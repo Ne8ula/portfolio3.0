@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 188.63 162.85">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: NotoSansJP-SemiBold, 'Noto Sans JP';
+        font-size: 16.31px;
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        glyph-orientation-vertical: 0deg;
+        text-orientation: upright;
+        writing-mode: tb;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-2, .cls-3, .cls-6 {
+        font-size: 8px;
+      }
+
+      .cls-3, .cls-7, .cls-6 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        font-size: 22px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-8 {
+        letter-spacing: .69em;
+      }
+
+      .cls-9 {
+        letter-spacing: .69em;
+      }
+
+      .cls-10 {
+        stroke-linejoin: round;
+      }
+
+      .cls-10, .cls-11 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-width: .75px;
+      }
+
+      .cls-12 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-13 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-14 {
+        letter-spacing: -.1em;
+      }
+
+      .cls-15 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-16 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-17 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-18 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-19 {
+        letter-spacing: -.14em;
+      }
+
+      .cls-20 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-5 {
+        font-size: 22.73px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <line class="cls-10" x1="119.75" y1="9.91" x2="136.27" y2="38.53"/>
+        <line class="cls-10" x1="140.68" y1="4.31" x2="140.68" y2="37.35"/>
+        <line class="cls-10" x1="161.6" y1="9.91" x2="145.08" y2="38.53"/>
+        <line class="cls-10" x1="176.92" y1="25.23" x2="148.31" y2="41.75"/>
+        <line class="cls-10" x1="182.53" y1="46.16" x2="149.49" y2="46.16"/>
+        <line class="cls-10" x1="161.6" y1="82.4" x2="145.08" y2="53.79"/>
+        <line class="cls-10" x1="140.68" y1="88.01" x2="140.68" y2="54.97"/>
+        <line class="cls-10" x1="119.75" y1="82.4" x2="136.27" y2="53.79"/>
+        <line class="cls-10" x1="104.43" y1="67.09" x2="133.05" y2="50.56"/>
+        <line class="cls-10" x1="98.82" y1="46.16" x2="131.87" y2="46.16"/>
+        <circle class="cls-11" cx="140.68" cy="46.16" r="1.97"/>
+        <circle class="cls-11" cx="140.68" cy="89.98" r="1.97"/>
+        <circle class="cls-11" cx="140.68" cy="2.34" r="1.97"/>
+        <circle class="cls-11" cx="96.86" cy="46.16" r="1.97"/>
+        <circle class="cls-11" cx="184.5" cy="46.16" r="1.97"/>
+      </g>
+      <path class="cls-10" d="M76.17,140.9l.16-123.73c0-3.63,3.93-5.89,7.08-4.08l49.65,28.67"/>
+      <path class="cls-10" d="M148.31,50.56l33.83,19.53c1.46.84,2.36,2.4,2.36,4.09v82.6c0,2.61-2.11,4.72-4.72,4.72h-98.92c-2.61,0-4.72-2.12-4.72-4.72"/>
+      <text class="cls-5" transform="translate(.77 156.69)"><tspan x="0" y="0">SYSTM</tspan></text>
+      <text class="cls-4" transform="translate(87.54 156.48)"><tspan x="0" y="0">OFF</tspan></text>
+      <circle class="cls-10" cx="76.19" cy="148.8" r="7.9"/>
+      <g>
+        <path d="M171.93,144.07c2.61,0,4.73,2.12,4.73,4.73s-2.12,4.73-4.73,4.73-4.73-2.12-4.73-4.73,2.12-4.73,4.73-4.73M171.93,143.32c-3.03,0-5.48,2.45-5.48,5.48s2.45,5.48,5.48,5.48,5.48-2.45,5.48-5.48-2.45-5.48-5.48-5.48h0Z"/>
+        <path d="M168.86,145.2c1.05.89,1.66,2.21,1.66,3.6s-.61,2.71-1.66,3.6c-1.05-.89-1.66-2.21-1.66-3.6s.61-2.71,1.66-3.6M168.86,144.26c-1.46.99-2.41,2.65-2.41,4.54s.96,3.56,2.41,4.54c1.46-.99,2.41-2.65,2.41-4.54s-.96-3.56-2.41-4.54h0Z"/>
+      </g>
+      <g>
+        <path d="M159.87,144.07c2.61,0,4.73,2.12,4.73,4.73s-2.12,4.73-4.73,4.73-4.73-2.12-4.73-4.73,2.12-4.73,4.73-4.73M159.87,143.32c-3.03,0-5.48,2.45-5.48,5.48s2.45,5.48,5.48,5.48,5.48-2.45,5.48-5.48-2.45-5.48-5.48-5.48h0Z"/>
+        <path d="M156.8,145.2c1.05.89,1.66,2.21,1.66,3.6s-.61,2.71-1.66,3.6c-1.05-.89-1.66-2.21-1.66-3.6s.61-2.71,1.66-3.6M156.8,144.26c-1.46.99-2.41,2.65-2.41,4.54s.96,3.56,2.41,4.54c1.46-.99,2.41-2.65,2.41-4.54s-.96-3.56-2.41-4.54h0Z"/>
+      </g>
+      <path d="M178.58,141.65c.28,0,.5.22.5.5v13.29c0,.28-.22.5-.5.5h-49.27c-.28,0-.5-.22-.5-.5v-13.29c0-.28.22-.5.5-.5h49.27M178.58,140.9h-49.27c-.69,0-1.25.56-1.25,1.25v13.29c0,.69.56,1.25,1.25,1.25h49.27c.69,0,1.25-.56,1.25-1.25v-13.29c0-.69-.56-1.25-1.25-1.25h0Z"/>
+      <text class="cls-1" transform="translate(65.72 11.29)"><tspan class="cls-18" x="0" y="0">オ</tspan><tspan class="cls-16" x="0" y="15.4">フ</tspan><tspan class="cls-14" x="0" y="30.74">ラ</tspan><tspan class="cls-15" x="0" y="45.37">イ</tspan><tspan class="cls-17" x="0" y="60.28">ン</tspan></text>
+      <text class="cls-3" transform="translate(47.65 12.63) rotate(90)"><tspan x="0" y="0">RELAY LINK</tspan><tspan x="0" y="8">OFFLINE</tspan></text>
+      <text class="cls-6" transform="translate(26.17 12.63) rotate(90)"><tspan x="0" y="0">UPTIME SYSTEM: INACTIVE</tspan><tspan x="0" y="8">UPTIME: 18:42 </tspan><tspan x="0" y="16">LOAD: 13%</tspan><tspan x="0" y="24">STATE: SUSPENDED</tspan></text>
+      <text class="cls-2" transform="translate(128.06 118.76)"><tspan class="cls-7" x="0" y="0">91</tspan><tspan class="cls-13" x="8.8" y="0"> </tspan><tspan class="cls-7" x="12.84" y="0">•</tspan><tspan class="cls-13" x="17.24" y="0"> </tspan><tspan class="cls-7" x="21.28" y="0">003</tspan><tspan class="cls-12" x="34.49" y="0"> </tspan><tspan class="cls-7" x="38.53" y="0">•</tspan><tspan class="cls-13" x="42.93" y="0"> </tspan><tspan class="cls-7" x="46.97" y="0" xml:space="preserve">1  </tspan><tspan class="cls-7" x="0" y="9">87º–94º</tspan><tspan class="cls-19" x="30.81" y="9"> </tspan><tspan class="cls-20" x="34.49" y="9">•</tspan><tspan class="cls-19" x="38.89" y="9"> </tspan><tspan class="cls-7" x="42.57" y="9" xml:space="preserve">55  </tspan><tspan class="cls-7" x="0" y="18">065</tspan><tspan class="cls-8" x="13.2" y="18"> </tspan><tspan class="cls-20" x="23.49" y="18">•</tspan><tspan class="cls-9" x="27.89" y="18"> </tspan><tspan class="cls-7" x="38.17" y="18">004</tspan></text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 236.13 142.46">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 35.5px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-2 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-5 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        stroke-linecap: square;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-2" transform="translate(5.41 111.21)"><tspan x="0" y="0">VALIDATED — ID: A0-04—INDEX: #0042</tspan><tspan x="0" y="14">SECTOR A — ACTIVE</tspan><tspan x="0" y="28" xml:space="preserve">            LOAD: 29% | TEMP: 30°C</tspan></text>
+      <text class="cls-1" transform="translate(0 85.16)"><tspan x="0" y="0">(CALIBRATED)</tspan></text>
+      <g>
+        <g>
+          <path class="cls-3" d="M43.29,45.35c0-24.84,20.13-44.97,44.97-44.97,24.84,0,44.97,20.13,44.97,44.97"/>
+          <path class="cls-3" d="M56.65,45.35c0-17.46,14.15-31.61,31.61-31.61,17.46,0,31.61,14.15,31.61,31.61"/>
+          <path class="cls-3" d="M70.02,45.35c0-10.07,8.17-18.24,18.24-18.24,10.07,0,18.24,8.17,18.24,18.24"/>
+        </g>
+        <circle cx="117.86" cy="34.25" r="3.22"/>
+        <circle cx="59.87" cy="10.52" r="3.22"/>
+        <circle cx="88.26" cy="27.11" r="3.22"/>
+      </g>
+      <text class="cls-5" transform="translate(146 12.38)"><tspan x="0" y="0">008293638</tspan></text>
+      <path d="M220.31,18.94c5.13,0,9.28-4.15,9.28-9.28S225.44.38,220.31.38c-5.12,0-9.27,4.16-9.28,9.28,0,5.13,4.15,9.28,9.28,9.28ZM224.18,8.88h1.55v1.55h-1.55v-1.55ZM221.86,5.02h1.55v6.96h-1.55v-6.96ZM219.54,7.34h1.55v6.96h-1.55v-6.96ZM217.22,6.56h1.55v5.41h-1.55v-5.41ZM214.9,8.88h1.55v1.55h-1.55v-1.55Z"/>
+      <g>
+        <path d="M199,8.11c-.85,0-1.55.69-1.55,1.55s.69,1.55,1.55,1.55,1.55-.69,1.55-1.55-.69-1.55-1.55-1.55Z"/>
+        <path d="M199,.38c-5.13,0-9.28,4.15-9.28,9.28s4.15,9.28,9.28,9.28c5.12,0,9.27-4.16,9.28-9.28,0-5.13-4.15-9.28-9.28-9.28ZM202.09,5.79h1.55v1.55h-1.55v-1.55ZM198.22,4.24h1.55v1.55h-1.55v-1.55ZM194.36,5.79h1.55v1.55h-1.55v-1.55ZM193.58,8.88h1.55v1.55h-1.55v-1.55ZM195.9,13.52h-1.55v-1.55h1.55v1.55ZM199.77,15.07h-1.55v-1.55h1.55v1.55ZM199,12.75c-1.71,0-3.09-1.39-3.09-3.09s1.38-3.09,3.09-3.09,3.09,1.38,3.09,3.09-1.39,3.09-3.09,3.09ZM203.64,13.52h-1.55v-1.55h1.55v1.55ZM204.41,10.43h-1.55v-1.55h1.55v1.55Z"/>
+      </g>
+      <line class="cls-4" x1="133.23" y1="45.35" x2="229.59" y2="45.35"/>
+      <line class="cls-4" x1="5.99" y1="45.35" x2="43.29" y2="45.35"/>
+      <g>
+        <g id="_Radial_Repeat_" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="22.73" cy="10.19" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-2" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="21.27" cy="14.66" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-3" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="17.46" cy="17.43" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-4" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="12.76" cy="17.43" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-5" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="8.95" cy="14.66" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-6" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="7.49" cy="10.19" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-7" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="8.95" cy="5.71" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-8" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="12.76" cy="2.94" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-9" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="17.46" cy="2.94" r="1.51"/>
+        </g>
+        <g id="_Radial_Repeat_-10" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="21.27" cy="5.71" r="1.51"/>
+        </g>
+      </g>
+      <path d="M74.62,131.43c1.91,0,3.47,1.55,3.47,3.47v.08c0,1.91-1.55,3.47-3.47,3.47H9.63c-1.91,0-3.47-1.55-3.47-3.47v-.08c0-1.91,1.55-3.47,3.47-3.47h64.99M74.62,130.68H9.63c-2.33,0-4.22,1.89-4.22,4.22v.08c0,2.33,1.89,4.22,4.22,4.22h64.99c2.33,0,4.22-1.89,4.22-4.22v-.08c0-2.33-1.89-4.22-4.22-4.22h0Z"/>
+      <path d="M225.38,117.44c1.91,0,3.47,1.55,3.47,3.47v.08c0,1.91-1.55,3.47-3.47,3.47h-96.51c-1.91,0-3.47-1.55-3.47-3.47v-.08c0-1.91,1.55-3.47,3.47-3.47h96.51M225.38,116.69h-96.51c-2.33,0-4.22,1.89-4.22,4.22v.08c0,2.33,1.89,4.22,4.22,4.22h96.51c2.33,0,4.22-1.89,4.22-4.22v-.08c0-2.33-1.89-4.22-4.22-4.22h0Z"/>
+    </g>
+  </g>
+</svg>
