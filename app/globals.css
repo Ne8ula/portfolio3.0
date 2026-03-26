@@ -6,7 +6,7 @@
 /* Adding custom font faces for VCR_OSD_MONO and SpaceMono */
 @font-face {
   font-family: "VCR_OSD_MONO";
-  src: url("/images/vcr-osd-mono-1.ttf") format("truetype");
+  src: url("/fonts/vcr-osd-mono.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: "SpaceMono";
-  src: url("/images/spacemono-regular.ttf") format("truetype");
+  src: url("/fonts/spacemono-regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;

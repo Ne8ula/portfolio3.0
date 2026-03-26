@@ -11,23 +11,24 @@ export function IsometricCube() {
         <svg viewBox="0 0 700 600" className="w-full h-full overflow-visible">
           {/*==================DEFINITIONS==================*/}
           <defs>
-            <filter id="grainy-texture*/"}
+            <filter id="grainy-texture">
               {/* Generate Noise */}
               <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" result="noise" />
-              <feColorMatrix type ="saturatate" values="0" in="noise" result="grayNoise" />
+              <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise" />
               <feComponentTransfer in="grayNoise" result="theNoise">
                   <feFuncA type="linear" slope="0.3"/>
               </feComponentTransfer>
-              <feblend in="thenoise" in2="sourceGraphic" mode="multiply" />
+              <feComposite in="theNoise" in2="SourceGraphic" operator="in" result="monoNoise" />
+              <feBlend in="monoNoise" in2="SourceGraphic" mode="multiply" />
             </filter>
           </defs>
           {/*==================FILTERED GROUP==================*/}
           <g filter="url(#grainy-texture)">
 
             <g>
-              <polygon points="300, 60 370, 100 300, 140 230, 100" fill="e8e5dc" stroke="1a1a1a" strokeWidth="2" />
-              <polygon points="370, 100 440, 140 370, 180 300, 140" fill="e8e5dc" stroke="1a1a1a" strokeWidth="2" />
-              <polygon points="440, 140 510, 180 440, 220 370, 180" fill="e8e5dc" stroke="1a1a1a" strokeWidth="2" />
+              <polygon points="300, 60 370, 100 300, 140 230, 100" fill="#e8e5dc" stroke="#1a1a1a" strokeWidth="2" />
+              <polygon points="370, 100 440, 140 370, 180 300, 140" fill="#e8e5dc" stroke="#1a1a1a" strokeWidth="2" />
+              <polygon points="440, 140 510, 180 440, 220 370, 180" fill="#e8e5dc" stroke="#1a1a1a" strokeWidth="2" />
 
               <polygon points="230,100 300,140 230,180 160,140" fill="#e8e5dc" stroke="#1a1a1a" strokeWidth="2" />
               {/* Center tile - base for button */}
@@ -72,6 +73,7 @@ export function IsometricCube() {
               <polygon points="440,300 510,260 510,340 440,380" fill="#ccc8bf" stroke="#1a1a1a" strokeWidth="2" />
               <polygon points="440,380 510,340 510,420 440,460" fill="#ccc8bf" stroke="#1a1a1a" strokeWidth="2" />
             </g>
+          </g>
           {/* ==================== CUBE BASE STRUCTURE ==================== */}
 
           {/* TOP FACE - 3x3 grid */}
