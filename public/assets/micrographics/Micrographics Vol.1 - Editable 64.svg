@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 233.99 107.2">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 21px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2, .cls-3 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-3, .cls-4 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-5 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <line class="cls-5" x1="225.9" y1="87.91" x2="225.9" y2="104.09"/>
+        <line class="cls-5" x1="217.81" y1="96" x2="233.99" y2="96"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="225.9" y1="0" x2="225.9" y2="16.18"/>
+        <line class="cls-5" x1="217.81" y1="8.09" x2="233.99" y2="8.09"/>
+      </g>
+      <text class="cls-3" transform="translate(91.24 61.94)"><tspan x="0" y="0">REBOOT STARTED</tspan><tspan x="0" y="14">SYSTEM OVERLOADED</tspan><tspan x="0" y="28">PROGRESS: 47/100</tspan><tspan x="0" y="42">EG.2399.20</tspan></text>
+      <text class="cls-4" transform="translate(0 103.94)"><tspan x="0" y="0">[SYSTM-RST]</tspan></text>
+      <text class="cls-3" transform="translate(0 10.27)"><tspan x="0" y="0">[OVERLOADED]</tspan></text>
+      <text class="cls-1" transform="translate(0 35.8)"><tspan class="cls-2" x="0" y="0">SYSTEM </tspan><tspan class="cls-6" x="80.86" y="0">RESET</tspan><tspan class="cls-2" x="138.62" y="0" xml:space="preserve"> [!]</tspan></text>
+      <g id="_17.Power" data-name=" 17.Power">
+        <path d="M17.35,86.38C7.77,86.38,0,78.61,0,69.03s7.77-17.35,17.35-17.35,17.35,7.77,17.35,17.35c-.01,9.58-7.77,17.34-17.35,17.35ZM17.35,54.57c-7.99,0-14.46,6.47-14.46,14.46s6.47,14.46,14.46,14.46,14.46-6.47,14.46-14.46c0-7.98-6.48-14.45-14.46-14.46Z"/>
+        <path d="M17.35,79.15c-5.59,0-10.12-4.53-10.12-10.12,0-2.88,1.23-5.62,3.37-7.54l1.93,2.15c-2.98,2.66-3.23,7.23-.57,10.21,2.66,2.98,7.23,3.23,10.21.57,2.98-2.66,3.23-7.23.57-10.21-.18-.2-.37-.39-.57-.57l1.93-2.15c4.17,3.73,4.52,10.13.8,14.29-1.92,2.15-4.66,3.37-7.54,3.37Z"/>
+        <rect x="15.91" y="58.91" width="2.89" height="10.12"/>
+      </g>
+      <g>
+        <path d="M56.99,88.03c-9.87,0-17.87-8-17.87-17.87s8-17.87,17.87-17.87,17.87,8,17.87,17.87c-.01,9.86-8,17.85-17.87,17.87ZM56.99,55.28c-8.22,0-14.89,6.67-14.89,14.89s6.67,14.89,14.89,14.89,14.89-6.67,14.89-14.89c0-8.22-6.67-14.88-14.89-14.89Z"/>
+        <path d="M55.51,61.23h2.98v11.91h-2.98v-11.91ZM55.51,76.12h2.98v2.98h-2.98v-2.98Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

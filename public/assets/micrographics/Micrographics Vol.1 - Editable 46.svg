@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.69 109.72">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-5 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        stroke-linecap: square;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-4" transform="translate(42.3 11.85) rotate(-11.56)"><tspan x="0" y="0">M</tspan></text>
+      <text class="cls-4" transform="translate(48.47 10.52) rotate(-3.49)"><tspan x="0" y="0">A</tspan></text>
+      <text class="cls-4" transform="translate(54.81 10.08) rotate(4.53)"><tspan x="0" y="0">I</tspan></text>
+      <text class="cls-4" transform="translate(61.12 10.51) rotate(12.64)"><tspan x="0" y="0">N</tspan></text>
+      <text class="cls-4" transform="translate(67.31 11.84) rotate(20.82)"><tspan x="0" y="0">T</tspan></text>
+      <text class="cls-4" transform="translate(73.27 14.04) rotate(28.99)"><tspan x="0" y="0">E</tspan></text>
+      <text class="cls-4" transform="translate(78.83 17.05) rotate(37.09)"><tspan x="0" y="0">N</tspan></text>
+      <text class="cls-4" transform="translate(83.9 20.81) rotate(45.13)"><tspan x="0" y="0">A</tspan></text>
+      <text class="cls-4" transform="translate(88.42 25.26) rotate(53.21)"><tspan x="0" y="0">N</tspan></text>
+      <text class="cls-4" transform="translate(92.26 30.29) rotate(61.31)"><tspan x="0" y="0">C</tspan></text>
+      <text class="cls-4" transform="translate(95.37 35.84) rotate(69.49)"><tspan x="0" y="0">E</tspan></text>
+      <text class="cls-4" transform="translate(97.64 41.73) rotate(77.65)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(99.21 49.02) rotate(87.19)"><tspan x="0" y="0">M</tspan></text>
+      <text class="cls-4" transform="translate(99.58 55.32) rotate(95.17)"><tspan x="0" y="0">O</tspan></text>
+      <text class="cls-4" transform="translate(99.07 61.65) rotate(103.31)"><tspan x="0" y="0">D</tspan></text>
+      <text class="cls-4" transform="translate(97.68 67.82) rotate(111.48)"><tspan x="0" y="0">E</tspan></text>
+      <text class="cls-4" transform="translate(95.41 73.74) rotate(119.64)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(91.72 80.19) rotate(129.15)"><tspan x="0" y="0">—</tspan></text>
+      <text class="cls-4" transform="translate(87.76 85.15) rotate(137.22)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(82.28 90.2) rotate(146.73)"><tspan x="0" y="0">I</tspan></text>
+      <text class="cls-4" transform="translate(77.03 93.71) rotate(154.84)"><tspan x="0" y="0">D</tspan></text>
+      <text class="cls-4" transform="translate(71.32 96.46) rotate(163.01)"><tspan x="0" y="0">:</tspan></text>
+      <text class="cls-4" transform="translate(65.28 98.37) rotate(171.18)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(57.95 99.51) rotate(-179.07)"><tspan x="0" y="0">0</tspan></text>
+      <text class="cls-4" transform="translate(51.59 99.49) rotate(-171.31)"><tspan x="0" y="0">F</tspan></text>
+      <text class="cls-4" transform="translate(45.33 98.59) rotate(-163.17)"><tspan x="0" y="0">-</tspan></text>
+      <text class="cls-4" transform="translate(39.23 96.81) rotate(-154.97)"><tspan x="0" y="0">6</tspan></text>
+      <text class="cls-4" transform="translate(33.48 94.19) rotate(-146.86)"><tspan x="0" y="0">6</tspan></text>
+      <text class="cls-4" transform="translate(28.13 90.77) rotate(-138.76)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(22.55 85.85) rotate(-129.28)"><tspan x="0" y="0">—</tspan></text>
+      <text class="cls-4" transform="translate(18.49 81) rotate(-121.2)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(14.65 74.61) rotate(-111.61)"><tspan x="0" y="0">P</tspan></text>
+      <text class="cls-4" transform="translate(12.26 68.75) rotate(-103.45)"><tspan x="0" y="0">O</tspan></text>
+      <text class="cls-4" transform="translate(10.73 62.62) rotate(-95.32)"><tspan x="0" y="0">W</tspan></text>
+      <text class="cls-4" transform="translate(10.09 56.32) rotate(-87.32)"><tspan x="0" y="0">E</tspan></text>
+      <text class="cls-4" transform="translate(10.32 50) rotate(-79.24)"><tspan x="0" y="0">R</tspan></text>
+      <text class="cls-4" transform="translate(11.45 43.74) rotate(-71.04)"><tspan x="0" y="0">:</tspan></text>
+      <text class="cls-4" transform="translate(13.45 37.73) rotate(-62.88)"><tspan x="0" y="0"> </tspan></text>
+      <text class="cls-4" transform="translate(16.84 31.14) rotate(-53.38)"><tspan x="0" y="0">5</tspan></text>
+      <text class="cls-4" transform="translate(20.58 26.01) rotate(-45.3)"><tspan x="0" y="0">4</tspan></text>
+      <text class="cls-4" transform="translate(24.99 21.46) rotate(-37.22)"><tspan x="0" y="0">%</tspan></text>
+      <g>
+        <g id="_Radial_Repeat_" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="54.82" cy="84.55" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-2" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="37.36" cy="78.88" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-3" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="26.57" cy="64.02" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-4" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="26.57" cy="45.66" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-5" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="37.36" cy="30.8" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-6" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="54.82" cy="25.13" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-7" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="72.29" cy="30.8" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-8" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="83.08" cy="45.66" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-9" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="83.08" cy="64.02" r="2.52"/>
+        </g>
+        <g id="_Radial_Repeat_-10" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle class="cls-1" cx="72.29" cy="78.88" r="2.52"/>
+        </g>
+      </g>
+      <g>
+        <line class="cls-2" x1="54.82" y1="27.65" x2="54.82" y2="47.01"/>
+        <line class="cls-3" x1="52.73" y1="44.91" x2="54.82" y2="47.01"/>
+        <line class="cls-3" x1="56.92" y1="44.91" x2="54.82" y2="47.01"/>
+      </g>
+      <g>
+        <line class="cls-2" x1="54.82" y1="82.03" x2="54.82" y2="62.67"/>
+        <line class="cls-3" x1="56.92" y1="64.76" x2="54.82" y2="62.67"/>
+        <line class="cls-3" x1="52.73" y1="64.76" x2="54.82" y2="62.67"/>
+      </g>
+      <text class="cls-5" transform="translate(39.22 57.91)"><tspan x="0" y="0">[ PWR ]</tspan></text>
+    </g>
+  </g>
+</svg>

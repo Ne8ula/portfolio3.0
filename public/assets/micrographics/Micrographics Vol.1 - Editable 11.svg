@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.19 225.57">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: none;
+        stroke: #000;
+        stroke-width: .75px;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+
+      .cls-4, .cls-5 {
+        font-size: 8px;
+      }
+
+      .cls-2 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-5 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        stroke-linecap: square;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <line class="cls-2" x1="17.41" y1="33.93" x2="17.41" y2="218.17"/>
+      <circle class="cls-1" cx="17.41" cy="221.68" r="3.51"/>
+      <circle class="cls-1" cx="4.09" cy="221.68" r="3.51"/>
+      <circle class="cls-1" cx="126.3" cy="221.68" r="3.51"/>
+      <circle class="cls-1" cx="126.3" cy="208.35" r="3.51"/>
+      <circle class="cls-1" cx="126.3" cy="3.88" r="3.51"/>
+      <circle class="cls-1" cx="17.41" cy="3.88" r="3.51"/>
+      <circle class="cls-1" cx="4.09" cy="3.88" r="3.51"/>
+      <circle class="cls-1" cx="4.09" cy="30.42" r="3.51"/>
+      <circle class="cls-1" cx="17.41" cy="30.42" r="3.51"/>
+      <circle class="cls-1" cx="4.09" cy="17.15" r="3.51"/>
+      <circle class="cls-1" cx="21.06" cy="114.36" r="3.51"/>
+      <circle class="cls-1" cx="126.3" cy="114.36" r="3.51"/>
+      <circle class="cls-1" cx="119.29" cy="114.36" r="3.51"/>
+      <circle class="cls-1" cx="37.26" cy="114.36" r="19.85"/>
+      <circle class="cls-1" cx="73.61" cy="112.78" r="56.2"/>
+      <path class="cls-3" d="M20.92,3.88c60.14,0,108.9,48.76,108.9,108.9s-48.76,108.9-108.9,108.9"/>
+      <line class="cls-2" x1="14.92" y1="6.36" x2="6.6" y2="14.65"/>
+      <line class="cls-1" x1="4.09" y1="20.66" x2="4.09" y2="26.91"/>
+      <line class="cls-1" x1="17.41" y1="7.39" x2="17.41" y2="26.91"/>
+      <line class="cls-1" x1="13.9" y1="30.42" x2="7.6" y2="30.42"/>
+      <text class="cls-4" transform="translate(6.84 213.43) rotate(-90)"><tspan x="0" y="0">INDEX / VALID – STATUS: OK • NODE 12</tspan></text>
+      <text class="cls-5" transform="translate(59.58 117.03)"><tspan x="0" y="0">[INITIALIZE]</tspan></text>
+    </g>
+  </g>
+</svg>

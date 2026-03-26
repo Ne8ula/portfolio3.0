@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 133.12 136.84">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 12px;
+        letter-spacing: -.12em;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-3, .cls-4, .cls-5 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-4, .cls-5 {
+        fill: none;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-6, .cls-2 {
+        font-size: 8px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-5 {
+        stroke-linecap: square;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 21px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <circle class="cls-4" cx="12.59" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(8.99 15.52)"><tspan x="0" y="0">S</tspan></text>
+        <circle class="cls-4" cx="34.44" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(30.84 15.52)"><tspan x="0" y="0">T</tspan></text>
+        <circle class="cls-4" cx="56.28" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(52.68 15.52)"><tspan x="0" y="0">A</tspan></text>
+        <circle class="cls-4" cx="78.13" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(74.53 15.52)"><tspan x="0" y="0">T</tspan></text>
+        <circle class="cls-4" cx="99.97" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(96.37 15.52)"><tspan x="0" y="0">I</tspan></text>
+        <circle class="cls-4" cx="121.82" cy="11.3" r="10.92"/>
+        <text class="cls-1" transform="translate(118.22 15.52)"><tspan x="0" y="0">C</tspan></text>
+      </g>
+      <text class="cls-2" transform="translate(.73 102.75)"><tspan x="0" y="0">DISABLE</tspan><tspan x="0" y="9.6">TARGET: CHANNEL 07</tspan><tspan x="0" y="19.2">STATE: OFFLINE</tspan></text>
+      <g>
+        <g>
+          <path class="cls-3" d="M21.18,28.89c10.77,0,19.51,8.73,19.51,19.51v-19.51h-19.51Z"/>
+          <path class="cls-3" d="M1.67,48.39v19.51h19.51c-10.77,0-19.51-8.73-19.51-19.51Z"/>
+          <path class="cls-3" d="M21.18,28.89H1.67v19.51c0-10.77,8.73-19.51,19.51-19.51Z"/>
+          <path class="cls-3" d="M21.18,67.9h19.51v-19.51c0,10.77-8.73,19.51-19.51,19.51Z"/>
+        </g>
+        <g>
+          <path class="cls-3" d="M67.21,28.89c10.77,0,19.51,8.73,19.51,19.51v-19.51h-19.51Z"/>
+          <path class="cls-3" d="M47.7,48.39v19.51h19.51c-10.77,0-19.51-8.73-19.51-19.51Z"/>
+          <path class="cls-3" d="M67.21,28.89h-19.51v19.51c0-10.77,8.73-19.51,19.51-19.51Z"/>
+          <path class="cls-3" d="M67.21,67.9h19.51v-19.51c0,10.77-8.73,19.51-19.51,19.51Z"/>
+        </g>
+        <g>
+          <path class="cls-3" d="M113.23,28.89c10.77,0,19.51,8.73,19.51,19.51v-19.51h-19.51Z"/>
+          <path class="cls-3" d="M93.73,48.39v19.51h19.51c-10.77,0-19.51-8.73-19.51-19.51Z"/>
+          <path class="cls-3" d="M113.23,28.89h-19.51v19.51c0-10.77,8.73-19.51,19.51-19.51Z"/>
+          <path class="cls-3" d="M113.23,67.9h19.51v-19.51c0,10.77-8.73,19.51-19.51,19.51Z"/>
+        </g>
+        <line class="cls-5" x1="21.18" y1="34.54" x2="21.18" y2="48.39"/>
+        <line class="cls-5" x1="113.23" y1="62.25" x2="113.23" y2="48.39"/>
+        <line class="cls-5" x1="77" y1="38.6" x2="67.21" y2="48.39"/>
+      </g>
+      <rect class="cls-4" x="107.16" y="75.03" width="25.58" height="15.29" rx="7.65" ry="7.65"/>
+      <text class="cls-6" transform="translate(110.95 85.51)"><tspan x="0" y="0">IDLE</tspan></text>
+      <text class="cls-7" transform="translate(0 90.32)"><tspan x="0" y="0">MODULE-D9</tspan></text>
+      <g>
+        <path class="cls-3" d="M113.23,97.45c10.77,0,19.51,8.73,19.51,19.51v-19.51h-19.51Z"/>
+        <path class="cls-3" d="M93.73,116.96v19.51h19.51c-10.77,0-19.51-8.73-19.51-19.51Z"/>
+        <path class="cls-3" d="M113.23,97.45h-19.51v19.51c0-10.77,8.73-19.51,19.51-19.51Z"/>
+        <path class="cls-3" d="M113.23,136.47h19.51v-19.51c0,10.77-8.73,19.51-19.51,19.51Z"/>
+      </g>
+      <line class="cls-5" x1="99.38" y1="116.96" x2="113.23" y2="116.96"/>
+      <g id="_49.Arrow" data-name=" 49.Arrow">
+        <path d="M6.22,136.84c-2.69,0-4.88-2.18-4.88-4.88s2.18-4.88,4.88-4.88,4.88,2.18,4.88,4.88c0,2.69-2.18,4.87-4.88,4.88ZM6.22,127.9c-2.24,0-4.06,1.82-4.06,4.06s1.82,4.06,4.06,4.06,4.06-1.82,4.06-4.06c0-2.24-1.82-4.06-4.06-4.06Z"/>
+        <polygon points="8.66 131.56 7.85 131.56 7.85 130.34 6.63 130.34 6.63 129.53 8.66 129.53 8.66 131.56"/>
+        <rect x="5.8" y="130.54" width="2.87" height=".81" transform="translate(-90.48 43.47) rotate(-45)"/>
+        <polygon points="5.81 134.41 3.78 134.41 3.78 132.37 4.59 132.37 4.59 133.59 5.81 133.59 5.81 134.41"/>
+        <rect x="3.77" y="132.58" width="2.87" height=".81" transform="translate(-92.51 42.63) rotate(-45)"/>
+      </g>
+      <g id="_84.App" data-name=" 84.App">
+        <path d="M17.18,136.84c-2.69,0-4.88-2.18-4.88-4.88s2.18-4.88,4.88-4.88,4.88,2.18,4.88,4.88c0,2.69-2.18,4.87-4.88,4.88ZM17.18,127.9c-2.24,0-4.06,1.82-4.06,4.06s1.82,4.06,4.06,4.06,4.06-1.82,4.06-4.06c0-2.24-1.82-4.06-4.06-4.06Z"/>
+        <path d="M19.62,134.41h-4.88v-4.88h4.88v4.88ZM15.56,133.59h3.25v-3.25h-3.25v3.25Z"/>
+        <rect x="15.15" y="131.15" width="4.06" height=".81"/>
+      </g>
+      <g id="_25.Option" data-name=" 25.Option">
+        <path d="M28.14,136.84c-2.69,0-4.88-2.18-4.88-4.88s2.18-4.88,4.88-4.88,4.88,2.18,4.88,4.88c0,2.69-2.18,4.87-4.88,4.88ZM28.14,127.9c-2.24,0-4.06,1.82-4.06,4.06s1.82,4.06,4.06,4.06,4.06-1.82,4.06-4.06c0-2.24-1.82-4.06-4.06-4.06Z"/>
+        <rect x="25.71" y="130.34" width="1.22" height=".81"/>
+        <path d="M27.74,131.97c-.67,0-1.22-.55-1.22-1.22s.55-1.22,1.22-1.22,1.22.55,1.22,1.22-.55,1.22-1.22,1.22ZM27.74,130.34c-.22,0-.41.18-.41.41s.18.41.41.41.41-.18.41-.41-.18-.41-.41-.41Z"/>
+        <rect x="28.55" y="130.34" width="2.03" height=".81"/>
+        <path d="M29.36,134.41c-.67,0-1.22-.55-1.22-1.22s.55-1.22,1.22-1.22,1.22.55,1.22,1.22-.55,1.22-1.22,1.22ZM29.36,132.78c-.22,0-.41.18-.41.41s.18.41.41.41.41-.18.41-.41-.18-.41-.41-.41Z"/>
+        <rect x="25.71" y="132.78" width="2.84" height=".81"/>
+      </g>
+      <g>
+        <line class="cls-4" x1="83.03" y1="127.09" x2="83.03" y2="136.84"/>
+        <line class="cls-4" x1="34.54" y1="131.97" x2="87.91" y2="131.97"/>
+        <line class="cls-4" x1="79.58" y1="128.52" x2="86.48" y2="135.42"/>
+        <line class="cls-4" x1="79.58" y1="135.42" x2="86.48" y2="128.52"/>
+      </g>
+    </g>
+  </g>
+</svg>

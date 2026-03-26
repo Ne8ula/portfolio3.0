@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212.51 222.17">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-1, .cls-2 {
+        font-size: 12px;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: 3px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <g>
+          <line class="cls-3" x1="103.29" y1="66.36" x2="103.29" y2="139.8"/>
+          <line class="cls-3" x1="29.84" y1="139.8" x2="176.74" y2="139.8"/>
+        </g>
+        <g>
+          <line class="cls-3" x1="68.39" y1="104.9" x2="103.29" y2="139.8"/>
+          <line class="cls-3" x1="103.29" y1="139.8" x2="138.19" y2="104.9"/>
+        </g>
+      </g>
+      <text class="cls-2" transform="translate(10.2 139.84) rotate(-87.85)"><tspan x="0" y="0">A</tspan></text>
+      <text class="cls-2" transform="translate(14.5 111.74) rotate(-70.24)"><tspan x="0" y="0">L</tspan></text>
+      <text class="cls-2" transform="translate(27.11 86.28) rotate(-52.65)"><tspan x="0" y="0">T</tspan></text>
+      <text class="cls-2" transform="translate(46.82 65.78) rotate(-35.17)"><tspan x="0" y="0">E</tspan></text>
+      <text class="cls-2" transform="translate(71.79 52.17) rotate(-17.54)"><tspan x="0" y="0">R</tspan></text>
+      <text class="cls-2" transform="translate(99.65 46.83) rotate(-.93)"><tspan x="0" y="0">N</tspan></text>
+      <text class="cls-2" transform="translate(127.93 50) rotate(17.54)"><tspan x="0" y="0">A</tspan></text>
+      <text class="cls-2" transform="translate(153.87 61.63) rotate(35.17)"><tspan x="0" y="0">T</tspan></text>
+      <text class="cls-2" transform="translate(175.11 80.56) rotate(52.65)"><tspan x="0" y="0">I</tspan></text>
+      <text class="cls-2" transform="translate(189.65 104.96) rotate(70.24)"><tspan x="0" y="0">N</tspan></text>
+      <text class="cls-2" transform="translate(196.12 132.65) rotate(87.85)"><tspan x="0" y="0">G</tspan></text>
+      <text class="cls-1" transform="translate(83.19 167.72)"><tspan x="0" y="0">SYSTEM</tspan><tspan x="-82.51" y="12.8">REJECTED –––––––– ID –––– 80-6B </tspan><tspan x="-46.21" y="25.6">ERROR ––––––– 0x1D22</tspan><tspan x="-82.51" y="38.4">REBOOT ––––– TARGET –– MAIN BUS</tspan><tspan x="-19.8" y="51.2">YEAR // 2026</tspan></text>
+      <text class="cls-1" transform="translate(.67 10.27)"><tspan x="0" y="0">CRITICAL ERROR —––– ID ––– 292C </tspan><tspan x="26.41" y="12.8">POWER ––––––––––– 3/100</tspan></text>
+    </g>
+  </g>
+</svg>

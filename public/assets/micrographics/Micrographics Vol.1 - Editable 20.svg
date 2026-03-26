@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.24 218.55">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-1, .cls-2 {
+        font-size: 8px;
+      }
+
+      .cls-3, .cls-4 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+
+      .cls-4 {
+        fill: none;
+        stroke-linecap: square;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-4" d="M12.97.38c60.14,0,108.9,48.76,108.9,108.9s-48.76,108.9-108.9,108.9V.38Z"/>
+      <text class="cls-2" transform="translate(6.84 217.29) rotate(-90)"><tspan x="0" y="0">ALERT — ID: A4-91 —–––––––– BANDWIDTH 900MBPS</tspan></text>
+      <text class="cls-1" transform="translate(49.3 102.01)"><tspan x="0" y="0">RELAY UNIT</tspan><tspan x="0" y="9.6">ONLINE</tspan><tspan x="0" y="19.2">CODE: 0x0833</tspan></text>
+      <g id="_10.Upload" data-name=" 10.Upload">
+        <path d="M33.52,121.24c-6.89,0-12.47-5.58-12.47-12.47s5.58-12.47,12.47-12.47,12.47,5.58,12.47,12.47c0,6.88-5.58,12.46-12.47,12.47ZM33.52,98.39c-5.74,0-10.39,4.65-10.39,10.39s4.65,10.39,10.39,10.39,10.39-4.65,10.39-10.39c0-5.73-4.65-10.38-10.39-10.39Z"/>
+        <polygon points="36.94 107.43 33.52 104.01 30.1 107.43 28.63 105.96 33.52 101.07 38.41 105.96 36.94 107.43"/>
+        <rect x="32.48" y="102.54" width="2.08" height="8.31"/>
+        <polygon points="38.71 116.05 28.32 116.05 28.32 112.93 30.4 112.93 30.4 113.97 36.64 113.97 36.64 112.93 38.71 112.93 38.71 116.05"/>
+      </g>
+      <circle class="cls-3" cx="119.2" cy="3.04" r="2.67"/>
+      <circle class="cls-3" cx="119.2" cy="215.51" r="2.67"/>
+    </g>
+  </g>
+</svg>

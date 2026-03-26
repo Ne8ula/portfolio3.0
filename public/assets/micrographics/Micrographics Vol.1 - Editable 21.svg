@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 165.42 221.16">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        font-family: NotoSansJP-SemiBold, 'Noto Sans JP';
+        font-size: 52.48px;
+        glyph-orientation-vertical: 0deg;
+        text-orientation: upright;
+        writing-mode: tb;
+      }
+
+      .cls-2, .cls-3 {
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-4, .cls-5 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 8px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-5 {
+        stroke-linecap: square;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 21px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <g id="_Grid_Repeat_" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-2" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="21.65" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-3" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-4" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-5" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-6" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M82.77,118.37c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M82.77,117.37c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-7" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="122.66" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-8" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-9" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M21.65,133.65c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M21.65,132.65c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-10" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-11" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-12" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-13" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="82.77" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-14" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="137.94" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-15" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="153.22" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-16" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="21.65" cy="153.22" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-17" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="153.22" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-18" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="153.22" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-19" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M67.49,148.93c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M67.49,147.93c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-20" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M82.77,148.93c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M82.77,147.93c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-21" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="153.22" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-22" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-23" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="21.65" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-24" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-25" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-26" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-27" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="82.77" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-28" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="168.5" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-29" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-30" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="21.65" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-31" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-32" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-33" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-34" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="82.77" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-35" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="183.78" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-36" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-37" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="21.65" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-38" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-39" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M52.21,194.77c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M52.21,193.77c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-40" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-41" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="82.77" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-42" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="199.06" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-43" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="6.37" cy="214.34" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-44" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <path d="M21.65,210.05c2.36,0,4.29,1.92,4.29,4.29s-1.92,4.29-4.29,4.29-4.29-1.92-4.29-4.29,1.92-4.29,4.29-4.29M21.65,209.05c-2.92,0-5.29,2.37-5.29,5.29s2.37,5.29,5.29,5.29,5.29-2.37,5.29-5.29-2.37-5.29-5.29-5.29h0Z"/>
+        </g>
+        <g id="_Grid_Repeat_-45" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="36.93" cy="214.34" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-46" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="52.21" cy="214.34" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-47" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="67.49" cy="214.34" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-48" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="82.77" cy="214.34" r="5.29"/>
+        </g>
+        <g id="_Grid_Repeat_-49" data-name="&amp;lt;Grid Repeat&amp;gt;">
+          <circle cx="98.06" cy="214.34" r="5.29"/>
+        </g>
+      </g>
+      <text class="cls-2" transform="translate(139.18 116.09)"><tspan x="0" y="0">方式</tspan></text>
+      <rect class="cls-4" x="115.66" y="90.56" width="47.04" height="15.29" rx="7.65" ry="7.65"/>
+      <text class="cls-3" transform="translate(125.78 101.03)"><tspan x="0" y="0">OUTPUT</tspan></text>
+      <text class="cls-6" transform="translate(0 105.85)"><tspan x="0" y="0">MODULE-B7</tspan></text>
+      <text class="cls-1" transform="translate(.34 36.9)"><tspan x="0" y="0">MODULE B7 — STABLE</tspan><tspan x="0" y="14">TEMP: 27°C | POWER: 68%</tspan><tspan x="0" y="28">• 17 “ 004 • 9 “ 84</tspan><tspan x="0" y="42">” 12 • 44 “ 003 • 7 • 88</tspan></text>
+      <g>
+        <g id="_Radial_Repeat_" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="1.09" y2="16.38"/>
+        </g>
+        <g id="_Radial_Repeat_-2" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="1.89" y2="11.32"/>
+        </g>
+        <g id="_Radial_Repeat_-3" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="4.21" y2="6.75"/>
+        </g>
+        <g id="_Radial_Repeat_-4" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="7.84" y2="3.13"/>
+        </g>
+        <g id="_Radial_Repeat_-5" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="12.4" y2=".81"/>
+        </g>
+        <g id="_Radial_Repeat_-6" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="17.46" y2="0"/>
+        </g>
+        <g id="_Radial_Repeat_-7" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="22.52" y2=".81"/>
+        </g>
+        <g id="_Radial_Repeat_-8" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="27.08" y2="3.13"/>
+        </g>
+        <g id="_Radial_Repeat_-9" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="30.71" y2="6.75"/>
+        </g>
+        <g id="_Radial_Repeat_-10" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="33.03" y2="11.32"/>
+        </g>
+        <g id="_Radial_Repeat_-11" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <line class="cls-4" x1="17.46" y1="16.38" x2="33.83" y2="16.38"/>
+        </g>
+      </g>
+      <path class="cls-5" d="M37.91,16.38C37.91,7.54,45.07.38,53.91.38s16,7.16,16,16h-32Z"/>
+      <path d="M155.11,0c-4.42,0-8,3.58-8,8s3.58,8,8,8,8-3.58,8-8S159.53,0,155.11,0ZM160.73,5.33l-2.37,1.37-.5-.87,2.37-1.37.5.87ZM152.44,2.38l1.37,2.37-.87.5-1.37-2.37.87-.5ZM149.99,4.47l2.37,1.37-.5.87-2.37-1.37.5-.87ZM148.9,8.5v-1h2.74v1h-2.74ZM149.49,10.67l2.37-1.37.5.87-2.37,1.37-.5-.87ZM152.44,13.63l-.87-.5,1.37-2.37.87.5-1.37,2.37ZM155.61,14.21h-1v-2.74h1v2.74ZM155.61,4.54h-1V1.8h1v2.74ZM157.78,2.38l.87.5-1.37,2.37-.87-.5,1.37-2.37ZM157.78,13.63l-1.37-2.37.87-.5,1.37,2.37-.87.5ZM160.23,11.54l-2.37-1.37.5-.87,2.37,1.37-.5.87ZM158.57,8.5v-1h2.74v1h-2.74Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 298.35 49.67">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3, .cls-4 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-4 {
+        font-size: 10px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <line class="cls-2" x1="23.62" y1="49.29" x2="23.62" y2="2.05"/>
+      <path class="cls-2" d="M47.44,28.67c1.47,11.63,11.4,20.62,23.42,20.62,13.04,0,23.62-10.57,23.62-23.62S83.9,2.05,70.86,2.05c-12.03,0-21.95,8.99-23.42,20.62"/>
+      <line class="cls-2" x1="70.86" y1="25.67" y2="25.67"/>
+      <line class="cls-2" x1="40.32" y1="42.37" x2="6.92" y2="8.97"/>
+      <line class="cls-2" x1="40.32" y1="8.97" x2="6.92" y2="42.37"/>
+      <text class="cls-3" transform="translate(104.58 10.27)"><tspan x="0" y="0">OFFLINE : STANDBY // PORT 025</tspan><tspan x="0" y="14">DATA.043.XML</tspan></text>
+      <path d="M290.25,48.58h-.66c-.22,0-.4-.18-.4-.4v-5.8c0-.22.18-.4.4-.4h5.8c.22,0,.4.18.4.4v.66c-3.06,0-5.55,2.48-5.55,5.55ZM290.25,34.22h-.66c-.22,0-.4.18-.4.4v5.8c0,.22.18.4.4.4h5.8c.22,0,.4-.18.4-.4v-.66c-3.06,0-5.55-2.48-5.55-5.55ZM281.43,39.77v.66c0,.22.18.4.4.4h5.8c.22,0,.4-.18.4-.4v-5.8c0-.22-.18-.4-.4-.4h-.66c0,3.06-2.48,5.55-5.55,5.55ZM286.98,48.58h.66c.22,0,.4-.18.4-.4v-5.8c0-.22-.18-.4-.4-.4h-5.8c-.22,0-.4.18-.4.4v.66c3.06,0,5.55,2.48,5.55,5.55Z"/>
+      <g>
+        <rect class="cls-1" x="104.81" y="40.37" width="17.32" height="2.77" transform="translate(3.71 92.46) rotate(-45)"/>
+        <rect class="cls-1" x="105.96" y="34.24" width="2.77" height="15.01"/>
+        <rect class="cls-1" x="105.96" y="46.49" width="15.01" height="2.77"/>
+      </g>
+      <g>
+        <circle class="cls-2" cx="209.24" cy="41.75" r="7.51"/>
+        <text class="cls-4" transform="translate(206.24 45.1)"><tspan x="0" y="0">L</tspan></text>
+        <circle class="cls-2" cx="224.25" cy="41.75" r="7.51"/>
+        <text class="cls-4" transform="translate(221.25 45.1)"><tspan x="0" y="0">O</tspan></text>
+        <circle class="cls-2" cx="239.26" cy="41.75" r="7.51"/>
+        <text class="cls-4" transform="translate(236.26 45.1)"><tspan x="0" y="0">G</tspan></text>
+        <circle class="cls-2" cx="254.28" cy="41.75" r="7.51"/>
+        <text class="cls-4" transform="translate(251.28 45.1)"><tspan x="0" y="0">I</tspan></text>
+        <circle class="cls-2" cx="269.29" cy="41.75" r="7.51"/>
+        <text class="cls-4" transform="translate(266.29 45.1)"><tspan x="0" y="0">C</tspan></text>
+      </g>
+      <text class="cls-3" transform="translate(264.75 24.28)"><tspan x="0" y="0">[ ? ]</tspan></text>
+    </g>
+  </g>
+</svg>

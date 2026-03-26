@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 237.18 115.19">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        font-size: 12px;
+      }
+
+      .cls-1, .cls-2, .cls-5, .cls-4 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-6 {
+        letter-spacing: 1.62em;
+      }
+
+      .cls-7 {
+        letter-spacing: .94em;
+      }
+
+      .cls-8, .cls-2, .cls-3 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-9 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-10 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <text class="cls-2" transform="translate(0 47.35)"><tspan x="0" y="0">05</tspan><tspan x="0" y="12.8">27</tspan><tspan x="0" y="25.6">56</tspan></text>
+        <text class="cls-2" transform="translate(223.38 47.35)"><tspan x="0" y="0">36</tspan><tspan x="0" y="12.8">02</tspan><tspan x="0" y="25.6">47</tspan></text>
+      </g>
+      <text class="cls-3" transform="translate(32 96.95)"><tspan class="cls-7" x="0" y="0">DIAGNOSTI</tspan><tspan class="cls-5" x="165.98" y="0">C</tspan></text>
+      <text class="cls-4" transform="translate(88.58 111.94)"><tspan x="0" y="0">LOAD: 31%</tspan></text>
+      <text class="cls-4" transform="translate(98.48 10.27)"><tspan x="0" y="0">STABLE</tspan></text>
+      <text class="cls-3" transform="translate(32 25.26)"><tspan class="cls-5" x="0" y="0">N</tspan><tspan class="cls-6" x="6.6" y="0"> </tspan><tspan class="cls-9" x="33.2" y="0">O</tspan><tspan class="cls-6" x="39.8" y="0"> </tspan><tspan class="cls-5" x="66.39" y="0">V</tspan><tspan class="cls-6" x="72.99" y="0"> </tspan><tspan class="cls-9" x="99.59" y="0">/</tspan><tspan class="cls-6" x="106.19" y="0"> </tspan><tspan class="cls-5" x="132.78" y="0">2</tspan><tspan class="cls-6" x="139.38" y="0"> </tspan><tspan class="cls-5" x="165.98" y="0">6</tspan></text>
+      <text class="cls-1" transform="translate(91.88 48.33)"><tspan class="cls-8"><tspan x="0" y="0">MODULE Z</tspan></tspan><tspan class="cls-10"><tspan x="-59.41" y="12.8">SUBROUTINE-04 — PROCESSING</tspan></tspan><tspan class="cls-8"><tspan x="-3.3" y="25.6">CYCLE: 42</tspan></tspan></text>
+    </g>
+  </g>
+</svg>

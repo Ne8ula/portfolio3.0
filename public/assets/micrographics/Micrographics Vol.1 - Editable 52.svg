@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.2 220.3">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        font-size: 8px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-1, .cls-3 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-4 {
+        stroke-width: 1.5px;
+      }
+
+      .cls-4, .cls-5, .cls-6 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 10px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-7, .cls-8 {
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-5, .cls-6 {
+        stroke-width: .75px;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-9 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.2em;
+      }
+
+      .cls-12 {
+        letter-spacing: -.15em;
+      }
+
+      .cls-13 {
+        letter-spacing: -.17em;
+      }
+
+      .cls-14 {
+        letter-spacing: -.11em;
+      }
+
+      .cls-8 {
+        font-family: NotoSansJP-Regular, 'Noto Sans JP';
+        glyph-orientation-vertical: 0deg;
+        text-orientation: upright;
+        writing-mode: tb;
+      }
+
+      .cls-8, .cls-15 {
+        font-size: 12px;
+      }
+
+      .cls-16 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-6 {
+        stroke-linecap: square;
+      }
+
+      .cls-3 {
+        font-size: 21px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-15 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <circle class="cls-5" cx="108.59" cy="110.17" r="60.45"/>
+      <rect class="cls-5" x="47.92" y="49.5" width="121.12" height="121.12"/>
+      <path d="M90.36,3.42c3.8,0,6.9,3.09,6.9,6.9s-3.09,6.9-6.9,6.9h-33.95c-3.8,0-6.9-3.09-6.9-6.9s3.09-6.9,6.9-6.9h33.95M90.36,2.67h-33.95c-4.22,0-7.65,3.42-7.65,7.65s3.42,7.65,7.65,7.65h33.95c4.22,0,7.65-3.42,7.65-7.65s-3.42-7.65-7.65-7.65h0Z"/>
+      <text class="cls-2" transform="translate(57.78 13.15)"><tspan x="0" y="0">ARCHIVE</tspan></text>
+      <text class="cls-2" transform="translate(116 123.31)"><tspan x="0" y="0">SYSTEM</tspan></text>
+      <g>
+        <line class="cls-5" x1="169.04" y1="91.42" x2="215.67" y2="91.42"/>
+        <line class="cls-6" x1="211.49" y1="95.61" x2="215.67" y2="91.42"/>
+        <line class="cls-6" x1="211.49" y1="87.24" x2="215.67" y2="91.42"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="108.48" y1="49.5" x2="108.48" y2="2.87"/>
+        <line class="cls-6" x1="112.67" y1="7.05" x2="108.48" y2="2.87"/>
+        <line class="cls-6" x1="104.3" y1="7.05" x2="108.48" y2="2.87"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="108.48" y1="170.62" x2="108.48" y2="217.25"/>
+        <line class="cls-6" x1="104.3" y1="213.06" x2="108.48" y2="217.25"/>
+        <line class="cls-6" x1="112.67" y1="213.06" x2="108.48" y2="217.25"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="169.04" y1="128.84" x2="215.67" y2="128.84"/>
+        <line class="cls-6" x1="211.49" y1="133.03" x2="215.67" y2="128.84"/>
+        <line class="cls-6" x1="211.49" y1="124.66" x2="215.67" y2="128.84"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="47.92" y1="128.84" x2="1.29" y2="128.84"/>
+        <line class="cls-6" x1="5.48" y1="124.66" x2="1.29" y2="128.84"/>
+        <line class="cls-6" x1="5.48" y1="133.03" x2="1.29" y2="128.84"/>
+      </g>
+      <g>
+        <line class="cls-5" x1="47.92" y1="91.42" x2="1.29" y2="91.42"/>
+        <line class="cls-6" x1="5.48" y1="87.24" x2="1.29" y2="91.42"/>
+        <line class="cls-6" x1="5.48" y1="95.61" x2="1.29" y2="91.42"/>
+      </g>
+      <text class="cls-3" transform="translate(0 17.96)"><tspan x="0" y="0">ECHO</tspan></text>
+      <g>
+        <g id="_Radial_Repeat_" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="108.59" cy="170.68" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-2" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="73" cy="159.12" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-3" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="51.01" cy="128.84" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-4" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="51.01" cy="91.42" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-5" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="73" cy="61.15" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-6" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="108.59" cy="49.58" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-7" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="144.18" cy="61.15" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-8" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="166.18" cy="91.42" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-9" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="166.18" cy="128.84" r="5.13"/>
+        </g>
+        <g id="_Radial_Repeat_-10" data-name="&amp;lt;Radial Repeat&amp;gt;">
+          <circle cx="144.18" cy="159.12" r="5.13"/>
+        </g>
+      </g>
+      <text class="cls-7" transform="translate(.87 193.23)"><tspan x="0" y="0">CONFIG</tspan><tspan x="0" y="12">REWRITE</tspan><tspan x="0" y="24">SUCCESSFUL</tspan></text>
+      <text class="cls-15" transform="translate(162.69 217.05)"><tspan x="0" y="0">DATA_042</tspan></text>
+      <text class="cls-1" transform="translate(157.08 8.71)"><tspan x="0" y="0">CORE UNIT</tspan><tspan x="-4.4" y="9">PROCESSING</tspan></text>
+      <g id="_29.File" data-name=" 29.File">
+        <path d="M208.12,17.96c-4.17,0-7.55-3.38-7.55-7.55s3.38-7.55,7.55-7.55,7.55,3.38,7.55,7.55c0,4.17-3.38,7.54-7.55,7.55ZM208.12,4.13c-3.47,0-6.29,2.82-6.29,6.29s2.82,6.29,6.29,6.29,6.29-2.82,6.29-6.29c0-3.47-2.82-6.29-6.29-6.29Z"/>
+        <path d="M211.27,14.19h-6.29v-7.55h4.66l1.63,1.63v5.92ZM206.24,12.93h3.77v-4.14l-.89-.89h-2.88v5.03Z"/>
+      </g>
+      <text class="cls-8" transform="translate(108.48 72.47)"><tspan class="cls-10" x="0" y="0">プ</tspan><tspan class="cls-9" x="0" y="10.88">ロ</tspan><tspan class="cls-13" x="0" y="21.82">セ</tspan><tspan class="cls-11" x="0" y="31.73">ッ</tspan><tspan class="cls-12" x="0" y="41.38">シ</tspan><tspan class="cls-14" x="0" y="51.56">ン</tspan><tspan class="cls-16" x="0" y="62.21">グ</tspan></text>
+      <g>
+        <line class="cls-4" x1="211.49" y1="196.39" x2="211.49" y2="204.59"/>
+        <line class="cls-4" x1="207.39" y1="200.49" x2="215.58" y2="200.49"/>
+        <line class="cls-4" x1="208.59" y1="197.59" x2="214.38" y2="203.39"/>
+        <line class="cls-4" x1="208.59" y1="203.39" x2="214.38" y2="197.59"/>
+      </g>
+      <g>
+        <line class="cls-4" x1="201.91" y1="196.39" x2="201.91" y2="204.59"/>
+        <line class="cls-4" x1="197.81" y1="200.49" x2="206" y2="200.49"/>
+        <line class="cls-4" x1="199.01" y1="197.59" x2="204.8" y2="203.39"/>
+        <line class="cls-4" x1="199.01" y1="203.39" x2="204.8" y2="197.59"/>
+      </g>
+      <g>
+        <line class="cls-4" x1="192.33" y1="196.39" x2="192.33" y2="204.59"/>
+        <line class="cls-4" x1="188.23" y1="200.49" x2="196.42" y2="200.49"/>
+        <line class="cls-4" x1="189.43" y1="197.59" x2="195.22" y2="203.39"/>
+        <line class="cls-4" x1="189.43" y1="203.39" x2="195.22" y2="197.59"/>
+      </g>
+    </g>
+  </g>
+</svg>

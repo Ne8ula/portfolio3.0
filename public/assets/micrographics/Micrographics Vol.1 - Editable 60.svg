@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 197.79 87.33">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        font-size: 8px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-2, .cls-4 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-5, .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-7 {
+        letter-spacing: .19em;
+      }
+
+      .cls-8 {
+        letter-spacing: .19em;
+      }
+
+      .cls-9 {
+        letter-spacing: 2.4em;
+      }
+
+      .cls-6 {
+        font-size: 12px;
+      }
+
+      .cls-10 {
+        font-size: 18px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-11 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .cls-12 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-13 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-14 {
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-6" transform="translate(44.38 37.79)"><tspan class="cls-13"><tspan x="0" y="0" xml:space="preserve">  LOG_007.TXT</tspan></tspan><tspan class="cls-9" x="0" y="14">	</tspan><tspan class="cls-13" x="36" y="14" xml:space="preserve"> VERIFIED</tspan><tspan class="cls-13"><tspan x="0" y="28">OBJECT.C45B DEPLOYED</tspan></tspan></text>
+      <g>
+        <path class="cls-11" d="M184.62,21.95c-2.22,0-4.29.6-6.09,1.64-1.79-1.04-3.87-1.64-6.09-1.64-6.72,0-12.17,5.45-12.17,12.17s5.45,12.17,12.17,12.17c2.22,0,4.29-.6,6.09-1.64,1.79,1.04,3.87,1.64,6.09,1.64,6.72,0,12.17-5.45,12.17-12.17s-5.45-12.17-12.17-12.17Z"/>
+        <circle class="cls-11" cx="160.28" cy="34.12" r="12.17"/>
+        <line class="cls-11" x1="160.28" y1="34.12" x2="172.45" y2="34.12"/>
+        <line class="cls-11" x1="161.63" y1="29.17" x2="171.1" y2="29.17"/>
+        <line class="cls-11" x1="161.63" y1="39.06" x2="171.1" y2="39.06"/>
+        <line class="cls-11" x1="166.37" y1="23.58" x2="166.37" y2="44.66"/>
+        <text class="cls-2" transform="translate(175.4 36.76)"><tspan x="0" y="0">2026</tspan></text>
+      </g>
+      <text class="cls-10" transform="translate(0 15.4)"><tspan class="cls-3" x="0" y="0">ACCESS: </tspan><tspan class="cls-5" x="79.21" y="0">PENDING</tspan></text>
+      <g>
+        <rect x=".45" y="29.17" width="12.32" height="18.73" rx="2.67" ry="2.67"/>
+        <rect x=".45" y="49.67" width="12.32" height="9.36" rx="2.67" ry="2.67"/>
+        <rect x=".45" y="60.79" width="12.32" height="4.97" rx="2.48" ry="2.48"/>
+      </g>
+      <rect x="184.48" y="60.79" width="12.32" height="4.97" rx="2.48" ry="2.48"/>
+      <rect x="184.48" y="2.48" width="12.32" height="4.97" rx="2.48" ry="2.48"/>
+      <text class="cls-1" transform="translate(0 85.17)"><tspan class="cls-4" x="0" y="0">DATA</tspan><tspan class="cls-7" x="17.6" y="0"> </tspan><tspan class="cls-14" x="23.94" y="0">––</tspan><tspan class="cls-7" x="32.67" y="0"> </tspan><tspan class="cls-12" x="39.01" y="0">CLASSIFIED</tspan><tspan class="cls-8" x="83.01" y="0"> </tspan><tspan class="cls-4" x="89.35" y="0">//</tspan><tspan class="cls-7" x="98.16" y="0"> </tspan><tspan class="cls-4" x="104.5" y="0">REROUTING</tspan><tspan class="cls-7" x="144.1" y="0"> </tspan><tspan class="cls-4" x="150.44" y="0">ACCESS</tspan><tspan class="cls-8" x="176.85" y="0"> </tspan><tspan class="cls-4" x="183.19" y="0">KEY</tspan></text>
+    </g>
+  </g>
+</svg>
