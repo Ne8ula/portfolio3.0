@@ -10,6 +10,7 @@ export function IsometricCube() {
   const router = useRouter()
   const handTracking = useHandTracking()
   const handRef = useRef({ rotateY: 45, isEgg: false })
+  const isHovered = useRef(false)
 
   useEffect(() => {
     if (handTracking.rotateY !== null) {
@@ -23,16 +24,21 @@ export function IsometricCube() {
     let targetRotation = 45;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!handRef.current.isEgg) {
+      // If the user's mouse is hovering the cube, we lock the target rotation 
+      // preventing it from spinning away while they try to click a face.
+      if (!handRef.current.isEgg && !isHovered.current) {
         const xPercent = e.clientX / window.innerWidth
-        targetRotation = (xPercent - 0.5) * -220 + 45
+        // Widen the rotation range multiplier back a bit but allow smooth UX
+        targetRotation = (xPercent - 0.5) * -180 + 45
       }
     }
 
     const animate = () => {
       setRotateY(prev => {
         const actualTarget = handRef.current.isEgg ? handRef.current.rotateY : targetRotation
-        return prev + (actualTarget - prev) * 0.08
+        // Use a slower lerp (0.04) so that the user has time to move their cursor 
+        // to the center from the edge before it completely rotates back.
+        return prev + (actualTarget - prev) * 0.04
       }); 
       animationFrameId = requestAnimationFrame(animate);
     }
@@ -98,6 +104,8 @@ export function IsometricCube() {
         style={{
           transform: `rotateX(-15deg) rotateY(${rotateY}deg)`,
         }}
+        onMouseEnter={() => isHovered.current = true}
+        onMouseLeave={() => isHovered.current = false}
       >
         {/* Front Face - PROJECTS DATA PANEL */}
         <div 

@@ -69,27 +69,29 @@ export function useHandTracking() {
         if (results.landmarks && results.landmarks.length > 0) {
           const landmarks = results.landmarks[0]
           
-          const thumbTip = landmarks[4]
-          const indexTip = landmarks[8]
-          const middleTip = landmarks[12]
+          // Relaxed Egg Grip: 
+          // Ensure index and middle fingers are "up" relative to their knuckles
+          const isIndexUp = landmarks[8].y < landmarks[5].y
+          const isMiddleUp = landmarks[12].y < landmarks[9].y
           
-          // Check if ring (16) and pinky (20) are curled below PIP joints (14, 18)
+          // Ensure ring and pinky are curled (tips below PIP joints)
           const isRingCurled = landmarks[16].y > landmarks[14].y
           const isPinkyCurled = landmarks[20].y > landmarks[18].y
           
-          // Pinch distance between thumb, index, middle tips 
-          const distThumbIndex = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y)
-          const distIndexMiddle = Math.hypot(indexTip.x - middleTip.x, indexTip.y - middleTip.y)
-          
-          const isEggGrip = isRingCurled && isPinkyCurled && distThumbIndex < 0.25 && distIndexMiddle < 0.25
+          const isEggGrip = isIndexUp && isMiddleUp && isRingCurled && isPinkyCurled
 
           if (isEggGrip) {
             setIsEggGesture(true)
             
-            // X coordinate of wrist mapped to -220 scale
-            // Mirrored horizontally: Hand moving right raises X. 
+            // 1. Amplified Wrist X Position
             const handX = landmarks[0].x 
-            const targetRotation = (handX - 0.5) * -220 + 45
+            
+            // 2. 2D Twist (Middle Knuckle vs Wrist X distance)
+            // Captures the wrist twist angle safely without relying on Z-depth
+            const twistDeltaX = landmarks[9].x - landmarks[0].x
+            
+            // Combine both factors with massive amplification
+            const targetRotation = (handX - 0.5) * -800 + (twistDeltaX * -2500) + 45
             setRotateY(targetRotation)
           } else {
             setIsEggGesture(false)
