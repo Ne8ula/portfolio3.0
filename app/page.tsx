@@ -39,9 +39,14 @@ export default function Home() {
             <div className="border border-primary/50 bg-background/80 backdrop-blur-md p-6 mb-6 relative group hover:border-primary transition-colors shadow-sm">
               <div className="absolute top-0 right-0 px-2 py-0.5 bg-primary text-primary-foreground font-mono text-[9px] font-bold">AUTH_MODE_TRUE</div>
               
-              <h1 className="font-mono text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase leading-none mix-blend-multiply mt-3">
-                ALEX<br />XIONG
-              </h1>
+              <div className="flex items-start justify-between gap-4 mt-3">
+                <h1 className="font-mono text-5xl md:text-6xl font-black tracking-tighter text-foreground uppercase leading-none mix-blend-multiply">
+                  ALEX<br />XIONG
+                </h1>
+                <div className="w-14 h-14 md:w-20 md:h-20 border-[1.5px] border-primary bg-card relative mix-blend-multiply drop-shadow-sm flex-shrink-0">
+                  <img src="/logo.webp" alt="Alex Xiong Logo" className="w-full h-full object-contain p-1" />
+                </div>
+              </div>
               
               <div className="mt-4 flex flex-col gap-2 border-t border-border/30 pt-3">
                 <div className="flex justify-between items-center font-mono text-xs">
