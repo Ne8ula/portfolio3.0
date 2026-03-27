@@ -105,13 +105,13 @@ export function IsometricCube() {
           onClick={() => handleRoute('/projects')}
         >
           <div className="w-full h-full border border-primary/20 flex flex-col items-start justify-between relative overflow-hidden bg-primary/5 transition-colors">
-            <span className="font-mono text-primary text-[10px] md:text-sm pt-2 pl-2 opacity-80 mix-blend-multiply">> DATA.STREAM_INIT</span>
+            <span className="font-mono text-primary text-[10px] md:text-sm pt-2 pl-2 opacity-80 mix-blend-multiply">&gt; DATA.STREAM_INIT</span>
             
             <div className="w-full flex-1 flex flex-col items-center justify-center relative z-10 transition-transform duration-300 group-hover:scale-110">
                <span className="font-mono font-black text-primary text-4xl md:text-6xl tracking-tighter opacity-90 drop-shadow-[0_0_6px_rgba(201,29,34,0.3)]">PROJECTS</span>
             </div>
             
-            <span className="font-mono text-primary-foreground font-bold bg-primary/80 px-2 py-0.5 text-xs m-2 self-end mix-blend-multiply">> VIEW_SECTOR</span>
+            <span className="font-mono text-primary-foreground font-bold bg-primary/80 px-2 py-0.5 text-xs m-2 self-end mix-blend-multiply">&gt; VIEW_SECTOR</span>
             
             {/* Tech crosshairs expanding on hover */}
             <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary transition-all duration-300 group-hover:w-8 group-hover:h-8 group-hover:border-2"></div>
@@ -141,7 +141,7 @@ export function IsometricCube() {
             
             <div className="flex w-full justify-between items-end p-2">
               <div className="w-2 h-2 bg-secondary animate-pulse ml-1 mb-1"></div>
-              <span className="font-mono text-secondary-foreground font-bold bg-secondary/80 px-2 py-0.5 text-xs mix-blend-multiply">> ACCESS_USER</span>
+              <span className="font-mono text-secondary-foreground font-bold bg-secondary/80 px-2 py-0.5 text-xs mix-blend-multiply">&gt; ACCESS_USER</span>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export function IsometricCube() {
              </div>
              
              <div className="absolute bottom-2 left-2">
-                <span className="font-mono text-foreground font-bold border border-foreground/50 px-2 py-0.5 text-xs">> CONNECT</span>
+                <span className="font-mono text-foreground font-bold border border-foreground/50 px-2 py-0.5 text-xs">&gt; CONNECT</span>
              </div>
           </div>
         </div>
