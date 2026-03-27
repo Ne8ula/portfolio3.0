@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#D94833" fill-opacity="0.05" stroke="#D94833" stroke-width="2"/>
+  <text transform="translate(360, 200) rotate(90)" font-family="monospace" font-weight="bold" font-size="36" fill="#D94833" text-anchor="middle" letter-spacing="8">DIAGNOSTIC</text>
+  <text x="20" y="40" font-family="monospace" font-size="20" fill="#1A1A1A">MEM: 44%</text>
+  <text x="20" y="80" font-family="monospace" font-size="20" fill="#1A1A1A">CPU: 92%</text>
+  <text x="20" y="120" font-family="monospace" font-size="20" fill="#1A1A1A">NET: OK</text>
+</svg>

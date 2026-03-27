@@ -111,86 +111,42 @@ export function IsometricCube() {
       >
         {/* Front Face - PROJECTS DATA PANEL */}
         <div 
-          className="cube-face face-front border border-primary/40 bg-background/5 p-2 flex-col items-center justify-center hover:bg-primary/10 hover:shadow-[inset_0_0_30px_rgba(201,29,34,0.2)] group"
+          className="cube-face face-front border border-primary/40 bg-background/5 flex items-center justify-center hover:bg-primary/10 hover:shadow-[inset_0_0_30px_rgba(201,29,34,0.2)] group"
           onClick={() => handleRoute('/projects')}
         >
-          <div className="w-full h-full border border-primary/20 flex flex-col items-start justify-between relative overflow-hidden bg-primary/5 transition-colors">
-            <span className="font-mono text-primary text-[10px] md:text-sm pt-2 pl-2 opacity-80 mix-blend-multiply">&gt; DATA.STREAM_INIT</span>
-            
-            <div className="w-full flex-1 flex flex-col items-center justify-center relative z-10 transition-transform duration-300 group-hover:scale-110">
-               <span className="font-mono font-black text-primary text-4xl md:text-6xl tracking-tighter opacity-90 drop-shadow-[0_0_6px_rgba(201,29,34,0.3)]">PROJECTS</span>
-            </div>
-            
-            <span className="font-mono text-primary-foreground font-bold bg-primary/80 px-2 py-0.5 text-xs m-2 self-end mix-blend-multiply">&gt; VIEW_SECTOR</span>
-            
-            {/* Tech crosshairs expanding on hover */}
-            <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-primary transition-all duration-300 group-hover:w-8 group-hover:h-8 group-hover:border-2"></div>
-            <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-primary transition-all duration-300 group-hover:w-8 group-hover:h-8 group-hover:border-2"></div>
-          </div>
+          <img src="/assets/cube-faces/face-projects.svg" className="w-full h-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105 mix-blend-multiply" alt="Projects Face" />
         </div>
         
         {/* Back Face - Data Grid */}
-        <div className="cube-face face-back border border-border/30 bg-card/5 p-2 flex-col items-center justify-center">
-          <div className="w-full h-full border border-border/20 grid-pattern flex items-center justify-center text-muted-foreground font-mono text-xs opacity-60 relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/50 mix-blend-overlay"></div>
-            [NULL_CORE]
-          </div>
+        <div className="cube-face face-back border border-border/30 bg-card/5 flex items-center justify-center">
+          <img src="/assets/cube-faces/face-core.svg" className="w-full h-full object-cover opacity-70 mix-blend-multiply" alt="Core Face" />
         </div>
         
         {/* Right Face - ABOUT / JADE TERMINAL */}
         <div 
-          className="cube-face face-right border border-secondary/40 bg-secondary/5 p-2 flex-col items-center justify-center hover:bg-secondary/10 hover:shadow-[inset_0_0_30px_rgba(75,110,79,0.2)] group"
+          className="cube-face face-right border border-secondary/40 bg-secondary/5 flex items-center justify-center hover:bg-secondary/10 hover:shadow-[inset_0_0_30px_rgba(75,110,79,0.2)] group"
           onClick={() => handleRoute('/about')}
         >
-          <div className="w-full h-full border border-secondary/20 flex flex-col items-end justify-between relative bg-secondary/5 transition-colors">
-            <span className="font-mono text-secondary text-[8px] md:text-xs pt-2 pr-2 opacity-70 mix-blend-multiply">SEC_ID: 104.992</span>
-            
-            <div className="w-full flex-1 flex items-center justify-center relative transition-transform duration-300 group-hover:scale-110">
-               <span className="font-mono font-black text-secondary text-4xl md:text-6xl tracking-tighter opacity-90 drop-shadow-[0_0_6px_rgba(75,110,79,0.3)]">ABOUT</span>
-            </div>
-            
-            <div className="flex w-full justify-between items-end p-2">
-              <div className="w-2 h-2 bg-secondary animate-pulse ml-1 mb-1"></div>
-              <span className="font-mono text-secondary-foreground font-bold bg-secondary/80 px-2 py-0.5 text-xs mix-blend-multiply">&gt; ACCESS_USER</span>
-            </div>
-          </div>
+          <img src="/assets/cube-faces/face-about.svg" className="w-full h-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105 mix-blend-multiply" alt="About Face" />
         </div>
         
         {/* Left Face - CONTACT / BRUTALISM */}
         <div 
-          className="cube-face face-left border border-border/40 bg-card/10 p-2 flex-col items-center justify-center hover:bg-border/10 hover:shadow-[inset_0_0_30px_rgba(26,26,26,0.1)] group"
+          className="cube-face face-left border border-border/40 bg-card/10 flex items-center justify-center hover:bg-border/10 hover:shadow-[inset_0_0_30px_rgba(26,26,26,0.1)] group"
           onClick={() => handleRoute('/contact')}
         >
-           <div className="w-full h-full border border-border/20 flex flex-col items-start justify-center relative bg-muted/10 transition-colors">
-             <div className="w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                <span className="font-mono font-black text-foreground text-4xl md:text-6xl tracking-tighter opacity-80 mix-blend-multiply">CONTACT</span>
-             </div>
-             
-             <div className="absolute bottom-2 left-2">
-                <span className="font-mono text-foreground font-bold border border-foreground/50 px-2 py-0.5 text-xs">&gt; CONNECT</span>
-             </div>
-          </div>
+           <img src="/assets/cube-faces/face-contact.svg" className="w-full h-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105 mix-blend-multiply" alt="Contact Face" />
         </div>
         
         {/* Top Face - System Diagnostics */}
         <div className="cube-face face-top border border-accent/20 bg-background/10 items-center justify-center">
-          <div className="w-full h-full relative p-4 flex justify-between items-end bg-gradient-to-t from-accent/5 to-transparent">
-              <div className="flex flex-col gap-2 opacity-70">
-                 <div className="text-[6px] md:text-[10px] font-mono text-foreground border-b border-border/30 w-12 text-right">MEM: 44%</div>
-                 <div className="text-[6px] md:text-[10px] font-mono text-foreground border-b border-border/30 w-16 text-right">CPU: 92%</div>
-                 <div className="text-[6px] md:text-[10px] font-mono text-foreground border-b border-border/30 w-8 text-right">NET: OK</div>
-              </div>
-              <div className="font-mono text-accent font-bold text-2xl md:text-3xl tracking-[0.2em] [writing-mode:vertical-rl] opacity-80 drop-shadow-sm">
-                DIAGNOSTIC
-              </div>
-          </div>
+          <img src="/assets/cube-faces/face-top.svg" className="w-full h-full object-cover opacity-90 mix-blend-multiply" alt="Top Face" />
         </div>
         
         {/* Bottom Face - Grid Shadow */}
         <div className="cube-face face-bottom border border-border/10 bg-background/20 overflow-hidden relative backdrop-blur-sm">
            <div className="absolute inset-0 grid-pattern opacity-40 mix-blend-multiply"></div>
-           <div className="absolute inset-8 border border-dashed border-border/30 rounded-full"></div>
-           <div className="absolute inset-16 border border-border/20 rounded-full animate-[spin_30s_linear_infinite]"></div>
+           <img src="/assets/cube-faces/face-bottom.svg" className="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-multiply animate-[spin_30s_linear_infinite]" alt="Bottom Face" />
         </div>
         
       </div>

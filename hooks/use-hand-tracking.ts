@@ -22,6 +22,7 @@ export function useHandTracking() {
     let animationFrameId: number
     let video: HTMLVideoElement | null = null
     let active = true
+    let lastVideoTime = -1
 
     const initMediaPipe = async () => {
       try {
@@ -70,23 +71,27 @@ export function useHandTracking() {
     const predictWebcam = () => {
       if (!active || !handLandmarker || !video) return
 
-      const startTimeMs = performance.now()
-      if (video.currentTime > 0) {
+      if (video.currentTime !== lastVideoTime) {
+        lastVideoTime = video.currentTime
+        const startTimeMs = performance.now()
         const results = handLandmarker.detectForVideo(video, startTimeMs)
 
         if (results.landmarks && results.landmarks.length > 0) {
           const landmarks = results.landmarks[0]
+          const wrist = landmarks[0]
           
-          // Relaxed Egg Grip: 
-          // Ensure index and middle fingers are "up" relative to their knuckles
-          const isIndexUp = landmarks[8].y < landmarks[5].y
-          const isMiddleUp = landmarks[12].y < landmarks[9].y
+          const getDist = (l1: any, l2: any) => Math.hypot(l1.x - l2.x, l1.y - l2.y)
           
-          // Ensure ring and pinky are curled (tips below PIP joints)
-          const isRingCurled = landmarks[16].y > landmarks[14].y
-          const isPinkyCurled = landmarks[20].y > landmarks[18].y
+          // Relaxed Egg Grip via 2D Distance Geometry: 
+          // Ensure index and middle fingers are "extended" (tip further from wrist than PIP joint)
+          const isIndexExtended = getDist(wrist, landmarks[8]) > getDist(wrist, landmarks[6])
+          const isMiddleExtended = getDist(wrist, landmarks[12]) > getDist(wrist, landmarks[10])
           
-          const isEggGrip = isIndexUp && isMiddleUp && isRingCurled && isPinkyCurled
+          // Ensure ring and pinky are "curled" (tip closer to wrist than PIP joint)
+          const isRingCurled = getDist(wrist, landmarks[16]) < getDist(wrist, landmarks[14])
+          const isPinkyCurled = getDist(wrist, landmarks[20]) < getDist(wrist, landmarks[18])
+          
+          const isEggGrip = isIndexExtended && isMiddleExtended && isRingCurled && isPinkyCurled
 
           if (isEggGrip) {
             setIsEggGesture(true)
