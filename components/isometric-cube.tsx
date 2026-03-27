@@ -29,7 +29,7 @@ export function IsometricCube() {
       if (!handRef.current.isEgg && !isHovered.current) {
         const xPercent = e.clientX / window.innerWidth
         // Widen the rotation range multiplier back a bit but allow smooth UX
-        targetRotation = (xPercent - 0.5) * -180 + 45
+        targetRotation = (xPercent - 0.5) * 270 + 45
       }
     }
 
