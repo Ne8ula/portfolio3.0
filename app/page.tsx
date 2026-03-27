@@ -3,29 +3,27 @@
 import { useState } from "react"
 import { Header } from "@/components/header"
 import { IsometricCube } from "@/components/isometric-cube"
-import { AboutSection } from "@/components/about-section"
-import { ProjectsSection } from "@/components/projects-section"
-import { ContactSection } from "@/components/contact-section"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { GlitchOverlay } from "@/components/glitch-overlay"
+import { HandTrackerOverlay } from "@/components/ui/hand-tracker"
 
 export default function Home() {
   const [isMinimized, setIsMinimized] = useState(false)
 
   return (
-    <div className="min-h-screen bg-background relative flex flex-col text-foreground selection:bg-primary selection:text-primary-foreground font-sans">
+    <div className="h-screen max-h-screen bg-background relative flex flex-col text-foreground selection:bg-primary selection:text-primary-foreground font-sans overflow-hidden">
       
-      {/* Background structural overlay using animated SVGs */}
+      {/* Dynamic Background structural overlay shader */}
       <GlitchOverlay />
 
-      <div className="sticky top-0 z-50 w-full">
+      <div className="absolute top-0 w-full z-50">
         <Header />
       </div>
 
-      <main className="flex flex-col relative z-[1]">
+      <main className="flex-1 flex flex-col relative z-[1] w-full h-full overflow-hidden mt-[70px]">
         
-        {/* Tech/ONI Hero Section */}
-        <section className="h-[calc(100vh-80px)] min-h-[600px] flex flex-col lg:flex-row items-center justify-center relative overflow-hidden p-4 md:p-6 lg:p-12 gap-8">
+        {/* Tech/ONI Hero Section Locked to Screen */}
+        <section className="flex-1 flex flex-col lg:flex-row items-center justify-center relative overflow-hidden p-4 md:p-6 lg:p-12 gap-8 h-full">
           
           {/* Left Data Terminal */}
           <div
@@ -76,9 +74,9 @@ export default function Home() {
               </div>
 
               <div className="p-5 relative">
-                <p className="font-mono text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-primary font-bold">{">"}</span> Executing operational map:<br/><br/>
-                  I engineer high-stakes products by establishing deep user-psychology models. This terminal serves as a tactical, verifiable structure for my operational sequence and interface patterns.
+                <p className="font-mono text-xs text-foreground/80 leading-relaxed font-medium">
+                  <span className="text-primary font-bold">{">"}</span> Select a cube surface to interface mapping:<br/><br/>
+                  This terminal serves as a tactical, verifiable structure for operational tracking. Unlocking data sectors requires physical interaction routing.
                 </p>
                 <div className="mt-6 flex items-center gap-1.5">
                    <div className="h-[2px] w-8 bg-primary/80"></div>
@@ -86,7 +84,6 @@ export default function Home() {
                    <div className="h-[2px] w-1 bg-secondary/80"></div>
                 </div>
                 
-                {/* Subtle tech background watermark */}
                 <div className="absolute right-[-10px] bottom-[-20px] font-mono text-8xl font-black text-muted/20 mix-blend-multiply pointer-events-none select-none">
                   01
                 </div>
@@ -95,23 +92,22 @@ export default function Home() {
           </div>
 
           {/* Center ONI Cube */}
-          <div className={`flex-1 flex items-center justify-center relative transition-all duration-700 z-10 ${isMinimized ? "scale-110 blur-[1px] opacity-80" : "scale-100"}`}>
+          <div className={`flex-1 flex items-center justify-center relative transition-all duration-700 z-10 w-full h-full ${isMinimized ? "scale-110 blur-[1px] opacity-80" : "scale-100"}`}>
             
-            {/* Tech Radar Core */}
+            {/* Tech Radar Core - Behind the Cube */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-              <div className="w-[300px] h-[300px] md:w-[600px] md:h-[600px] border-[1.5px] border-dashed border-secondary/40 rounded-full animate-[spin_120s_linear_infinite]"></div>
-              <div className="absolute w-[200px] h-[200px] md:w-[400px] md:h-[400px] border border-primary/20 rounded-full"></div>
-              <div className="absolute w-[100px] h-[100px] border-[1.5px] border-border/40 rounded-full"></div>
+              <div className="w-[300px] h-[300px] md:w-[650px] md:h-[650px] border-[1.5px] border-dashed border-secondary/40 rounded-full animate-[spin_120s_linear_infinite]"></div>
+              <div className="absolute w-[200px] h-[200px] md:w-[450px] md:h-[450px] border border-primary/20 rounded-full"></div>
               
               {/* Targetting crosshairs */}
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
               <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"></div>
               
               {/* Random floating data boxes */}
-              <div className="absolute top-[20%] left-[30%] w-6 h-6 border border-accent/60 flex items-center justify-center mix-blend-multiply">
+              <div className="absolute top-[18%] left-[28%] w-6 h-6 border border-accent/60 flex items-center justify-center mix-blend-multiply">
                  <div className="w-1.5 h-1.5 bg-accent/60 animate-ping"></div>
               </div>
-              <div className="absolute bottom-[25%] right-[25%] w-8 h-8 border border-secondary/40 flex items-center justify-center">
+              <div className="absolute bottom-[22%] right-[22%] w-8 h-8 border border-secondary/40 flex items-center justify-center">
                  <div className="w-0.5 h-4 bg-secondary/80"></div>
               </div>
             </div>
@@ -123,7 +119,6 @@ export default function Home() {
           <div className={`hidden lg:flex flex-col justify-center h-full w-[40px] relative transition-opacity duration-500 pointer-events-none z-20 ${isMinimized ? "opacity-0" : "opacity-100"}`}>
             <div className="flex flex-col items-center gap-12 h-full py-16 justify-between">
               
-              {/* Vertical Progress Bar */}
               <div className="flex-1 w-[1px] bg-border/20 relative">
                 <div className="absolute top-[10%] -left-[3px] w-2 h-[1px] bg-foreground/60"></div>
                 <div className="absolute top-[40%] -left-[3px] w-2 h-[1px] bg-foreground/60"></div>
@@ -135,7 +130,6 @@ export default function Home() {
                 システム警告 // SEC_9
               </div>
               
-              {/* Bottom Node */}
               <div className="w-3 h-3 border border-foreground/60 flex items-center justify-center">
                  <div className="w-1 h-1 bg-primary"></div>
               </div>
@@ -160,13 +154,6 @@ export default function Home() {
           <div className="absolute bottom-0 left-4 right-4 h-[1px] bg-foreground/10 z-20"></div>
         </section>
 
-        {/* Informational Layer Sections */}
-        <div className="relative z-20 bg-background/95 backdrop-blur-md border-t border-border/20">
-          <AboutSection />
-          <ProjectsSection />
-          <ContactSection />
-        </div>
-
       </main>
 
       <footer className="border-t border-border/30 bg-card/80 backdrop-blur-md px-6 py-4 flex-shrink-0 relative z-30 mt-auto">
@@ -188,6 +175,10 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      
+      {/* MediaPipe Cyberpunk Tracking HUD */}
+      <HandTrackerOverlay />
+
     </div>
   )
 }
