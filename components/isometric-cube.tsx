@@ -28,17 +28,16 @@ export function IsometricCube() {
       // preventing it from spinning away while they try to click a face.
       if (!handRef.current.isEgg && !isHovered.current) {
         const xPercent = e.clientX / window.innerWidth
-        // Widen the rotation range multiplier back a bit but allow smooth UX
-        targetRotation = (xPercent - 0.5) * 270 + 45
+        // Reverse direction: moving Right (-270 * pos + 45) reveals About (-90deg), Left reveals Contact (180deg).
+        targetRotation = (xPercent - 0.5) * -270 + 45
       }
     }
 
     const animate = () => {
       setRotateY(prev => {
         const actualTarget = handRef.current.isEgg ? handRef.current.rotateY : targetRotation
-        // Use a slower lerp (0.04) so that the user has time to move their cursor 
-        // to the center from the edge before it completely rotates back.
-        return prev + (actualTarget - prev) * 0.04
+        // Use an even slower lerp (0.02) to maximize time to reach the hover zone.
+        return prev + (actualTarget - prev) * 0.02
       }); 
       animationFrameId = requestAnimationFrame(animate);
     }
@@ -57,7 +56,12 @@ export function IsometricCube() {
   }
 
   return (
-    <div className="relative w-full aspect-square max-w-[300px] md:max-w-[500px] lg:max-w-[650px] flex items-center justify-center p-8" style={{ perspective: '1200px' }}>
+    <div 
+      className="relative w-full aspect-square max-w-[300px] md:max-w-[500px] lg:max-w-[650px] flex items-center justify-center p-8" 
+      style={{ perspective: '1200px' }}
+      onMouseEnter={() => isHovered.current = true}
+      onMouseLeave={() => isHovered.current = false}
+    >
       
       <style>{`
         .cube-container {
@@ -104,8 +108,6 @@ export function IsometricCube() {
         style={{
           transform: `rotateX(-15deg) rotateY(${rotateY}deg)`,
         }}
-        onMouseEnter={() => isHovered.current = true}
-        onMouseLeave={() => isHovered.current = false}
       >
         {/* Front Face - PROJECTS DATA PANEL */}
         <div 

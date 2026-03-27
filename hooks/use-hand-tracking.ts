@@ -7,9 +7,17 @@ export function useHandTracking() {
   const [rotateY, setRotateY] = useState<number | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [isEggGesture, setIsEggGesture] = useState(false)
+  const [isEnabled, setIsEnabled] = useState(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
+    if (!isEnabled) {
+      setIsReady(false)
+      setIsEggGesture(false)
+      setRotateY(null)
+      return
+    }
+
     let handLandmarker: HandLandmarker
     let animationFrameId: number
     let video: HTMLVideoElement | null = null
@@ -117,7 +125,14 @@ export function useHandTracking() {
       }
       if (handLandmarker) handLandmarker.close()
     }
-  }, [])
+  }, [isEnabled])
 
-  return { rotateY, isReady, isEggGesture, videoRef }
+  return { 
+    rotateY, 
+    isReady, 
+    isEggGesture, 
+    videoRef,
+    isEnabled,
+    toggleTracking: () => setIsEnabled(prev => !prev)
+  }
 }
