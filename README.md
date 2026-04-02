@@ -1,30 +1,15 @@
-# VS Code Project
-
-*Automatically synced with your [v0.app](https://v0.app) deployments*
-
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/alexxiong0522-gmailcoms-projects/v0-portfolio-landing-page)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/U1I3egePHpp)
+# Portfolio Renewal 3.0
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+An in-progress portfolio page that updates the aesthetics and information for my current projects.
 
 ## Deployment
 
-Your project is live at:
+Live URL:
 
 **[https://vercel.com/alexxiong0522-gmailcoms-projects/v0-portfolio-landing-page](https://vercel.com/alexxiong0522-gmailcoms-projects/v0-portfolio-landing-page)**
 
-## Build your app
-
-Continue building your app on:
+## Vercel Edit Link:
 
 **[https://v0.app/chat/U1I3egePHpp](https://v0.app/chat/U1I3egePHpp)**
-
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
