@@ -1,19 +1,61 @@
 "use client"
 
 import { useState } from "react"
+import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { IsometricCube } from "@/components/isometric-cube"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { GlitchOverlay } from "@/components/glitch-overlay"
 import { HandTrackerOverlay } from "@/components/ui/hand-tracker"
+import { CrateHud } from "@/components/scene/crate-hud"
+import { useSceneStore } from "@/lib/store/scene-store"
+import { useCrateKeyboardNav } from "@/hooks/use-crate-keyboard-nav"
+
+const SceneCanvas = dynamic(
+  () => import("@/components/scene/scene-canvas").then((m) => m.SceneCanvas),
+  { ssr: false }
+)
 
 export default function Home() {
   const [isMinimized, setIsMinimized] = useState(false)
+  const view = useSceneStore((s) => s.view)
+  useCrateKeyboardNav()
+
+  // Shell is visually present through cube + zooming so the CSS cube remains
+  // on screen as it fades into the R3F paperweight. It only fully disappears
+  // once the camera has settled on `desk`.
+  const shellVisible = view === "cube" || view === "zooming"
+  // Side panels (left terminal, right vertical panel) dim the moment the
+  // handoff begins so the eye isn't pulled sideways during the zoom-out.
+  const sidePanelsDimmed = view !== "cube"
+  // The cube itself shrinks + fades during zooming; at `desk` it's gone.
+  const cubeFaded = view !== "cube"
+  // Pointer is only live while the landing actually owns the screen.
+  const shellInteractive = view === "cube"
 
   return (
     <div className="h-screen max-h-screen bg-background relative flex flex-col text-foreground selection:bg-primary selection:text-primary-foreground font-sans overflow-hidden">
-      
-      {/* Dynamic Background structural overlay shader */}
+
+      {/* R3F desk scene — sits behind the DOM landing. Crossfades in during `zooming`. */}
+      <SceneCanvas />
+
+      {/* Crate HUD — DOM overlay above the canvas, only visible on `desk`.
+          Sits at z-[50] — below GlitchOverlay (z-[60]) but above the canvas (z-[1]). */}
+      <CrateHud />
+
+      {/* DOM landing shell — stays mounted through the handoff so the CSS cube
+          can fade *over* the already-visible R3F desk; hides once view==='desk'. */}
+      <div
+        className="absolute inset-0 flex flex-col"
+        style={{
+          opacity: shellVisible ? 1 : 0,
+          pointerEvents: shellInteractive ? "auto" : "none",
+          transition: "opacity 400ms ease",
+        }}
+        aria-hidden={!shellInteractive}
+      >
+
+      {/* Dynamic Background structural overlay shader — must stay above the R3F canvas */}
       <GlitchOverlay />
 
       <div className="absolute top-0 w-full z-50">
@@ -28,7 +70,7 @@ export default function Home() {
           {/* Left Data Terminal */}
           <div
             className={`lg:w-[350px] xl:w-[400px] h-full flex flex-col justify-center transition-all duration-500 ease-in-out z-20 ${
-                isMinimized
+                isMinimized || sidePanelsDimmed
                 ? "opacity-0 -translate-x-12 pointer-events-none"
                 : "opacity-100 translate-x-0"
               }`}
@@ -93,16 +135,22 @@ export default function Home() {
 
           {/* Center ONI Cube */}
           <div className={`flex-1 flex items-center justify-center relative transition-all duration-700 z-10 w-full h-full ${isMinimized ? "scale-110 blur-[1px] opacity-80" : "scale-100"}`}>
-            
-            {/* Tech Radar Core - Behind the Cube */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+
+            {/* Tech Radar Core - Behind the Cube (dims alongside the panels during handoff) */}
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              style={{
+                opacity: sidePanelsDimmed ? 0 : 0.4,
+                transition: "opacity 400ms ease",
+              }}
+            >
               <div className="w-[300px] h-[300px] md:w-[650px] md:h-[650px] border-[1.5px] border-dashed border-secondary/40 rounded-full animate-[spin_120s_linear_infinite]"></div>
               <div className="absolute w-[200px] h-[200px] md:w-[450px] md:h-[450px] border border-primary/20 rounded-full"></div>
-              
+
               {/* Targetting crosshairs */}
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
               <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent"></div>
-              
+
               {/* Random floating data boxes */}
               <div className="absolute top-[18%] left-[28%] w-6 h-6 border border-accent/60 flex items-center justify-center mix-blend-multiply">
                  <div className="w-1.5 h-1.5 bg-accent/60 animate-ping"></div>
@@ -112,11 +160,23 @@ export default function Home() {
               </div>
             </div>
 
-            <IsometricCube />
+            {/* Cube itself — shrinks + fades during zooming; stays full-opacity
+                through the cube state so it's the thing the user interacts with. */}
+            <div
+              className="relative flex items-center justify-center"
+              style={{
+                opacity: cubeFaded ? 0 : 1,
+                transform: cubeFaded ? "scale(0.95)" : "scale(1)",
+                transition: "opacity 400ms ease, transform 400ms ease",
+                pointerEvents: cubeFaded ? "none" : "auto",
+              }}
+            >
+              <IsometricCube />
+            </div>
           </div>
 
           {/* Right Metrics Panel */}
-          <div className={`hidden lg:flex flex-col justify-center h-full w-[40px] relative transition-opacity duration-500 pointer-events-none z-20 ${isMinimized ? "opacity-0" : "opacity-100"}`}>
+          <div className={`hidden lg:flex flex-col justify-center h-full w-[40px] relative transition-opacity duration-500 pointer-events-none z-20 ${isMinimized || sidePanelsDimmed ? "opacity-0" : "opacity-100"}`}>
             <div className="flex flex-col items-center gap-12 h-full py-16 justify-between">
               
               <div className="flex-1 w-[1px] bg-border/20 relative">
@@ -175,9 +235,14 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      
-      {/* MediaPipe Cyberpunk Tracking HUD */}
-      <HandTrackerOverlay />
+
+      {/* MediaPipe Cyberpunk Tracking HUD — landing-only HUD.
+          Unmount outside of cube view so the webcam stream + rAF loop
+          are released once the user enters the desk scene. */}
+      {view === "cube" && <HandTrackerOverlay />}
+
+      </div>
+      {/* /DOM landing shell */}
 
     </div>
   )

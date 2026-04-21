@@ -1,16 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
 import { useHandTracking } from "@/hooks/use-hand-tracking"
+import { useSceneStore } from "@/lib/store/scene-store"
 
 export function IsometricCube() {
   const [rotateY, setRotateY] = useState(45)
-  const router = useRouter()
+  const rotationRef = useRef(45)
   const handTracking = useHandTracking()
   const handRef = useRef({ rotateY: 45, isEgg: false })
-  const isHovered = useRef(false)
 
   useEffect(() => {
     if (handTracking.rotateY !== null) {
@@ -20,30 +18,28 @@ export function IsometricCube() {
   }, [handTracking.rotateY, handTracking.isEggGesture])
 
   useEffect(() => {
-    let animationFrameId: number;
-    let targetRotation = 45;
+    let animationFrameId: number
+    let targetRotation = 45
 
     const handleMouseMove = (e: MouseEvent) => {
-      // If the user's mouse is hovering the cube, we lock the target rotation 
-      // preventing it from spinning away while they try to click a face.
-      if (!handRef.current.isEgg && !isHovered.current) {
+      if (!handRef.current.isEgg) {
         const xPercent = e.clientX / window.innerWidth
-        // Reverse direction: moving Right (-270 * pos + 45) reveals About (-90deg), Left reveals Contact (180deg).
         targetRotation = (xPercent - 0.5) * -270 + 45
       }
     }
 
     const animate = () => {
-      setRotateY(prev => {
+      setRotateY((prev) => {
         const actualTarget = handRef.current.isEgg ? handRef.current.rotateY : targetRotation
-        // Use an even slower lerp (0.02) to maximize time to reach the hover zone.
-        return prev + (actualTarget - prev) * 0.02
-      }); 
-      animationFrameId = requestAnimationFrame(animate);
+        const next = prev + (actualTarget - prev) * 0.02
+        rotationRef.current = next
+        return next
+      })
+      animationFrameId = requestAnimationFrame(animate)
     }
 
     window.addEventListener("mousemove", handleMouseMove)
-    animate();
+    animate()
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove)
@@ -51,16 +47,17 @@ export function IsometricCube() {
     }
   }, [])
 
-  const handleRoute = (path: string) => {
-    router.push(path)
+  const handleCubeClick = () => {
+    // Single click anywhere on the cube hands off to the R3F scene. We capture
+    // the current rotateY so the 3D paperweight can start at the same Y angle
+    // and avoid a visible jump across the DOM→WebGL seam.
+    useSceneStore.getState().enterDesk(rotationRef.current)
   }
 
   return (
-    <div 
-      className="relative w-full aspect-square max-w-[300px] md:max-w-[500px] lg:max-w-[650px] flex items-center justify-center p-8" 
-      style={{ perspective: '1200px' }}
-      onMouseEnter={() => isHovered.current = true}
-      onMouseLeave={() => isHovered.current = false}
+    <div
+      className="relative w-full aspect-square max-w-[300px] md:max-w-[500px] lg:max-w-[650px] flex items-center justify-center p-8"
+      style={{ perspective: "1200px" }}
     >
       
       <style>{`
@@ -112,7 +109,7 @@ export function IsometricCube() {
         {/* Front Face - PROJECTS DATA PANEL */}
         <div 
           className="cube-face face-front border border-primary/40 bg-background/5 p-2 flex-col items-center justify-center hover:bg-primary/10 hover:shadow-[inset_0_0_30px_rgba(201,29,34,0.2)] group"
-          onClick={() => handleRoute('/projects')}
+          onClick={handleCubeClick}
         >
           <div className="w-full h-full border border-primary/20 flex flex-col items-start justify-between relative overflow-hidden bg-primary/5 transition-colors">
             <span className="font-mono text-primary text-[10px] md:text-sm pt-2 pl-2 opacity-80 mix-blend-multiply">&gt; DATA.STREAM_INIT</span>
@@ -130,7 +127,7 @@ export function IsometricCube() {
         </div>
         
         {/* Back Face - Data Grid */}
-        <div className="cube-face face-back border border-border/30 bg-card/5 p-2 flex-col items-center justify-center">
+        <div className="cube-face face-back border border-border/30 bg-card/5 p-2 flex-col items-center justify-center" onClick={handleCubeClick}>
           <div className="w-full h-full border border-border/20 grid-pattern flex flex-col items-center justify-between text-muted-foreground relative p-3">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/50 mix-blend-overlay"></div>
             
@@ -157,7 +154,7 @@ export function IsometricCube() {
         {/* Right Face - ABOUT / JADE TERMINAL */}
         <div 
           className="cube-face face-right border border-secondary/40 bg-secondary/5 p-2 flex-col items-center justify-center hover:bg-secondary/10 hover:shadow-[inset_0_0_30px_rgba(75,110,79,0.2)] group"
-          onClick={() => handleRoute('/about')}
+          onClick={handleCubeClick}
         >
           <div className="w-full h-full border border-secondary/20 flex flex-col items-end justify-between relative bg-secondary/5 transition-colors">
             <span className="font-mono text-secondary text-[8px] md:text-xs pt-2 pr-2 opacity-70 mix-blend-multiply">SEC_ID: 104.992</span>
@@ -176,7 +173,7 @@ export function IsometricCube() {
         {/* Left Face - CONTACT / BRUTALISM */}
         <div 
           className="cube-face face-left border border-border/40 bg-card/10 p-2 flex-col items-center justify-center hover:bg-border/10 hover:shadow-[inset_0_0_30px_rgba(26,26,26,0.1)] group"
-          onClick={() => handleRoute('/contact')}
+          onClick={handleCubeClick}
         >
            <div className="w-full h-full border border-border/20 flex flex-col items-start justify-center relative bg-muted/10 transition-colors">
              <div className="w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
@@ -190,7 +187,7 @@ export function IsometricCube() {
         </div>
         
         {/* Top Face - System Diagnostics */}
-        <div className="cube-face face-top border border-accent/20 bg-background/10 items-center justify-center">
+        <div className="cube-face face-top border border-accent/20 bg-background/10 items-center justify-center" onClick={handleCubeClick}>
           <div className="w-full h-full relative p-4 flex justify-between items-end bg-gradient-to-t from-accent/5 to-transparent">
               <div className="flex flex-col gap-2 opacity-70">
                  <div className="text-[6px] md:text-[10px] font-mono text-foreground border-b border-border/30 w-12 text-right">MEM: 44%</div>
@@ -204,7 +201,7 @@ export function IsometricCube() {
         </div>
         
         {/* Bottom Face - Grid Shadow */}
-        <div className="cube-face face-bottom border border-border/10 bg-background/20 overflow-hidden relative backdrop-blur-sm">
+        <div className="cube-face face-bottom border border-border/10 bg-background/20 overflow-hidden relative backdrop-blur-sm" onClick={handleCubeClick}>
            <div className="absolute inset-0 grid-pattern opacity-40 mix-blend-multiply"></div>
            <div className="absolute inset-8 border border-dashed border-border/30 rounded-full"></div>
            <div className="absolute inset-16 border border-border/20 rounded-full animate-[spin_30s_linear_infinite]"></div>

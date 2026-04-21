@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#EDE6D3"/>
+  <rect x="12" y="12" width="1000" height="1000" fill="none" stroke="#1A1A1A" stroke-width="10"/>
+  <rect x="60" y="60" width="240" height="60" fill="#C91D22"/>
+  <text x="80" y="105" font-family="monospace" font-size="34" font-weight="bold" fill="#EDE6D3">PROTO //</text>
+  <text x="512" y="620" font-family="monospace" font-size="420" font-weight="900" fill="#1A1A1A" text-anchor="middle">10</text>
+  <rect x="60" y="920" width="904" height="4" fill="#1A1A1A"/>
+  <text x="60" y="970" font-family="monospace" font-size="28" fill="#1A1A1A">ex://project/proto-03</text>
+  <circle cx="927" cy="97" r="40" fill="none" stroke="#1A1A1A" stroke-width="6"/>
+  <circle cx="927" cy="97" r="14" fill="#C91D22"/>
+</svg>

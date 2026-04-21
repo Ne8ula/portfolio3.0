@@ -4,6 +4,7 @@ import localFont from "next/font/local"
 
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { SceneReadyGate } from "@/components/loading/scene-ready-gate"
 
 import { Libre_Baskerville as V0_Font_Libre_Baskerville, IBM_Plex_Mono as V0_Font_IBM_Plex_Mono, Lora as V0_Font_Lora } from 'next/font/google'
 
@@ -55,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${vcrOsdMono.variable} ${spaceMono.variable}`}>
       <body className="font-mono antialiased">
-        {children}
+        <SceneReadyGate>{children}</SceneReadyGate>
         <Analytics />
       </body>
     </html>

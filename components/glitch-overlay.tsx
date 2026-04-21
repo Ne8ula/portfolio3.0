@@ -72,7 +72,7 @@ export function GlitchOverlay() {
   }, [])
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden mix-blend-multiply opacity-100">
+    <div className="fixed inset-0 pointer-events-none z-[60] overflow-hidden mix-blend-multiply opacity-100">
       
       {/* Background SVG Decals */}
       <AnimatePresence>
