@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CLR // LIVE_GLOBE_FPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Major+Mono+Display&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* DARK (default) — Editorial cockpit, cream-on-ink */
+    --cream:        #E8E4DC;
+    --cream-deep:   #D8D3C7;
+    --cream-warm:   #F0EBE1;
+    --fog:          #CFC9C0;
+    --mist:         #B9B5AE;
+    --ink:          #1E1C1A;
+    --ink-soft:     #55514B;
+    --ink-faint:    #8E8A83;
+
+    --mauve-deep:   #3A3644;
+    --mauve:        #6E6878;
+    --mauve-light:  #A8A2B0;
+
+    --jade:         #4B6E4F;
+    --jade-deep:    #3A5A3E;
+    --jade-light:   #7A9A7E;
+
+    --scene-bg:     #2d2b30;
+    --page-grad-1:  #F0EBE1;
+    --page-grad-2:  #E8E4DC;
+    --page-grad-3:  #CFC9C0;
+
+    --font-serif:"Cormorant Garamond","EB Garamond","Times New Roman",serif;
+    --font-mono:"JetBrains Mono","Space Mono","Courier New",monospace;
+  }
+  /* LIGHT — invert the cockpit. Scene becomes cream; HUD text inks darken. */
+  html[data-theme="light"]{
+    --cream:        #1E1C1A;        /* "ink" foreground for HUD on light bg */
+    --cream-deep:   #3A3733;
+    --cream-warm:   #14110F;
+    --fog:          #B9B5AE;
+    --mist:         #8E8A83;
+    --ink:          #F0EBE1;
+    --ink-soft:     #C9C4B8;
+    --ink-faint:    #A8A29A;
+
+    --mauve-deep:   #C7C2CC;
+    --mauve:        #A8A2B0;
+    --mauve-light:  #6E6878;
+
+    --jade:         #3A5A3E;
+    --jade-deep:    #2A4830;
+    --jade-light:   #4B6E4F;
+
+    --scene-bg:     #ECE6D8;
+    --page-grad-1:  #F4EFE2;
+    --page-grad-2:  #E8E2D2;
+    --page-grad-3:  #C8C2B2;
+  }
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--cream);color:var(--ink);font-family:var(--font-mono);cursor:default}
+  #root{position:fixed;inset:0}
+  canvas{display:block}
+
+  @keyframes softBlink{50%{opacity:.35}}
+  @keyframes softPulse{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes spin360{to{transform:rotate(360deg)}}
+  @keyframes scanDown{0%{transform:translateY(-20%)}100%{transform:translateY(120%)}}
+  @keyframes typeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes termBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes termFlicker{0%,97%,100%{opacity:1}98%{opacity:.6}99%{opacity:.92}}
+  @keyframes termShift{0%,100%{transform:translateX(0)}50%{transform:translateX(1px)}}
+  @keyframes termFade{from{opacity:0}to{opacity:1}}
+  @keyframes termSweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  @keyframes termGlitch{0%,100%{clip-path:inset(0 0 0 0);transform:translate(0,0)}10%{clip-path:inset(10% 0 60% 0);transform:translate(-3px,0)}25%{clip-path:inset(50% 0 20% 0);transform:translate(2px,1px)}40%{clip-path:inset(30% 0 40% 0);transform:translate(-1px,-1px)}60%{clip-path:inset(70% 0 5% 0);transform:translate(4px,0)}80%{clip-path:inset(5% 0 70% 0);transform:translate(-2px,2px)}}
+  @keyframes termBarGrow{from{width:0}to{width:100%}}
+  @keyframes termCountUp{from{opacity:.2}to{opacity:1}}
+  @keyframes termCrash{0%{opacity:1;transform:scale(1) translate(0,0)}30%{opacity:1;transform:scale(1.02) translate(-2px,1px);filter:invert(1)}35%{opacity:.1;filter:none}40%{opacity:1;transform:scale(0.985) translate(3px,-2px)}100%{opacity:0;transform:scale(0.8) translate(0,0);filter:blur(8px)}}
+  @keyframes termCrtOff{0%{opacity:1;transform:scaleY(1);filter:brightness(1)}60%{opacity:1;transform:scaleY(0.02);filter:brightness(3)}62%{opacity:1;transform:scaleY(0.004);filter:brightness(6)}100%{opacity:0;transform:scaleY(0.002);filter:brightness(0)}}
+  @keyframes termCrtOn{0%{opacity:0;transform:scaleY(0.002);filter:brightness(6)}15%{opacity:1;transform:scaleY(0.04);filter:brightness(3)}40%{opacity:1;transform:scaleY(1);filter:brightness(1.2)}100%{opacity:1;transform:scaleY(1);filter:brightness(1)}}
+  @keyframes termJitter{0%,100%{transform:translate(0,0)}20%{transform:translate(-1px,0)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,1px)}80%{transform:translate(1px,0)}}
+  @keyframes termRGB{0%,100%{text-shadow:1px 0 rgba(180,60,60,.55),-1px 0 rgba(75,110,79,.55)}50%{text-shadow:2px 0 rgba(180,60,60,.7),-2px 0 rgba(75,110,79,.7)}}
+  @keyframes termScanRoll{0%{background-position:0 0}100%{background-position:0 60px}}
+  @keyframes termBandRoll{0%{top:-30%}100%{top:130%}}
+  @keyframes termNoise{0%,100%{opacity:.08}50%{opacity:.14}}
+  @keyframes termFlash{0%,100%{background:var(--cream)}50%{background:#fff}}
+  @keyframes termFadeIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+
+  /* ── WARP / TRANCE transition between BootScreen and Cockpit ── */
+  @keyframes warpRingExpand{
+    0%   {transform:translate(-50%,-50%) scale(0.05); opacity:0;}
+    15%  {opacity:0.9;}
+    100% {transform:translate(-50%,-50%) scale(28);   opacity:0;}
+  }
+  @keyframes warpStretch{
+    0%   {transform:scaleY(0); opacity:0;}
+    20%  {transform:scaleY(1); opacity:0.85;}
+    80%  {transform:scaleY(1); opacity:0.85;}
+    100% {transform:scaleY(0); opacity:0;}
+  }
+  @keyframes warpRotate{
+    from {transform:translate(-50%,-50%) rotate(0deg);}
+    to   {transform:translate(-50%,-50%) rotate(360deg);}
+  }
+  @keyframes warpFlash{
+    0%, 100% {opacity:0;}
+    72% {opacity:0;}
+    78% {opacity:1;}
+    90% {opacity:0.45;}
+  }
+  @keyframes warpShrinkText{
+    0%   {opacity:0; transform:translate(-50%,-50%) scale(0.92); letter-spacing:.5em;}
+    18%  {opacity:1; transform:translate(-50%,-50%) scale(1);    letter-spacing:.32em;}
+    72%  {opacity:1; transform:translate(-50%,-50%) scale(1);    letter-spacing:.32em;}
+    100% {opacity:0; transform:translate(-50%,-50%) scale(8);    letter-spacing:1em;}
+  }
+  @keyframes warpHorizontalLine{
+    0%   {height:0;            opacity:0;}
+    8%   {height:2px;           opacity:1;}
+    72%  {height:2px;           opacity:1;}
+    78%  {height:100vh;         opacity:1;}
+    100% {height:100vh;         opacity:0;}
+  }
+  @keyframes warpFinalFade{
+    0%, 70% {opacity:1;}
+    100%    {opacity:0;}
+  }
+
+  .term{font-family:"VT323","JetBrains Mono",monospace;font-size:15px;line-height:1.15;letter-spacing:.02em}
+  .term-small{font-family:"VT323","JetBrains Mono",monospace;font-size:13px;line-height:1.2;letter-spacing:.04em}
+  .term-display{font-family:"Cormorant Garamond","EB Garamond",serif;letter-spacing:-.02em;font-weight:500}
+
+  /* Soft grain noise overlay — sells the "photo poster" feel */
+  .grain{position:absolute;inset:0;pointer-events:none;z-index:98;opacity:.35;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.11  0 0 0 0 0.10  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size:240px 240px;
+  }
+  .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(30,28,26,.25) 100%);z-index:97}
+  ::selection{background:var(--ink);color:var(--cream)}
+
+  /* serif display */
+  .display{font-family:var(--font-serif);font-weight:400;letter-spacing:-.02em;line-height:.95}
+  .label{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--ink-soft)}
+  .micro{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<!-- three r0.140 — has UMD examples/js loaders in the npm package -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/DRACOLoader.js"></script>
+
+<script type="text/babel" src="./BootScreen.jsx"></script>
+<script type="text/babel" src="./CockpitHUD.jsx"></script>
+<script type="text/babel" src="./Globe.jsx"></script>
+<script type="text/babel" src="./VinylCrate.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "cubeX": -4,
+  "cubeY": 1.62,
+  "cubeZ": 1.3,
+  "pcX": 3.55,
+  "pcY": 0.8,
+  "pcZ": 0.45,
+  "pcScale": 1.05,
+  "pcYaw": -0.69,
+  "pcPitch": -0.01,
+  "pcRoll": -0.01,
+  "kbX": 0,
+  "kbY": 0,
+  "kbZ": 0,
+  "fpvHeight": -1.98,
+  "fpvDistance": -0.64,
+  "vinylX": -4.13,
+  "vinylY": 0.32,
+  "vinylZ": 0.55,
+  "vinylRX": -0.06,
+  "vinylRY": 1.97,
+  "vinylRZ": 0
+}/*EDITMODE-END*/;
+
+function SliderRow({ r, values, onChange }){
+  return (
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:6}}>
+        <span className="micro" style={{color:'var(--ink)',letterSpacing:'.22em'}}>{r.label}</span>
+        <span style={{fontSize:11,fontWeight:500,color:'var(--ink)'}}>
+          {values[r.key].toFixed(2)}<span style={{color:'var(--ink-faint)',marginLeft:3}}>{r.unit}</span>
+        </span>
+      </div>
+      <input
+        type="range"
+        min={r.min} max={r.max} step={r.step}
+        value={values[r.key]}
+        onChange={e => onChange(r.key, parseFloat(e.target.value))}
+        style={{width:'100%', accentColor:'#4B6E4F', cursor:'ew-resize'}}
+      />
+      <div style={{display:'flex',justifyContent:'space-between',marginTop:2}}>
+        <span style={{fontSize:9,color:'var(--ink-faint)',letterSpacing:'.1em'}}>{r.min.toFixed(1)}</span>
+        <span style={{fontSize:9,color:'var(--ink-faint)',letterSpacing:'.1em'}}>{r.max.toFixed(1)}</span>
+      </div>
+    </div>
+  );
+}
+
+function TweaksPanel({ values, onChange }){
+  const cubeRows = [
+    { key: 'cubeX', label: 'X · lateral',   min: -4, max:  4, step: 0.01, unit: 'u' },
+    { key: 'cubeY', label: 'Y · vertical',  min: -1, max:  5, step: 0.01, unit: 'u' },
+    { key: 'cubeZ', label: 'Z · depth',     min: -4, max:  4, step: 0.01, unit: 'u' },
+  ];
+  const pcRows = [
+    { key: 'pcX',     label: 'X · lateral',  min: -10, max: 10, step: 0.05, unit: 'u' },
+    { key: 'pcY',     label: 'Y · vertical', min: -2,  max:  5, step: 0.05, unit: 'u' },
+    { key: 'pcZ',     label: 'Z · depth',    min: -4,  max:  4, step: 0.05, unit: 'u' },
+    { key: 'pcScale', label: 'scale',        min: 0.2, max:  3, step: 0.01, unit: '×' },
+    { key: 'pcYaw',   label: 'yaw · rot Y',   min: -3.14, max: 3.14, step: 0.01, unit: 'r' },
+    { key: 'pcPitch', label: 'pitch · rot X', min: -1.57, max: 1.57, step: 0.01, unit: 'r' },
+    { key: 'pcRoll',  label: 'roll · rot Z',  min: -3.14, max: 3.14, step: 0.01, unit: 'r' },
+  ];
+  const kbRows = [
+    { key: 'kbX', label: 'X · lateral',  min: -4, max:  4, step: 0.01, unit: 'u' },
+    { key: 'kbY', label: 'Y · vertical', min: -2, max:  2, step: 0.01, unit: 'u' },
+    { key: 'kbZ', label: 'Z · depth',    min: -4, max:  4, step: 0.01, unit: 'u' },
+  ];
+  const fpvRows = [
+    { key: 'fpvHeight',   label: 'height',   min: -4, max:  4, step: 0.01, unit: 'u' },
+    { key: 'fpvDistance', label: 'distance', min: -6, max:  8, step: 0.01, unit: 'u' },
+  ];
+  const vinylRows = [
+    { key: 'vinylX',  label: 'X · lateral',   min: -6, max:  6, step: 0.01, unit: 'u' },
+    { key: 'vinylY',  label: 'Y · vertical',  min: -2, max:  4, step: 0.01, unit: 'u' },
+    { key: 'vinylZ',  label: 'Z · depth',     min: -4, max:  4, step: 0.01, unit: 'u' },
+    { key: 'vinylRX', label: 'pitch · rot X', min: -3.14, max: 3.14, step: 0.01, unit: 'r' },
+    { key: 'vinylRY', label: 'yaw · rot Y',   min: -3.14, max: 3.14, step: 0.01, unit: 'r' },
+    { key: 'vinylRZ', label: 'roll · rot Z',  min: -3.14, max: 3.14, step: 0.01, unit: 'r' },
+  ];
+  return (
+    <div style={{
+      position:'fixed', right:20, bottom:20, zIndex:200,
+      width:300, padding:'16px 18px 18px', maxHeight:'85vh', overflowY:'auto',
+      background:'rgba(232,228,220,0.92)',
+      backdropFilter:'blur(8px)',
+      border:'1px solid rgba(30,28,26,0.25)',
+      boxShadow:'0 18px 40px -20px rgba(30,28,26,0.5)',
+      fontFamily:'var(--font-mono)', color:'var(--ink)'
+    }}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:4}}>
+        <div className="label" style={{fontSize:10,letterSpacing:'.28em'}}>Tweaks</div>
+        <div className="micro" style={{color:'var(--jade)',fontWeight:700}}>● live</div>
+      </div>
+      <div className="micro" style={{marginBottom:14,color:'var(--ink-soft)'}}>cube · location axis</div>
+      <div style={{borderTop:'1px dotted var(--ink-faint)',paddingTop:12,display:'flex',flexDirection:'column',gap:14}}>
+        {cubeRows.map(r => <SliderRow key={r.key} r={r} values={values} onChange={onChange}/>)}
+      </div>
+      <div style={{marginTop:14,paddingTop:12,borderTop:'1px dotted var(--ink-faint)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span className="micro" style={{color:'var(--ink-faint)'}}>cube.mod · xyz</span>
+        <button
+          onClick={() => {
+            onChange('cubeX', 0);
+            onChange('cubeY', 1.45);
+            onChange('cubeZ', 0);
+          }}
+          style={{
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase', fontWeight:500,
+            background:'transparent', color:'var(--ink)',
+            border:'1px solid var(--ink-soft)', padding:'4px 10px',
+            cursor:'pointer'
+          }}
+        >reset</button>
+      </div>
+
+      <div className="micro" style={{marginTop:18,marginBottom:10,color:'var(--ink-soft)'}}>pc · location + scale</div>
+      <div style={{borderTop:'1px dotted var(--ink-faint)',paddingTop:12,display:'flex',flexDirection:'column',gap:14}}>
+        {pcRows.map(r => <SliderRow key={r.key} r={r} values={values} onChange={onChange}/>)}
+      </div>
+      <div style={{marginTop:14,paddingTop:12,borderTop:'1px dotted var(--ink-faint)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span className="micro" style={{color:'var(--ink-faint)'}}>pc.mod · xyz·s</span>
+        <button
+          onClick={() => {
+            onChange('pcX', 7);
+            onChange('pcY', 0.18);
+            onChange('pcZ', 0);
+            onChange('pcScale', 1);
+            onChange('pcYaw', -0.35);
+            onChange('pcPitch', 0);
+            onChange('pcRoll', 0);
+          }}
+          style={{
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase', fontWeight:500,
+            background:'transparent', color:'var(--ink)',
+            border:'1px solid var(--ink-soft)', padding:'4px 10px',
+            cursor:'pointer'
+          }}
+        >reset</button>
+      </div>
+
+      <div className="micro" style={{marginTop:18,marginBottom:10,color:'var(--ink-soft)'}}>keyboard · location axis</div>
+      <div style={{borderTop:'1px dotted var(--ink-faint)',paddingTop:12,display:'flex',flexDirection:'column',gap:14}}>
+        {kbRows.map(r => <SliderRow key={r.key} r={r} values={values} onChange={onChange}/>)}
+      </div>
+      <div style={{marginTop:14,paddingTop:12,borderTop:'1px dotted var(--ink-faint)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span className="micro" style={{color:'var(--ink-faint)'}}>kb.mod · xyz</span>
+        <button
+          onClick={() => {
+            onChange('kbX', 0);
+            onChange('kbY', 0);
+            onChange('kbZ', 0);
+          }}
+          style={{
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase', fontWeight:500,
+            background:'transparent', color:'var(--ink)',
+            border:'1px solid var(--ink-soft)', padding:'4px 10px',
+            cursor:'pointer'
+          }}
+        >reset</button>
+      </div>
+
+      <div className="micro" style={{marginTop:18,marginBottom:10,color:'var(--ink-soft)'}}>fpv · height + distance</div>
+      <div style={{borderTop:'1px dotted var(--ink-faint)',paddingTop:12,display:'flex',flexDirection:'column',gap:14}}>
+        {fpvRows.map(r => <SliderRow key={r.key} r={r} values={values} onChange={onChange}/>)}
+      </div>
+      <div style={{marginTop:14,paddingTop:12,borderTop:'1px dotted var(--ink-faint)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span className="micro" style={{color:'var(--ink-faint)'}}>fpv.mod · h·d</span>
+        <button
+          onClick={() => {
+            onChange('fpvHeight', 0);
+            onChange('fpvDistance', 0);
+          }}
+          style={{
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase', fontWeight:500,
+            background:'transparent', color:'var(--ink)',
+            border:'1px solid var(--ink-soft)', padding:'4px 10px',
+            cursor:'pointer'
+          }}
+        >reset</button>
+      </div>
+
+      <div className="micro" style={{marginTop:18,marginBottom:10,color:'var(--ink-soft)'}}>vinyl crate · location + rotation</div>
+      <div style={{borderTop:'1px dotted var(--ink-faint)',paddingTop:12,display:'flex',flexDirection:'column',gap:14}}>
+        {vinylRows.map(r => <SliderRow key={r.key} r={r} values={values} onChange={onChange}/>)}
+      </div>
+      <div style={{marginTop:14,paddingTop:12,borderTop:'1px dotted var(--ink-faint)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span className="micro" style={{color:'var(--ink-faint)'}}>vinyl.mod · xyz·rxyz</span>
+        <button
+          onClick={() => {
+            onChange('vinylX', 3);
+            onChange('vinylY', 0.18);
+            onChange('vinylZ', -2.4);
+            onChange('vinylRX', 0);
+            onChange('vinylRY', -0.22);
+            onChange('vinylRZ', 0);
+          }}
+          style={{
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase', fontWeight:500,
+            background:'transparent', color:'var(--ink)',
+            border:'1px solid var(--ink-soft)', padding:'4px 10px',
+            cursor:'pointer'
+          }}
+        >reset</button>
+      </div>
+    </div>
+  );
+}
+
+function WarpTransition({ onComplete }){
+  // Total trance duration: 1800ms.
+  // Phases (visual): rings expand → vertical stretch → white flash → fade
+  React.useEffect(() => {
+    const t = setTimeout(() => onComplete && onComplete(), 1800);
+    return () => clearTimeout(t);
+  }, [onComplete]);
+
+  // Generate concentric rings with staggered delays
+  const rings = Array.from({length: 7}, (_, i) => i);
+  // Generate radial spokes (rotating tunnel feel)
+  const spokes = Array.from({length: 24}, (_, i) => i);
+
+  return (
+    <div data-screen-label="00b Warp" style={{
+      position:'fixed', inset:0, overflow:'hidden', zIndex: 50,
+      background:'var(--cream)',
+      animation: 'warpFinalFade 1.8s ease-in forwards',
+      pointerEvents:'none',
+    }}>
+      {/* Vertical light streak across the screen — the "stretch" */}
+      <div aria-hidden style={{
+        position:'absolute', left:'50%', top:0, bottom:0, width:'100vw',
+        transform:'translateX(-50%)',
+        background:'radial-gradient(ellipse 50% 100% at 50% 50%, rgba(75,110,79,0.18), transparent 70%)',
+        animation:'warpStretch 1.8s cubic-bezier(.6,.05,.4,.95) forwards',
+        transformOrigin:'50% 50%',
+      }}/>
+
+      {/* Rotating spoke field — gives the tunnel motion */}
+      <div aria-hidden style={{
+        position:'absolute', left:'50%', top:'50%',
+        width:'200vmax', height:'200vmax',
+        transform:'translate(-50%,-50%)',
+        animation:'warpRotate 2.4s linear infinite',
+        opacity:0.55,
+        pointerEvents:'none',
+      }}>
+        {spokes.map(i => (
+          <div key={i} style={{
+            position:'absolute', left:'50%', top:'50%',
+            width:1, height:'100%',
+            background:'linear-gradient(to bottom, transparent 0%, var(--ink) 48%, var(--ink) 52%, transparent 100%)',
+            transformOrigin:'50% 50%',
+            transform:`translate(-50%,-50%) rotate(${(i/spokes.length)*360}deg)`,
+            opacity: 0.18,
+          }}/>
+        ))}
+      </div>
+
+      {/* Concentric expanding rings — the warp */}
+      {rings.map(i => (
+        <div key={i} aria-hidden style={{
+          position:'absolute', left:'50%', top:'50%',
+          width:80, height:80, borderRadius:'50%',
+          border:`1.5px solid var(--jade)`,
+          transform:'translate(-50%,-50%) scale(0.05)',
+          animation:`warpRingExpand 1.8s cubic-bezier(.4,.05,.2,1) ${i * 0.12}s forwards`,
+          mixBlendMode:'multiply',
+        }}/>
+      ))}
+
+      {/* Center text — small, centered, scales up at end */}
+      <div style={{
+        position:'absolute', left:'50%', top:'50%',
+        transform:'translate(-50%,-50%)',
+        fontFamily:'"VT323","JetBrains Mono",monospace',
+        fontSize: 22, letterSpacing:'.32em', fontWeight:700,
+        color:'var(--jade-deep)',
+        textTransform:'uppercase', whiteSpace:'nowrap',
+        animation:'warpShrinkText 1.8s cubic-bezier(.5,.05,.3,1) forwards',
+        textAlign:'center',
+      }}>
+        — entering the room —
+      </div>
+
+      {/* Horizontal sweep line that pinches across at the climax */}
+      <div aria-hidden style={{
+        position:'absolute', left:0, right:0, top:'50%',
+        background:'var(--jade)',
+        transform:'translateY(-50%)',
+        animation:'warpHorizontalLine 1.8s cubic-bezier(.5,.05,.3,1) forwards',
+        opacity:0,
+        boxShadow:'0 0 24px rgba(75,110,79,0.6)',
+      }}/>
+
+      {/* Final white flash before reveal */}
+      <div aria-hidden style={{
+        position:'absolute', inset:0,
+        background:'#fff',
+        animation:'warpFlash 1.8s ease-in forwards',
+        opacity:0,
+        mixBlendMode:'screen',
+      }}/>
+
+      {/* Scanlines overlay (carries CRT vibe through the transition) */}
+      <div aria-hidden style={{
+        position:'absolute', inset:0, pointerEvents:'none',
+        background: 'repeating-linear-gradient(to bottom, rgba(30,28,26,0.00) 0 2px, rgba(30,28,26,0.06) 2px 3px)',
+        animation:'termScanRoll 4s linear infinite',
+        opacity:0.7,
+      }}/>
+    </div>
+  );
+}
+
+function ThemeToggle({ theme, onToggle }){
+  const dark = theme === 'dark';
+  return (
+    <button
+      onClick={onToggle}
+      aria-label={dark ? 'switch to light mode' : 'switch to dark mode'}
+      style={{
+        position:'fixed', right:32, bottom:120, zIndex:60,
+        display:'flex', alignItems:'center', gap:10,
+        padding:'9px 14px 9px 12px',
+        background: dark ? 'rgba(20,18,24,0.55)' : 'rgba(232,228,220,0.18)',
+        backdropFilter:'blur(14px) saturate(140%)',
+        WebkitBackdropFilter:'blur(14px) saturate(140%)',
+        border: `1px solid ${dark ? 'rgba(236,231,218,0.22)' : 'rgba(232,228,220,0.45)'}`,
+        boxShadow: '0 8px 24px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+        cursor:'pointer',
+        fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+        letterSpacing:'.28em', textTransform:'uppercase',
+        color: 'var(--cream-warm)',
+        transition:'background .25s ease, border-color .25s ease',
+      }}
+      onMouseOver={(e)=>{ e.currentTarget.style.borderColor = 'var(--jade-light)'; }}
+      onMouseOut={(e)=>{ e.currentTarget.style.borderColor = dark ? 'rgba(236,231,218,0.22)' : 'rgba(232,228,220,0.45)'; }}
+    >
+      {/* slider track */}
+      <span aria-hidden style={{
+        position:'relative', width:38, height:18, borderRadius:999,
+        background: dark ? 'rgba(143,184,144,0.22)' : 'rgba(75,110,79,0.28)',
+        border:'1px solid rgba(255,255,255,0.18)',
+        display:'inline-block',
+      }}>
+        {/* sun icon */}
+        <span aria-hidden style={{
+          position:'absolute', left:4, top:'50%', transform:'translateY(-50%)',
+          fontSize:9, color: dark ? 'rgba(255,255,255,0.35)' : 'var(--cream-warm)',
+          lineHeight:1,
+        }}>☀</span>
+        {/* moon icon */}
+        <span aria-hidden style={{
+          position:'absolute', right:4, top:'50%', transform:'translateY(-50%)',
+          fontSize:9, color: dark ? 'var(--jade-light)' : 'rgba(255,255,255,0.35)',
+          lineHeight:1,
+        }}>☾</span>
+        {/* knob */}
+        <span aria-hidden style={{
+          position:'absolute', top:1, left: dark ? 20 : 1,
+          width:14, height:14, borderRadius:'50%',
+          background: dark ? 'var(--jade-light)' : 'var(--cream-warm)',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.45), 0 0 8px rgba(122,154,126,0.3)',
+          transition:'left .28s cubic-bezier(.5,.05,.3,1), background .25s ease',
+        }}/>
+      </span>
+      <span style={{color:'var(--cream-warm)'}}>{dark ? 'dark' : 'light'}</span>
+    </button>
+  );
+}
+
+function App(){
+  const [phase, setPhase] = useState('boot');
+  const [bootLines, setBootLines] = useState([]);
+  const [cockpitOpacity, setCockpitOpacity] = useState(0);
+  const [interactive, setInteractive] = useState(false);
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [editMode, setEditMode] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('cockpit-theme') || 'dark'; }
+    catch { return 'dark'; }
+  });
+
+  // Apply theme to <html data-theme="..."> + broadcast to 3D scene.
+  // BUT only once the cockpit has actually mounted — the BootScreen uses
+  // the same CSS vars and must always render in its original (dark) palette.
+  useEffect(() => {
+    try { localStorage.setItem('cockpit-theme', theme); } catch {}
+    if (phase === 'cockpit') {
+      document.documentElement.setAttribute('data-theme', theme);
+      window.__cockpitTheme = theme;
+      window.dispatchEvent(new CustomEvent('cockpit-theme', { detail: { theme } }));
+    } else {
+      // Force boot/warp screens to always look the same regardless of theme.
+      document.documentElement.removeAttribute('data-theme');
+      window.__cockpitTheme = 'dark';
+    }
+  }, [theme, phase]);
+
+  // Edit-mode protocol: listen first, then announce.
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === '__activate_edit_mode')   setEditMode(true);
+      if (d.type === '__deactivate_edit_mode') setEditMode(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  // Push tweak values into the live 3D cube + PC every time they change.
+  useEffect(() => {
+    let cancelled = false;
+    const apply = () => {
+      if (cancelled) return;
+      const cube = window.__cockpitCube;
+      const pc = window.__cockpitPC;
+      const kb = window.__cockpitKeyboard;
+      if (pc && pc.setTransform){
+        pc.setTransform({ x: tweaks.pcX, y: tweaks.pcY, z: tweaks.pcZ, scale: tweaks.pcScale, yaw: tweaks.pcYaw, pitch: tweaks.pcPitch, roll: tweaks.pcRoll });
+      }
+      if (kb && kb.setOffset){
+        kb.setOffset({ x: tweaks.kbX, y: tweaks.kbY, z: tweaks.kbZ });
+      }
+      const fpv = window.__cockpitFPV;
+      if (fpv && fpv.setOffset){
+        fpv.setOffset({ height: tweaks.fpvHeight, distance: tweaks.fpvDistance });
+      }
+      const vinyl = window.__cockpitVinyl;
+      if (vinyl && vinyl.setTransform){
+        vinyl.setTransform({
+          x: tweaks.vinylX, y: tweaks.vinylY, z: tweaks.vinylZ,
+          rx: tweaks.vinylRX, ry: tweaks.vinylRY, rz: tweaks.vinylRZ
+        });
+      }
+      if (cube && cube.setPosition){
+        cube.setPosition({ x: tweaks.cubeX, y: tweaks.cubeY, z: tweaks.cubeZ });
+      } else if (!vinyl) {
+        // Scene not fully built yet. Retry next frame to catch late init.
+        requestAnimationFrame(apply);
+      } else {
+        // Cube not built yet (still in boot/loader). Retry next frame.
+        requestAnimationFrame(apply);
+      }
+    };
+    apply();
+    return () => { cancelled = true; };
+  }, [tweaks]);
+
+  const handleTweakChange = (key, val) => {
+    setTweaks(prev => {
+      const next = { ...prev, [key]: val };
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (phase !== 'boot') return;
+    // BootScreen drives its own dramatic timeline and calls setPhase('loader')
+    // when it finishes. The legacy 'lines' array is left unused — kept as a
+    // no-op so existing prop wiring still resolves.
+    const lines = [];
+    let i = 0;
+    const iv = setInterval(() => {
+      i++;
+      if (i >= 1){ clearInterval(iv); }
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [phase]);
+
+  // Seamless handoff: when loader's reveal finishes, mount cockpit underneath
+  // and fade it in while the loader's chrome dissolves. The Rubik's cube now
+  // lives INSIDE the cockpit 3D scene on the pedestal (see CockpitCube.jsx +
+  // Globe.jsx), so once the loader unmounts the user sees it grounded on the
+  // table, rotating slowly alongside the bobblehead — and the viewport is
+  // fully interactive via cursor look-around.
+  const handleLoaderHandoff = () => {
+    // Stash the current tweaked position so the 3D cube uses it as the
+    // destination of its fly-in from the hero position.
+    window.__cockpitCubeInitial = {
+      x: tweaks.cubeX, y: tweaks.cubeY, z: tweaks.cubeZ
+    };
+    setPhase('handoff');
+    // Transition timing: loader cube expands for 1.1s, then the 3D cube
+    // starts a 2s shrink-to-pedestal. Unmount loader after full sequence.
+    setTimeout(() => { setPhase('cockpit'); setInteractive(true); }, 3200);
+  };
+
+  return (
+    <div data-screen-label="01 Cockpit FPS" style={{position:'fixed',inset:0,overflow:'hidden',background:'radial-gradient(ellipse at 30% 20%, var(--page-grad-1), var(--page-grad-2) 45%, var(--page-grad-3) 100%)'}}>
+      {phase === 'boot' && <BootScreen onDone={() => { setPhase('warp'); }}/>}
+      {phase === 'warp' && (
+        <WarpTransition onComplete={() => { setPhase('cockpit'); setInteractive(true); }}/>
+      )}
+      {phase === 'cockpit' && (
+        <div style={{
+          position:'absolute', inset:0,
+          zIndex: 1
+        }}>
+          <Cockpit interactive={interactive}/>
+        </div>
+      )}
+      <div className="grain"/>
+      <div className="vignette"/>
+      {phase === 'cockpit' && (
+        <ThemeToggle theme={theme} onToggle={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}/>
+      )}
+      {editMode && phase === 'cockpit' && (
+        <TweaksPanel values={tweaks} onChange={handleTweakChange}/>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,230 +1,136 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@font-face {
-  font-family: "VCR_OSD_MONO";
-  src: url("/fonts/vcr-osd-mono.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SpaceMono";
-  src: url("/fonts/spacemono-regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+/* ============================================================
+   ALEX XIONG — "Editorial Cockpit"
+   Cream parchment + ink + mauve + muted jade. Jade is the sole
+   chromatic accent. No rounded corners (--radius: 0).
+   Ported verbatim from the Cockpit.html prototype :root vars.
+   ============================================================ */
 
 :root {
-  /* Chinese-Brutalist Light Mode Aesthetic — light-only site, no .dark class ever applied. */
-  --background: #F4F1E8; 
-  --foreground: #1a1a1a; 
-  --card: #E8E5DC; 
-  --card-foreground: #1a1a1a;
-  --popover: #E8E5DC;
-  --popover-foreground: #1a1a1a;
-  
-  /* Imperial Red */
-  --primary: #C91D22;
-  --primary-foreground: #F4F1E8;
-  
-  /* Jade/Olive Green — saturation pushed for vibrant warm band */
-  --secondary: #3C8760;
-  --secondary-foreground: #F4F1E8;
+  /* DARK (default) — Editorial cockpit, cream-on-ink */
+  --cream:        #E8E4DC;
+  --cream-deep:   #D8D3C7;
+  --cream-warm:   #F0EBE1;
+  --fog:          #CFC9C0;
+  --mist:         #B9B5AE;
+  --ink:          #1E1C1A;
+  --ink-soft:     #55514B;
+  --ink-faint:    #8E8A83;
 
-  --muted: #D9D5C8;
-  --muted-foreground: #5A5A52;
+  --mauve-deep:   #3A3644;
+  --mauve:        #6E6878;
+  --mauve-light:  #A8A2B0;
 
-  /* Vermilion Orange */
-  --accent: #E84A30;
-  --accent-foreground: #F4F1E8;
-  
-  --destructive: #C91D22;
-  --destructive-foreground: #F4F1E8;
-  
-  /* Black structural borders (Marathon Grid Style) */
-  --border: #1a1a1a;
-  --input: #1a1a1a;
-  --ring: #C91D22;
-  
-  --radius: 0rem;
-  
-  /* Heavy brutalist black shadows */
-  --shadow-x: 4px;
-  --shadow-y: 4px;
-  --shadow-blur: 0px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 1;
-  --shadow-color: #1a1a1a;
+  --jade:         #4B6E4F;
+  --jade-deep:    #3A5A3E;
+  --jade-light:   #7A9A7E;
 
-  /* Warm band — lived-in analog mid-tones (saturation pushed) */
-  --paper-warm: #EDE6D3;
-  --paper-shadow: #BFB59A;
-  --ink-warm: #2A2520;
-  --vermilion-soft: #CB3A3D;
-  --jade-soft: #4F9970;
-  --tape-yellow: #E6B938;
+  --scene-bg:     #2d2b30;
+  --page-grad-1:  #F0EBE1;
+  --page-grad-2:  #E8E4DC;
+  --page-grad-3:  #CFC9C0;
 
-  /* Cold-electric band — AR-graffiti overlay accents */
-  --signal-lime: #C6F24A;
-  --signal-blue: #2A4CFF;
-  --signal-white: #F7F9F2;
+  --radius: 0;
+
+  --font-serif: "Cormorant Garamond", "EB Garamond", "Times New Roman", serif;
+  --font-mono:  "JetBrains Mono", "Space Mono", "Courier New", monospace;
 }
 
+/* LIGHT — invert the cockpit. Scene becomes cream; HUD text inks darken. */
+html[data-theme="light"] {
+  --cream:        #1E1C1A;        /* "ink" foreground for HUD on light bg */
+  --cream-deep:   #3A3733;
+  --cream-warm:   #14110F;
+  --fog:          #B9B5AE;
+  --mist:         #8E8A83;
+  --ink:          #F0EBE1;
+  --ink-soft:     #C9C4B8;
+  --ink-faint:    #A8A29A;
+
+  --mauve-deep:   #C7C2CC;
+  --mauve:        #A8A2B0;
+  --mauve-light:  #6E6878;
+
+  --jade:         #3A5A3E;
+  --jade-deep:    #2A4830;
+  --jade-light:   #4B6E4F;
+
+  --scene-bg:     #ECE6D8;
+  --page-grad-1:  #F4EFE2;
+  --page-grad-2:  #E8E2D2;
+  --page-grad-3:  #C8C2B2;
+}
+
+/* Expose the two font families to Tailwind's font-* utilities. */
 @theme inline {
-  --font-sans: "SpaceMono", "Courier New", monospace;
-  --font-mono: "VCR_OSD_MONO", "Courier New", monospace;
-  --font-serif: "SpaceMono", "Courier New", monospace;
-  
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  /* Warm band tokens (Tailwind: bg-paper-warm, text-ink-warm, etc.) */
-  --color-paper-warm: var(--paper-warm);
-  --color-paper-shadow: var(--paper-shadow);
-  --color-ink-warm: var(--ink-warm);
-  --color-vermilion-soft: var(--vermilion-soft);
-  --color-jade-soft: var(--jade-soft);
-  --color-tape-yellow: var(--tape-yellow);
-
-  /* Cold-electric band tokens (Tailwind: text-signal-lime, etc.) */
-  --color-signal-lime: var(--signal-lime);
-  --color-signal-blue: var(--signal-blue);
-  --color-signal-white: var(--signal-white);
-  
-  --radius-sm: var(--radius);
-  --radius-md: var(--radius);
-  --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  
-  --shadow-sm: var(--shadow-x) var(--shadow-y) 0px 0px var(--shadow-color);
-  --shadow-md: calc(var(--shadow-x) * 1.5) calc(var(--shadow-y) * 1.5) 0px 0px var(--shadow-color);
-  --shadow-lg: calc(var(--shadow-x) * 2) calc(var(--shadow-y) * 2) 0px 0px var(--shadow-color);
-  --shadow: var(--shadow-md);
+  --font-sans:  "JetBrains Mono", "Space Mono", "Courier New", monospace;
+  --font-mono:  "JetBrains Mono", "Space Mono", "Courier New", monospace;
+  --font-serif: "Cormorant Garamond", "EB Garamond", "Times New Roman", serif;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-.grid-pattern {
-  background-image: linear-gradient(to right, var(--muted) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--muted) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-/* Paper grain — inline SVG turbulence, multiplied over parchment */
-.paper-grain {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.08;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  background-size: 300px 300px;
-}
-
-/* Warm vignette — soft brown radial darkening at corners */
-.vignette-warm {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 45%, rgba(42, 37, 32, 0.12) 100%);
-}
-
-/* Edge foxing — aged-paper corner stains */
-.edge-foxing {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 180px 120px at 2% 2%, rgba(191, 181, 154, 0.22), transparent 70%),
-    radial-gradient(ellipse 180px 120px at 98% 2%, rgba(191, 181, 154, 0.18), transparent 70%),
-    radial-gradient(ellipse 180px 120px at 2% 98%, rgba(191, 181, 154, 0.2), transparent 70%),
-    radial-gradient(ellipse 180px 120px at 98% 98%, rgba(191, 181, 154, 0.24), transparent 70%);
-  mix-blend-mode: multiply;
-}
-
-/* AR-graffiti angular shard — clip-path wedge with electric fill */
-.ar-shard {
-  position: absolute;
-  mix-blend-mode: screen;
-  clip-path: polygon(0% 40%, 30% 0%, 100% 25%, 80% 100%, 15% 85%);
-  background: var(--signal-lime);
-  filter: saturate(1.2);
-  pointer-events: none;
-}
-.ar-shard--blue { background: var(--signal-blue); }
-.ar-shard--slim { clip-path: polygon(0% 50%, 100% 0%, 100% 10%, 5% 60%, 100% 80%, 100% 100%, 0% 55%); }
-
-/* Kanji-glitch chunk — vertical-rl kanji with hard offset */
-.kanji-glitch {
-  position: absolute;
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--cream);
+  color: var(--ink);
   font-family: var(--font-mono);
-  font-weight: 900;
-  writing-mode: vertical-rl;
-  letter-spacing: -0.1em;
-  color: var(--signal-lime);
-  text-shadow: 2px 0 0 var(--signal-blue);
-  mix-blend-mode: screen;
-  pointer-events: none;
-  user-select: none;
+  cursor: default;
 }
+canvas { display: block; }
 
-/* URL-protocol caption (ex://3.m6t style) — inline mono tag */
-.url-tag {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.04em;
-  color: var(--signal-blue);
-  background: var(--signal-white);
-  padding: 2px 6px;
-  border: 1px solid var(--signal-blue);
-  text-transform: lowercase;
-}
+/* ─── Typography helpers (from the prototype) ─────────────────── */
+.display { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.02em; line-height: .95; }
+.label   { font-family: var(--font-mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; color: var(--ink-soft); }
+.micro   { font-family: var(--font-mono); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; font-weight: 500; color: var(--ink-faint); }
+.term          { font-family: "VT323","JetBrains Mono",monospace; font-size: 15px; line-height: 1.15; letter-spacing: .02em; }
+.term-small    { font-family: "VT323","JetBrains Mono",monospace; font-size: 13px; line-height: 1.2; letter-spacing: .04em; }
+.term-display  { font-family: "Cormorant Garamond","EB Garamond",serif; letter-spacing: -.02em; font-weight: 500; }
 
-/* CRT scanlines — thin horizontal striping for screen surfaces */
-.scanlines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.08) 0px,
-    rgba(0, 0, 0, 0.08) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  mix-blend-mode: multiply;
+/* Soft grain noise overlay — sells the "photo poster" feel */
+.grain {
+  position: absolute; inset: 0; pointer-events: none; z-index: 98;
+  opacity: .35; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.11  0 0 0 0 0.10  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 240px 240px;
 }
+.vignette {
+  position: absolute; inset: 0; pointer-events: none; z-index: 97;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(30,28,26,.25) 100%);
+}
+::selection { background: var(--ink); color: var(--cream); }
 
-::selection {
-  background: var(--border);
-  color: var(--background);
-}
+/* ─── Keyframe library (ported from Cockpit.html) ─────────────── */
+@keyframes softBlink { 50% { opacity: .35; } }
+@keyframes softPulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes spin360 { to { transform: rotate(360deg); } }
+@keyframes scanDown { 0% { transform: translateY(-20%); } 100% { transform: translateY(120%); } }
+@keyframes typeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes termBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+@keyframes termFlicker { 0%,97%,100% { opacity: 1; } 98% { opacity: .6; } 99% { opacity: .92; } }
+@keyframes termShift { 0%,100% { transform: translateX(0); } 50% { transform: translateX(1px); } }
+@keyframes termFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes termSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes termGlitch { 0%,100% { clip-path: inset(0 0 0 0); transform: translate(0,0); } 10% { clip-path: inset(10% 0 60% 0); transform: translate(-3px,0); } 25% { clip-path: inset(50% 0 20% 0); transform: translate(2px,1px); } 40% { clip-path: inset(30% 0 40% 0); transform: translate(-1px,-1px); } 60% { clip-path: inset(70% 0 5% 0); transform: translate(4px,0); } 80% { clip-path: inset(5% 0 70% 0); transform: translate(-2px,2px); } }
+@keyframes termBarGrow { from { width: 0; } to { width: 100%; } }
+@keyframes termCountUp { from { opacity: .2; } to { opacity: 1; } }
+@keyframes termCrash { 0% { opacity: 1; transform: scale(1) translate(0,0); } 30% { opacity: 1; transform: scale(1.02) translate(-2px,1px); filter: invert(1); } 35% { opacity: .1; filter: none; } 40% { opacity: 1; transform: scale(0.985) translate(3px,-2px); } 100% { opacity: 0; transform: scale(0.8) translate(0,0); filter: blur(8px); } }
+@keyframes termCrtOff { 0% { opacity: 1; transform: scaleY(1); filter: brightness(1); } 60% { opacity: 1; transform: scaleY(0.02); filter: brightness(3); } 62% { opacity: 1; transform: scaleY(0.004); filter: brightness(6); } 100% { opacity: 0; transform: scaleY(0.002); filter: brightness(0); } }
+@keyframes termCrtOn { 0% { opacity: 0; transform: scaleY(0.002); filter: brightness(6); } 15% { opacity: 1; transform: scaleY(0.04); filter: brightness(3); } 40% { opacity: 1; transform: scaleY(1); filter: brightness(1.2); } 100% { opacity: 1; transform: scaleY(1); filter: brightness(1); } }
+@keyframes termJitter { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-1px,0); } 40% { transform: translate(1px,-1px); } 60% { transform: translate(-1px,1px); } 80% { transform: translate(1px,0); } }
+@keyframes termRGB { 0%,100% { text-shadow: 1px 0 rgba(180,60,60,.55),-1px 0 rgba(75,110,79,.55); } 50% { text-shadow: 2px 0 rgba(180,60,60,.7),-2px 0 rgba(75,110,79,.7); } }
+@keyframes termScanRoll { 0% { background-position: 0 0; } 100% { background-position: 0 60px; } }
+@keyframes termBandRoll { 0% { top: -30%; } 100% { top: 130%; } }
+@keyframes termNoise { 0%,100% { opacity: .08; } 50% { opacity: .14; } }
+@keyframes termFlash { 0%,100% { background: var(--cream); } 50% { background: #fff; } }
+@keyframes termFadeIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* ── WARP / TRANCE transition between BootScreen and Cockpit ── */
+@keyframes warpRingExpand { 0% { transform: translate(-50%,-50%) scale(0.05); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(-50%,-50%) scale(28); opacity: 0; } }
+@keyframes warpStretch { 0% { transform: scaleY(0); opacity: 0; } 20% { transform: scaleY(1); opacity: 0.85; } 80% { transform: scaleY(1); opacity: 0.85; } 100% { transform: scaleY(0); opacity: 0; } }
+@keyframes warpRotate { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+@keyframes warpFlash { 0%,100% { opacity: 0; } 72% { opacity: 0; } 78% { opacity: 1; } 90% { opacity: 0.45; } }
+@keyframes warpShrinkText { 0% { opacity: 0; transform: translate(-50%,-50%) scale(0.92); letter-spacing: .5em; } 18% { opacity: 1; transform: translate(-50%,-50%) scale(1); letter-spacing: .32em; } 72% { opacity: 1; transform: translate(-50%,-50%) scale(1); letter-spacing: .32em; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(8); letter-spacing: 1em; } }
+@keyframes warpHorizontalLine { 0% { height: 0; opacity: 0; } 8% { height: 2px; opacity: 1; } 72% { height: 2px; opacity: 1; } 78% { height: 100vh; opacity: 1; } 100% { height: 100vh; opacity: 0; } }
+@keyframes warpFinalFade { 0%,70% { opacity: 1; } 100% { opacity: 0; } }

@@ -1,0 +1,72 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e12]:
+    - generic [ref=f2e70]:
+      - generic:
+        - generic:
+          - generic: AX/OS
+          - generic: click to wake
+          - generic: _
+      - banner [ref=f2e73]:
+        - generic [ref=f2e76]:
+          - link "A xiong weather" [ref=f2e77] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=f2e79]
+            - generic [ref=f2e86]:
+              - generic [ref=f2e87]:
+                - generic [ref=f2e89]: callsign
+                - generic [ref=f2e90]: ·
+                - generic [ref=f2e91]: ax–04
+              - generic [ref=f2e92]:
+                - generic [ref=f2e93]: A
+                - generic [ref=f2e95]: xiong
+                - generic [ref=f2e96]:
+                  - generic [ref=f2e98]: /
+                  - generic [ref=f2e99]: studio
+              - generic [ref=f2e101]: location:40.7128° N,74.0060° W
+            - generic "weather" [ref=f2e102]:
+              - generic [ref=f2e103]:
+                - generic [ref=f2e104]: ☀
+                - generic [ref=f2e105]: 84°F
+              - generic [ref=f2e107]: clear · 3mph
+              - generic [ref=f2e108]:
+                - generic [ref=f2e110]: ○
+                - generic [ref=f2e111]: NYC
+          - navigation [ref=f2e116]:
+            - button "projects" [ref=f2e118] [cursor=pointer]:
+              - generic [ref=f2e119]: "01"
+              - text: projects
+              - generic [ref=f2e120]: ▾
+            - button "designs" [ref=f2e123] [cursor=pointer]:
+              - generic [ref=f2e124]: "02"
+              - text: designs
+            - button "about" [ref=f2e126] [cursor=pointer]:
+              - generic [ref=f2e127]: "03"
+              - text: about
+            - button "contact" [ref=f2e129] [cursor=pointer]:
+              - generic [ref=f2e130]: "04"
+              - text: contact
+            - generic [ref=f2e134]: 04:17 · EDT
+      - generic [ref=f2e136]:
+        - generic [ref=f2e137]:
+          - text: Alex
+          - text: Xiong
+        - generic [ref=f2e140]: portfolio · v.2026.04
+      - generic [ref=f2e141]: extinguish flame³ · illuminate in ∞
+      - generic [ref=f2e143]:
+        - generic [ref=f2e144]:
+          - generic [ref=f2e145]: crystal clear
+          - generic [ref=f2e146]: See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+        - generic [ref=f2e147]:
+          - generic [ref=f2e148]: release
+          - generic [ref=f2e149]:
+            - text: Jan 25, 2059 — 9AM PT
+            - text: v.2025.04 · sec_encrypted
+            - text: powered by 333 lab
+    - button "switch to light mode" [ref=f2e150] [cursor=pointer]:
+      - generic [ref=f2e151]:
+        - generic [ref=f2e152]: ☀
+        - generic [ref=f2e153]: ☾
+      - generic [ref=f2e155]: dark
+  - button "Open Next.js Dev Tools" [ref=f2e7] [cursor=pointer]:
+    - img [ref=f2e8]
+  - alert [ref=f2e11]

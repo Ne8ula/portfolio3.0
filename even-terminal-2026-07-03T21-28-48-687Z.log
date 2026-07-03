@@ -1,0 +1,16 @@
+[2026-07-03 17:56:23] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:56:23] [192.168.1.230] 401 GET /api/sessions?provider=claude 78.6ms
+[2026-07-03 17:56:25] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:56:25] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.8ms
+[2026-07-03 17:58:03] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:58:03] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.7ms
+[2026-07-03 17:58:07] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:58:07] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.6ms
+[2026-07-03 17:58:17] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:58:17] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.8ms
+[2026-07-03 17:59:01] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:59:01] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.6ms
+[2026-07-03 17:59:12] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:59:12] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.6ms
+[2026-07-03 17:59:15] [auth] 401 GET /sessions?provider=claude (ip=192.168.1.230)
+[2026-07-03 17:59:15] [192.168.1.230] 401 GET /api/sessions?provider=claude 0.7ms

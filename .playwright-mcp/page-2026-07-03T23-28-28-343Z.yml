@@ -1,0 +1,59 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e12]:
+    - generic [ref=f5e70]:
+      - generic:
+        - generic:
+          - generic: hello.
+          - generic: AX/OS · CLICK TO WAKE
+          - generic: _
+      - banner [ref=f5e73]:
+        - generic [ref=f5e76]:
+          - link "A xiong studio weather" [ref=f5e77] [cursor=pointer]:
+            - /url: "#"
+            - img [ref=f5e78]
+            - generic [ref=f5e82]:
+              - generic [ref=f5e83]: A
+              - generic [ref=f5e85]: xiong
+              - generic [ref=f5e86]: studio
+            - generic "weather" [ref=f5e87]:
+              - generic [ref=f5e88]: ·
+              - generic [ref=f5e89]: wx
+          - navigation [ref=f5e90]:
+            - button "projects" [ref=f5e92] [cursor=pointer]:
+              - generic [ref=f5e93]: "01"
+              - text: projects
+              - generic [ref=f5e94]: ▾
+            - button "designs" [ref=f5e97] [cursor=pointer]:
+              - generic [ref=f5e98]: "02"
+              - text: designs
+            - button "about" [ref=f5e100] [cursor=pointer]:
+              - generic [ref=f5e101]: "03"
+              - text: about
+            - button "contact" [ref=f5e103] [cursor=pointer]:
+              - generic [ref=f5e104]: "04"
+              - text: contact
+            - generic [ref=f5e108]: 19:28 · EDT
+      - generic [ref=f5e110]:
+        - generic [ref=f5e111]:
+          - text: Alex
+          - text: Xiong
+        - generic [ref=f5e114]: portfolio · v.2026.04
+      - generic [ref=f5e115]: extinguish flame³ · illuminate in ∞
+      - generic [ref=f5e117]:
+        - generic [ref=f5e118]:
+          - generic [ref=f5e119]: crystal clear
+          - generic [ref=f5e120]: See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+        - generic [ref=f5e121]:
+          - generic [ref=f5e122]: release
+          - generic [ref=f5e123]:
+            - text: Jan 25, 2059 — 9AM PT
+            - text: v.2025.04 · sec_encrypted
+            - text: powered by 333 lab
+    - button "switch to light mode" [ref=f5e124] [cursor=pointer]:
+      - generic [ref=f5e125]:
+        - generic [ref=f5e126]: ☀
+        - generic [ref=f5e127]: ☾
+      - generic [ref=f5e129]: dark
+  - button "Open Next.js Dev Tools" [ref=f5e7] [cursor=pointer]:
+    - img [ref=f5e8]
+  - alert [ref=f5e11]

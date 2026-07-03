@@ -1,0 +1,135 @@
+{
+  "_README": [
+    "Edit any string value below, then send this file (or paste its contents) back in chat.",
+    "I'll re-apply it to BootScreen.jsx. Keep the keys/structure intact — only change the values.",
+    "Tips:",
+    "  - 'log_lines' bracket prefixes like '[  0.0012 ]' are timestamps; you can edit freely but keep them roughly aligned for the terminal feel.",
+    "  - 'center_word.*.headline' is wrapped in [BRACKETS] in the design — you can change them but the brackets are part of the look.",
+    "  - 'stage_map.items' are the boot-stage list on the left; keep them short (under ~24 chars).",
+    "  - You can change the count of items in arrays (add/remove lines) freely."
+  ],
+  "header_top_left": {
+    "line_1": "— 01 .",
+    "line_2": "AX.RUNTIME  v2.6.14",
+    "line_3": "boot // cold-start"
+  },
+  "hardware_plate_top_right": [
+    "§ AXIONG / PORTFOLIO",
+    "§ 2026 ·  Version 0.4",
+    "host 0xAE71·BC2F",
+    "User // You"
+  ],
+  "stage_map": {
+    "heading": "░ SYS STARTING...",
+    "items": [
+      ".01 > SYS.CORE",
+      ".02 > PORTFOLIO.INIT",
+      ".03 > RENDER.PIPELINE",
+      ".04 > PRODUCT.DESIGN",
+      ".05 > USER.RESEARCH",
+      ".06 > PRODUCT.MANAGEMENT",
+      ".07 > UI // UX",
+      ".08 > STANDBY"
+    ],
+    "stall_suffix": "stall",
+    "ok_suffix": "  · ok",
+    "active_suffix": " ◆ ACTIVE"
+  },
+  "console_label": {
+    "dmesg": "▣ /dev/console  ·  dmesg",
+    "post": "▣ /dev/console  ·  POST"
+  },
+  "log_lines": [
+    "[  0.0012 ] kernel: portfolio-os v2.6.14 boot",
+    "[  0.0023 ] identity: alex xiong · designer · loaded",
+    "[  0.0041 ] mem: 32768 MB · case studies cached",
+    "[  0.0087 ] dma: 0-7 · routing résumé blocks",
+    "[  0.0152 ] pci: bus 0 device 00.0 · about-me bridge",
+    "[  0.0193 ] pci: bus 0 device 01.0 gpu · pixels.gl",
+    "[  0.0218 ] acpi: caffeine / focus / sleep · ok",
+    "[  0.0301 ] usb: hub @ 0x7f12 · 4 side-projects mounted",
+    "[  0.0344 ] net: eth0 link up · linkedin · dribbble",
+    "[  0.0389 ] fs: mount /work · type case-study-fs",
+    "[  0.0412 ] fs: mount /play · 47821 sketches indexed",
+    "[  0.0456 ] sec: nda attestation · key 0xAF-2E ok",
+    "[  0.0512 ] pipe: design pipeline · 12 stages",
+    "[  0.0537 ] shader: typography vs 0x01-0x07 compiled",
+    "[  0.0561 ] shader: color-system fs 0x08-0x14 compiled",
+    "[  0.0598 ] cube.mod · 6 projects · 3 disciplines",
+    "[  0.0624 ] globe: 14 cities · rgba streamed",
+    "[  0.0661 ] cockpit.fpv: portfolio camera bound",
+    "[  0.0702 ] input: scroll / hover / click connected",
+    "[  0.0718 ] audio: lo-fi playlist · muted",
+    "[  0.0747 ] timer: deadlines hpet @ 14318180 Hz",
+    "[  0.0781 ] rt: ship-it scheduler · quantum 1 ms",
+    "[  0.0812 ] idle: weekend states C1..C6 enabled",
+    "[  0.0843 ] perf: shipping counters armed",
+    "[  0.0876 ] dbg: design-rationale map loaded",
+    "[  0.0914 ] portfolio-runtime: handoff → visitor",
+    "[  0.0968 ] startup: /sbin/welcome · pid 1",
+    "[  0.1012 ] svc: portfolio.service · starting",
+    "[  0.1041 ] svc: portfolio.service · resolving case studies",
+    "[  0.1088 ] svc: portfolio.service · asking Alex",
+    "[  0.1133 ] svc: portfolio.service · warming greeting",
+    "[  0.1201 ] svc: portfolio.service · prefetch projects",
+    "[  0.1247 ] svc: portfolio.service · hydrate visuals",
+    "[  0.1301 ] svc: portfolio.service · ready-ish",
+    "[  0.1388 ] █  unexpected idea on vector 0x0D ",
+    "[  0.1388 ] ██ creative interrupt at 0x00FA·BE7C ██"
+  ],
+  "post_steps_during_reboot": [
+    "POST ............. ok",
+    "ROM  checksum .... ok",
+    "RAM  32768 MB .... ok",
+    "GPU  AX-GL9800 ... ok",
+    "FS   mount /      ok",
+    "NET  link up      ok",
+    "RT   scheduler    ok",
+    "AX.RUNTIME ...... ready"
+  ],
+  "registers_panel": {
+    "heading": "░ REGISTERS",
+    "bus_heading": "░ BUS",
+    "irq_stall_label": "STALL",
+    "irq_quiet_label": "quiet",
+    "dma_line": "dma  ch2 · 0xB7·14",
+    "clk_line": "clk  3.214 GHz",
+    "power_stable": "◆ POWER · stable",
+    "power_nominal": "◆ POWER · nom"
+  },
+  "center_word": {
+    "loading": {
+      "headline": "[LOADING]",
+      "subtitle": "PORTFOLIO RUNTIME · COLD BOOT"
+    },
+    "stalled": {
+      "headline": "[STALLED]",
+      "subtitle": "▲ WATCHDOG TIMEOUT · retry in T-0.7s"
+    },
+    "crash": {
+      "headline": "[···DOWN···]"
+    },
+    "reboot": {
+      "headline": "[REBOOTING]",
+      "subtitle": "WARM START · POST · SELF-TEST"
+    },
+    "ready": {
+      "headline": "{A_XIONG}",
+      "subtitle": "◆ READY · HANDING OFF"
+    }
+  },
+  "footer": {
+    "left_label": "// AX.RUNTIME · console",
+    "uptime_prefix": "uptime",
+    "status_labels": {
+      "init": "INIT",
+      "scroll": "BOOTING",
+      "stall": "STALLED",
+      "crash": "SHUTDOWN",
+      "reboot": "WARM-UP",
+      "ready": "READY"
+    },
+    "right_state_prefix": "state",
+    "right_ready_prefix": "rdy"
+  }
+}

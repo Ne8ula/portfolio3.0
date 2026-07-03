@@ -1,0 +1,7 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e12]:
+    - generic:
+      - generic: — entering the room —
+  - button "Open Next.js Dev Tools" [ref=f2e7] [cursor=pointer]:
+    - img [ref=f2e8]
+  - alert [ref=f2e11]

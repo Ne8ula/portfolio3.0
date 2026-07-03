@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AX // Design System</title>
+<link rel="stylesheet" href="./ds/colors_and_type.css">
+<style>
+  html,body{margin:0;background:var(--bg1);color:var(--fg1);font-family:var(--font-mono);font-size:var(--size-body);line-height:var(--lh-body)}
+  *{box-sizing:border-box}
+
+  .page{max-width:1280px;margin:0 auto;padding:64px 56px 120px;position:relative}
+
+  /* ===== header ===== */
+  .head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:flex-end;border-bottom:1px solid var(--ink);padding-bottom:28px;margin-bottom:48px}
+  .head .kicker{font-family:var(--font-mono);font-size:var(--size-micro);letter-spacing:var(--tracking-widest);text-transform:uppercase;color:var(--fg2);margin-bottom:10px}
+  .head h1{font-family:var(--font-display);font-weight:400;font-size:clamp(72px,10vw,132px);letter-spacing:-.02em;line-height:.92;margin:0;color:var(--ink)}
+  .head h1 em{font-style:italic;color:var(--mauve-deep)}
+  .head .meta{text-align:right;font-family:var(--font-mono);font-size:var(--size-micro);letter-spacing:var(--tracking-wide);color:var(--fg3);text-transform:uppercase;line-height:1.8}
+  .head .meta .ok{color:var(--jade);font-weight:700}
+
+  /* ===== section scaffolding ===== */
+  section{margin:88px 0 0}
+  .sec-head{display:grid;grid-template-columns:240px 1fr;gap:32px;align-items:baseline;padding-bottom:16px;border-bottom:1px dotted var(--ink-faint);margin-bottom:32px}
+  .sec-head .num{font-family:var(--font-mono);font-size:var(--size-micro);letter-spacing:var(--tracking-widest);text-transform:uppercase;color:var(--fg3)}
+  .sec-head h2{font-family:var(--font-display);font-weight:400;font-style:italic;font-size:44px;letter-spacing:-.015em;margin:0;color:var(--ink)}
+  .sec-head .desc{grid-column:2;font-family:var(--font-mono);font-size:var(--size-body);color:var(--fg2);max-width:560px;margin-top:6px}
+
+  /* ===== COLORS ===== */
+  .swatch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .swatch{position:relative;border:1px solid var(--ink);padding:0;display:flex;flex-direction:column;background:var(--bg2)}
+  .swatch .chip{height:140px;border-bottom:1px solid var(--ink)}
+  .swatch .info{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  .swatch .name{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.05em;color:var(--ink)}
+  .swatch .hex{font-family:var(--font-mono);font-size:10px;color:var(--ink-soft);letter-spacing:.06em}
+  .swatch .tok{font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.12em;text-transform:uppercase;margin-top:3px}
+
+  .col-row{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;padding:10px 0;border-bottom:1px dotted var(--ink-faint)}
+  .col-row .dot{width:36px;height:36px;border:1px solid var(--ink)}
+  .col-row .lbl{font-family:var(--font-mono);font-size:11px;font-weight:500}
+  .col-row .hex{font-family:var(--font-mono);font-size:10px;color:var(--ink-soft)}
+  .col-row .tok{font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);letter-spacing:.14em;text-transform:uppercase}
+
+  .scale-strip{display:flex;border:1px solid var(--ink)}
+  .scale-strip > div{flex:1;aspect-ratio:4/1;position:relative}
+  .scale-strip > div span{position:absolute;left:8px;bottom:6px;font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+
+  /* ===== TYPE ===== */
+  .type-row{display:grid;grid-template-columns:200px 1fr;gap:32px;align-items:baseline;padding:22px 0;border-bottom:1px dotted var(--ink-faint)}
+  .type-row .meta{font-family:var(--font-mono);font-size:var(--size-micro);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--fg2);line-height:1.7}
+  .type-row .meta b{color:var(--ink);display:block;font-weight:500;margin-bottom:4px;letter-spacing:.22em}
+  .display-serif{font-family:var(--font-display);font-weight:400;font-size:128px;letter-spacing:-.02em;line-height:.92;color:var(--ink)}
+  .display-serif em{font-style:italic;color:var(--mauve-deep)}
+  .h1-serif{font-family:var(--font-display);font-weight:400;font-size:56px;letter-spacing:-.015em;line-height:1;color:var(--ink)}
+  .h2-serif{font-family:var(--font-display);font-weight:500;font-size:36px;letter-spacing:-.015em;color:var(--ink)}
+  .h3-mono{font-family:var(--font-mono);font-size:22px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+  .body-mono{font-family:var(--font-mono);font-size:13px;line-height:1.7;color:var(--ink);max-width:560px}
+  .label-mono{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
+  .micro-mono{font-family:var(--font-mono);font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+
+  /* ===== SPACING / RADII / SHADOW ===== */
+  .trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px}
+  .trio h3{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--ink)}
+  .space-row{display:grid;grid-template-columns:60px 1fr 56px;gap:12px;align-items:center;padding:4px 0}
+  .space-row .tok{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .space-row .val{font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);text-align:right}
+  .space-bar{height:8px;background:var(--ink)}
+  .radii-row{display:flex;gap:14px;align-items:flex-end}
+  .radii-row .r{width:72px;height:72px;background:var(--cream-deep);border:1px solid var(--ink);display:flex;align-items:flex-end;justify-content:center;padding:6px;font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .shadow-row{display:flex;gap:24px;flex-wrap:wrap}
+  .shadow-row .sh{width:140px;height:90px;background:var(--cream-warm);border:1px solid var(--ink);display:flex;align-items:flex-end;justify-content:center;padding:8px;font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+  /* ===== MOTION / MOTION CURVES ===== */
+  .motion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+  .motion-card{border:1px solid var(--ink);padding:16px;background:var(--bg2)}
+  .motion-card .lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);margin-bottom:12px}
+  .motion-card .curve{font-family:var(--font-mono);font-size:10px;color:var(--ink-soft)}
+  .motion-card svg{width:100%;height:80px;margin-top:12px}
+
+  /* ===== COMPONENTS ===== */
+  .comp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px}
+  .comp{border:1px solid var(--ink);background:var(--bg2);padding:28px;position:relative}
+  .comp .head-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px}
+  .comp .head-row .lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink)}
+  .comp .head-row .tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--jade);font-weight:700}
+
+  /* boot panel */
+  .boot-demo{font-family:var(--font-mono);font-size:11px;color:var(--ink)}
+  .boot-demo .row{display:grid;grid-template-columns:28px 1fr auto;gap:12px;padding:6px 0;border-bottom:1px dotted var(--ink-faint)}
+  .boot-demo .row .n{color:var(--ink-faint);font-size:9px;letter-spacing:.15em}
+  .boot-demo .row .ok{color:var(--jade);font-weight:700;font-size:9px;letter-spacing:.18em;text-transform:uppercase}
+  .boot-demo .row .verb{color:var(--ink-soft)}
+  .boot-demo .row .tgt{color:var(--ink)}
+
+  /* runtime block */
+  .runtime{font-family:var(--font-mono);font-size:11px;line-height:1.7;color:var(--ink)}
+  .runtime .k{color:var(--ink-soft)}
+  .runtime .v{color:var(--ink)}
+  .runtime .hi{color:var(--jade);font-weight:700}
+  .runtime .hdr{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+
+  /* buttons */
+  .btn{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;padding:10px 16px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;transition:all 200ms var(--ease-soft)}
+  .btn:hover{background:var(--ink);color:var(--cream)}
+  .btn--solid{background:var(--ink);color:var(--cream)}
+  .btn--solid:hover{background:var(--mauve-deep);border-color:var(--mauve-deep)}
+  .btn--jade{border-color:var(--jade);color:var(--jade)}
+  .btn--jade:hover{background:var(--jade);color:var(--cream)}
+  .btn--ghost{border-color:var(--ink-soft);color:var(--ink-soft)}
+  .btn--ghost:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* seal */
+  .seal{width:56px;height:56px;border:1px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;color:var(--ink);background:var(--cream-warm)}
+
+  /* status row */
+  .status-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;padding:3px 8px;border:1px solid var(--ink);color:var(--ink)}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--jade)}
+  .pill--jade{border-color:var(--jade);color:var(--jade)}
+  .pill--mauve{border-color:var(--mauve);color:var(--mauve)}
+  .pill--solid{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+  /* slider */
+  .slider-demo input[type=range]{width:100%;accent-color:var(--jade)}
+  .slider-demo .r{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .slider-demo .r .k{font-family:var(--font-mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink)}
+  .slider-demo .r .v{font-family:var(--font-mono);font-size:11px;color:var(--ink)}
+  .slider-demo .r .v span{color:var(--ink-faint);margin-left:4px}
+
+  /* card */
+  .paper{background:var(--cream-warm);border:1px solid var(--ink);padding:24px;box-shadow:var(--shadow-paper-sm)}
+  .paper .t{font-family:var(--font-display);font-size:28px;color:var(--ink);line-height:1;margin:0 0 4px}
+  .paper .s{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft)}
+
+  /* footer */
+  footer{margin-top:120px;padding-top:24px;border-top:1px solid var(--ink);display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint)}
+  footer .ok{color:var(--jade);font-weight:700}
+
+  /* soft grain overlay on the page */
+  .page-grain{position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.3;mix-blend-mode:multiply;background-image:var(--grain-url);background-size:240px 240px}
+</style>
+</head>
+<body class="ds-body" data-screen-label="Design System">
+
+<div class="page-grain"></div>
+
+<main class="page">
+
+  <!-- header -->
+  <header class="head">
+    <div>
+      <div class="kicker">v · presale · jan 2059 // design.system.v2</div>
+      <h1>Design<br><em>System.</em></h1>
+    </div>
+    <div class="meta">
+      alex xiong<br>
+      creative technologist<br>
+      <span class="ok">● live</span> &nbsp; reedit · 01
+    </div>
+  </header>
+
+  <!-- FOUNDATIONS blurb -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-bottom:24px">
+    <p class="ds-prose" style="margin:0;max-width:540px">
+      The portfolio runs on a single editorial palette — <em style="font-family:var(--font-display);font-style:italic">cream parchment, ink, mauve, and a single muted jade accent</em>. No gradients, no rounded corners, no vermilion. Typography pairs Cormorant Garamond display with JetBrains Mono chrome, letting the serif carry weight and the mono carry data.
+    </p>
+    <div class="status-row" style="align-self:end;justify-content:flex-end">
+      <span class="pill"><span class="dot"></span> palette · 12</span>
+      <span class="pill pill--jade">accents · 01</span>
+      <span class="pill pill--mauve">fonts · 02</span>
+      <span class="pill pill--solid">radius · 00</span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       01 · COLORS
+       ============================================================ -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="num">01 · colors</div>
+        <h2>Parchment &amp;<br>Ink.</h2>
+      </div>
+      <p class="desc">Warm neutrals do the heavy lifting. Mauve anchors structural accents (headers, rules, display pairings). Jade is the sole chromatic voice — used sparingly for live state, hover, success, and selection.</p>
+    </div>
+
+    <!-- Core swatch grid -->
+    <div class="label-mono" style="margin-bottom:14px">Core · neutrals</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="chip" style="background:#E8E4DC"></div>
+        <div class="info"><span class="name">Cream</span><span class="hex">#E8E4DC</span><span class="tok">--cream · bg1</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#F0EBE1"></div>
+        <div class="info"><span class="name">Cream Warm</span><span class="hex">#F0EBE1</span><span class="tok">--cream-warm · bg2</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#D8D3C7"></div>
+        <div class="info"><span class="name">Cream Deep</span><span class="hex">#D8D3C7</span><span class="tok">--cream-deep · bg3</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#CFC9C0"></div>
+        <div class="info"><span class="name">Fog</span><span class="hex">#CFC9C0</span><span class="tok">--fog · bg4</span></div>
+      </div>
+    </div>
+
+    <div class="label-mono" style="margin:32px 0 14px">Ink · text</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="chip" style="background:#1E1C1A"></div>
+        <div class="info"><span class="name" style="color:#1E1C1A">Ink</span><span class="hex">#1E1C1A</span><span class="tok">--ink · fg1</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#55514B"></div>
+        <div class="info"><span class="name">Ink Soft</span><span class="hex">#55514B</span><span class="tok">--ink-soft · fg2</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#8E8A83"></div>
+        <div class="info"><span class="name">Ink Faint</span><span class="hex">#8E8A83</span><span class="tok">--ink-faint · fg3</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#B9B5AE"></div>
+        <div class="info"><span class="name">Mist</span><span class="hex">#B9B5AE</span><span class="tok">--mist · hairline</span></div>
+      </div>
+    </div>
+
+    <div class="label-mono" style="margin:32px 0 14px">Mauve · structural accent</div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="chip" style="background:#3A3644"></div>
+        <div class="info"><span class="name">Mauve Deep</span><span class="hex">#3A3644</span><span class="tok">--mauve-deep · display pair</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#6E6878"></div>
+        <div class="info"><span class="name">Mauve</span><span class="hex">#6E6878</span><span class="tok">--mauve</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#A8A2B0"></div>
+        <div class="info"><span class="name">Mauve Light</span><span class="hex">#A8A2B0</span><span class="tok">--mauve-light</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:linear-gradient(90deg,#1E1C1A,#3A3644,#6E6878)"></div>
+        <div class="info"><span class="name">Structural ramp</span><span class="hex">ink → mauve</span><span class="tok">use for headers, rules</span></div>
+      </div>
+    </div>
+
+    <div class="label-mono" style="margin:32px 0 14px">Jade · chromatic accent <span style="color:var(--jade)">(solo)</span></div>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="chip" style="background:#4B6E4F"></div>
+        <div class="info"><span class="name" style="color:#4B6E4F">Jade</span><span class="hex">#4B6E4F</span><span class="tok">--jade · accent</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#3A5A3E"></div>
+        <div class="info"><span class="name">Jade Deep</span><span class="hex">#3A5A3E</span><span class="tok">--jade-deep · pressed</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#7A9A7E"></div>
+        <div class="info"><span class="name">Jade Light</span><span class="hex">#7A9A7E</span><span class="tok">--jade-light · wash</span></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:#E8E4DC;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--ink)">
+          <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;color:#4B6E4F;font-weight:700">● LIVE · OK</span>
+        </div>
+        <div class="info"><span class="name">In use</span><span class="hex">status · success</span><span class="tok">hover · selection</span></div>
+      </div>
+    </div>
+
+    <!-- Ramp strip -->
+    <div class="label-mono" style="margin:40px 0 10px">Paper ramp</div>
+    <div class="scale-strip">
+      <div style="background:#F0EBE1"><span>warm</span></div>
+      <div style="background:#E8E4DC"><span>cream</span></div>
+      <div style="background:#D8D3C7"><span>deep</span></div>
+      <div style="background:#CFC9C0"><span>fog</span></div>
+      <div style="background:#B9B5AE"><span>mist</span></div>
+      <div style="background:#8E8A83"><span>ink · faint</span></div>
+      <div style="background:#55514B"><span style="color:#CFC9C0">soft</span></div>
+      <div style="background:#1E1C1A"><span style="color:#CFC9C0">ink</span></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       02 · TYPE
+       ============================================================ -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="num">02 · typography</div>
+        <h2>Serif<br><em style="font-style:italic;color:var(--mauve-deep)">&amp; mono.</em></h2>
+      </div>
+      <p class="desc">Cormorant Garamond sets the tone — display headlines, italic accents, seal letterforms. JetBrains Mono carries every operational voice: labels, meta, runtime, slider values, boot output.</p>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>display</b>Cormorant Garamond<br>400 · 128 / .92<br>tracking −0.02em</div>
+      <div class="display-serif">Crystal <em>Clear.</em></div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>h1</b>Cormorant Garamond<br>400 · 56 / 1.0</div>
+      <div class="h1-serif">Alex Xiong · creative technologist</div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>h2</b>Cormorant Garamond<br>500 · 36 · italic ok</div>
+      <div class="h2-serif">Certain <em style="font-style:italic;color:var(--mauve-deep)">uncertainties</em>.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>h3</b>JetBrains Mono<br>500 · 22 · uppercase<br>tracking 0.04em</div>
+      <div class="h3-mono">Loading Cockpit // Sector 104.992</div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>body</b>JetBrains Mono<br>400 · 13 / 1.7</div>
+      <div class="body-mono">
+        The cockpit boots into a warm editorial scene — parchment light, dust in the air, a rubik's pedestal at rest. Chrome is written in monospace; voice is written in serif. Numbers align by figure; rules align by hairline.
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>label</b>JetBrains Mono<br>500 · 10 · uppercase<br>tracking 0.22em</div>
+      <div class="label-mono">phase · reveal_seal // solver · lbl.local</div>
+    </div>
+
+    <div class="type-row">
+      <div class="meta"><b>micro</b>JetBrains Mono<br>500 · 9 · uppercase<br>tracking 0.18em</div>
+      <div class="micro-mono"># sector / 104.992 // live_globe · px333 · seal ·印</div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       03 · SPACING · RADII · SHADOW
+       ============================================================ -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="num">03 · metrics</div>
+        <h2>Grid <em style="font-style:italic;color:var(--mauve-deep)">&amp; paper.</em></h2>
+      </div>
+      <p class="desc">8px grid throughout. Zero radius, ever. Shadow is a soft paper drop — not a brutalist ink block — because the scene is photo-poster, not pixel-sticker.</p>
+    </div>
+
+    <div class="trio">
+      <!-- spacing -->
+      <div>
+        <h3>Spacing · 8px</h3>
+        <div class="space-row"><span class="tok">--1</span><div class="space-bar" style="width:4px"></div><span class="val">4</span></div>
+        <div class="space-row"><span class="tok">--2</span><div class="space-bar" style="width:8px"></div><span class="val">8</span></div>
+        <div class="space-row"><span class="tok">--3</span><div class="space-bar" style="width:12px"></div><span class="val">12</span></div>
+        <div class="space-row"><span class="tok">--4</span><div class="space-bar" style="width:16px"></div><span class="val">16</span></div>
+        <div class="space-row"><span class="tok">--6</span><div class="space-bar" style="width:24px"></div><span class="val">24</span></div>
+        <div class="space-row"><span class="tok">--8</span><div class="space-bar" style="width:32px"></div><span class="val">32</span></div>
+        <div class="space-row"><span class="tok">--12</span><div class="space-bar" style="width:48px"></div><span class="val">48</span></div>
+        <div class="space-row"><span class="tok">--16</span><div class="space-bar" style="width:64px"></div><span class="val">64</span></div>
+        <div class="space-row"><span class="tok">--24</span><div class="space-bar" style="width:96px"></div><span class="val">96</span></div>
+      </div>
+
+      <!-- radii (intentionally empty — conveys the rule) -->
+      <div>
+        <h3>Radius · 0</h3>
+        <div class="radii-row">
+          <div class="r" style="border-radius:0">0 · default</div>
+        </div>
+        <p class="micro-mono" style="margin-top:18px;line-height:1.8;color:var(--ink-soft)">
+          no rounded corners — <span style="color:var(--jade);font-weight:700">ever</span>.<br>
+          every surface is a hairline rectangle.
+        </p>
+        <h3 style="margin-top:32px">Borders</h3>
+        <div class="radii-row" style="gap:10px">
+          <div class="r" style="border-width:1px;height:40px">1px · hair</div>
+          <div class="r" style="border-width:2px;height:40px">2px · emph</div>
+          <div class="r" style="border-width:4px;height:40px">4px · sec</div>
+        </div>
+        <div class="radii-row" style="gap:10px;margin-top:10px">
+          <div class="r" style="border-style:dotted;height:40px">dotted · runtime</div>
+        </div>
+      </div>
+
+      <!-- shadow -->
+      <div>
+        <h3>Shadow · paper</h3>
+        <div class="shadow-row">
+          <div class="sh" style="box-shadow:var(--shadow-paper-sm)">paper · sm</div>
+          <div class="sh" style="box-shadow:var(--shadow-paper)">paper</div>
+          <div class="sh" style="box-shadow:var(--shadow-paper-lg)">paper · lg</div>
+          <div class="sh" style="box-shadow:var(--shadow-inner)">inner hairline</div>
+        </div>
+        <p class="micro-mono" style="margin-top:18px;line-height:1.8;color:var(--ink-soft)">
+          drop warm, low, offset; 40–60% opacity ink at 20–24px blur.
+        </p>
+      </div>
+    </div>
+
+    <!-- motion -->
+    <h3 style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink);margin:56px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--ink)">Motion · timing</h3>
+    <div class="motion-grid">
+      <div class="motion-card">
+        <div class="lbl">dur · fast · 120ms</div>
+        <div class="curve">hover · toggle · micro-state</div>
+        <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+          <path d="M0 72 L200 8" stroke="#1E1C1A" fill="none" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="motion-card">
+        <div class="lbl">dur · base · 240ms</div>
+        <div class="curve">ease-soft · cubic-bezier(0.22, 0.61, 0.36, 1)</div>
+        <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+          <path d="M0 72 C60 72, 80 8, 200 8" stroke="#4B6E4F" fill="none" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="motion-card">
+        <div class="lbl">dur · slow · 520ms</div>
+        <div class="curve">ease-brut · cubic-bezier(0.16, 1, 0.3, 1)</div>
+        <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+          <path d="M0 72 C30 72, 40 12, 200 8" stroke="#3A3644" fill="none" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       04 · COMPONENTS
+       ============================================================ -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="num">04 · components</div>
+        <h2>In <em style="font-style:italic;color:var(--mauve-deep)">use.</em></h2>
+      </div>
+      <p class="desc">Patterns pulled straight from the cockpit: the boot log, runtime panel, tweak sliders, seal, and the inline status pills that carry the only chromatic voice on the page.</p>
+    </div>
+
+    <div class="comp-grid">
+      <!-- Boot sequence -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">boot · sequence</span>
+          <span class="tag">● ok</span>
+        </div>
+        <div class="boot-demo">
+          <div class="row"><span class="n">01</span><span><span class="verb">initializing</span> · <span class="tgt">sys.core</span></span><span class="ok">ok</span></div>
+          <div class="row"><span class="n">02</span><span><span class="verb">loading</span> · <span class="tgt">render.pipeline</span></span><span class="ok">ok</span></div>
+          <div class="row"><span class="n">03</span><span><span class="verb">mounting</span> · <span class="tgt">cube.mod</span></span><span class="ok">ok</span></div>
+          <div class="row"><span class="n">04</span><span><span class="verb">authorizing</span> · <span class="tgt">sec.encrypted</span></span><span class="ok">ok</span></div>
+          <div class="row"><span class="n">05</span><span><span class="verb">ready</span> · <span class="tgt">standby</span></span><span class="ok">ok</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+          <span class="micro-mono">— standing by —</span>
+          <div style="width:120px;height:2px;background:var(--cream-deep);position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:var(--ink);width:100%"></div></div>
+        </div>
+      </div>
+
+      <!-- Runtime console -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">runtime · console</span>
+          <span class="tag">● live</span>
+        </div>
+        <div class="runtime">
+          <div class="hdr">[ runtime ]</div>
+          <div><span class="k">phase</span> · <span class="v">reveal_seal</span></div>
+          <div><span class="k">solver</span> · <span class="v">lbl.local</span> //</div>
+          <div><span class="k">determined</span> · <span class="hi">true</span></div>
+          <div style="border-top:1px dotted var(--ink-faint);margin:14px 0"></div>
+          <div><span class="k">sector</span> · <span class="v">104.992</span> // <span class="k">program</span> · <span class="v">no.∞</span></div>
+          <div><span class="k">seal</span> · <span class="v">印 · px333</span></div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">buttons · mono</span>
+          <span class="tag">hover · invert</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+          <button class="btn">default</button>
+          <button class="btn btn--solid">primary</button>
+          <button class="btn btn--jade">● commit</button>
+          <button class="btn btn--ghost">ghost</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn" style="padding:6px 12px;font-size:9px">reset</button>
+          <span class="micro-mono">4×10 letter-spacing .22em</span>
+        </div>
+      </div>
+
+      <!-- Slider row (Tweaks pattern) -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">slider · tweak</span>
+          <span class="tag">accent · jade</span>
+        </div>
+        <div class="slider-demo">
+          <div class="r"><span class="k">X · lateral</span><span class="v">-4.00<span>u</span></span></div>
+          <input type="range" min="-4" max="4" step="0.01" value="-4">
+          <div style="display:flex;justify-content:space-between;margin-top:2px;font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.1em"><span>-4.0</span><span>4.0</span></div>
+        </div>
+        <div class="slider-demo" style="margin-top:18px">
+          <div class="r"><span class="k">scale</span><span class="v">1.56<span>×</span></span></div>
+          <input type="range" min="0.2" max="3" step="0.01" value="1.56">
+          <div style="display:flex;justify-content:space-between;margin-top:2px;font-family:var(--font-mono);font-size:9px;color:var(--ink-faint);letter-spacing:.1em"><span>0.2</span><span>3.0</span></div>
+        </div>
+      </div>
+
+      <!-- Status pills -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">status · pills</span>
+          <span class="tag">jade · solo accent</span>
+        </div>
+        <div class="status-row" style="margin-bottom:14px">
+          <span class="pill"><span class="dot"></span> live</span>
+          <span class="pill pill--jade">● ok</span>
+          <span class="pill pill--mauve">● idle</span>
+          <span class="pill pill--solid">● ink</span>
+        </div>
+        <div class="status-row">
+          <span class="pill" style="border-style:dotted">dotted · meta</span>
+          <span class="pill" style="border-color:var(--ink-faint);color:var(--ink-faint)">faint · disabled</span>
+        </div>
+        <p class="micro-mono" style="margin-top:16px;color:var(--ink-soft);line-height:1.8">
+          jade is the only chromatic voice — reserved for <span style="color:var(--jade);font-weight:700">live, ok, hover, selection</span>. never used as a surface fill.
+        </p>
+      </div>
+
+      <!-- Seal + paper card -->
+      <div class="comp">
+        <div class="head-row">
+          <span class="lbl">seal · paper</span>
+          <span class="tag">display · pair</span>
+        </div>
+        <div style="display:flex;gap:18px;align-items:flex-start">
+          <div class="seal">AX</div>
+          <div>
+            <div class="paper" style="min-width:240px">
+              <div class="t">Crystal Clear.</div>
+              <div class="s">sector 104.992 · px333</div>
+              <hr class="ds-divider">
+              <div class="label-mono" style="color:var(--ink-faint)">phase · reveal_seal</div>
+              <div class="body-mono" style="font-size:11px;margin-top:6px">A soft paper drop, a hairline ink frame, a serif display over mono chrome. Repeat.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       05 · VOICE
+       ============================================================ -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="num">05 · voice</div>
+        <h2>How it <em style="font-style:italic;color:var(--mauve-deep)">reads.</em></h2>
+      </div>
+      <p class="desc">Two voices share the page. Serif is observational — it names the mood. Mono is operational — it reports state. They never trade places.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+      <div>
+        <div class="label-mono" style="margin-bottom:12px">serif · observational</div>
+        <div class="h2-serif" style="margin-bottom:18px">Crystal <em style="font-style:italic;color:var(--mauve-deep)">clear.</em></div>
+        <div class="h2-serif" style="margin-bottom:18px">Certain <em style="font-style:italic;color:var(--mauve-deep)">uncertainties.</em></div>
+        <div class="h2-serif">Standing <em style="font-style:italic;color:var(--mauve-deep)">by.</em></div>
+      </div>
+      <div>
+        <div class="label-mono" style="margin-bottom:12px">mono · operational</div>
+        <div class="runtime">
+          <div>phase · reveal_seal</div>
+          <div>solver · lbl.local //</div>
+          <div>determined · <span class="hi">true</span></div>
+          <div style="margin-top:10px">initializing · sys.core</div>
+          <div>mounting · cube.mod</div>
+          <div>authorizing · sec.encrypted</div>
+          <div>ready · standby</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>ax · design system · v2 · reedit 01</span>
+    <span><span class="ok">● live</span> &nbsp; cockpit.html · source of truth</span>
+  </footer>
+
+</main>
+
+</body>
+</html>

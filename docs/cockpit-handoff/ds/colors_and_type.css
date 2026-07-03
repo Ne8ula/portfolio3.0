@@ -1,0 +1,280 @@
+/* ============================================================
+   ALEX XIONG PORTFOLIO — Colors + Type
+   Editorial Cockpit. Cream parchment + ink + mauve + muted jade.
+   Reflects the live portfolio (Cockpit.html): no vermilion red.
+   Single accent is jade; mauve-grey carries structure.
+   ============================================================ */
+
+/* ----- FONTS (Google-hosted, matching Cockpit.html) ----- */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
+:root {
+  /* ===== CORE PALETTE =====
+     A warm, editorial, photo-poster neutral stack:
+     Cream → Fog → Mauve → Ink.  Jade is the sole color accent.
+     All values taken directly from Cockpit.html :root vars. */
+
+  --cream:        #E8E4DC;   /* primary page background */
+  --cream-warm:   #F0EBE1;   /* hero / lifted surface */
+  --cream-deep:   #D8D3C7;   /* card / pressed surface */
+  --fog:          #CFC9C0;   /* inset / divider fills */
+  --mist:         #B9B5AE;   /* hairline / meta surface */
+
+  --ink:          #1E1C1A;   /* primary text + structural ink */
+  --ink-soft:     #55514B;   /* secondary text, labels */
+  --ink-faint:    #8E8A83;   /* tertiary chrome, meta */
+
+  --mauve-deep:   #3A3644;   /* CLR/MM purple-grey — display pair */
+  --mauve:        #6E6878;   /* structural accent */
+  --mauve-light:  #A8A2B0;   /* pale mauve wash */
+
+  --jade:         #4B6E4F;   /* single chromatic accent — success, live, hover */
+  --jade-deep:    #3A5A3E;   /* pressed / dense jade */
+  --jade-light:   #7A9A7E;   /* pale jade wash, selection tint */
+
+  /* ===== SEMANTIC TOKENS ===== */
+  --background:            var(--cream);
+  --foreground:            var(--ink);
+
+  --surface:               var(--cream-warm);
+  --surface-raised:        var(--cream-deep);
+  --surface-inset:         var(--fog);
+
+  --card:                  var(--cream-deep);
+  --card-foreground:       var(--ink);
+
+  --primary:               var(--ink);
+  --primary-foreground:    var(--cream);
+
+  --secondary:             var(--mauve-deep);
+  --secondary-foreground:  var(--cream);
+
+  --accent:                var(--jade);
+  --accent-foreground:     var(--cream);
+  --accent-soft:           var(--jade-light);
+
+  --muted:                 var(--fog);
+  --muted-foreground:      var(--ink-soft);
+
+  --border:                var(--ink);
+  --border-soft:           var(--ink-faint);
+  --border-hair:           var(--mist);
+  --input:                 var(--ink);
+  --ring:                  var(--jade);
+
+  /* ===== FG / BG UTILITIES ===== */
+  --fg1: var(--ink);         /* primary text */
+  --fg2: var(--ink-soft);    /* secondary / meta */
+  --fg3: var(--ink-faint);   /* tertiary / faint labels */
+  --fg-invert: var(--cream);
+
+  --bg1: var(--cream);       /* page */
+  --bg2: var(--cream-warm);  /* lifted */
+  --bg3: var(--cream-deep);  /* card */
+  --bg4: var(--fog);         /* inset */
+
+  /* ===== TYPOGRAPHY ===== */
+  --font-serif:   "Cormorant Garamond", "EB Garamond", "Times New Roman", serif;
+  --font-mono:    "JetBrains Mono", "Space Mono", "Courier New", monospace;
+  --font-display: var(--font-serif);
+  --font-display-weight: 400;
+
+  /* Scale — editorial: oversized serif display, restrained mono body */
+  --size-display: clamp(4rem, 10vw, 8rem);   /* 64–128px — AX / CLR scale */
+  --size-h1:  3rem;      /* 48 — Crystal Clear. */
+  --size-h2:  2rem;      /* 32 */
+  --size-h3:  1.5rem;    /* 24 */
+  --size-h4:  1.125rem;  /* 18 */
+  --size-body:    0.8125rem;  /* 13 */
+  --size-body-lg: 1rem;       /* 16 — prose */
+  --size-label:   0.625rem;   /* 10 — .label */
+  --size-micro:   0.5625rem;  /* 9  — .micro / chrome */
+
+  --lh-tight: 0.95;
+  --lh-snug:  1.15;
+  --lh-body:  1.55;
+
+  --tracking-display: -0.02em;
+  --tracking-tight:    0.05em;
+  --tracking-wide:     0.18em;
+  --tracking-wider:    0.22em;
+  --tracking-widest:   0.30em;
+
+  /* ===== BORDERS ===== */
+  --radius: 0;            /* no rounded corners, ever */
+  --border-w-1: 1px;      /* hairline default */
+  --border-w-2: 2px;      /* emphasized */
+  --border-w-4: 4px;      /* section divider */
+
+  /* ===== SHADOWS — soft editorial drop, not brutalist block ===== */
+  --shadow-paper-sm: 0 6px 14px -10px rgba(30,28,26,0.35);
+  --shadow-paper:    0 18px 40px -20px rgba(30,28,26,0.50);
+  --shadow-paper-lg: 0 30px 60px -24px rgba(30,28,26,0.55);
+  --shadow-inner:    inset 0 0 0 1px rgba(30,28,26,0.15);
+
+  /* ===== SPACING (8px grid) ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* ===== MOTION ===== */
+  --ease-brut: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-slow: 520ms;
+
+  /* ===== TEXTURE (grain + vignette — used over hero scenes) ===== */
+  --grain-url: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.11  0 0 0 0 0.10  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT STYLES
+   Use .ds-* classes when not in Tailwind.
+   ============================================================ */
+
+.ds-body {
+  background: var(--bg1);
+  color: var(--fg1);
+  font-family: var(--font-mono);
+  font-size: var(--size-body);
+  line-height: var(--lh-body);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+.ds-display {
+  font-family: var(--font-display);
+  font-size: var(--size-display);
+  font-weight: 400;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg1);
+}
+
+.ds-h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-h1);
+  font-weight: 400;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-display);
+}
+
+.ds-h2 {
+  font-family: var(--font-display);
+  font-size: var(--size-h2);
+  font-weight: 500;
+  letter-spacing: var(--tracking-display);
+  color: var(--fg1);
+}
+
+.ds-h3 {
+  font-family: var(--font-mono);
+  font-size: var(--size-h3);
+  font-weight: 500;
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+}
+
+.ds-label {
+  font-family: var(--font-mono);
+  font-size: var(--size-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+.ds-micro {
+  font-family: var(--font-mono);
+  font-size: var(--size-micro);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--fg3);
+}
+
+.ds-tag {
+  /* Inline jade pill for status / tags (e.g. "LIVE · OK") */
+  display: inline-block;
+  background: transparent;
+  color: var(--jade);
+  font-family: var(--font-mono);
+  font-size: var(--size-micro);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid var(--jade);
+}
+
+.ds-tag--solid {
+  background: var(--jade);
+  color: var(--cream);
+  border-color: var(--jade);
+}
+
+.ds-prose {
+  font-family: var(--font-mono);
+  font-size: var(--size-body-lg);
+  line-height: var(--lh-body);
+  color: var(--fg1);
+}
+
+.ds-code {
+  font-family: var(--font-mono);
+  font-size: var(--size-body);
+  background: var(--bg4);
+  padding: 0 4px;
+}
+
+/* ----- Bullet / runtime prompt marker: "· " ----- */
+.ds-prompt::before {
+  content: "· ";
+  color: var(--jade);
+  font-weight: 700;
+}
+
+/* ----- Vertical-RL eastern seal layout ----- */
+.ds-vertical {
+  writing-mode: vertical-rl;
+  letter-spacing: var(--tracking-widest);
+  font-family: var(--font-display);
+}
+
+/* ----- Soft grain overlay (use over hero scenes) ----- */
+.ds-grain {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 98;
+  opacity: .35;
+  mix-blend-mode: multiply;
+  background-image: var(--grain-url);
+  background-size: 240px 240px;
+}
+
+/* ----- Vignette ----- */
+.ds-vignette {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 97;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(30,28,26,.25) 100%);
+}
+
+/* ----- Dotted hairline divider (runtime console style) ----- */
+.ds-divider {
+  border: 0;
+  border-top: 1px dotted var(--border-soft);
+  margin: var(--space-4) 0;
+}
+
+/* ----- Selection ----- */
+::selection {
+  background: var(--ink);
+  color: var(--cream);
+}

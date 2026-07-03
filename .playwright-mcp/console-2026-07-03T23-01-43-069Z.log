@@ -1,0 +1,23 @@
+[      91ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     116ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     325ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     325ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     325ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 1.3.1, ts: 1783119703394} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   10898ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   11061ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   15079ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.7486732147541&longitude=-73.94147588442623&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   15079ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.7486732147541&longitude=-73.94147588442623&count=1&language=en&format=json:0
+[   15182ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.7486732147541&longitude=-73.94147588442623&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   15182ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.7486732147541&longitude=-73.94147588442623&count=1&language=en&format=json:0
+[   65486ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   65507ms] [LOG] [Fast Refresh] done in 43ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   75979ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   76039ms] [LOG] [Fast Refresh] done in 38ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   80677ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   80737ms] [LOG] [Fast Refresh] done in 31ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  101195ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  101256ms] [LOG] [Fast Refresh] done in 37ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  117380ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  117441ms] [LOG] [Fast Refresh] done in 31ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  128467ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  128528ms] [LOG] [Fast Refresh] done in 32ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287

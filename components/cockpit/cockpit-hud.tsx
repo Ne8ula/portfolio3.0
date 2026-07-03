@@ -1,0 +1,1186 @@
+"use client"
+// @ts-nocheck
+// Cockpit HUD — mounts the 3D scene (GlobeCanvas) and all DOM chrome:
+// site header + live weather, title card, reticle, PC hover brackets,
+// the on-screen dialog, and the bottom editorial strip.
+// Ported from the Cockpit.html prototype (CockpitHUD.jsx).
+import React from "react"
+import { GlobeCanvas } from "./globe-canvas"
+import { CURSOR_DEFAULT } from "./cursors"
+
+// CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
+function Cockpit({ interactive = true }){
+  const yawRef = React.useRef(0);
+  const pitchRef = React.useRef(0);
+  const [mode, setMode] = React.useState('free');
+  const [hudYaw, setHudYaw] = React.useState(0);
+  const [hudPitch, setHudPitch] = React.useState(0);
+  const [orders, setOrders] = React.useState(1248732);
+  const [opm, setOpm] = React.useState(14200);
+  const [sales, setSales] = React.useState(3460000);
+  const [viewMode, setViewMode] = React.useState('cockpit');
+  const [hoveringPC, setHoveringPC] = React.useState(false);
+  const [hoveringCrate, setHoveringCrate] = React.useState(false);
+
+  const stageRef = React.useRef(null);
+
+  // Listen for 3D-scene view-mode + hover events
+  React.useEffect(() => {
+    const onView = (e) => setViewMode(e.detail.mode);
+    const onHover = (e) => setHoveringPC(e.detail.hovering);
+    const onCrateHover = (e) => setHoveringCrate(e.detail.hovering);
+    window.addEventListener('cockpit-view-mode', onView);
+    window.addEventListener('cockpit-hover', onHover);
+    window.addEventListener('cockpit-crate-hover', onCrateHover);
+    return () => {
+      window.removeEventListener('cockpit-view-mode', onView);
+      window.removeEventListener('cockpit-hover', onHover);
+      window.removeEventListener('cockpit-crate-hover', onCrateHover);
+    };
+  }, []);
+
+  const exitGlobe = React.useCallback(() => {
+    if (window.__setCockpitViewMode) window.__setCockpitViewMode('cockpit');
+  }, []);
+
+  // While non-interactive (loader still playing), force view to center and
+  // ignore all cursor input. Re-enabled once the parent flips `interactive`.
+  React.useEffect(() => {
+    if (!interactive){
+      yawRef.current = 0;
+      pitchRef.current = 0;
+      setHudYaw(0);
+      setHudPitch(0);
+    }
+  }, [interactive]);
+
+  // FREE mode — mouse position → yaw/pitch. Works in iframes.
+  React.useEffect(() => {
+    if (!interactive) return;
+    const el = stageRef.current;
+    if (!el) return;
+    const onMove = (e) => {
+      if (mode !== 'free') return;
+      const r = el.getBoundingClientRect();
+      const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+      const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+      // In monitor/crate mode, cursor input is used only for gentle
+      // parallax (scaled down in Globe.jsx), not full free-look.
+      // Free-look: tight range so the camera can never leave the desk —
+      // max ±22° yaw, ±15° pitch. Smoothed in Globe.jsx for butter feel.
+      const yawScale = viewMode !== 'cockpit' ? 0.25 : (Math.PI * 22/180);
+      const pitchScale = viewMode !== 'cockpit' ? 0.15 : (Math.PI * 15/180);
+      yawRef.current   = -nx * yawScale;
+      pitchRef.current = -ny * pitchScale;
+    };
+    window.addEventListener('mousemove', onMove);
+    return () => window.removeEventListener('mousemove', onMove);
+  }, [mode, interactive, viewMode]);
+
+  // Sync HUD yaw/pitch readouts to the butter-smoothed values in Globe
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const y = window.__cockpitSmoothedYaw;
+      const p = window.__cockpitSmoothedPitch;
+      if (typeof y === 'number') setHudYaw(y);
+      if (typeof p === 'number') setHudPitch(p);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // LOCKED mode — pointer-lock delta
+  React.useEffect(() => {
+    if (!interactive) return;
+    const el = stageRef.current;
+    if (!el) return;
+    const onLockChange = () => {
+      if (document.pointerLockElement !== el && mode === 'locked') setMode('free');
+    };
+    const onMove = (e) => {
+      if (mode !== 'locked' || document.pointerLockElement !== el) return;
+      yawRef.current   -= e.movementX * 0.0025;
+      pitchRef.current -= e.movementY * 0.0025;
+      const lim = Math.PI/2 - 0.1;
+      if (pitchRef.current > lim) pitchRef.current = lim;
+      if (pitchRef.current < -lim) pitchRef.current = -lim;
+    };
+    document.addEventListener('pointerlockchange', onLockChange);
+    document.addEventListener('mousemove', onMove);
+    return () => {
+      document.removeEventListener('pointerlockchange', onLockChange);
+      document.removeEventListener('mousemove', onMove);
+    };
+  }, [mode, interactive]);
+
+  const tryLock = async () => {
+    const el = stageRef.current;
+    if (!el || !el.requestPointerLock) return;
+    try { await el.requestPointerLock(); setMode('locked'); }
+    catch { setMode('free'); }
+  };
+  const releaseLock = () => {
+    if (document.pointerLockElement) document.exitPointerLock?.();
+    setMode('free');
+  };
+
+  React.useEffect(() => {
+    const iv = setInterval(() => {
+      setOrders(o => o + Math.floor(Math.random()*240+80));
+      setOpm(o => Math.max(9000, Math.min(22000, o + (Math.random()-.5)*400)));
+      setSales(s => s + Math.floor(Math.random()*90000+20000));
+    }, 900);
+    return () => clearInterval(iv);
+  }, []);
+
+  const locked = mode === 'locked';
+  const heading = ((hudYaw * 180/Math.PI) % 360 + 360) % 360;
+  const pitchDeg = hudPitch * 180/Math.PI;
+
+  const fmt = n => n.toLocaleString('en-US');
+  const fmt$ = n => '$' + (n/1000).toFixed(0) + 'K';
+
+  return (
+    <div ref={stageRef} data-screen-label="02 Cockpit FPS" onKeyDown={(e)=>{ if(e.key==='Escape'){ if(viewMode!=='cockpit') exitGlobe(); else releaseLock(); } }} tabIndex={0} style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor: locked ? 'none' : CURSOR_DEFAULT,outline:'none'}}>
+      <GlobeCanvas yawRef={yawRef} pitchRef={pitchRef}/>
+
+      {viewMode === 'cockpit' && <PCHoverHighlight hovering={hoveringPC}/>}
+      {viewMode === 'cockpit' && <CrateHoverHighlight hovering={hoveringCrate}/>}
+      {viewMode === 'crate' && <VinylInfoCard/>}
+      <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
+      {viewMode !== 'cockpit' && (
+        <div style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
+          <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:'pointer'}}>esc · return</button>
+        </div>
+      )}
+
+      {/* soft inner-window gradient so the scene feels framed */}
+      {viewMode === 'cockpit' && <div style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:3,
+        background:'radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(30,28,26,.35) 75%, rgba(30,28,26,.7) 100%)'}}/>}
+
+      {viewMode === 'cockpit' && <>
+      {/* Universal site header — full-width bar with identity + nav */}
+      <SiteHeader/>
+
+      {/* Title card — sits below the header, on the left */}
+      <div style={{position:'absolute',top:120,left:40,zIndex:20,color:'var(--cream)',maxWidth:560}}>
+        <div style={{fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>Alex<br/>Xiong</div>
+        <div style={{marginTop:20,display:'flex',gap:14,alignItems:'center'}}>
+          <span style={{width:24,height:1,background:'var(--cream-deep)',display:'inline-block',opacity:.65}}/>
+          <span style={{color:'var(--cream-deep)',letterSpacing:'.32em',fontWeight:600,fontFamily:'var(--font-mono)',fontSize:13,textTransform:'uppercase'}}>portfolio · v.2026.04</span>
+        </div>
+      </div>
+
+      {/* Mid-left vertical label — sits between the name + bottom CLR panel */}
+      <div style={{position:'absolute',top:'74%',left:28,transform:'translateY(-50%)',zIndex:20,writingMode:'vertical-rl',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.4em',color:'var(--cream-deep)',textTransform:'uppercase'}}>
+        extinguish flame³ · illuminate in ∞
+      </div>
+
+      {/* Bottom: editorial layout — CLR mark + stats + meta */}
+      <div style={{position:'absolute',left:0,right:0,bottom:0,zIndex:20,padding:'24px 40px 28px',color:'var(--cream)',
+        background:'linear-gradient(to top, rgba(30,28,26,.55), rgba(30,28,26,0))'}}>
+        <div style={{display:'grid',gridTemplateColumns:'1.2fr 1fr',gap:48,alignItems:'end'}}>
+          {/* Desc column */}
+          <div>
+            <div className="micro" style={{color:'var(--cream-deep)',marginBottom:6}}>crystal clear</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:11,lineHeight:1.55,color:'var(--cream-deep)',maxWidth:560}}>
+              See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+            </div>
+          </div>
+          {/* Meta */}
+          <div style={{textAlign:'right'}}>
+            <div className="micro" style={{color:'var(--cream-deep)',marginBottom:4}}>release</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--cream-deep)',lineHeight:1.6}}>
+              Jan 25, 2059 — 9AM PT<br/>
+              v.2025.04 · sec_encrypted<br/>
+              powered by <span style={{color:'var(--jade)',fontWeight:700}}>333 lab</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </>}
+    </div>
+  );
+}
+
+const toggleStyle = (active) => ({
+  border: active ? '1px solid var(--jade)' : '1px solid var(--mauve)',
+  background: active ? 'var(--jade)' : 'transparent',
+  color: active ? 'var(--cream-warm)' : 'var(--cream-deep)',
+  padding:'5px 10px', cursor:'pointer',
+  fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em', textTransform:'uppercase', fontWeight:500
+});
+
+function Stat({label, value}){
+  return (
+    <div>
+      <div className="micro" style={{color:'var(--cream-deep)',marginBottom:2}}>{label}</div>
+      <div style={{fontFamily:'var(--font-serif)',fontSize:26,fontWeight:400,color:'var(--cream-warm)',lineHeight:1,letterSpacing:'-.01em'}}>{value}</div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// SiteHeader — universal full-width header.
+// A thin top strip that contains: identity slug on the left,
+// primary nav on the right, with a hairline rule + corner ticks
+// that explicitly bound the header region. Animates in once,
+// reacts elegantly on hover, and reveals a sub-menu for Projects.
+// ─────────────────────────────────────────────────────────────
+function SiteHeader(){
+  const [active, setActive] = React.useState('projects');
+  const [hovered, setHovered] = React.useState(null);
+  const [openSub, setOpenSub] = React.useState(false);
+  const closeTimer = React.useRef(null);
+  const [time, setTime] = React.useState(() => new Date());
+
+  // ── Live weather state (geolocation + Open-Meteo, no API key) ──
+  // Statuses: 'init' → 'locating' → 'fetching' → 'ready' | 'denied' | 'error'
+  const [weather, setWeather] = React.useState({ status: 'init' });
+
+  React.useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 1000 * 30);
+    return () => clearInterval(t);
+  }, []);
+
+  // Fetch weather once on mount. If geolocation is unavailable or denied,
+  // fall back to NYC (matches the LOCATION line in the lockup).
+  React.useEffect(() => {
+    const NYC = { lat: 40.7128, lon: -74.0060, label: 'NYC' };
+    let cancelled = false;
+
+    const fetchWx = async (lat, lon, label, geo) => {
+      try {
+        if (!cancelled) setWeather({ status:'fetching', label });
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('wx http ' + res.status);
+        const data = await res.json();
+        const c = data && data.current;
+        if (!c) throw new Error('wx no current');
+        if (cancelled) return;
+        setWeather({
+          status: 'ready',
+          label,
+          geo: !!geo,
+          tempF: Math.round(c.temperature_2m),
+          windMph: Math.round(c.wind_speed_10m),
+          code: c.weather_code,
+        });
+      } catch (err) {
+        if (!cancelled) setWeather({ status:'error', label });
+      }
+    };
+
+    // Try to reverse-geocode the user's coords to a short city label.
+    const reverseGeocode = async (lat, lon) => {
+      try {
+        const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1&language=en&format=json`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const r = data && data.results && data.results[0];
+        if (!r) return null;
+        // Prefer short city/region; fall back gracefully.
+        const name = r.name || r.admin1 || r.country || null;
+        return name ? String(name).slice(0, 14) : null;
+      } catch { return null; }
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.geolocation) {
+      setWeather({ status: 'locating' });
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const label = (await reverseGeocode(latitude, longitude)) || 'HERE';
+          fetchWx(latitude, longitude, label, true);
+        },
+        () => fetchWx(NYC.lat, NYC.lon, NYC.label, false),
+        { timeout: 6000, maximumAge: 10 * 60 * 1000 }
+      );
+    } else {
+      fetchWx(NYC.lat, NYC.lon, NYC.label, false);
+    }
+
+    return () => { cancelled = true; };
+  }, []);
+
+  // Map WMO weather codes (Open-Meteo) → tiny glyph + short text.
+  // https://open-meteo.com/en/docs — codes 0..99
+  const wxFromCode = (code) => {
+    if (code == null) return { g:'~', t:'—' };
+    if (code === 0) return { g:'☀', t:'clear' };
+    if (code === 1) return { g:'☼', t:'mostly clear' };
+    if (code === 2) return { g:'⛅', t:'partly cloudy' };
+    if (code === 3) return { g:'☁', t:'overcast' };
+    if (code === 45 || code === 48) return { g:'≡', t:'fog' };
+    if (code >= 51 && code <= 57) return { g:'⋮', t:'drizzle' };
+    if (code >= 61 && code <= 67) return { g:'☂', t:'rain' };
+    if (code >= 71 && code <= 77) return { g:'❄', t:'snow' };
+    if (code >= 80 && code <= 82) return { g:'☂', t:'showers' };
+    if (code >= 85 && code <= 86) return { g:'❄', t:'snow showers' };
+    if (code >= 95) return { g:'⚡', t:'thunder' };
+    return { g:'~', t:'wx' };
+  };
+
+  const items = [
+    { id:'projects', label:'projects', sub:[
+      { id:'finished', label:'finished',           hint:'shipped · 12' },
+      { id:'wip',      label:'work-in-progress',   hint:'in-flight · 04' },
+    ]},
+    { id:'designs',  label:'designs' },
+    { id:'about',    label:'about' },
+    { id:'contact',  label:'contact' },
+  ];
+
+  const open = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenSub(true);
+  };
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenSub(false), 200);
+  };
+
+  const HEADER_H = 78;
+  // Local time in user's timezone (HH:MM, 24h) + short tz abbreviation
+  const hhmm = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  const tzAbbr = (() => {
+    try {
+      const parts = new Intl.DateTimeFormat([], { timeZoneName: 'short' }).formatToParts(time);
+      const tz = parts.find(p => p.type === 'timeZoneName');
+      return tz ? tz.value : '';
+    } catch { return ''; }
+  })();
+
+  return (
+    <header style={{
+      position:'absolute', top:0, left:0, right:0,
+      height: HEADER_H, zIndex:30,
+      pointerEvents:'auto',
+      // glassmorphic — frosted ink with subtle inner light + saturation lift
+      background:'linear-gradient(to bottom, rgba(232,228,220,0.10) 0%, rgba(30,28,26,0.18) 100%)',
+      backdropFilter:'blur(18px) saturate(140%)',
+      WebkitBackdropFilter:'blur(18px) saturate(140%)',
+      borderBottom:'1px solid rgba(232,228,220,0.14)',
+      boxShadow:'inset 0 1px 0 rgba(232,228,220,0.18), inset 0 -1px 0 rgba(30,28,26,0.25), 0 8px 32px -12px rgba(30,28,26,0.45)',
+      animation:'termFadeIn .8s ease-out',
+    }}>
+      {/* Inner highlight sheen — a thin diagonal gloss that sells the glass */}
+      <div aria-hidden style={{
+        position:'absolute', inset:0, pointerEvents:'none',
+        background:'linear-gradient(105deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.04) 100%)',
+        mixBlendMode:'overlay',
+      }}/>
+      {/* Subtle noise so the glass has texture, not pure blur */}
+      <div aria-hidden style={{
+        position:'absolute', inset:0, pointerEvents:'none', opacity:0.18,
+        backgroundImage:"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.93  0 0 0 0 0.88  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+        backgroundSize:'180px 180px',
+        mixBlendMode:'overlay',
+      }}/>
+      {/* Corner ticks — bound the header region */}
+      <CornerTick pos="tl"/>
+      <CornerTick pos="tr"/>
+
+      <div style={{
+        position:'absolute', inset:0,
+        padding:'0 40px',
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        gap:24,
+      }}>
+        {/* LEFT — horizontal logo lockup, expanded with graphic elements */}
+        <a href="#" onClick={(e)=>e.preventDefault()} style={{
+          display:'flex', alignItems:'center', gap:14,
+          textDecoration:'none', cursor:'pointer',
+          color:'var(--cream-warm)',
+          position:'relative',
+        }}>
+          {/* ── Monogram — minimal AX glyph ── */}
+          <svg aria-hidden width="28" height="28" viewBox="0 0 38 38" style={{display:'block', flexShrink:0}}>
+            <path d="M 19 8 L 29 28 L 9 28 Z"
+              fill="none" stroke="var(--cream-warm)" strokeWidth="1.6" strokeLinejoin="miter"/>
+            <line x1="12" y1="12" x2="26" y2="28" stroke="var(--jade)" strokeWidth="1.3"/>
+            <line x1="26" y1="12" x2="12" y2="28" stroke="var(--jade)" strokeWidth="1.3"/>
+          </svg>
+
+          {/* ── Wordmark — one quiet line ── */}
+          <span style={{display:'inline-flex', alignItems:'baseline', gap:8}}>
+            <span style={{
+              fontFamily:'var(--font-serif)', fontSize:22, fontWeight:400,
+              lineHeight:1, letterSpacing:'-.02em',
+              color:'var(--cream-warm)', fontStyle:'italic',
+            }}>A</span>
+            <span aria-hidden style={{
+              width:1, height:14, background:'var(--cream-deep)', opacity:.4,
+              alignSelf:'center',
+            }}/>
+            <span style={{
+              fontFamily:'var(--font-mono)', fontSize:13, fontWeight:600,
+              letterSpacing:'.3em', textTransform:'uppercase',
+              color:'var(--cream-warm)',
+            }}>xiong</span>
+            <span style={{
+              fontFamily:'var(--font-serif)', fontSize:12, fontStyle:'italic',
+              color:'var(--cream-deep)', opacity:.8, marginLeft:2,
+            }}>studio</span>
+          </span>
+
+          {/* ── Live weather — a single micro line ── */}
+          {(() => {
+            const wx = wxFromCode(weather.code);
+            const isReady = weather.status === 'ready';
+            const isLoading = weather.status === 'init' || weather.status === 'locating' || weather.status === 'fetching';
+            const placeLabel = (weather.label || 'NYC').toUpperCase();
+            return (
+              <span aria-label="weather" style={{
+                display:'inline-flex', alignItems:'center', gap:7,
+                borderLeft:'1px dotted var(--cream-deep)',
+                paddingLeft:14, marginLeft:4, height:20,
+                fontFamily:'var(--font-mono)', fontSize:9, fontWeight:500,
+                letterSpacing:'.24em', textTransform:'uppercase',
+                color:'var(--cream-deep)', whiteSpace:'nowrap',
+              }}>
+                <span aria-hidden style={{
+                  fontSize:11, color:'var(--jade-light)', width:12, textAlign:'center',
+                  animation: isLoading ? 'softPulse 1.4s ease-in-out infinite' : 'none',
+                }}>{isReady ? wx.g : '·'}</span>
+                {isReady
+                  ? <span>{weather.tempF}° · {placeLabel}</span>
+                  : <span style={{opacity:.7}}>{isLoading ? 'wx' : 'wx offline'}</span>}
+              </span>
+            );
+          })()}
+
+        </a>
+
+        {/* RIGHT — primary nav + meta */}
+        <nav style={{display:'flex', alignItems:'center', gap:0}}>
+          {items.map((it, idx) => {
+            const isActive = active === it.id;
+            const isHover  = hovered === it.id;
+            const isProjects = it.id === 'projects';
+            return (
+              <div
+                key={it.id}
+                onMouseEnter={() => { setHovered(it.id); if (isProjects) open(); }}
+                onMouseLeave={() => { setHovered(null); if (isProjects) scheduleClose(); }}
+                style={{position:'relative', padding:'0 18px'}}
+              >
+                <button
+                  onClick={() => setActive(it.id)}
+                  style={{
+                    background:'transparent', border:'none', padding:'6px 0',
+                    cursor:'pointer',
+                    fontFamily:'var(--font-mono)',
+                    fontSize: 13, letterSpacing:'.26em', textTransform:'uppercase',
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? 'var(--jade-light)' : (isHover ? 'var(--cream-warm)' : 'var(--cream-deep)'),
+                    transition:'color .2s ease',
+                    position:'relative',
+                    display:'flex', alignItems:'center', gap:6,
+                  }}
+                >
+                  {/* number prefix — editorial ledger feel */}
+                  <span aria-hidden style={{
+                    fontSize:10, opacity: isActive ? .85 : .55,
+                    color:'currentColor', fontWeight:400,
+                    letterSpacing:'.2em',
+                  }}>0{idx+1}</span>
+                  {it.label}
+                  {isProjects && (
+                    <span aria-hidden style={{
+                      marginLeft:2, fontSize:7, opacity:.55,
+                      transform: openSub ? 'rotate(180deg)' : 'rotate(0)',
+                      transition:'transform .2s ease',
+                      display:'inline-block',
+                    }}>▾</span>
+                  )}
+
+                  {/* underline track — animates from center on hover, jade when active */}
+                  <span aria-hidden style={{
+                    position:'absolute', bottom:0, left:0, right:0, height:1,
+                    background:'currentColor', opacity: isActive ? .9 : (isHover ? .35 : 0),
+                    transform: isActive || isHover ? 'scaleX(1)' : 'scaleX(0)',
+                    transformOrigin:'center',
+                    transition:'transform .25s ease, opacity .25s ease',
+                  }}/>
+                </button>
+
+                {/* Projects sub-menu — renders above the header rule */}
+                {isProjects && openSub && (
+                  <div
+                    onMouseEnter={open}
+                    onMouseLeave={scheduleClose}
+                    style={{
+                      position:'absolute', top: 'calc(100% + 14px)', left:8,
+                      minWidth: 240, zIndex: 50,
+                      background:'rgba(30,28,26,0.96)',
+                      backdropFilter:'blur(10px)',
+                      border:'1px solid rgba(232,228,220,0.22)',
+                      padding:'14px 16px 16px',
+                      animation:'termFadeIn .22s ease-out',
+                      boxShadow:'0 24px 60px -20px rgba(0,0,0,0.7)',
+                      color:'var(--cream-warm)',
+                    }}
+                  >
+                    {/* small caret */}
+                    <div aria-hidden style={{
+                      position:'absolute', top:-5, left:24, width:8, height:8,
+                      background:'rgba(30,28,26,0.96)',
+                      borderLeft:'1px solid rgba(232,228,220,0.22)',
+                      borderTop:'1px solid rgba(232,228,220,0.22)',
+                      transform:'rotate(45deg)',
+                    }}/>
+                    <div className="micro" style={{
+                      color:'var(--cream-deep)', opacity:.55,
+                      fontSize:8, letterSpacing:'.3em', marginBottom:10,
+                    }}>
+                      ── subset · 02
+                    </div>
+                    <div style={{display:'flex', flexDirection:'column'}}>
+                      {it.sub.map((s, sIdx) => (
+                        <button
+                          key={s.id}
+                          onClick={() => { setActive(it.id); setOpenSub(false); }}
+                          style={{
+                            background:'transparent', border:'none',
+                            padding:'10px 0', cursor:'pointer', textAlign:'left',
+                            fontFamily:'var(--font-mono)',
+                            display:'flex', alignItems:'baseline',
+                            justifyContent:'space-between', gap:14,
+                            borderTop: sIdx === 0 ? 'none' : '1px dotted rgba(232,228,220,0.14)',
+                            color:'var(--cream-warm)',
+                            transition:'color .15s ease',
+                          }}
+                          onMouseOver={(e)=>{
+                            e.currentTarget.style.color='var(--jade-light)';
+                            const dot = e.currentTarget.querySelector('[data-dot]');
+                            if (dot){ dot.style.opacity = '1'; dot.style.background='var(--jade)'; }
+                            const hint = e.currentTarget.querySelector('[data-hint]');
+                            if (hint) hint.style.color = 'var(--jade-light)';
+                          }}
+                          onMouseOut={(e)=>{
+                            e.currentTarget.style.color='var(--cream-warm)';
+                            const dot = e.currentTarget.querySelector('[data-dot]');
+                            if (dot){ dot.style.opacity = '.5'; dot.style.background='var(--cream-deep)'; }
+                            const hint = e.currentTarget.querySelector('[data-hint]');
+                            if (hint) hint.style.color = 'var(--cream-deep)';
+                          }}
+                        >
+                          <span style={{
+                            fontSize:11, letterSpacing:'.18em', textTransform:'uppercase',
+                            color:'inherit', fontWeight:500,
+                            display:'flex', alignItems:'center', gap:12,
+                          }}>
+                            <span data-dot aria-hidden style={{
+                              width:5, height:5, background:'var(--cream-deep)',
+                              display:'inline-block', opacity:.5,
+                              transition:'opacity .15s ease, background .15s ease',
+                            }}/>
+                            {s.label}
+                          </span>
+                          <span data-hint style={{
+                            fontSize:9, color:'var(--cream-deep)', opacity:.7,
+                            letterSpacing:'.2em', textTransform:'uppercase',
+                            transition:'color .15s ease',
+                          }}>
+                            {s.hint}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Vertical divider */}
+          <div aria-hidden style={{
+            width:1, height:18, background:'var(--cream-deep)', opacity:.25,
+            margin:'0 18px 0 22px',
+          }}/>
+
+          {/* Status cluster */}
+          <div style={{
+            display:'flex', alignItems:'center', gap:10,
+            color:'var(--cream-deep)',
+            fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+            textTransform:'uppercase',
+          }}>
+            <span style={{
+              width:6, height:6, background:'var(--jade)',
+              borderRadius:'50%',
+              animation:'softPulse 1.8s infinite',
+            }}/>
+            <span style={{fontSize:12, letterSpacing:'.24em', fontWeight:500}}>{hhmm}{tzAbbr ? ` · ${tzAbbr}` : ''}</span>
+          </div>
+        </nav>
+      </div>
+
+      {/* Hairline rule — explicitly bounds the header */}
+      <div aria-hidden style={{
+        position:'absolute', left:40, right:40, bottom:0, height:1, zIndex:1,
+        background:'linear-gradient(to right, transparent 0%, rgba(232,228,220,0.45) 12%, rgba(232,228,220,0.45) 88%, transparent 100%)',
+        mixBlendMode:'screen',
+      }}/>
+      {/* Jade tracker tick under active item — drawn relative to header */}
+    </header>
+  );
+}
+
+function CornerTick({ pos }){
+  const map = {
+    tl:{ top:10,    left:10,   borderTop:'1px solid var(--cream-deep)', borderLeft:'1px solid var(--cream-deep)' },
+    tr:{ top:10,    right:10,  borderTop:'1px solid var(--cream-deep)', borderRight:'1px solid var(--cream-deep)' },
+    bl:{ bottom:10, left:10,   borderBottom:'1px solid var(--cream-deep)', borderLeft:'1px solid var(--cream-deep)' },
+    br:{ bottom:10, right:10,  borderBottom:'1px solid var(--cream-deep)', borderRight:'1px solid var(--cream-deep)' },
+  };
+  return (
+    <span aria-hidden style={{
+      position:'absolute', width:10, height:10, opacity:.5,
+      ...map[pos],
+    }}/>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// PCHoverHighlight — jade corner brackets that track the PC's
+// screen-space bounding box when the cursor is over it.
+// ─────────────────────────────────────────────────────────────
+function PCHoverHighlight({ hovering }){
+  const [rect, setRect] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const r = window.__getCockpitPCRect && window.__getCockpitPCRect();
+      setRect(r);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!rect || !hovering) return null;
+  const pad = 12;
+  const { x, y, w, h } = rect;
+  if (w < 10 || h < 10) return null;
+  const L = x - pad, T = y - pad, R = x + w + pad, B = y + h + pad;
+  const bracketLen = Math.max(22, Math.min(48, Math.min(w, h) * 0.14));
+  const strokeW = 1.5;
+  const jade = '#9BC4A1';
+  const mkBracket = (cx, cy, dx, dy) => (
+    <>
+      <line x1={cx} y1={cy} x2={cx + bracketLen*dx} y2={cy} stroke={jade} strokeWidth={strokeW}/>
+      <line x1={cx} y1={cy} x2={cx} y2={cy + bracketLen*dy} stroke={jade} strokeWidth={strokeW}/>
+    </>
+  );
+  return (
+    <svg style={{
+      position:'absolute', inset:0, zIndex:14, pointerEvents:'none',
+      animation:'softPulse 1.6s ease-in-out infinite'
+    }}>
+      {mkBracket(L, T, 1, 1)}
+      {mkBracket(R, T, -1, 1)}
+      {mkBracket(L, B, 1, -1)}
+      {mkBracket(R, B, -1, -1)}
+      {/* center mini-reticle */}
+      <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
+      {/* label */}
+      <text x={L} y={T - 6}
+        fontFamily='"JetBrains Mono", monospace' fontSize={10}
+        letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
+        AX/OS · CLICK TO ENTER
+      </text>
+    </svg>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CrateHoverHighlight — same bracket treatment as the PC, but
+// tracking the vinyl crate's bounding box ('cockpit-crate-hover').
+// ─────────────────────────────────────────────────────────────
+function CrateHoverHighlight({ hovering }){
+  const [rect, setRect] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const r = window.__getCockpitCrateRect && window.__getCockpitCrateRect();
+      setRect(r);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!rect || !hovering) return null;
+  const pad = 12;
+  const { x, y, w, h } = rect;
+  if (w < 10 || h < 10) return null;
+  const L = x - pad, T = y - pad, R = x + w + pad, B = y + h + pad;
+  const bracketLen = Math.max(22, Math.min(48, Math.min(w, h) * 0.14));
+  const strokeW = 1.5;
+  const jade = '#9BC4A1';
+  const mkBracket = (cx, cy, dx, dy) => (
+    <>
+      <line x1={cx} y1={cy} x2={cx + bracketLen*dx} y2={cy} stroke={jade} strokeWidth={strokeW}/>
+      <line x1={cx} y1={cy} x2={cx} y2={cy + bracketLen*dy} stroke={jade} strokeWidth={strokeW}/>
+    </>
+  );
+  return (
+    <svg style={{
+      position:'absolute', inset:0, zIndex:14, pointerEvents:'none',
+      animation:'softPulse 1.6s ease-in-out infinite'
+    }}>
+      {mkBracket(L, T, 1, 1)}
+      {mkBracket(R, T, -1, 1)}
+      {mkBracket(L, B, 1, -1)}
+      {mkBracket(R, B, -1, -1)}
+      <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
+      <text x={L} y={T - 6}
+        fontFamily='"JetBrains Mono", monospace' fontSize={10}
+        letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
+        ARCHIVE · CLICK TO BROWSE
+      </text>
+    </svg>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// VinylInfoCard — editorial card that floats above the hovered
+// record while browsing the crate. Polls the hover projection
+// exposed by vinyl-crate.ts each frame.
+// ─────────────────────────────────────────────────────────────
+function VinylInfoCard(){
+  const [info, setInfo] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const h = window.__getCockpitVinylHover && window.__getCockpitVinylHover();
+      setInfo(h || null);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!info) return null;
+  // Clamp into the viewport — with the camera dollied close to the crate,
+  // the projected anchor can land above the top edge of the screen.
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1600;
+  const cx = Math.min(Math.max(info.x, 180), vw - 180);
+  const cy = Math.min(Math.max(info.y, 160), (typeof window !== 'undefined' ? window.innerHeight : 900) - 40);
+  return (
+    <div style={{
+      position:'absolute', left: cx, top: cy,
+      transform:'translate(-50%, -100%)',
+      zIndex:16, pointerEvents:'none',
+      background:'rgba(30,28,26,0.88)',
+      backdropFilter:'blur(8px)',
+      border:'1px solid rgba(232,228,220,0.22)',
+      boxShadow:'0 18px 48px -18px rgba(0,0,0,0.65)',
+      padding:'12px 18px 13px',
+      minWidth:180, maxWidth:300,
+      animation:'termFadeIn .18s ease-out',
+    }}>
+      {/* micro header — index · category · date */}
+      <div style={{
+        fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+        letterSpacing:'.26em', textTransform:'uppercase',
+        color:'var(--jade-light)', marginBottom:6,
+        display:'flex', alignItems:'center', gap:8,
+      }}>
+        <span style={{color:'var(--cream-deep)'}}>n° {String(info.index+1).padStart(2,'0')}</span>
+        <span style={{width:3, height:3, background:'var(--jade)', display:'inline-block'}}/>
+        <span>{info.category}</span>
+        <span style={{color:'var(--cream-deep)'}}>· {info.date}</span>
+      </div>
+      {/* title */}
+      <div style={{
+        fontFamily:'var(--font-serif)', fontSize:24, fontWeight:400,
+        letterSpacing:'-.01em', lineHeight:1.05,
+        color:'var(--cream-warm)',
+      }}>{info.title}</div>
+      {/* jade rule */}
+      <div style={{marginTop:9, display:'flex', alignItems:'center', gap:8}}>
+        <span style={{width:26, height:1, background:'var(--jade)', display:'inline-block'}}/>
+        <span style={{
+          fontFamily:'var(--font-mono)', fontSize:8, fontWeight:500,
+          letterSpacing:'.3em', textTransform:'uppercase',
+          color:'var(--cream-deep)', opacity:.8,
+        }}>click to pull</span>
+      </div>
+      {/* caret */}
+      <div aria-hidden style={{
+        position:'absolute', left:'50%', bottom:-5, width:8, height:8,
+        transform:'translateX(-50%) rotate(45deg)',
+        background:'rgba(30,28,26,0.88)',
+        borderRight:'1px solid rgba(232,228,220,0.22)',
+        borderBottom:'1px solid rgba(232,228,220,0.22)',
+      }}/>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// GlobeHUD — editorial overlay shown while the user is inside
+// the Live Globe view. Matches the Shopify BFCM aesthetic:
+// mono readouts, cream/jade, a tiny exit affordance.
+// ─────────────────────────────────────────────────────────────
+function GlobeHUD({ onExit }){
+  const [orders, setOrders] = React.useState(1254237);
+  const [sales, setSales] = React.useState(5074000);
+  const [opm, setOpm] = React.useState(14378);
+  const [tick, setTick] = React.useState(0);
+  React.useEffect(() => {
+    const iv = setInterval(() => {
+      setOrders(o => o + Math.floor(Math.random()*300+100));
+      setOpm(o => Math.max(9000, Math.min(22000, o + (Math.random()-.5)*400)));
+      setSales(s => s + Math.floor(Math.random()*120000+30000));
+      setTick(t => t + 1);
+    }, 900);
+    return () => clearInterval(iv);
+  }, []);
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onExit(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onExit]);
+  const fmt = n => n.toLocaleString('en-US');
+  const fmt$ = n => '$' + (n/1000).toFixed(0) + 'K';
+  return (
+    <div style={{position:'absolute', inset:0, zIndex:20, color:'var(--cream)', pointerEvents:'none'}}>
+      {/* top-left: title */}
+      <div style={{position:'absolute', top:28, left:40, pointerEvents:'auto'}}>
+        <div className="micro" style={{color:'var(--cream-deep)', marginBottom:6}}>ax/os · live globe 2059</div>
+        <div style={{fontFamily:'var(--font-serif)', fontSize:54, fontWeight:300, lineHeight:.9, letterSpacing:'-.02em', color:'var(--cream-warm)'}}>
+          Live<br/>Globe
+        </div>
+        <div style={{marginTop:10, display:'flex', gap:10, alignItems:'center'}}>
+          <span style={{width:7, height:7, background:'var(--jade)', display:'inline-block', animation:'softPulse 1.6s infinite'}}/>
+          <span className="micro" style={{color:'var(--cream-deep)'}}>streaming · real_time</span>
+        </div>
+      </div>
+
+      {/* top-right: meta + exit */}
+      <div style={{position:'absolute', top:28, right:40, textAlign:'right', pointerEvents:'auto'}}>
+        <div className="micro" style={{color:'var(--cream-deep)', marginBottom:4}}>sector · 104.992</div>
+        <div style={{fontFamily:'var(--font-mono)', fontSize:11, color:'var(--cream-deep)', lineHeight:1.6}}>
+          <div>hemisphere · <span style={{color:'var(--cream-warm)'}}>orbital_n</span></div>
+          <div>uptime · <span style={{color:'var(--cream-warm)'}}>24h 00m</span></div>
+          <div>peers · <span style={{color:'var(--cream-warm)'}}>{(1200+tick).toLocaleString()}</span></div>
+        </div>
+        <button onClick={onExit} style={{
+          marginTop:14, background:'transparent', color:'var(--cream-warm)',
+          border:'1px solid var(--jade)', padding:'6px 12px',
+          fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+          textTransform:'uppercase', fontWeight:600, cursor:'pointer'
+        }}>esc · return</button>
+      </div>
+
+      {/* bottom: big editorial stats */}
+      <div style={{position:'absolute', left:0, right:0, bottom:0,
+        padding:'28px 40px 32px', pointerEvents:'auto',
+        background:'linear-gradient(to top, rgba(30,28,26,.7), rgba(30,28,26,0))'}}>
+        <div style={{display:'grid', gridTemplateColumns:'1.2fr 1fr 1fr 1fr', gap:32, alignItems:'end'}}>
+          <div>
+            <div className="micro" style={{color:'var(--cream-deep)', marginBottom:8}}>total_orders</div>
+            <div style={{fontFamily:'var(--font-serif)', fontSize:72, fontWeight:300, lineHeight:.9, color:'var(--cream-warm)', letterSpacing:'-.02em'}}>
+              {fmt(orders)}
+            </div>
+          </div>
+          <BigStat label="orders_per_min" value={fmt(Math.round(opm))}/>
+          <BigStat label="sales_per_min"  value={fmt$(sales)}/>
+          <BigStat label="peak_region"    value="APAC"/>
+        </div>
+      </div>
+
+      {/* mid-left vertical */}
+      <div style={{position:'absolute', top:'50%', left:28, transform:'translateY(-50%)',
+        writingMode:'vertical-rl', fontFamily:'var(--font-mono)', fontSize:9,
+        letterSpacing:'.4em', color:'var(--cream-deep)', textTransform:'uppercase'}}>
+        live · orbital_telemetry · 2059.04.21
+      </div>
+
+      {/* mid-right: crosshair line */}
+      <div style={{position:'absolute', top:'50%', right:28, transform:'translateY(-50%)',
+        fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.4em',
+        color:'var(--cream-deep)', textTransform:'uppercase', writingMode:'vertical-rl'}}>
+        powered by 333 lab
+      </div>
+    </div>
+  );
+}
+
+function BigStat({ label, value }){
+  return (
+    <div>
+      <div className="micro" style={{color:'var(--cream-deep)', marginBottom:6}}>{label}</div>
+      <div style={{fontFamily:'var(--font-serif)', fontSize:42, fontWeight:300, lineHeight:1, color:'var(--cream-warm)', letterSpacing:'-.01em'}}>{value}</div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ScreenDialog — HTML overlay that sits exactly over the 3D
+// monitor's screen and renders an interactive chat UI. Uses
+// window.__getCockpitScreenRect() to align every frame.
+// ─────────────────────────────────────────────────────────────
+function ScreenDialog({ interactive, active }){
+  const wrapRef = React.useRef(null);
+  const [rect, setRect] = React.useState(null);
+  const [messages, setMessages] = React.useState([
+    { role:'system', text:'AX/OS v2.59 ready.' },
+    { role:'system', text:'Type a prompt to begin.' }
+  ]);
+  const [input, setInput] = React.useState('');
+  const [sending, setSending] = React.useState(false);
+  const listRef = React.useRef(null);
+
+  // Project screen rect every animation frame
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const r = window.__getCockpitScreenRect && window.__getCockpitScreenRect();
+      if (r && r.visible) setRect(r);
+      else setRect(prev => prev ? { ...prev, hidden:true } : null);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  React.useEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [messages, sending]);
+
+  const send = async () => {
+    const q = input.trim();
+    if (!q || sending) return;
+    setMessages(m => [...m, { role:'user', text:q }]);
+    setInput('');
+    setSending(true);
+    // Placeholder: will be replaced with real API call by user.
+    try {
+      let reply = '...';
+      if (window.claude && window.claude.complete){
+        reply = await window.claude.complete({
+          messages:[{ role:'user', content:`You are a terse retro computer AI named AX/OS. Reply in ≤2 short sentences, lowercase, no emoji.\n\nuser: ${q}` }]
+        });
+      } else {
+        reply = `> ack. '${q}' logged. (api offline)`;
+      }
+      setMessages(m => [...m, { role:'ax', text: (reply || '').trim() || '> silence.' }]);
+    } catch (err){
+      setMessages(m => [...m, { role:'ax', text:'> link error. retry.' }]);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (!rect) return null;
+  const { corners, hidden } = rect;
+  if (hidden || !corners) return null;
+  const { TL, TR, BL, BR } = corners;
+  // Bounding box in screen space (for pre-transform size)
+  const minX = Math.min(TL.x, TR.x, BL.x, BR.x);
+  const minY = Math.min(TL.y, TR.y, BL.y, BR.y);
+  const maxX = Math.max(TL.x, TR.x, BL.x, BR.x);
+  const maxY = Math.max(TL.y, TR.y, BL.y, BR.y);
+  const bw = maxX - minX, bh = maxY - minY;
+  if (bw < 20 || bh < 20) return null;
+  // We render the dialog at size bw × bh positioned at (minX, minY), then
+  // apply a matrix3d that maps its four corners to (TL, TR, BR, BL)
+  // relative to its own top-left.
+  const dstCorners = [
+    [TL.x - minX, TL.y - minY],
+    [TR.x - minX, TR.y - minY],
+    [BR.x - minX, BR.y - minY],
+    [BL.x - minX, BL.y - minY]
+  ];
+  const m3d = computeMatrix3d(bw, bh, dstCorners);
+  if (!m3d) return null;
+  const w = bw, h = bh;
+  // Inner padding within the screen (use short edge of visible quad)
+  const screenW = Math.hypot(TR.x - TL.x, TR.y - TL.y);
+  const pad = Math.max(4, screenW * 0.035);
+  const baseFont = Math.max(6, screenW * 0.022);
+  return (
+    <div
+      ref={wrapRef}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position:'absolute',
+        left: minX, top: minY,
+        width: w, height: h,
+        transform: m3d,
+        transformOrigin:'0 0',
+        zIndex: 15,
+        pointerEvents: (interactive && active) ? 'auto' : 'none',
+        overflow:'hidden',
+        // Superglass screen — warm cream panel like the "hello" Macintosh,
+        // jade + ink type instead of the old dark-green CRT.
+        background: active
+          ? 'radial-gradient(ellipse at 50% 40%, #F4F0E6 0%, #DFD9CB 85%)'
+          : 'radial-gradient(ellipse at 50% 50%, #EDE8DC 0%, #D6D0C2 85%)',
+        boxShadow: active
+          ? 'inset 0 0 26px rgba(30,28,26,0.18), inset 0 0 8px rgba(75,110,79,0.18), 0 0 22px rgba(232,228,220,0.2)'
+          : 'inset 0 0 22px rgba(30,28,26,0.22)',
+        color:'#55514B',
+        fontFamily:'"JetBrains Mono", monospace',
+      }}>
+      {/* scanlines — barely-there paper grain lines */}
+      <div style={{
+        position:'absolute', inset:0,
+        backgroundImage:'repeating-linear-gradient(0deg, rgba(30,28,26,0.05) 0px, rgba(30,28,26,0.05) 1px, transparent 1px, transparent 3px)',
+        pointerEvents:'none'
+      }}/>
+      {/* content */}
+      {!active ? (
+        <div style={{
+          position:'absolute', inset:pad,
+          display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center',
+          fontSize: baseFont, lineHeight: 1.4, color:'#55514B', textAlign:'center'
+        }}>
+          {/* the "hello." homage — ink script on the cream panel */}
+          <div style={{fontFamily:'"Cormorant Garamond", Georgia, serif', fontStyle:'italic', fontWeight:500, fontSize: baseFont*3.4, color:'#1E1C1A', lineHeight:1}}>hello.</div>
+          <div style={{fontSize: baseFont*0.8, marginTop: pad*0.5, letterSpacing:'.3em', color:'#4B6E4F', fontWeight:700}}>AX/OS · CLICK TO WAKE</div>
+          <div style={{fontSize: baseFont*0.75, marginTop: pad*0.4, opacity:.5, animation:'softBlink 1.4s infinite'}}>_</div>
+        </div>
+      ) : (
+      <div style={{
+        position:'absolute', inset:pad,
+        display:'flex', flexDirection:'column',
+        fontSize: baseFont,
+        lineHeight: 1.35
+      }}>
+        {/* title bar */}
+        <div style={{
+          display:'flex', justifyContent:'space-between', alignItems:'center',
+          borderBottom:'1px solid rgba(75,110,79,0.45)',
+          paddingBottom: pad*0.3, marginBottom: pad*0.4,
+          color:'#3A5A3E'
+        }}>
+          <span style={{letterSpacing:'.18em', fontWeight:700}}>AX/OS · DIALOG</span>
+          <span style={{opacity:.6}}>● ● ●</span>
+        </div>
+        {/* message list */}
+        <div ref={listRef} style={{
+          flex:1, overflowY:'auto', paddingRight: pad*0.2,
+          scrollbarWidth:'thin', scrollbarColor:'#4B6E4F transparent'
+        }}>
+          {messages.map((m, i) => (
+            <div key={i} style={{
+              marginBottom: pad*0.3,
+              color: m.role === 'user' ? '#1E1C1A' : m.role === 'system' ? '#8E8A83' : '#3A5A3E',
+              opacity: m.role === 'system' ? 0.9 : 1
+            }}>
+              <span style={{opacity:.6, marginRight: pad*0.2}}>
+                {m.role === 'user' ? '›' : m.role === 'system' ? '*' : '·'}
+              </span>
+              {m.text}
+            </div>
+          ))}
+          {sending && (
+            <div style={{color:'#6E6878', opacity:.8}}>
+              <span style={{opacity:.6, marginRight: pad*0.2}}>·</span>
+              <span style={{animation:'softBlink 1s infinite'}}>thinking_</span>
+            </div>
+          )}
+        </div>
+        {/* input row */}
+        <div style={{
+          borderTop:'1px solid rgba(75,110,79,0.45)',
+          paddingTop: pad*0.3, marginTop: pad*0.3,
+          display:'flex', alignItems:'center', gap: pad*0.3
+        }}>
+          <span style={{color:'#3A5A3E', fontWeight:700}}>&gt;</span>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+            placeholder="ask ax/os…"
+            disabled={sending}
+            style={{
+              flex:1, background:'transparent', border:'none', outline:'none',
+              color:'#1E1C1A', fontFamily:'inherit', fontSize:'inherit',
+              caretColor:'#4B6E4F'
+            }}
+          />
+          <button
+            onClick={send}
+            disabled={sending || !input.trim()}
+            style={{
+              background:'transparent', color:'#3A5A3E',
+              border:'1px solid rgba(75,110,79,0.55)',
+              padding:`${pad*0.15}px ${pad*0.4}px`,
+              cursor: sending ? 'default' : 'pointer',
+              fontFamily:'inherit', fontSize:'inherit', letterSpacing:'.1em',
+              textTransform:'uppercase', fontWeight:700,
+              opacity: (sending || !input.trim()) ? .4 : 1
+            }}
+          >send</button>
+        </div>
+      </div>
+      )}
+    </div>
+  );
+}
+
+export { Cockpit };
+
+// ─────────────────────────────────────────────────────────────
+// computeMatrix3d(w, h, [p0,p1,p2,p3])
+//   Solves the 2D projective transform that maps the rect
+//   (0,0)-(w,0)-(w,h)-(0,h) onto the given 4 destination points
+//   (TL, TR, BR, BL in that order) and returns a CSS matrix3d().
+//   Works for any convex quad including strong perspective.
+// ─────────────────────────────────────────────────────────────
+function computeMatrix3d(w, h, dst){
+  // Solve for 8 unknowns (a..h) in the projective transform:
+  //   x' = (a*x + b*y + c) / (g*x + h*y + 1)
+  //   y' = (d*x + e*y + f) / (g*x + h*y + 1)
+  // Source quad: (0,0), (w,0), (w,h), (0,h)
+  const [p0, p1, p2, p3] = dst;
+  const src = [[0,0],[w,0],[w,h],[0,h]];
+  const A = [], b = [];
+  for (let i=0; i<4; i++){
+    const [sx, sy] = src[i];
+    const [dx, dy] = dst[i];
+    A.push([sx, sy, 1, 0, 0, 0, -sx*dx, -sy*dx]); b.push(dx);
+    A.push([0, 0, 0, sx, sy, 1, -sx*dy, -sy*dy]); b.push(dy);
+  }
+  const x = solve8(A, b);
+  if (!x) return null;
+  const [a,bb,c,d,e,f,g,hh] = x;
+  // CSS matrix3d is column-major. Projective 2D → 3D mapping with z=0:
+  //   | a  b  0  c |
+  //   | d  e  0  f |
+  //   | 0  0  1  0 |
+  //   | g  h  0  1 |
+  return `matrix3d(${a},${d},0,${g}, ${bb},${e},0,${hh}, 0,0,1,0, ${c},${f},0,1)`;
+}
+
+// Gauss-Jordan solve for 8x8
+function solve8(A, b){
+  const n = 8;
+  const M = A.map((row,i) => row.concat([b[i]]));
+  for (let i=0; i<n; i++){
+    // pivot
+    let piv = i;
+    for (let j=i+1; j<n; j++) if (Math.abs(M[j][i]) > Math.abs(M[piv][i])) piv = j;
+    if (Math.abs(M[piv][i]) < 1e-10) return null;
+    [M[i], M[piv]] = [M[piv], M[i]];
+    const d = M[i][i];
+    for (let k=i; k<=n; k++) M[i][k] /= d;
+    for (let j=0; j<n; j++){
+      if (j === i) continue;
+      const f = M[j][i];
+      if (f === 0) continue;
+      for (let k=i; k<=n; k++) M[j][k] -= f * M[i][k];
+    }
+  }
+  return M.map(row => row[n]);
+}

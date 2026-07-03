@@ -1,0 +1,20 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8]
+  - alert [ref=e11]
+  - generic [ref=e12]:
+    - generic [ref=e70]:
+      - generic:
+        - generic:
+          - generic: n° 01
+          - generic: design
+          - generic: · 2025.11
+        - generic: MIDNIGHT SIGNALS
+        - generic:
+          - generic: click to pull
+      - button "esc · return" [ref=e157] [cursor=pointer]
+    - button "switch to light mode" [ref=e150] [cursor=pointer]:
+      - generic [ref=e151]:
+        - generic [ref=e152]: ☀
+        - generic [ref=e153]: ☾
+      - generic [ref=e155]: dark
