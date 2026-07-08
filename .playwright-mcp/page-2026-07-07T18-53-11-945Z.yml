@@ -1,0 +1,1038 @@
+- generic [active] [ref=f21e1]:
+  - generic [ref=f21e2]:
+    - banner [ref=f21e3]:
+      - generic [ref=f21e5]:
+        - navigation [ref=f21e6]:
+          - link "Home" [ref=f21e7] [cursor=pointer]:
+            - /url: /
+          - link "Docs" [ref=f21e8] [cursor=pointer]:
+            - /url: /docs/installation
+          - link "Components" [ref=f21e9] [cursor=pointer]:
+            - /url: /docs/components
+          - link "Blocks" [ref=f21e10] [cursor=pointer]:
+            - /url: /blocks
+          - link "Charts" [ref=f21e11] [cursor=pointer]:
+            - /url: /charts/area
+          - link "Directory" [ref=f21e12] [cursor=pointer]:
+            - /url: /docs/directory
+          - link "Create" [ref=f21e13] [cursor=pointer]:
+            - /url: /create
+        - generic [ref=f21e14]:
+          - button "Search documentation..." [ref=f21e16]:
+            - generic [ref=f21e17]: Search documentation...
+          - link "118k" [ref=f21e18] [cursor=pointer]:
+            - /url: https://github.com/shadcn-ui/ui
+            - img
+            - generic [ref=f21e19]: 118k
+          - button "Toggle theme" [ref=f21e20]:
+            - img
+            - generic [ref=f21e21]: Toggle theme
+          - link "New" [ref=f21e23] [cursor=pointer]:
+            - /url: /create
+            - img
+            - text: New
+    - main [ref=f21e24]:
+      - generic [ref=f21e26]:
+        - generic [ref=f21e28]:
+          - generic [ref=f21e29]:
+            - generic [ref=f21e30]: Sections
+            - list [ref=f21e32]:
+              - listitem [ref=f21e33]:
+                - link "Introduction" [ref=f21e34] [cursor=pointer]:
+                  - /url: /docs
+                  - text: Introduction
+              - listitem [ref=f21e36]:
+                - link "Components" [ref=f21e37] [cursor=pointer]:
+                  - /url: /docs/components
+                  - text: Components
+              - listitem [ref=f21e39]:
+                - link "Installation" [ref=f21e40] [cursor=pointer]:
+                  - /url: /docs/installation
+                  - text: Installation
+              - listitem [ref=f21e42]:
+                - link "Theming" [ref=f21e43] [cursor=pointer]:
+                  - /url: /docs/theming
+                  - text: Theming
+              - listitem [ref=f21e45]:
+                - link "CLI" [ref=f21e46] [cursor=pointer]:
+                  - /url: /docs/cli
+                  - text: CLI
+              - listitem [ref=f21e48]:
+                - link "RTL" [ref=f21e49] [cursor=pointer]:
+                  - /url: /docs/rtl
+                  - text: RTL
+              - listitem [ref=f21e51]:
+                - link "Skills" [ref=f21e52] [cursor=pointer]:
+                  - /url: /docs/skills
+                  - text: Skills
+              - listitem [ref=f21e54]:
+                - link "MCP Server" [ref=f21e55] [cursor=pointer]:
+                  - /url: /docs/mcp
+                  - text: MCP Server
+              - listitem [ref=f21e57]:
+                - link "Registry" [ref=f21e58] [cursor=pointer]:
+                  - /url: /docs/registry
+                  - text: Registry
+              - listitem [ref=f21e60]:
+                - link "Forms" [ref=f21e61] [cursor=pointer]:
+                  - /url: /docs/forms
+                  - text: Forms
+              - listitem [ref=f21e63]:
+                - link "Changelog" [ref=f21e64] [cursor=pointer]:
+                  - /url: /docs/changelog
+                  - text: Changelog
+          - generic [ref=f21e66]:
+            - generic [ref=f21e67]: Components
+            - list [ref=f21e69]:
+              - listitem [ref=f21e70]:
+                - link "Accordion" [ref=f21e71] [cursor=pointer]:
+                  - /url: /docs/components/base/accordion
+                  - text: Accordion
+              - listitem [ref=f21e73]:
+                - link "Alert" [ref=f21e74] [cursor=pointer]:
+                  - /url: /docs/components/base/alert
+                  - text: Alert
+              - listitem [ref=f21e76]:
+                - link "Alert Dialog" [ref=f21e77] [cursor=pointer]:
+                  - /url: /docs/components/base/alert-dialog
+                  - text: Alert Dialog
+              - listitem [ref=f21e79]:
+                - link "Aspect Ratio" [ref=f21e80] [cursor=pointer]:
+                  - /url: /docs/components/base/aspect-ratio
+                  - text: Aspect Ratio
+              - listitem [ref=f21e82]:
+                - link "Attachment New" [ref=f21e83] [cursor=pointer]:
+                  - /url: /docs/components/base/attachment
+                  - text: Attachment
+                  - generic "New" [ref=f21e85]
+              - listitem [ref=f21e86]:
+                - link "Avatar" [ref=f21e87] [cursor=pointer]:
+                  - /url: /docs/components/base/avatar
+                  - text: Avatar
+              - listitem [ref=f21e89]:
+                - link "Badge" [ref=f21e90] [cursor=pointer]:
+                  - /url: /docs/components/base/badge
+                  - text: Badge
+              - listitem [ref=f21e92]:
+                - link "Breadcrumb" [ref=f21e93] [cursor=pointer]:
+                  - /url: /docs/components/base/breadcrumb
+                  - text: Breadcrumb
+              - listitem [ref=f21e95]:
+                - link "Bubble New" [ref=f21e96] [cursor=pointer]:
+                  - /url: /docs/components/base/bubble
+                  - text: Bubble
+                  - generic "New" [ref=f21e98]
+              - listitem [ref=f21e99]:
+                - link "Button" [ref=f21e100] [cursor=pointer]:
+                  - /url: /docs/components/base/button
+                  - text: Button
+              - listitem [ref=f21e102]:
+                - link "Button Group" [ref=f21e103] [cursor=pointer]:
+                  - /url: /docs/components/base/button-group
+                  - text: Button Group
+              - listitem [ref=f21e105]:
+                - link "Calendar" [ref=f21e106] [cursor=pointer]:
+                  - /url: /docs/components/base/calendar
+                  - text: Calendar
+              - listitem [ref=f21e108]:
+                - link "Card" [ref=f21e109] [cursor=pointer]:
+                  - /url: /docs/components/base/card
+                  - text: Card
+              - listitem [ref=f21e111]:
+                - link "Carousel" [ref=f21e112] [cursor=pointer]:
+                  - /url: /docs/components/base/carousel
+                  - text: Carousel
+              - listitem [ref=f21e114]:
+                - link "Chart" [ref=f21e115] [cursor=pointer]:
+                  - /url: /docs/components/base/chart
+                  - text: Chart
+              - listitem [ref=f21e117]:
+                - link "Checkbox" [ref=f21e118] [cursor=pointer]:
+                  - /url: /docs/components/base/checkbox
+                  - text: Checkbox
+              - listitem [ref=f21e120]:
+                - link "Collapsible" [ref=f21e121] [cursor=pointer]:
+                  - /url: /docs/components/base/collapsible
+                  - text: Collapsible
+              - listitem [ref=f21e123]:
+                - link "Combobox" [ref=f21e124] [cursor=pointer]:
+                  - /url: /docs/components/base/combobox
+                  - text: Combobox
+              - listitem [ref=f21e126]:
+                - link "Command" [ref=f21e127] [cursor=pointer]:
+                  - /url: /docs/components/base/command
+                  - text: Command
+              - listitem [ref=f21e129]:
+                - link "Context Menu" [ref=f21e130] [cursor=pointer]:
+                  - /url: /docs/components/base/context-menu
+                  - text: Context Menu
+              - listitem [ref=f21e132]:
+                - link "Data Table" [ref=f21e133] [cursor=pointer]:
+                  - /url: /docs/components/base/data-table
+                  - text: Data Table
+              - listitem [ref=f21e135]:
+                - link "Date Picker" [ref=f21e136] [cursor=pointer]:
+                  - /url: /docs/components/base/date-picker
+                  - text: Date Picker
+              - listitem [ref=f21e138]:
+                - link "Dialog" [ref=f21e139] [cursor=pointer]:
+                  - /url: /docs/components/base/dialog
+                  - text: Dialog
+              - listitem [ref=f21e141]:
+                - link "Direction" [ref=f21e142] [cursor=pointer]:
+                  - /url: /docs/components/base/direction
+                  - text: Direction
+              - listitem [ref=f21e144]:
+                - link "Drawer" [ref=f21e145] [cursor=pointer]:
+                  - /url: /docs/components/base/drawer
+                  - text: Drawer
+              - listitem [ref=f21e147]:
+                - link "Dropdown Menu" [ref=f21e148] [cursor=pointer]:
+                  - /url: /docs/components/base/dropdown-menu
+                  - text: Dropdown Menu
+              - listitem [ref=f21e150]:
+                - link "Empty" [ref=f21e151] [cursor=pointer]:
+                  - /url: /docs/components/base/empty
+                  - text: Empty
+              - listitem [ref=f21e153]:
+                - link "Field" [ref=f21e154] [cursor=pointer]:
+                  - /url: /docs/components/base/field
+                  - text: Field
+              - listitem [ref=f21e156]:
+                - link "Hover Card" [ref=f21e157] [cursor=pointer]:
+                  - /url: /docs/components/base/hover-card
+                  - text: Hover Card
+              - listitem [ref=f21e159]:
+                - link "Input" [ref=f21e160] [cursor=pointer]:
+                  - /url: /docs/components/base/input
+                  - text: Input
+              - listitem [ref=f21e162]:
+                - link "Input Group" [ref=f21e163] [cursor=pointer]:
+                  - /url: /docs/components/base/input-group
+                  - text: Input Group
+              - listitem [ref=f21e165]:
+                - link "Input OTP" [ref=f21e166] [cursor=pointer]:
+                  - /url: /docs/components/base/input-otp
+                  - text: Input OTP
+              - listitem [ref=f21e168]:
+                - link "Item" [ref=f21e169] [cursor=pointer]:
+                  - /url: /docs/components/base/item
+                  - text: Item
+              - listitem [ref=f21e171]:
+                - link "Kbd" [ref=f21e172] [cursor=pointer]:
+                  - /url: /docs/components/base/kbd
+                  - text: Kbd
+              - listitem [ref=f21e174]:
+                - link "Label" [ref=f21e175] [cursor=pointer]:
+                  - /url: /docs/components/base/label
+                  - text: Label
+              - listitem [ref=f21e177]:
+                - link "Marker New" [ref=f21e178] [cursor=pointer]:
+                  - /url: /docs/components/base/marker
+                  - text: Marker
+                  - generic "New" [ref=f21e180]
+              - listitem [ref=f21e181]:
+                - link "Menubar" [ref=f21e182] [cursor=pointer]:
+                  - /url: /docs/components/base/menubar
+                  - text: Menubar
+              - listitem [ref=f21e184]:
+                - link "Message New" [ref=f21e185] [cursor=pointer]:
+                  - /url: /docs/components/base/message
+                  - text: Message
+                  - generic "New" [ref=f21e187]
+              - listitem [ref=f21e188]:
+                - link "Message Scroller New" [ref=f21e189] [cursor=pointer]:
+                  - /url: /docs/components/base/message-scroller
+                  - text: Message Scroller
+                  - generic "New" [ref=f21e191]
+              - listitem [ref=f21e192]:
+                - link "Native Select" [ref=f21e193] [cursor=pointer]:
+                  - /url: /docs/components/base/native-select
+                  - text: Native Select
+              - listitem [ref=f21e195]:
+                - link "Navigation Menu" [ref=f21e196] [cursor=pointer]:
+                  - /url: /docs/components/base/navigation-menu
+                  - text: Navigation Menu
+              - listitem [ref=f21e198]:
+                - link "Pagination" [ref=f21e199] [cursor=pointer]:
+                  - /url: /docs/components/base/pagination
+                  - text: Pagination
+              - listitem [ref=f21e201]:
+                - link "Popover" [ref=f21e202] [cursor=pointer]:
+                  - /url: /docs/components/base/popover
+                  - text: Popover
+              - listitem [ref=f21e204]:
+                - link "Progress" [ref=f21e205] [cursor=pointer]:
+                  - /url: /docs/components/base/progress
+                  - text: Progress
+              - listitem [ref=f21e207]:
+                - link "Radio Group" [ref=f21e208] [cursor=pointer]:
+                  - /url: /docs/components/base/radio-group
+                  - text: Radio Group
+              - listitem [ref=f21e210]:
+                - link "Resizable" [ref=f21e211] [cursor=pointer]:
+                  - /url: /docs/components/base/resizable
+                  - text: Resizable
+              - listitem [ref=f21e213]:
+                - link "Scroll Area" [ref=f21e214] [cursor=pointer]:
+                  - /url: /docs/components/base/scroll-area
+                  - text: Scroll Area
+              - listitem [ref=f21e216]:
+                - link "Select" [ref=f21e217] [cursor=pointer]:
+                  - /url: /docs/components/base/select
+                  - text: Select
+              - listitem [ref=f21e219]:
+                - link "Separator" [ref=f21e220] [cursor=pointer]:
+                  - /url: /docs/components/base/separator
+                  - text: Separator
+              - listitem [ref=f21e222]:
+                - link "Sheet" [ref=f21e223] [cursor=pointer]:
+                  - /url: /docs/components/base/sheet
+                  - text: Sheet
+              - listitem [ref=f21e225]:
+                - link "Sidebar" [ref=f21e226] [cursor=pointer]:
+                  - /url: /docs/components/base/sidebar
+                  - text: Sidebar
+              - listitem [ref=f21e228]:
+                - link "Skeleton" [ref=f21e229] [cursor=pointer]:
+                  - /url: /docs/components/base/skeleton
+                  - text: Skeleton
+              - listitem [ref=f21e231]:
+                - link "Slider" [ref=f21e232] [cursor=pointer]:
+                  - /url: /docs/components/base/slider
+                  - text: Slider
+              - listitem [ref=f21e234]:
+                - link "Sonner" [ref=f21e235] [cursor=pointer]:
+                  - /url: /docs/components/base/sonner
+                  - text: Sonner
+              - listitem [ref=f21e237]:
+                - link "Spinner" [ref=f21e238] [cursor=pointer]:
+                  - /url: /docs/components/base/spinner
+                  - text: Spinner
+              - listitem [ref=f21e240]:
+                - link "Switch" [ref=f21e241] [cursor=pointer]:
+                  - /url: /docs/components/base/switch
+                  - text: Switch
+              - listitem [ref=f21e243]:
+                - link "Table" [ref=f21e244] [cursor=pointer]:
+                  - /url: /docs/components/base/table
+                  - text: Table
+              - listitem [ref=f21e246]:
+                - link "Tabs" [ref=f21e247] [cursor=pointer]:
+                  - /url: /docs/components/base/tabs
+                  - text: Tabs
+              - listitem [ref=f21e249]:
+                - link "Textarea" [ref=f21e250] [cursor=pointer]:
+                  - /url: /docs/components/base/textarea
+                  - text: Textarea
+              - listitem [ref=f21e252]:
+                - link "Toast" [ref=f21e253] [cursor=pointer]:
+                  - /url: /docs/components/base/toast
+                  - text: Toast
+              - listitem [ref=f21e255]:
+                - link "Toggle" [ref=f21e256] [cursor=pointer]:
+                  - /url: /docs/components/base/toggle
+                  - text: Toggle
+              - listitem [ref=f21e258]:
+                - link "Toggle Group" [ref=f21e259] [cursor=pointer]:
+                  - /url: /docs/components/base/toggle-group
+                  - text: Toggle Group
+              - listitem [ref=f21e261]:
+                - link "Tooltip" [ref=f21e262] [cursor=pointer]:
+                  - /url: /docs/components/base/tooltip
+                  - text: Tooltip
+              - listitem [ref=f21e264]:
+                - link "Typography" [ref=f21e265] [cursor=pointer]:
+                  - /url: /docs/components/base/typography
+                  - text: Typography
+          - generic [ref=f21e267]:
+            - generic [ref=f21e268]: Get Started
+            - list [ref=f21e270]:
+              - listitem [ref=f21e271]:
+                - link "Installation" [ref=f21e272] [cursor=pointer]:
+                  - /url: /docs/installation
+                  - text: Installation
+              - listitem [ref=f21e274]:
+                - link "components.json" [ref=f21e275] [cursor=pointer]:
+                  - /url: /docs/components-json
+                  - text: components.json
+              - listitem [ref=f21e277]:
+                - link "Package Imports" [ref=f21e278] [cursor=pointer]:
+                  - /url: /docs/package-imports
+                  - text: Package Imports
+              - listitem [ref=f21e280]:
+                - link "Theming" [ref=f21e281] [cursor=pointer]:
+                  - /url: /docs/theming
+                  - text: Theming
+              - listitem [ref=f21e283]:
+                - link "Dark Mode" [ref=f21e284] [cursor=pointer]:
+                  - /url: /docs/dark-mode
+                  - text: Dark Mode
+              - listitem [ref=f21e286]:
+                - link "CLI" [ref=f21e287] [cursor=pointer]:
+                  - /url: /docs/cli
+                  - text: CLI
+              - listitem [ref=f21e289]:
+                - link "Monorepo" [ref=f21e290] [cursor=pointer]:
+                  - /url: /docs/monorepo
+                  - text: Monorepo
+              - listitem [ref=f21e292]:
+                - link "Skills" [ref=f21e293] [cursor=pointer]:
+                  - /url: /docs/skills
+                  - text: Skills
+              - listitem [ref=f21e295]:
+                - link "JavaScript" [ref=f21e296] [cursor=pointer]:
+                  - /url: /docs/javascript
+                  - text: JavaScript
+              - listitem [ref=f21e298]:
+                - link "Figma" [ref=f21e299] [cursor=pointer]:
+                  - /url: /docs/figma
+                  - text: Figma
+              - listitem [ref=f21e301]:
+                - link "llms.txt" [ref=f21e302] [cursor=pointer]:
+                  - /url: /llms.txt
+                  - text: llms.txt
+              - listitem [ref=f21e304]:
+                - link "Legacy Docs" [ref=f21e305] [cursor=pointer]:
+                  - /url: /docs/legacy
+                  - text: Legacy Docs
+          - generic [ref=f21e307]:
+            - generic [ref=f21e308]: "@shadcn/react"
+            - list [ref=f21e310]:
+              - listitem [ref=f21e311]:
+                - link "Message Scroller" [ref=f21e312] [cursor=pointer]:
+                  - /url: /docs/react/message-scroller
+                  - text: Message Scroller
+          - generic [ref=f21e314]:
+            - generic [ref=f21e315]: Forms
+            - list [ref=f21e317]:
+              - listitem [ref=f21e318]:
+                - link "React Hook Form" [ref=f21e319] [cursor=pointer]:
+                  - /url: /docs/forms/react-hook-form
+                  - text: React Hook Form
+              - listitem [ref=f21e321]:
+                - link "TanStack Form" [ref=f21e322] [cursor=pointer]:
+                  - /url: /docs/forms/tanstack-form
+                  - text: TanStack Form
+              - listitem [ref=f21e324]:
+                - link "Formisch" [ref=f21e325] [cursor=pointer]:
+                  - /url: /docs/forms/formisch
+                  - text: Formisch
+          - generic [ref=f21e327]:
+            - generic [ref=f21e328]: Utilities
+            - list [ref=f21e330]:
+              - listitem [ref=f21e331]:
+                - link "scroll-fade New" [ref=f21e332] [cursor=pointer]:
+                  - /url: /docs/utils/scroll-fade
+                  - text: scroll-fade
+                  - generic "New" [ref=f21e334]
+              - listitem [ref=f21e335]:
+                - link "shimmer New" [ref=f21e336] [cursor=pointer]:
+                  - /url: /docs/utils/shimmer
+                  - text: shimmer
+                  - generic "New" [ref=f21e338]
+          - generic [ref=f21e339]:
+            - generic [ref=f21e340]: Registry
+            - list [ref=f21e342]:
+              - listitem [ref=f21e343]:
+                - link "Introduction" [ref=f21e344] [cursor=pointer]:
+                  - /url: /docs/registry
+                  - text: Introduction
+              - listitem [ref=f21e346]:
+                - link "Getting Started" [ref=f21e347] [cursor=pointer]:
+                  - /url: /docs/registry/getting-started
+                  - text: Getting Started
+              - listitem [ref=f21e349]:
+                - link "GitHub Registries" [ref=f21e350] [cursor=pointer]:
+                  - /url: /docs/registry/github
+                  - text: GitHub Registries
+              - listitem [ref=f21e352]:
+                - link "Registry Directory" [ref=f21e353] [cursor=pointer]:
+                  - /url: /docs/registry/registry-index
+                  - text: Registry Directory
+              - listitem [ref=f21e355]:
+                - link "Examples" [ref=f21e356] [cursor=pointer]:
+                  - /url: /docs/registry/examples
+                  - text: Examples
+              - listitem [ref=f21e358]:
+                - link "Namespaces" [ref=f21e359] [cursor=pointer]:
+                  - /url: /docs/registry/namespace
+                  - text: Namespaces
+              - listitem [ref=f21e361]:
+                - link "Authentication" [ref=f21e362] [cursor=pointer]:
+                  - /url: /docs/registry/authentication
+                  - text: Authentication
+              - listitem [ref=f21e364]:
+                - link "MCP Server" [ref=f21e365] [cursor=pointer]:
+                  - /url: /docs/registry/mcp
+                  - text: MCP Server
+              - listitem [ref=f21e367]:
+                - link "Open in v0" [ref=f21e368] [cursor=pointer]:
+                  - /url: /docs/registry/open-in-v0
+                  - text: Open in v0
+              - listitem [ref=f21e370]:
+                - link "API Reference" [ref=f21e371] [cursor=pointer]:
+                  - /url: /docs/registry/api-reference
+                  - text: API Reference
+              - listitem [ref=f21e373]:
+                - link "registry.json" [ref=f21e374] [cursor=pointer]:
+                  - /url: /docs/registry/registry-json
+                  - text: registry.json
+              - listitem [ref=f21e376]:
+                - link "registry-item.json" [ref=f21e377] [cursor=pointer]:
+                  - /url: /docs/registry/registry-item-json
+                  - text: registry-item.json
+        - generic [ref=f21e380]:
+          - generic [ref=f21e383]:
+            - generic [ref=f21e385]:
+              - generic [ref=f21e386]:
+                - heading "MCP Server" [level=1] [ref=f21e387]
+                - generic [ref=f21e388]:
+                  - generic [ref=f21e390]:
+                    - button "Copy Page" [ref=f21e391]:
+                      - img
+                      - text: Copy Page
+                    - button [ref=f21e392]:
+                      - img
+                  - generic [ref=f21e393]:
+                    - link "Previous" [ref=f21e394] [cursor=pointer]:
+                      - /url: /docs/directory
+                      - img
+                      - generic [ref=f21e395]: Previous
+                    - link "Next" [ref=f21e396] [cursor=pointer]:
+                      - /url: /docs/new
+                      - generic [ref=f21e397]: Next
+                      - img
+              - paragraph [ref=f21e398]: Use the shadcn MCP server to browse, search, and install components from registries.
+            - generic [ref=f21e399]:
+              - paragraph [ref=f21e400]: The shadcn MCP Server allows AI assistants to interact with items from registries. You can browse available components, search for specific ones, and install them directly into your project using natural language.
+              - paragraph [ref=f21e401]: For example, you can ask an AI assistant to "Build a landing page using components from the acme registry" or "Find me a login form from the shadcn registry".
+              - paragraph [ref=f21e402]:
+                - text: Registries are configured in your project's
+                - code [ref=f21e403]: components.json
+                - text: file.
+              - figure "components.json" [ref=f21e404]:
+                - generic [ref=f21e405]:
+                  - img [ref=f21e406]
+                  - text: components.json
+                - generic [ref=f21e408]:
+                  - button "Copy" [ref=f21e409]:
+                    - generic [ref=f21e410]: Copy
+                    - img
+                  - code [ref=f21e411]:
+                    - generic [ref=f21e412]: "{"
+                    - generic [ref=f21e413]: "\"registries\": {"
+                    - generic [ref=f21e414]: "\"@acme\": \"https://acme.com/r/{name}.json\""
+                    - generic [ref=f21e415]: "}"
+                    - generic [ref=f21e416]: "}"
+              - separator [ref=f21e417]
+              - heading "Quick Start" [level=2] [ref=f21e418]:
+                - link "Quick Start" [ref=f21e419] [cursor=pointer]:
+                  - /url: "#quick-start"
+                  - text: Quick Start#
+              - paragraph [ref=f21e420]:
+                - text: Select your MCP client and follow the instructions to configure the shadcn MCP server. If you'd like to do it manually, see the
+                - link "Configuration" [ref=f21e421] [cursor=pointer]:
+                  - /url: "#configuration"
+                - text: section.
+              - generic [ref=f21e422]:
+                - tablist [ref=f21e423]:
+                  - tab "Claude Code" [selected] [ref=f21e424]
+                  - tab "Cursor" [ref=f21e425]
+                  - tab "VS Code" [ref=f21e426]
+                  - tab "Codex" [ref=f21e427]
+                  - tab "OpenCode" [ref=f21e428]
+                - tabpanel "Claude Code" [ref=f21e429]:
+                  - paragraph [ref=f21e430]:
+                    - strong [ref=f21e431]: Run the following command
+                    - text: "in your project:"
+                  - figure [ref=f21e432]:
+                    - generic [ref=f21e434]:
+                      - generic [ref=f21e435]:
+                        - generic [ref=f21e436]:
+                          - img [ref=f21e438]
+                          - tablist [ref=f21e440]:
+                            - tab "pnpm" [selected] [ref=f21e441]
+                            - tab "npm" [ref=f21e442]
+                            - tab "yarn" [ref=f21e443]
+                            - tab "bun" [ref=f21e444]
+                        - tabpanel "pnpm" [ref=f21e446]:
+                          - code [ref=f21e448]: pnpm dlx shadcn@latest mcp init --client claude
+                      - button "Copy" [ref=f21e449]:
+                        - generic [ref=f21e450]: Copy
+                        - img
+                  - paragraph [ref=f21e451]:
+                    - strong [ref=f21e452]: Restart Claude Code
+                    - text: "and try the following prompts:"
+                  - list [ref=f21e453]:
+                    - listitem [ref=f21e454]: Show me all available components in the shadcn registry
+                    - listitem [ref=f21e455]: Add the button, dialog and card components to my project
+                    - listitem [ref=f21e456]: Create a contact form using components from the shadcn registry
+                  - paragraph [ref=f21e457]:
+                    - strong [ref=f21e458]: "Note:"
+                    - text: You can use
+                    - code [ref=f21e459]: /mcp
+                    - text: command in Claude Code to debug the MCP server.
+              - separator [ref=f21e460]
+              - heading "What is MCP?" [level=2] [ref=f21e461]:
+                - link "What is MCP?" [ref=f21e462] [cursor=pointer]:
+                  - /url: "#what-is-mcp"
+                  - text: What is MCP?#
+              - paragraph [ref=f21e463]:
+                - link "Model Context Protocol (MCP)" [ref=f21e464] [cursor=pointer]:
+                  - /url: https://modelcontextprotocol.io
+                - text: "is an open protocol that enables AI assistants to securely connect to external data sources and tools. With the shadcn MCP server, your AI assistant gains direct access to:"
+              - list [ref=f21e465]:
+                - listitem [ref=f21e466]:
+                  - strong [ref=f21e467]: Browse Components
+                  - text: "- List all available components, blocks, and templates from any configured registry"
+                - listitem [ref=f21e468]:
+                  - strong [ref=f21e469]: Search Across Registries
+                  - text: "- Find specific components by name or functionality across multiple sources"
+                - listitem [ref=f21e470]:
+                  - strong [ref=f21e471]: Install with Natural Language
+                  - text: "- Add components using simple conversational prompts like \"add a login form\""
+                - listitem [ref=f21e472]:
+                  - strong [ref=f21e473]: Support for Multiple Registries
+                  - text: "- Access public registries, private company libraries, and third-party sources"
+              - separator [ref=f21e474]
+              - heading "How It Works" [level=2] [ref=f21e475]:
+                - link "How It Works" [ref=f21e476] [cursor=pointer]:
+                  - /url: "#how-it-works"
+                  - text: How It Works#
+              - paragraph [ref=f21e477]: The MCP server acts as a bridge between your AI assistant, component registries and the shadcn CLI.
+              - list [ref=f21e478]:
+                - listitem [ref=f21e479]:
+                  - strong [ref=f21e480]: Registry Connection
+                  - text: "- MCP connects to configured registries (shadcn/ui, private registries, third-party sources)"
+                - listitem [ref=f21e481]:
+                  - strong [ref=f21e482]: Natural Language
+                  - text: "- You describe what you need in plain English"
+                - listitem [ref=f21e483]:
+                  - strong [ref=f21e484]: AI Processing
+                  - text: "- The assistant translates your request into registry commands"
+                - listitem [ref=f21e485]:
+                  - strong [ref=f21e486]: Component Delivery
+                  - text: "- Resources are fetched and installed in your project"
+              - separator [ref=f21e487]
+              - heading "Supported Registries" [level=2] [ref=f21e488]:
+                - link "Supported Registries" [ref=f21e489] [cursor=pointer]:
+                  - /url: "#supported-registries"
+                  - text: Supported Registries#
+              - paragraph [ref=f21e490]: The shadcn MCP server works out of the box with any shadcn-compatible registry.
+              - list [ref=f21e491]:
+                - listitem [ref=f21e492]:
+                  - strong [ref=f21e493]: shadcn/ui Registry
+                  - text: "- The default registry with all shadcn/ui components"
+                - listitem [ref=f21e494]:
+                  - strong [ref=f21e495]: Third-Party Registries
+                  - text: "- Any registry following the shadcn registry specification"
+                - listitem [ref=f21e496]:
+                  - strong [ref=f21e497]: Private Registries
+                  - text: "- Your company's internal component libraries"
+                - listitem [ref=f21e498]:
+                  - strong [ref=f21e499]: Namespaced Registries
+                  - text: "- Multiple registries configured with"
+                  - code [ref=f21e500]: "@namespace"
+                  - text: syntax
+              - separator [ref=f21e501]
+              - heading "Configuration" [level=2] [ref=f21e502]:
+                - link "Configuration" [ref=f21e503] [cursor=pointer]:
+                  - /url: "#configuration"
+                  - text: Configuration#
+              - paragraph [ref=f21e504]: You can use any MCP client to interact with the shadcn MCP server. Here are the instructions for the most popular ones.
+              - heading "Claude Code" [level=3] [ref=f21e505]:
+                - link "Claude Code" [ref=f21e506] [cursor=pointer]:
+                  - /url: "#claude-code"
+                  - text: Claude Code#
+              - paragraph [ref=f21e507]:
+                - text: To use the shadcn MCP server with Claude Code, add the following configuration to your project's
+                - code [ref=f21e508]: .mcp.json
+                - text: "file:"
+              - figure ".mcp.json" [ref=f21e509]:
+                - generic [ref=f21e510]:
+                  - img [ref=f21e511]
+                  - text: .mcp.json
+                - generic [ref=f21e513]:
+                  - button "Copy" [ref=f21e514]:
+                    - generic [ref=f21e515]: Copy
+                    - img
+                  - code [ref=f21e516]:
+                    - generic [ref=f21e517]: "{"
+                    - generic [ref=f21e518]: "\"mcpServers\": {"
+                    - generic [ref=f21e519]: "\"shadcn\": {"
+                    - generic [ref=f21e520]: "\"command\": \"npx\","
+                    - generic [ref=f21e521]: "\"args\": [\"shadcn@latest\", \"mcp\"]"
+                    - generic [ref=f21e522]: "}"
+                    - generic [ref=f21e523]: "}"
+                    - generic [ref=f21e524]: "}"
+              - paragraph [ref=f21e525]:
+                - text: After adding the configuration, restart Claude Code and run
+                - code [ref=f21e526]: /mcp
+                - text: to see the shadcn MCP server in the list. If you see
+                - code [ref=f21e527]: Connected
+                - text: ", you're good to go."
+              - paragraph [ref=f21e528]:
+                - text: See the
+                - link "Claude Code MCP documentation" [ref=f21e529] [cursor=pointer]:
+                  - /url: https://code.claude.com/docs/en/mcp
+                - text: for more details.
+              - heading "Cursor" [level=3] [ref=f21e530]:
+                - link "Cursor" [ref=f21e531] [cursor=pointer]:
+                  - /url: "#cursor"
+                  - text: Cursor#
+              - paragraph [ref=f21e532]:
+                - text: To configure MCP in Cursor, add the shadcn server to your project's
+                - code [ref=f21e533]: .cursor/mcp.json
+                - text: "configuration file:"
+              - figure ".cursor/mcp.json" [ref=f21e534]:
+                - generic [ref=f21e535]:
+                  - img [ref=f21e536]
+                  - text: .cursor/mcp.json
+                - generic [ref=f21e538]:
+                  - button "Copy" [ref=f21e539]:
+                    - generic [ref=f21e540]: Copy
+                    - img
+                  - code [ref=f21e541]:
+                    - generic [ref=f21e542]: "{"
+                    - generic [ref=f21e543]: "\"mcpServers\": {"
+                    - generic [ref=f21e544]: "\"shadcn\": {"
+                    - generic [ref=f21e545]: "\"command\": \"npx\","
+                    - generic [ref=f21e546]: "\"args\": [\"shadcn@latest\", \"mcp\"]"
+                    - generic [ref=f21e547]: "}"
+                    - generic [ref=f21e548]: "}"
+                    - generic [ref=f21e549]: "}"
+              - paragraph [ref=f21e550]: After adding the configuration, enable the shadcn MCP server in Cursor Settings.
+              - paragraph [ref=f21e551]: Once enabled, you should see a green dot next to the shadcn server in the MCP server list and a list of available tools.
+              - paragraph [ref=f21e552]:
+                - text: See the
+                - link "Cursor MCP documentation" [ref=f21e553] [cursor=pointer]:
+                  - /url: https://docs.cursor.com/en/context/mcp#using-mcp-json
+                - text: for more details.
+              - heading "VS Code" [level=3] [ref=f21e554]:
+                - link "VS Code" [ref=f21e555] [cursor=pointer]:
+                  - /url: "#vs-code"
+                  - text: VS Code#
+              - paragraph [ref=f21e556]:
+                - text: To configure MCP in VS Code with GitHub Copilot, add the shadcn server to your project's
+                - code [ref=f21e557]: .vscode/mcp.json
+                - text: "configuration file:"
+              - figure ".vscode/mcp.json" [ref=f21e558]:
+                - generic [ref=f21e559]:
+                  - img [ref=f21e560]
+                  - text: .vscode/mcp.json
+                - generic [ref=f21e562]:
+                  - button "Copy" [ref=f21e563]:
+                    - generic [ref=f21e564]: Copy
+                    - img
+                  - code [ref=f21e565]:
+                    - generic [ref=f21e566]: "{"
+                    - generic [ref=f21e567]: "\"servers\": {"
+                    - generic [ref=f21e568]: "\"shadcn\": {"
+                    - generic [ref=f21e569]: "\"command\": \"npx\","
+                    - generic [ref=f21e570]: "\"args\": [\"shadcn@latest\", \"mcp\"]"
+                    - generic [ref=f21e571]: "}"
+                    - generic [ref=f21e572]: "}"
+                    - generic [ref=f21e573]: "}"
+              - paragraph [ref=f21e574]:
+                - text: After adding the configuration, open
+                - code [ref=f21e575]: .vscode/mcp.json
+                - text: and click
+                - strong [ref=f21e576]: Start
+                - text: next to the shadcn server.
+              - paragraph [ref=f21e577]:
+                - text: See the
+                - link "VS Code MCP documentation" [ref=f21e578] [cursor=pointer]:
+                  - /url: https://code.visualstudio.com/docs/copilot/chat/mcp-servers
+                - text: for more details.
+              - heading "Codex" [level=3] [ref=f21e579]:
+                - link "Codex" [ref=f21e580] [cursor=pointer]:
+                  - /url: "#codex"
+                  - text: Codex#
+              - alert [ref=f21e581]:
+                - paragraph [ref=f21e583]:
+                  - strong [ref=f21e584]: "Note:"
+                  - text: The
+                  - code [ref=f21e585]: shadcn
+                  - text: CLI cannot automatically update
+                  - code [ref=f21e586]: ~/.codex/config.toml
+                  - text: . You'll need to add the configuration manually.
+              - paragraph [ref=f21e587]:
+                - text: To configure MCP in Codex, add the shadcn server to
+                - code [ref=f21e588]: ~/.codex/config.toml
+                - text: ":"
+              - figure "~/.codex/config.toml" [ref=f21e589]:
+                - generic [ref=f21e590]:
+                  - img [ref=f21e591]
+                  - text: ~/.codex/config.toml
+                - generic [ref=f21e594]:
+                  - button "Copy" [ref=f21e595]:
+                    - generic [ref=f21e596]: Copy
+                    - img
+                  - code [ref=f21e597]:
+                    - generic [ref=f21e598]: "[mcp_servers.shadcn]"
+                    - generic [ref=f21e599]: command = "npx"
+                    - generic [ref=f21e600]: args = ["shadcn@latest", "mcp"]
+              - paragraph [ref=f21e601]: After adding the configuration, restart Codex to load the MCP server.
+              - separator [ref=f21e602]
+              - heading "Configuring Registries" [level=2] [ref=f21e603]:
+                - link "Configuring Registries" [ref=f21e604] [cursor=pointer]:
+                  - /url: "#configuring-registries"
+                  - text: Configuring Registries#
+              - paragraph [ref=f21e605]:
+                - text: The MCP server supports multiple registries through your project's
+                - code [ref=f21e606]: components.json
+                - text: configuration. This allows you to access components from various sources including private registries and third-party providers.
+              - paragraph [ref=f21e607]:
+                - text: Configure additional registries in your
+                - code [ref=f21e608]: components.json
+                - text: ":"
+              - figure "components.json" [ref=f21e609]:
+                - generic [ref=f21e610]:
+                  - img [ref=f21e611]
+                  - text: components.json
+                - generic [ref=f21e613]:
+                  - button "Copy" [ref=f21e614]:
+                    - generic [ref=f21e615]: Copy
+                    - img
+                  - code [ref=f21e616]:
+                    - generic [ref=f21e617]: "{"
+                    - generic [ref=f21e618]: "\"registries\": {"
+                    - generic [ref=f21e619]: "\"@acme\": \"https://registry.acme.com/{name}.json\","
+                    - generic [ref=f21e620]: "\"@internal\": {"
+                    - generic [ref=f21e621]: "\"url\": \"https://internal.company.com/{name}.json\","
+                    - generic [ref=f21e622]: "\"headers\": {"
+                    - generic [ref=f21e623]: "\"Authorization\": \"Bearer ${REGISTRY_TOKEN}\""
+                    - generic [ref=f21e624]: "}"
+                    - generic [ref=f21e625]: "}"
+                    - generic [ref=f21e626]: "}"
+                    - generic [ref=f21e627]: "}"
+              - alert [ref=f21e628]:
+                - paragraph [ref=f21e630]:
+                  - strong [ref=f21e631]: "Note:"
+                  - text: No configuration is needed to access the standard shadcn/ui registry.
+              - separator [ref=f21e632]
+              - heading "Authentication" [level=2] [ref=f21e633]:
+                - link "Authentication" [ref=f21e634] [cursor=pointer]:
+                  - /url: "#authentication"
+                  - text: Authentication#
+              - paragraph [ref=f21e635]:
+                - text: For private registries requiring authentication, set environment variables in your
+                - code [ref=f21e636]: .env.local
+                - text: ":"
+              - figure ".env.local" [ref=f21e637]:
+                - generic [ref=f21e638]:
+                  - img [ref=f21e639]
+                  - text: .env.local
+                - generic [ref=f21e642]:
+                  - button "Copy" [ref=f21e643]:
+                    - generic [ref=f21e644]: Copy
+                    - img
+                  - code [ref=f21e645]:
+                    - generic [ref=f21e646]: REGISTRY_TOKEN=your_token_here
+                    - generic [ref=f21e647]: API_KEY=your_api_key_here
+              - paragraph [ref=f21e648]:
+                - text: For more details on registry authentication, see the
+                - link "Authentication documentation" [ref=f21e649] [cursor=pointer]:
+                  - /url: /docs/registry/authentication
+                - text: .
+              - separator [ref=f21e650]
+              - heading "Example Prompts" [level=2] [ref=f21e651]:
+                - link "Example Prompts" [ref=f21e652] [cursor=pointer]:
+                  - /url: "#example-prompts"
+                  - text: Example Prompts#
+              - paragraph [ref=f21e653]: "Once the MCP server is configured, you can use natural language to interact with registries. Try one of the following prompts:"
+              - heading "Browse & Search" [level=3] [ref=f21e654]:
+                - link "Browse & Search" [ref=f21e655] [cursor=pointer]:
+                  - /url: "#browse--search"
+                  - text: Browse & Search#
+              - list [ref=f21e656]:
+                - listitem [ref=f21e657]: Show me all available components in the shadcn registry
+                - listitem [ref=f21e658]: Find me a login form from the shadcn registry
+              - heading "Install Items" [level=3] [ref=f21e659]:
+                - link "Install Items" [ref=f21e660] [cursor=pointer]:
+                  - /url: "#install-items"
+                  - text: Install Items#
+              - list [ref=f21e661]:
+                - listitem [ref=f21e662]: Add the button component to my project
+                - listitem [ref=f21e663]: Create a login form using shadcn components
+                - listitem [ref=f21e664]: Install the Cursor rules from the acme registry
+              - heading "Work with Namespaces" [level=3] [ref=f21e665]:
+                - link "Work with Namespaces" [ref=f21e666] [cursor=pointer]:
+                  - /url: "#work-with-namespaces"
+                  - text: Work with Namespaces#
+              - list [ref=f21e667]:
+                - listitem [ref=f21e668]: Show me components from acme registry
+                - listitem [ref=f21e669]: Install @internal/auth-form
+                - listitem [ref=f21e670]: Build me a landing page using hero, features and testimonials sections from the acme registry
+              - separator [ref=f21e671]
+              - heading "Troubleshooting" [level=2] [ref=f21e672]:
+                - link "Troubleshooting" [ref=f21e673] [cursor=pointer]:
+                  - /url: "#troubleshooting"
+                  - text: Troubleshooting#
+              - heading "MCP Not Responding" [level=3] [ref=f21e674]:
+                - link "MCP Not Responding" [ref=f21e675] [cursor=pointer]:
+                  - /url: "#mcp-not-responding"
+                  - text: MCP Not Responding#
+              - paragraph [ref=f21e676]: "If the MCP server isn't responding to prompts:"
+              - list [ref=f21e677]:
+                - listitem [ref=f21e678]:
+                  - strong [ref=f21e679]: Check Configuration
+                  - text: "- Verify the MCP server is properly configured and enabled in your MCP client"
+                - listitem [ref=f21e680]:
+                  - strong [ref=f21e681]: Restart MCP Client
+                  - text: "- Restart your MCP client after configuration changes"
+                - listitem [ref=f21e682]:
+                  - strong [ref=f21e683]: Verify Installation
+                  - text: "- Ensure"
+                  - code [ref=f21e684]: shadcn
+                  - text: is installed in your project
+                - listitem [ref=f21e685]:
+                  - strong [ref=f21e686]: Check Network
+                  - text: "- Confirm you can access the configured registries"
+              - heading "Registry Access Issues" [level=3] [ref=f21e687]:
+                - link "Registry Access Issues" [ref=f21e688] [cursor=pointer]:
+                  - /url: "#registry-access-issues"
+                  - text: Registry Access Issues#
+              - paragraph [ref=f21e689]: "If components aren't loading from registries:"
+              - list [ref=f21e690]:
+                - listitem [ref=f21e691]:
+                  - strong [ref=f21e692]: Check components.json
+                  - text: "- Verify registry URLs are correct"
+                - listitem [ref=f21e693]:
+                  - strong [ref=f21e694]: Test Authentication
+                  - text: "- Ensure environment variables are set for private registries"
+                - listitem [ref=f21e695]:
+                  - strong [ref=f21e696]: Verify Registry
+                  - text: "- Confirm the registry is online and accessible"
+                - listitem [ref=f21e697]:
+                  - strong [ref=f21e698]: Check Namespace
+                  - text: "- Ensure namespace syntax is correct ("
+                  - code [ref=f21e699]: "@namespace/component"
+                  - text: )
+              - heading "Installation Failures" [level=3] [ref=f21e700]:
+                - link "Installation Failures" [ref=f21e701] [cursor=pointer]:
+                  - /url: "#installation-failures"
+                  - text: Installation Failures#
+              - paragraph [ref=f21e702]: "If components fail to install:"
+              - list [ref=f21e703]:
+                - listitem [ref=f21e704]:
+                  - strong [ref=f21e705]: Check Project Setup
+                  - text: "- Ensure you have a valid"
+                  - code [ref=f21e706]: components.json
+                  - text: file
+                - listitem [ref=f21e707]:
+                  - strong [ref=f21e708]: Verify Paths
+                  - text: "- Confirm the target directories exist"
+                - listitem [ref=f21e709]:
+                  - strong [ref=f21e710]: Check Permissions
+                  - text: "- Ensure write permissions for component directories"
+                - listitem [ref=f21e711]:
+                  - strong [ref=f21e712]: Review Dependencies
+                  - text: "- Check that required dependencies are installed"
+              - heading "No Tools or Prompts" [level=3] [ref=f21e713]:
+                - link "No Tools or Prompts" [ref=f21e714] [cursor=pointer]:
+                  - /url: "#no-tools-or-prompts"
+                  - text: No Tools or Prompts#
+              - paragraph [ref=f21e715]:
+                - text: If you see the
+                - code [ref=f21e716]: No tools or prompts
+                - text: "message, try the following:"
+              - list [ref=f21e717]:
+                - listitem [ref=f21e718]:
+                  - strong [ref=f21e719]: Clear the npx cache
+                  - text: "- Run"
+                  - code [ref=f21e720]: npx clear-npx-cache
+                - listitem [ref=f21e721]:
+                  - strong [ref=f21e722]: Re-enable the MCP server
+                  - text: "- Try to re-enable the MCP server in your MCP client"
+                - listitem [ref=f21e723]:
+                  - strong [ref=f21e724]: Check Logs
+                  - text: "- In Cursor, you can see the logs under View -> Output and select"
+                  - code [ref=f21e725]: "MCP: project-*"
+                  - text: in the dropdown.
+              - separator [ref=f21e726]
+              - heading "Learn More" [level=2] [ref=f21e727]:
+                - link "Learn More" [ref=f21e728] [cursor=pointer]:
+                  - /url: "#learn-more"
+                  - text: Learn More#
+              - list [ref=f21e729]:
+                - listitem [ref=f21e730]:
+                  - link "Registry Documentation" [ref=f21e731] [cursor=pointer]:
+                    - /url: /docs/registry
+                  - text: "- Complete guide to shadcn registries"
+                - listitem [ref=f21e732]:
+                  - link "Namespaces" [ref=f21e733] [cursor=pointer]:
+                    - /url: /docs/registry/namespace
+                  - text: "- Configure multiple registry sources"
+                - listitem [ref=f21e734]:
+                  - link "Authentication" [ref=f21e735] [cursor=pointer]:
+                    - /url: /docs/registry/authentication
+                  - text: "- Secure your private registries"
+                - listitem [ref=f21e736]:
+                  - link "MCP Specification" [ref=f21e737] [cursor=pointer]:
+                    - /url: https://modelcontextprotocol.io
+                  - text: "- Learn about Model Context Protocol"
+            - generic [ref=f21e738]:
+              - link "Registry Directory" [ref=f21e739] [cursor=pointer]:
+                - /url: /docs/directory
+                - img
+                - text: Registry Directory
+              - link "Your project is ready!" [ref=f21e740] [cursor=pointer]:
+                - /url: /docs/new
+                - text: Your project is ready!
+                - img
+          - generic [ref=f21e741]:
+            - generic [ref=f21e744]:
+              - paragraph [ref=f21e745]: On This Page
+              - link "Quick Start" [ref=f21e746] [cursor=pointer]:
+                - /url: "#quick-start"
+              - link "What is MCP?" [ref=f21e747] [cursor=pointer]:
+                - /url: "#what-is-mcp"
+              - link "How It Works" [ref=f21e748] [cursor=pointer]:
+                - /url: "#how-it-works"
+              - link "Supported Registries" [ref=f21e749] [cursor=pointer]:
+                - /url: "#supported-registries"
+              - link "Configuration" [ref=f21e750] [cursor=pointer]:
+                - /url: "#configuration"
+              - link "Claude Code" [ref=f21e751] [cursor=pointer]:
+                - /url: "#claude-code"
+              - link "Cursor" [ref=f21e752] [cursor=pointer]:
+                - /url: "#cursor"
+              - link "VS Code" [ref=f21e753] [cursor=pointer]:
+                - /url: "#vs-code"
+              - link "Codex" [ref=f21e754] [cursor=pointer]:
+                - /url: "#codex"
+              - link "Configuring Registries" [ref=f21e755] [cursor=pointer]:
+                - /url: "#configuring-registries"
+              - link "Authentication" [ref=f21e756] [cursor=pointer]:
+                - /url: "#authentication"
+              - link "Example Prompts" [ref=f21e757] [cursor=pointer]:
+                - /url: "#example-prompts"
+              - link "Browse & Search" [ref=f21e758] [cursor=pointer]:
+                - /url: "#browse--search"
+              - link "Install Items" [ref=f21e759] [cursor=pointer]:
+                - /url: "#install-items"
+              - link "Work with Namespaces" [ref=f21e760] [cursor=pointer]:
+                - /url: "#work-with-namespaces"
+              - link "Troubleshooting" [ref=f21e761] [cursor=pointer]:
+                - /url: "#troubleshooting"
+              - link "MCP Not Responding" [ref=f21e762] [cursor=pointer]:
+                - /url: "#mcp-not-responding"
+              - link "Registry Access Issues" [ref=f21e763] [cursor=pointer]:
+                - /url: "#registry-access-issues"
+              - link "Installation Failures" [ref=f21e764] [cursor=pointer]:
+                - /url: "#installation-failures"
+              - link "No Tools or Prompts" [ref=f21e765] [cursor=pointer]:
+                - /url: "#no-tools-or-prompts"
+              - link "Learn More" [ref=f21e766] [cursor=pointer]:
+                - /url: "#learn-more"
+            - generic [ref=f21e768]:
+              - generic [ref=f21e769]: Deploy your shadcn/ui app on Vercel
+              - generic [ref=f21e770]: Trusted by OpenAI, Sonos, Adobe, and more.
+              - generic [ref=f21e771]: Vercel provides tools and infrastructure to deploy apps and features at scale.
+              - button "Deploy Now" [ref=f21e772]
+              - link "Deploy to Vercel" [ref=f21e773] [cursor=pointer]:
+                - /url: https://vercel.com/new?utm_source=shadcn_site&utm_medium=web&utm_campaign=docs_cta_deploy_now_callout
+                - generic [ref=f21e774]: Deploy to Vercel
+  - region "Notifications alt+T"

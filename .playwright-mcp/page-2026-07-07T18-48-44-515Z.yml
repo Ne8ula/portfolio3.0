@@ -1,0 +1,505 @@
+- generic [ref=f1e3]:
+  - banner:
+    - generic [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - generic [ref=f1e6]:
+          - generic [ref=f1e7]:
+            - link "Home" [ref=f1e8] [cursor=pointer]:
+              - /url: /en
+              - img [ref=f1e9]
+            - generic [ref=f1e18]: Docs
+          - generic [ref=f1e19]:
+            - button "Search docs... K" [ref=f1e21] [cursor=pointer]:
+              - img [ref=f1e22]
+              - text: Search docs...
+              - generic [ref=f1e24]: K
+            - generic [ref=f1e25]:
+              - button "Toggle theme" [ref=f1e27] [cursor=pointer]:
+                - img [ref=f1e28]
+              - combobox [ref=f1e31] [cursor=pointer]:
+                - img [ref=f1e32]
+              - combobox [ref=f1e34]
+              - generic [ref=f1e35]:
+                - link "Open API Playground" [ref=f1e36] [cursor=pointer]:
+                  - /url: https://www.meshy.ai/api-playground
+                - link "Open Web App" [ref=f1e37] [cursor=pointer]:
+                  - /url: https://www.meshy.ai/
+        - navigation "Document sections" [ref=f1e40]:
+          - link "Overview" [ref=f1e41] [cursor=pointer]:
+            - /url: /en
+          - link "API" [ref=f1e42] [cursor=pointer]:
+            - /url: /en/api
+            - text: API
+          - link "Webapp" [ref=f1e44] [cursor=pointer]:
+            - /url: /en/webapp/getting-started
+          - link "Plugins" [ref=f1e45] [cursor=pointer]:
+            - /url: /en/webapp/plugins/blender/introduction
+          - link "3D Printing" [ref=f1e46] [cursor=pointer]:
+            - /url: /en/webapp/3d-printing-platforms/introduction
+      - navigation [ref=f1e47]:
+        - list [ref=f1e48]:
+          - listitem [ref=f1e49]:
+            - link "API" [ref=f1e50] [cursor=pointer]:
+              - /url: /en/api
+            - list [ref=f1e51]:
+              - listitem [ref=f1e52]:
+                - heading "Getting Started" [level=3] [ref=f1e53]
+                - list [ref=f1e58]:
+                  - listitem [ref=f1e59]:
+                    - link "Quickstart" [ref=f1e60] [cursor=pointer]:
+                      - /url: /en/api/quick-start
+                      - generic [ref=f1e61]: Quickstart
+                  - listitem [ref=f1e62]:
+                    - link "API Playground" [ref=f1e63] [cursor=pointer]:
+                      - /url: /en/api/playground
+                      - generic [ref=f1e64]: API Playground
+                  - listitem [ref=f1e65]:
+                    - link "Authentication" [ref=f1e66] [cursor=pointer]:
+                      - /url: /en/api/authentication
+                      - generic [ref=f1e67]: Authentication
+                  - listitem [ref=f1e68]:
+                    - link "Errors" [ref=f1e69] [cursor=pointer]:
+                      - /url: /en/api/errors
+                      - generic [ref=f1e70]: Errors
+                  - listitem [ref=f1e71]:
+                    - link "Pricing" [ref=f1e72] [cursor=pointer]:
+                      - /url: /en/api/pricing
+                      - generic [ref=f1e73]: Pricing
+                  - listitem [ref=f1e74]:
+                    - link "Rate Limits" [ref=f1e75] [cursor=pointer]:
+                      - /url: /en/api/rate-limits
+                      - generic [ref=f1e76]: Rate Limits
+                  - listitem [ref=f1e77]:
+                    - link "Asset Retention" [ref=f1e78] [cursor=pointer]:
+                      - /url: /en/api/asset-retention
+                      - generic [ref=f1e79]: Asset Retention
+                  - listitem [ref=f1e80]:
+                    - link "Webhooks" [ref=f1e81] [cursor=pointer]:
+                      - /url: /en/api/webhooks
+                      - generic [ref=f1e82]: Webhooks
+                  - listitem [ref=f1e83]:
+                    - link "AI Integration" [ref=f1e84] [cursor=pointer]:
+                      - /url: /en/api/ai
+                      - generic [ref=f1e85]: AI Integration
+                    - list [ref=f1e86]:
+                      - listitem [ref=f1e87]:
+                        - link "What is MCP" [ref=f1e88] [cursor=pointer]:
+                          - /url: /en/api/ai#what-is-mcp
+                          - generic [ref=f1e89]: What is MCP
+                      - listitem [ref=f1e90]:
+                        - link "Quick Install" [ref=f1e91] [cursor=pointer]:
+                          - /url: /en/api/ai#quick-install
+                          - generic [ref=f1e92]: Quick Install
+                      - listitem [ref=f1e93]:
+                        - link "Available Tools" [ref=f1e94] [cursor=pointer]:
+                          - /url: /en/api/ai#available-tools
+                          - generic [ref=f1e95]: Available Tools
+                      - listitem [ref=f1e96]:
+                        - link "Example Prompts" [ref=f1e97] [cursor=pointer]:
+                          - /url: /en/api/ai#example-prompts
+                          - generic [ref=f1e98]: Example Prompts
+                      - listitem [ref=f1e99]:
+                        - link "llms.txt and llms-full.txt" [ref=f1e100] [cursor=pointer]:
+                          - /url: /en/api/ai#llms-txt
+                          - generic [ref=f1e101]: llms.txt and llms-full.txt
+                      - listitem [ref=f1e102]:
+                        - link "FAQ" [ref=f1e103] [cursor=pointer]:
+                          - /url: /en/api/ai#faq
+                          - generic [ref=f1e104]: FAQ
+                  - listitem [ref=f1e105]:
+                    - link "Changelog" [ref=f1e106] [cursor=pointer]:
+                      - /url: /en/api/changelog
+                      - generic [ref=f1e107]: Changelog
+              - listitem [ref=f1e108]:
+                - heading "API Endpoints" [level=3] [ref=f1e109]
+                - list [ref=f1e112]:
+                  - listitem [ref=f1e113]:
+                    - link "Text to 3D v2" [ref=f1e114] [cursor=pointer]:
+                      - /url: /en/api/text-to-3d
+                      - generic [ref=f1e115]: Text to 3D
+                      - generic [ref=f1e116]: v2
+                  - listitem [ref=f1e117]:
+                    - link "Image to 3D" [ref=f1e118] [cursor=pointer]:
+                      - /url: /en/api/image-to-3d
+                      - generic [ref=f1e119]: Image to 3D
+                  - listitem [ref=f1e120]:
+                    - link "Multi Image to 3D" [ref=f1e121] [cursor=pointer]:
+                      - /url: /en/api/multi-image-to-3d
+                      - generic [ref=f1e122]: Multi Image to 3D
+                  - listitem [ref=f1e123]:
+                    - link "Remesh" [ref=f1e124] [cursor=pointer]:
+                      - /url: /en/api/remesh
+                      - generic [ref=f1e125]: Remesh
+                  - listitem [ref=f1e126]:
+                    - link "Convert" [ref=f1e127] [cursor=pointer]:
+                      - /url: /en/api/convert
+                      - generic [ref=f1e128]: Convert
+                  - listitem [ref=f1e129]:
+                    - link "Resize" [ref=f1e130] [cursor=pointer]:
+                      - /url: /en/api/resize
+                      - generic [ref=f1e131]: Resize
+                  - listitem [ref=f1e132]:
+                    - link "UV Unwrap" [ref=f1e133] [cursor=pointer]:
+                      - /url: /en/api/uv-unwrap
+                      - generic [ref=f1e134]: UV Unwrap
+                  - listitem [ref=f1e135]:
+                    - link "Rigging" [ref=f1e136] [cursor=pointer]:
+                      - /url: /en/api/rigging
+                      - generic [ref=f1e137]: Rigging
+                  - listitem [ref=f1e138]:
+                    - link "Animation" [ref=f1e139] [cursor=pointer]:
+                      - /url: /en/api/animation
+                      - generic [ref=f1e140]: Animation
+                  - listitem [ref=f1e141]:
+                    - link "Retexture" [ref=f1e142] [cursor=pointer]:
+                      - /url: /en/api/retexture
+                      - generic [ref=f1e143]: Retexture
+                  - listitem [ref=f1e144]:
+                    - link "Text to Image" [ref=f1e145] [cursor=pointer]:
+                      - /url: /en/api/text-to-image
+                      - generic [ref=f1e146]: Text to Image
+                  - listitem [ref=f1e147]:
+                    - link "Image to Image" [ref=f1e148] [cursor=pointer]:
+                      - /url: /en/api/image-to-image
+                      - generic [ref=f1e149]: Image to Image
+                  - listitem [ref=f1e150]:
+                    - link "Multi-Color Print" [ref=f1e151] [cursor=pointer]:
+                      - /url: /en/api/multi-color-print
+                      - generic [ref=f1e152]: Multi-Color Print
+                  - listitem [ref=f1e153]:
+                    - link "Analyze Printability" [ref=f1e154] [cursor=pointer]:
+                      - /url: /en/api/analyze-printability
+                      - generic [ref=f1e155]: Analyze Printability
+                  - listitem [ref=f1e156]:
+                    - link "Repair Printability" [ref=f1e157] [cursor=pointer]:
+                      - /url: /en/api/repair-printability
+                      - generic [ref=f1e158]: Repair Printability
+                  - listitem [ref=f1e159]:
+                    - link "Balance" [ref=f1e160] [cursor=pointer]:
+                      - /url: /en/api/balance
+                      - generic [ref=f1e161]: Balance
+              - listitem [ref=f1e162]:
+                - heading "Creative Lab APIs" [level=3] [ref=f1e163]
+                - list [ref=f1e166]:
+                  - listitem [ref=f1e167]:
+                    - link "Keychain" [ref=f1e168] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-keychain
+                      - generic [ref=f1e169]: Keychain
+                  - listitem [ref=f1e170]:
+                    - link "Fridge Magnet" [ref=f1e171] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-fridge-magnet
+                      - generic [ref=f1e172]: Fridge Magnet
+                  - listitem [ref=f1e173]:
+                    - link "Figure" [ref=f1e174] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-figure
+                      - generic [ref=f1e175]: Figure
+                  - listitem [ref=f1e176]:
+                    - link "Lamp" [ref=f1e177] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-lamp
+                      - generic [ref=f1e178]: Lamp
+  - generic [ref=f1e179]:
+    - main [ref=f1e180]:
+      - article [ref=f1e181]:
+        - generic [ref=f1e182]:
+          - generic [ref=f1e184]:
+            - img [ref=f1e186]:
+              - img [ref=f1e188]
+            - img [ref=f1e193]
+          - heading "AI Integration" [level=1] [ref=f1e195]
+          - paragraph [ref=f1e196]:
+            - text: "Meshy exposes two channels for AI agents and coding assistants: the Meshy MCP server for tool-calling, and"
+            - code [ref=f1e197]: llms.txt
+            - text: /
+            - code [ref=f1e198]: llms-full.txt
+            - text: for docs ingestion.
+          - paragraph [ref=f1e199]:
+            - text: If you are integrating Meshy from Claude Code, Cursor, Windsurf, Codex, or any other MCP-compatible tool, install the MCP server below. If you are integrating from a plain chat agent with no MCP support, point it at
+            - link "https://docs.meshy.ai/llms.txt" [ref=f1e200] [cursor=pointer]:
+              - /url: /llms.txt
+              - code [ref=f1e201]: https://docs.meshy.ai/llms.txt
+            - text: instead.
+          - separator [ref=f1e202]
+          - heading "What is MCP" [level=2] [ref=f1e203]:
+            - link "What is MCP" [ref=f1e204] [cursor=pointer]:
+              - /url: "#what-is-mcp"
+          - paragraph [ref=f1e205]:
+            - text: The
+            - link "Model Context Protocol (MCP)" [ref=f1e206] [cursor=pointer]:
+              - /url: https://modelcontextprotocol.io/
+            - text: is an open standard that lets AI assistants call external tools and retrieve structured context. The Meshy MCP server wraps the Meshy REST API as a set of tools your agent can invoke — generate a model, check a task, download the result — without hand-writing HTTP code.
+          - paragraph [ref=f1e207]:
+            - text: The MCP server is open source and published on npm as
+            - link "@meshy-ai/meshy-mcp-server" [ref=f1e208] [cursor=pointer]:
+              - /url: https://www.npmjs.com/package/@meshy-ai/meshy-mcp-server
+              - code [ref=f1e209]: "@meshy-ai/meshy-mcp-server"
+            - text: ". Source:"
+            - link "github.com/meshy-dev/meshy-mcp-server" [ref=f1e210] [cursor=pointer]:
+              - /url: https://github.com/meshy-dev/meshy-mcp-server
+            - text: .
+          - generic [ref=f1e211]:
+            - img [ref=f1e212]
+            - paragraph [ref=f1e217]:
+              - text: You need a Meshy API key. Create one at
+              - link "https://www.meshy.ai/settings/api" [ref=f1e218] [cursor=pointer]:
+                - /url: https://www.meshy.ai/settings/api
+              - text: . The MCP server reads it from the
+              - code [ref=f1e219]: MESHY_API_KEY
+              - text: environment variable.
+          - separator [ref=f1e220]
+          - heading "Quick Install" [level=2] [ref=f1e221]:
+            - link "Quick Install" [ref=f1e222] [cursor=pointer]:
+              - /url: "#quick-install"
+          - generic [ref=f1e223]:
+            - tablist [ref=f1e225]:
+              - tab "add-mcp" [selected] [ref=f1e226] [cursor=pointer]
+              - tab "Claude Code" [ref=f1e227] [cursor=pointer]
+              - tab "Cursor" [ref=f1e228] [cursor=pointer]
+              - tab "Windsurf" [ref=f1e229] [cursor=pointer]
+              - tab "Claude Desktop" [ref=f1e230] [cursor=pointer]
+              - tab "Codex" [ref=f1e231] [cursor=pointer]
+              - tab "VS Code" [ref=f1e232] [cursor=pointer]
+              - tab "Other" [ref=f1e233] [cursor=pointer]
+            - generic [ref=f1e234]:
+              - tabpanel [ref=f1e235]:
+                - generic [ref=f1e237]:
+                  - code [ref=f1e239]:
+                    - generic [ref=f1e240]: "# Detects installed AI clients and configures Meshy for each"
+                    - generic [ref=f1e241]: npx add-mcp @meshy-ai/meshy-mcp-server --env MESHY_API_KEY=msy_YOUR_API_KEY
+                  - button "Copy" [ref=f1e242] [cursor=pointer]:
+                    - generic:
+                      - img
+                      - text: Copy
+                    - generic: Copied!
+              - tabpanel
+              - tabpanel
+              - tabpanel
+              - tabpanel
+              - tabpanel
+              - tabpanel
+              - tabpanel
+          - generic [ref=f1e243]:
+            - img [ref=f1e244]
+            - generic [ref=f1e248]:
+              - paragraph [ref=f1e249]:
+                - strong [ref=f1e250]: Prefer a drop-in skill instead?
+                - text: The open-source
+                - link "meshy-3d-agent" [ref=f1e251] [cursor=pointer]:
+                  - /url: https://github.com/meshy-dev/meshy-3d-agent
+                  - code [ref=f1e252]: meshy-3d-agent
+                - text: skill pack ships pre-written Meshy workflows (generate → poll → download) for Claude Code, Cursor, and OpenClaw. It calls the Meshy REST API directly — no MCP server required.
+              - generic [ref=f1e255]:
+                - code [ref=f1e257]:
+                  - generic [ref=f1e258]: npx skills add meshy-dev/meshy-3d-agent
+                - button "Copy" [ref=f1e259] [cursor=pointer]:
+                  - generic:
+                    - img
+                    - text: Copy
+                  - generic: Copied!
+          - separator [ref=f1e260]
+          - heading "Available Tools" [level=2] [ref=f1e261]:
+            - link "Available Tools" [ref=f1e262] [cursor=pointer]:
+              - /url: "#available-tools"
+          - paragraph [ref=f1e263]: The MCP server exposes the Meshy REST API as tools, grouped by capability.
+          - heading "3D Generation" [level=3] [ref=f1e264]
+          - list [ref=f1e265]:
+            - listitem [ref=f1e266]:
+              - code [ref=f1e267]: meshy_text_to_3d
+              - text: — create a 3D model from a text prompt
+            - listitem [ref=f1e268]:
+              - code [ref=f1e269]: meshy_image_to_3d
+              - text: — create a 3D model from one image
+            - listitem [ref=f1e270]:
+              - code [ref=f1e271]: meshy_multi_image_to_3d
+              - text: — create a 3D model from multiple images of the same object
+            - listitem [ref=f1e272]:
+              - code [ref=f1e273]: meshy_text_to_3d_refine
+              - text: — add texture to a preview mesh
+          - heading "Post-Processing" [level=3] [ref=f1e274]
+          - list [ref=f1e275]:
+            - listitem [ref=f1e276]:
+              - code [ref=f1e277]: meshy_remesh
+              - text: — change topology and/or polycount of an existing model
+            - listitem [ref=f1e278]:
+              - code [ref=f1e279]: meshy_retexture
+              - text: — apply a new texture to an existing model
+            - listitem [ref=f1e280]:
+              - code [ref=f1e281]: meshy_rig
+              - text: — add a skeleton to a 3D humanoid character
+            - listitem [ref=f1e282]:
+              - code [ref=f1e283]: meshy_animate
+              - text: — apply an animation to a rigged character
+          - heading "Image Generation" [level=3] [ref=f1e284]
+          - list [ref=f1e285]:
+            - listitem [ref=f1e286]:
+              - code [ref=f1e287]: meshy_text_to_image
+              - text: — 2D image from text
+            - listitem [ref=f1e288]:
+              - code [ref=f1e289]: meshy_image_to_image
+              - text: — 2D image from a reference image
+          - heading "Task Management" [level=3] [ref=f1e290]
+          - list [ref=f1e291]:
+            - listitem [ref=f1e292]:
+              - code [ref=f1e293]: meshy_get_task_status
+              - text: — check task status and download URLs
+            - listitem [ref=f1e294]:
+              - code [ref=f1e295]: meshy_list_tasks
+              - text: — list recent tasks, optionally filtered by type/status
+            - listitem [ref=f1e296]:
+              - code [ref=f1e297]: meshy_cancel_task
+              - text: — cancel a pending or in-progress task
+            - listitem [ref=f1e298]:
+              - code [ref=f1e299]: meshy_download_model
+              - text: — fetch a completed model file and save locally
+          - heading "Workspace" [level=3] [ref=f1e300]
+          - list [ref=f1e301]:
+            - listitem [ref=f1e302]:
+              - code [ref=f1e303]: meshy_list_models
+              - text: — list all models in the authenticated user's workspace
+          - heading "3D Printing" [level=3] [ref=f1e304]
+          - list [ref=f1e305]:
+            - listitem [ref=f1e306]:
+              - code [ref=f1e307]: meshy_send_to_slicer
+              - text: — detect installed slicers and launch the model in one (runs locally on your machine; no Meshy API call)
+            - listitem [ref=f1e308]:
+              - code [ref=f1e309]: meshy_analyze_printability
+              - text: —
+              - strong [ref=f1e310]: currently returns a manual print-readiness checklist
+              - text: (wall thickness, overhangs, manifold mesh, etc.). Will be upgraded to automated analysis once the Meshy printability API is available.
+            - listitem [ref=f1e311]:
+              - code [ref=f1e312]: meshy_process_multicolor
+              - text: — convert a textured model into a multi-color 3MF file for printing
+          - heading "Account" [level=3] [ref=f1e313]
+          - list [ref=f1e314]:
+            - listitem [ref=f1e315]:
+              - code [ref=f1e316]: meshy_check_balance
+              - text: — query remaining credits
+          - generic [ref=f1e317]:
+            - img [ref=f1e318]
+            - paragraph [ref=f1e323]:
+              - text: Tool names and behaviors may evolve. The authoritative list lives in the
+              - link "MCP server source" [ref=f1e324] [cursor=pointer]:
+                - /url: https://github.com/meshy-dev/meshy-mcp-server/tree/main/src/tools
+              - text: .
+          - separator [ref=f1e325]
+          - heading "Example Prompts" [level=2] [ref=f1e326]:
+            - link "Example Prompts" [ref=f1e327] [cursor=pointer]:
+              - /url: "#example-prompts"
+          - paragraph [ref=f1e328]: Drop these into your MCP-enabled chat as a starting point.
+          - generic [ref=f1e331]:
+            - code [ref=f1e333]: Generate a 3D fox from the prompt "a cartoon fox sitting", preview it, then texture it with PBR maps. Download the final GLB to ./outputs.
+            - button "Copy" [ref=f1e334] [cursor=pointer]:
+              - generic:
+                - img
+                - text: Copy
+              - generic: Copied!
+          - generic [ref=f1e337]:
+            - code [ref=f1e339]: "Take the image at https://example.com/sculpture.jpg and convert it into a riggable 3D character. Use `should_remesh: true` and 50k target polycount."
+            - button "Copy" [ref=f1e340] [cursor=pointer]:
+              - generic:
+                - img
+                - text: Copy
+              - generic: Copied!
+          - generic [ref=f1e343]:
+            - code [ref=f1e345]: What's my current Meshy credit balance?
+            - button "Copy" [ref=f1e346] [cursor=pointer]:
+              - generic:
+                - img
+                - text: Copy
+              - generic: Copied!
+          - generic [ref=f1e349]:
+            - code [ref=f1e351]: List my last 10 successful text-to-3d tasks and download the top 3 as GLB into ./downloads/.
+            - button "Copy" [ref=f1e352] [cursor=pointer]:
+              - generic:
+                - img
+                - text: Copy
+              - generic: Copied!
+          - separator [ref=f1e353]
+          - heading "llms.txt and llms-full.txt" [level=2] [ref=f1e354]:
+            - link "llms.txt and llms-full.txt" [ref=f1e355] [cursor=pointer]:
+              - /url: "#llms-txt"
+          - paragraph [ref=f1e356]: "If your agent doesn't support MCP, or you want to ingest the Meshy docs into a prompt directly, point it at our plain-text surfaces:"
+          - list [ref=f1e357]:
+            - listitem [ref=f1e358]:
+              - link "llms.txt" [ref=f1e359] [cursor=pointer]:
+                - /url: /llms.txt
+                - code [ref=f1e360]: llms.txt
+              - text: — compact index + integration instructions (the correct async-polling pattern, auth rules, rate limits, model choice, common mistakes).
+            - listitem [ref=f1e361]:
+              - link "llms-full.txt" [ref=f1e362] [cursor=pointer]:
+                - /url: /llms-full.txt
+                - code [ref=f1e363]: llms-full.txt
+              - text: — every API page concatenated in a single file for single-fetch ingestion.
+            - listitem [ref=f1e364]:
+              - text: "Per-page Markdown: append"
+              - code [ref=f1e365]: .md
+              - text: "to any endpoint URL. Example:"
+              - link "https://docs.meshy.ai/api/text-to-3d.md" [ref=f1e366] [cursor=pointer]:
+                - /url: /api/text-to-3d.md
+                - code [ref=f1e367]: https://docs.meshy.ai/api/text-to-3d.md
+              - text: .
+          - paragraph [ref=f1e368]: All three are regenerated every time the docs site builds, so they never drift from the HTML docs.
+          - separator [ref=f1e369]
+          - heading "FAQ" [level=2] [ref=f1e370]:
+            - link "FAQ" [ref=f1e371] [cursor=pointer]:
+              - /url: "#faq"
+          - generic [ref=f1e372]:
+            - generic [ref=f1e373]:
+              - term [ref=f1e374]: Is the MCP server stateless?
+              - definition [ref=f1e375]: Yes. Your MESHY_API_KEY is used per request and never persisted on the server side.
+            - generic [ref=f1e376]:
+              - term [ref=f1e377]: Does MCP cost the same as the REST API?
+              - definition [ref=f1e378]: Yes — every MCP tool call maps to a single REST call and consumes credits at the exact same rate. See the Pricing page for the full matrix.
+            - generic [ref=f1e379]:
+              - term [ref=f1e380]: What are the rate limits?
+              - definition [ref=f1e381]: The MCP server shares the same rate-limit plane as the REST API. See the Rate Limits page for per-tier limits.
+            - generic [ref=f1e382]:
+              - term [ref=f1e383]: What Meshy data can the MCP access?
+              - definition [ref=f1e384]: Only what the MESHY_API_KEY can access via REST. Scopes and permissions are identical.
+            - generic [ref=f1e385]:
+              - term [ref=f1e386]: How do I report issues?
+              - definition [ref=f1e387]: "File an issue at the meshy-mcp-server repository: https://github.com/meshy-dev/meshy-mcp-server/issues"
+    - contentinfo [ref=f1e388]:
+      - generic [ref=f1e389]:
+        - generic [ref=f1e390]:
+          - 'link "Previous: Webhooks" [ref=f1e391] [cursor=pointer]':
+            - /url: /en/api/webhooks
+            - img [ref=f1e392]
+            - text: Previous
+          - link [ref=f1e394] [cursor=pointer]:
+            - /url: /en/api/webhooks
+            - text: Webhooks
+        - generic [ref=f1e395]:
+          - 'link "Next: Changelog" [ref=f1e396] [cursor=pointer]':
+            - /url: /en/api/changelog
+            - text: Next
+            - img [ref=f1e397]
+          - link [ref=f1e399] [cursor=pointer]:
+            - /url: /en/api/changelog
+            - text: Changelog
+      - generic [ref=f1e400]:
+        - paragraph [ref=f1e401]: © 2026 Meshy LLC. All rights reserved.
+        - generic [ref=f1e402]:
+          - link "Join our Discord server" [ref=f1e403] [cursor=pointer]:
+            - /url: https://discord.com/invite/KgD5yVM9Y4
+            - generic [ref=f1e404]: Join our Discord server
+            - img [ref=f1e405]
+          - link "Follow us on Twitter" [ref=f1e407] [cursor=pointer]:
+            - /url: https://twitter.com/MeshyAI
+            - generic [ref=f1e408]: Follow us on Twitter
+            - img [ref=f1e409]
+          - link "Subscribe on YouTube" [ref=f1e411] [cursor=pointer]:
+            - /url: https://www.youtube.com/@MeshyAI
+            - generic [ref=f1e412]: Subscribe on YouTube
+            - img [ref=f1e413]
+          - link "Follow us on Instagram" [ref=f1e415] [cursor=pointer]:
+            - /url: https://www.instagram.com/meshy.ai/
+            - generic [ref=f1e416]: Follow us on Instagram
+            - img [ref=f1e417]
+          - link "Follow us on TikTok" [ref=f1e420] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@meshy.ai
+            - generic [ref=f1e421]: Follow us on TikTok
+            - img [ref=f1e422]
+          - link "Follow us on LinkedIn" [ref=f1e425] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/meshyai/
+            - generic [ref=f1e426]: Follow us on LinkedIn
+            - img [ref=f1e427]

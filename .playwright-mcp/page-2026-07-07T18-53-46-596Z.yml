@@ -1,0 +1,204 @@
+- generic [active] [ref=f23e1]:
+  - generic [ref=f23e2]:
+    - generic [ref=f23e3]:
+      - link "DuckDuckGo" [ref=f23e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f23e5]:
+        - generic [ref=f23e6]:
+          - textbox [ref=f23e7]: "\"Claude Design\" Anthropic product what is it 2026"
+          - button "Submit" [ref=f23e8] [cursor=pointer]
+        - combobox [ref=f23e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f23e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f23e15]:
+      - generic [ref=f23e17]:
+        - heading "Introducing Claude Design by Anthropic Labs" [level=2] [ref=f23e18]:
+          - link "Introducing Claude Design by Anthropic Labs" [ref=f23e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.anthropic.com%2Fnews%2Fclaude%2Ddesign%2Danthropic%2Dlabs&rut=b413941d72c7320d01414aaf3ea0cd528c056f7c83dfd775d0d153a4d117682f
+        - generic [ref=f23e21]:
+          - link [ref=f23e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.anthropic.com%2Fnews%2Fclaude%2Ddesign%2Danthropic%2Dlabs&rut=b413941d72c7320d01414aaf3ea0cd528c056f7c83dfd775d0d153a4d117682f
+          - link "www.anthropic.com/news/claude-design-anthropic-labs" [ref=f23e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.anthropic.com%2Fnews%2Fclaude%2Ddesign%2Danthropic%2Dlabs&rut=b413941d72c7320d01414aaf3ea0cd528c056f7c83dfd775d0d153a4d117682f
+          - text: 2026-04-17T00:00:00.0000000
+        - link "Today, we're launching Claude Design, a new Anthropic Labs product that lets you collaborate with Claude to create polished visual work like designs, prototypes, slides, one-pagers, and more. Claude Design is powered by our most capable vision model, Claude Opus 4.7, and is available in research preview for Claude Pro, Max, Team, and Enterprise subscribers. We're rolling out to users ..." [ref=f23e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.anthropic.com%2Fnews%2Fclaude%2Ddesign%2Danthropic%2Dlabs&rut=b413941d72c7320d01414aaf3ea0cd528c056f7c83dfd775d0d153a4d117682f
+      - generic [ref=f23e27]:
+        - 'heading "Claude Design 2026: Anthropic''s New AI Feature Explained" [level=2] [ref=f23e28]':
+          - 'link "Claude Design 2026: Anthropic''s New AI Feature Explained" [ref=f23e29] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fimfounder.com%2Fscience%2Dtech%2Fai%2Fclaude%2Ddesign%2Danthropic%2Dnew%2Dfeatures%2D2026%2F&rut=94a51dc262efcb1d3240582e10e3e34810ab7c4c9f6462a9bcf4311264b54643
+        - generic [ref=f23e31]:
+          - link [ref=f23e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fimfounder.com%2Fscience%2Dtech%2Fai%2Fclaude%2Ddesign%2Danthropic%2Dnew%2Dfeatures%2D2026%2F&rut=94a51dc262efcb1d3240582e10e3e34810ab7c4c9f6462a9bcf4311264b54643
+          - link "imfounder.com/science-tech/ai/claude-design-anthropic-new-features-2026/" [ref=f23e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fimfounder.com%2Fscience%2Dtech%2Fai%2Fclaude%2Ddesign%2Danthropic%2Dnew%2Dfeatures%2D2026%2F&rut=94a51dc262efcb1d3240582e10e3e34810ab7c4c9f6462a9bcf4311264b54643
+          - text: 2026-07-06T00:00:00.0000000
+        - link "Claude Design launched April 2026 and just got a major update. Here's what Anthropic's new AI design tool does, who it's for, and how it compares to Canva and Figma." [ref=f23e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fimfounder.com%2Fscience%2Dtech%2Fai%2Fclaude%2Ddesign%2Danthropic%2Dnew%2Dfeatures%2D2026%2F&rut=94a51dc262efcb1d3240582e10e3e34810ab7c4c9f6462a9bcf4311264b54643
+      - generic [ref=f23e37]:
+        - heading "What Is Claude Design? Anthropic's AI Design Tool Explained (2026)" [level=2] [ref=f23e38]:
+          - link "What Is Claude Design? Anthropic's AI Design Tool Explained (2026)" [ref=f23e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fanotherwrapper.com%2Fblog%2Fwhat%2Dis%2Dclaude%2Ddesign&rut=2c6face406389b74d6507d5c3833fb6637c1015b641bf0d4c525f4926bf7eac7
+        - generic [ref=f23e41]:
+          - link [ref=f23e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fanotherwrapper.com%2Fblog%2Fwhat%2Dis%2Dclaude%2Ddesign&rut=2c6face406389b74d6507d5c3833fb6637c1015b641bf0d4c525f4926bf7eac7
+          - link "anotherwrapper.com/blog/what-is-claude-design" [ref=f23e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fanotherwrapper.com%2Fblog%2Fwhat%2Dis%2Dclaude%2Ddesign&rut=2c6face406389b74d6507d5c3833fb6637c1015b641bf0d4c525f4926bf7eac7
+          - text: 2026-04-17T00:00:00.0000000
+        - link "Claude Design is Anthropic's new AI design tool for prototypes, slides, one-pagers, and branded visuals. Learn how it works, key features, pricing access, use cases, limitations, and alternatives." [ref=f23e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fanotherwrapper.com%2Fblog%2Fwhat%2Dis%2Dclaude%2Ddesign&rut=2c6face406389b74d6507d5c3833fb6637c1015b641bf0d4c525f4926bf7eac7
+      - generic [ref=f23e47]:
+        - 'heading "Claude Design: Complete 2026 Guide for Teams & Businesses" [level=2] [ref=f23e48]':
+          - 'link "Claude Design: Complete 2026 Guide for Teams & Businesses" [ref=f23e49] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fkersai.com%2Fclaude%2Ddesign%2Dcomplete%2Dguide%2Dworkflows%2Dbusiness%2D2026%2F&rut=9c206c1888a2d2245c3778d436066f5ae5d4ce3f238c40c0d81987cbf1c72f3a
+        - generic [ref=f23e51]:
+          - link [ref=f23e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fkersai.com%2Fclaude%2Ddesign%2Dcomplete%2Dguide%2Dworkflows%2Dbusiness%2D2026%2F&rut=9c206c1888a2d2245c3778d436066f5ae5d4ce3f238c40c0d81987cbf1c72f3a
+          - link "kersai.com/claude-design-complete-guide-workflows-business-2026/" [ref=f23e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fkersai.com%2Fclaude%2Ddesign%2Dcomplete%2Dguide%2Dworkflows%2Dbusiness%2D2026%2F&rut=9c206c1888a2d2245c3778d436066f5ae5d4ce3f238c40c0d81987cbf1c72f3a
+          - text: 2026-04-21T00:00:00.0000000
+        - link "On April 17, 2026, Anthropic Labs quietly flipped the switch on Claude Design — a new visual tool built on top of Claude Opus 4.7 and offered as a research preview to Claude Pro, Max, Team and Enterprise customers at claude.ai/design. Within days it was trending across design Twitter/X and product circles." [ref=f23e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fkersai.com%2Fclaude%2Ddesign%2Dcomplete%2Dguide%2Dworkflows%2Dbusiness%2D2026%2F&rut=9c206c1888a2d2245c3778d436066f5ae5d4ce3f238c40c0d81987cbf1c72f3a
+      - generic [ref=f23e57]:
+        - 'heading "Claude Design (Anthropic): The Complete 2026 Guide" [level=2] [ref=f23e58]':
+          - 'link "Claude Design (Anthropic): The Complete 2026 Guide" [ref=f23e59] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagence%2Dscroll.com%2Fen%2Fblog%2Fclaude%2Ddesign%2Danthropic%2D2026%2Dguide&rut=f84619b81569f3a7fcec7115ff6308a2afec75951d04735a7163b2901a9e747a
+        - generic [ref=f23e61]:
+          - link [ref=f23e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagence%2Dscroll.com%2Fen%2Fblog%2Fclaude%2Ddesign%2Danthropic%2D2026%2Dguide&rut=f84619b81569f3a7fcec7115ff6308a2afec75951d04735a7163b2901a9e747a
+          - link "agence-scroll.com/en/blog/claude-design-anthropic-2026-guide" [ref=f23e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagence%2Dscroll.com%2Fen%2Fblog%2Fclaude%2Ddesign%2Danthropic%2D2026%2Dguide&rut=f84619b81569f3a7fcec7115ff6308a2afec75951d04735a7163b2901a9e747a
+          - text: 2026-04-18T00:00:00.0000000
+        - 'link "Anthropic wiped 7% off Figma''s value in a single day. Not with a funding round, not with a pivot—with a product. Claude Design launched on April 17, 2026, three days after Mike Krieger, Anthropic''s CPO, left Figma''s board. And the tool directly raises the question Figma, Lovable, and v0 left unanswered: what does a tool that truly bridges the gap between idea and production look like ..." [ref=f23e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagence%2Dscroll.com%2Fen%2Fblog%2Fclaude%2Ddesign%2Danthropic%2D2026%2Dguide&rut=f84619b81569f3a7fcec7115ff6308a2afec75951d04735a7163b2901a9e747a
+      - generic [ref=f23e67]:
+        - 'heading "Claude Design: What It Is and How to Use It - Review (July-August 2026)" [level=2] [ref=f23e68]':
+          - 'link "Claude Design: What It Is and How to Use It - Review (July-August 2026)" [ref=f23e69] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fincrypted.com%2Fen%2Fwhat%2Danthropics%2Dclaude%2Ddesign%2Dcan%2Ddo%2F&rut=905f58279df4ec151be8abfa45684296db947800a1be70882d3815e77feac460
+        - generic [ref=f23e71]:
+          - link [ref=f23e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fincrypted.com%2Fen%2Fwhat%2Danthropics%2Dclaude%2Ddesign%2Dcan%2Ddo%2F&rut=905f58279df4ec151be8abfa45684296db947800a1be70882d3815e77feac460
+          - link "incrypted.com/en/what-anthropics-claude-design-can-do/" [ref=f23e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fincrypted.com%2Fen%2Fwhat%2Danthropics%2Dclaude%2Ddesign%2Dcan%2Ddo%2F&rut=905f58279df4ec151be8abfa45684296db947800a1be70882d3815e77feac460
+          - text: 2026-04-20T00:00:00.0000000
+        - link "Claude Design is Anthropic's new tool for building interfaces, websites, and apps with AI. We break down what Claude Design can do, how to get started, how it differs from competitors, and whether it's worth trying now. On April 17, Anthropic unveiled Claude Design — a new product for creating visual content with artificial intelligence." [ref=f23e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fincrypted.com%2Fen%2Fwhat%2Danthropics%2Dclaude%2Ddesign%2Dcan%2Ddo%2F&rut=905f58279df4ec151be8abfa45684296db947800a1be70882d3815e77feac460
+      - generic [ref=f23e77]:
+        - heading "What Is Claude Design? Anthropic's AI Design Tool Explained" [level=2] [ref=f23e78]:
+          - link "What Is Claude Design? Anthropic's AI Design Tool Explained" [ref=f23e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.datacamp.com%2Fblog%2Fclaude%2Ddesign&rut=da77cae1c085d37bde68318581e743f9129779f1860b1ce066731b112b31890e
+        - generic [ref=f23e81]:
+          - link [ref=f23e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.datacamp.com%2Fblog%2Fclaude%2Ddesign&rut=da77cae1c085d37bde68318581e743f9129779f1860b1ce066731b112b31890e
+          - link "www.datacamp.com/blog/claude-design" [ref=f23e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.datacamp.com%2Fblog%2Fclaude%2Ddesign&rut=da77cae1c085d37bde68318581e743f9129779f1860b1ce066731b112b31890e
+          - text: 2026-04-28T00:00:00.0000000
+        - link "Learn what Claude Design is, how it works, what you can build with it, and where Anthropic's new design workspace fits into real product, marketing, and prototyping workflows." [ref=f23e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.datacamp.com%2Fblog%2Fclaude%2Ddesign&rut=da77cae1c085d37bde68318581e743f9129779f1860b1ce066731b112b31890e
+      - generic [ref=f23e87]:
+        - heading "Claude Design now stays on brand for daily work | Claude by Anthropic" [level=2] [ref=f23e88]:
+          - link "Claude Design now stays on brand for daily work | Claude by Anthropic" [ref=f23e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fclaude%2Ddesign%2Dstays%2Don%2Dbrand%2Dfor%2Ddaily%2Dwork&rut=627e1b33d70fbc673a3841de8c36800c5982b9ced9d75ff1084949d5f7837446
+        - generic [ref=f23e91]:
+          - link [ref=f23e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fclaude%2Ddesign%2Dstays%2Don%2Dbrand%2Dfor%2Ddaily%2Dwork&rut=627e1b33d70fbc673a3841de8c36800c5982b9ced9d75ff1084949d5f7837446
+          - link "claude.com/blog/claude-design-stays-on-brand-for-daily-work" [ref=f23e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fclaude%2Ddesign%2Dstays%2Don%2Dbrand%2Dfor%2Ddaily%2Dwork&rut=627e1b33d70fbc673a3841de8c36800c5982b9ced9d75ff1084949d5f7837446
+          - text: 2026-06-17T00:00:00.0000000
+        - link "Claude Design now sticks to your design system across projects, works fluidly with Claude Code, lets you edit directly on the canvas, and connects to more tools you already use. It has a new home in the sidebar on the Claude desktop app; you can also find it at claude.ai/design." [ref=f23e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fclaude%2Ddesign%2Dstays%2Don%2Dbrand%2Dfor%2Ddaily%2Dwork&rut=627e1b33d70fbc673a3841de8c36800c5982b9ced9d75ff1084949d5f7837446
+      - generic [ref=f23e97]:
+        - heading "Anthropic just launched Claude Design, an AI tool that turns prompts ..." [level=2] [ref=f23e98]:
+          - link "Anthropic just launched Claude Design, an AI tool that turns prompts ..." [ref=f23e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fventurebeat.com%2Ftechnology%2Fanthropic%2Djust%2Dlaunched%2Dclaude%2Ddesign%2Dan%2Dai%2Dtool%2Dthat%2Dturns%2Dprompts%2Dinto%2Dprototypes%2Dand%2Dchallenges%2Dfigma&rut=8e98fb6f01cb05429aa78900aa9142c0e24f1d6ee2aefdf696f4993d72eb42ba
+        - generic [ref=f23e101]:
+          - link [ref=f23e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fventurebeat.com%2Ftechnology%2Fanthropic%2Djust%2Dlaunched%2Dclaude%2Ddesign%2Dan%2Dai%2Dtool%2Dthat%2Dturns%2Dprompts%2Dinto%2Dprototypes%2Dand%2Dchallenges%2Dfigma&rut=8e98fb6f01cb05429aa78900aa9142c0e24f1d6ee2aefdf696f4993d72eb42ba
+          - link "venturebeat.com/technology/anthropic-just-launched-claude-design-an-ai-tool-that-turns-prompts-into-prototypes-and-challenges-figma" [ref=f23e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fventurebeat.com%2Ftechnology%2Fanthropic%2Djust%2Dlaunched%2Dclaude%2Ddesign%2Dan%2Dai%2Dtool%2Dthat%2Dturns%2Dprompts%2Dinto%2Dprototypes%2Dand%2Dchallenges%2Dfigma&rut=8e98fb6f01cb05429aa78900aa9142c0e24f1d6ee2aefdf696f4993d72eb42ba
+          - text: 2026-04-17T15:00:00.0000000
+        - link "Anthropic launched Claude Design, an AI tool that turns text prompts into interactive prototypes, alongside its most powerful public model, Claude Opus 4.7 — directly challenging Figma and ..." [ref=f23e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fventurebeat.com%2Ftechnology%2Fanthropic%2Djust%2Dlaunched%2Dclaude%2Ddesign%2Dan%2Dai%2Dtool%2Dthat%2Dturns%2Dprompts%2Dinto%2Dprototypes%2Dand%2Dchallenges%2Dfigma&rut=8e98fb6f01cb05429aa78900aa9142c0e24f1d6ee2aefdf696f4993d72eb42ba
+      - generic [ref=f23e107]:
+        - 'heading "Claude Design: What It Is & Why It Matters (2026) - eigent.ai" [level=2] [ref=f23e108]':
+          - 'link "Claude Design: What It Is & Why It Matters (2026) - eigent.ai" [ref=f23e109] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.eigent.ai%2Fblog%2Fclaude%2Ddesign&rut=67ddc2c28655a4c1a547c325855f4832d9ab5fabc1566cfbe1a052f85d8d6cc9
+        - generic [ref=f23e111]:
+          - link [ref=f23e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.eigent.ai%2Fblog%2Fclaude%2Ddesign&rut=67ddc2c28655a4c1a547c325855f4832d9ab5fabc1566cfbe1a052f85d8d6cc9
+          - link "www.eigent.ai/blog/claude-design" [ref=f23e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.eigent.ai%2Fblog%2Fclaude%2Ddesign&rut=67ddc2c28655a4c1a547c325855f4832d9ab5fabc1566cfbe1a052f85d8d6cc9
+        - 'link "Claude Design: What It Is, How It Works, and Why It Matters Anthropic Labs just shipped Claude Design — a system-aware AI design product for prototypes, slides, and branded visual work. Here''s a grounded look at what it does and why it''s a real shift." [ref=f23e115] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.eigent.ai%2Fblog%2Fclaude%2Ddesign&rut=67ddc2c28655a4c1a547c325855f4832d9ab5fabc1566cfbe1a052f85d8d6cc9
+      - button "Next" [ref=f23e118] [cursor=pointer]
+      - link "Feedback" [ref=f23e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f23e121]

@@ -149,6 +149,7 @@ function Cockpit({ interactive = true }){
       {viewMode === 'cockpit' && <PCHoverHighlight hovering={hoveringPC}/>}
       {viewMode === 'cockpit' && <CrateHoverHighlight hovering={hoveringCrate}/>}
       {viewMode === 'crate' && <VinylInfoCard/>}
+      {viewMode === 'crate' && <VinylBrowseArrows/>}
       <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
         <div style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
@@ -766,15 +767,13 @@ function VinylInfoCard(){
     return () => cancelAnimationFrame(raf);
   }, []);
   if (!info) return null;
-  // Clamp into the viewport — with the camera dollied close to the crate,
-  // the projected anchor can land above the top edge of the screen.
-  const vw = typeof window !== 'undefined' ? window.innerWidth : 1600;
-  const cx = Math.min(Math.max(info.x, 180), vw - 180);
-  const cy = Math.min(Math.max(info.y, 160), (typeof window !== 'undefined' ? window.innerHeight : 900) - 40);
+  // Fixed bottom-center placard — under the bin, deliberately OFF the
+  // record so the pulled sleeve is never covered by its own caption.
   return (
     <div style={{
-      position:'absolute', left: cx, top: cy,
-      transform:'translate(-50%, -100%)',
+      position:'absolute', left:'50%', bottom: 44,
+      transform:'translateX(-50%)',
+      textAlign:'center',
       zIndex:16, pointerEvents:'none',
       background:'rgba(30,28,26,0.88)',
       backdropFilter:'blur(8px)',
@@ -789,7 +788,7 @@ function VinylInfoCard(){
         fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
         letterSpacing:'.26em', textTransform:'uppercase',
         color:'var(--jade-light)', marginBottom:6,
-        display:'flex', alignItems:'center', gap:8,
+        display:'flex', alignItems:'center', justifyContent:'center', gap:8,
       }}>
         <span style={{color:'var(--cream-deep)'}}>n° {String(info.index+1).padStart(2,'0')}</span>
         <span style={{width:3, height:3, background:'var(--jade)', display:'inline-block'}}/>
@@ -803,23 +802,75 @@ function VinylInfoCard(){
         color:'var(--cream-warm)',
       }}>{info.title}</div>
       {/* jade rule */}
-      <div style={{marginTop:9, display:'flex', alignItems:'center', gap:8}}>
+      <div style={{marginTop:9}}>
         <span style={{width:26, height:1, background:'var(--jade)', display:'inline-block'}}/>
-        <span style={{
-          fontFamily:'var(--font-mono)', fontSize:8, fontWeight:500,
-          letterSpacing:'.3em', textTransform:'uppercase',
-          color:'var(--cream-deep)', opacity:.8,
-        }}>click to pull</span>
       </div>
-      {/* caret */}
-      <div aria-hidden style={{
-        position:'absolute', left:'50%', bottom:-5, width:8, height:8,
-        transform:'translateX(-50%) rotate(45deg)',
-        background:'rgba(30,28,26,0.88)',
-        borderRight:'1px solid rgba(232,228,220,0.22)',
-        borderBottom:'1px solid rgba(232,228,220,0.22)',
-      }}/>
     </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// VinylBrowseArrows — appear while a record is pulled out.
+// ◄ selects the record beneath the current one (toward the
+// viewer); ► selects the record above it (deeper into the bin).
+// Steps via window.__cockpitVinylSelect(±1), clamped by index/count.
+// ─────────────────────────────────────────────────────────────
+function VinylBrowseArrows(){
+  const [info, setInfo] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const h = window.__getCockpitVinylHover && window.__getCockpitVinylHover();
+      setInfo(h || null);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!info) return null;
+  const step = (d) => window.__cockpitVinylSelect && window.__cockpitVinylSelect(d);
+  const arrow = (side, glyph, delta, disabled) => (
+    <button
+      onClick={() => !disabled && step(delta)}
+      disabled={disabled}
+      aria-label={delta < 0 ? 'previous record' : 'next record'}
+      style={{
+        position:'absolute', top:'50%', [side]:36,
+        transform:'translateY(-50%)',
+        zIndex:17, pointerEvents: disabled ? 'none' : 'auto',
+        background:'rgba(30,28,26,0.72)',
+        backdropFilter:'blur(6px)',
+        border:'1px solid rgba(232,228,220,0.22)',
+        padding:'13px 15px',
+        cursor:'pointer',
+        opacity: disabled ? 0.25 : 1,
+        color:'var(--cream-warm)',
+        transition:'opacity .2s ease',
+        animation:'termFadeIn .18s ease-out',
+      }}>
+      <span style={{fontSize:16, lineHeight:1, color:'var(--jade-light)'}}>{glyph}</span>
+    </button>
+  );
+  return (
+    <>
+      {/* one-time hint, floated above the bin — NOT inside the info card */}
+      <div style={{
+        position:'absolute', top:76, left:'50%', transform:'translateX(-50%)',
+        zIndex:17, pointerEvents:'none',
+        fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+        letterSpacing:'.28em', textTransform:'uppercase',
+        color:'var(--cream-deep)',
+        background:'rgba(30,28,26,0.72)',
+        border:'1px solid rgba(232,228,220,0.18)',
+        backdropFilter:'blur(6px)',
+        padding:'8px 14px',
+        animation:'termFadeIn .18s ease-out',
+      }}>
+        ◄ ► to browse · click away to return
+      </div>
+      {arrow('left',  '◄', -1, info.index <= 0)}
+      {arrow('right', '►', +1, info.index >= info.count - 1)}
+    </>
   );
 }
 

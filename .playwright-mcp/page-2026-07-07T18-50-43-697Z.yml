@@ -1,0 +1,196 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e2]:
+    - generic [ref=f11e3]:
+      - link "DuckDuckGo" [ref=f11e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f11e5]:
+        - generic [ref=f11e6]:
+          - textbox [ref=f11e7]: 21st.dev Magic MCP server UI component generation Claude Code 2026
+          - button "Submit" [ref=f11e8] [cursor=pointer]
+        - combobox [ref=f11e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f11e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f11e15]:
+      - generic [ref=f11e17]:
+        - heading "21st-dev/magic-mcp - GitHub" [level=2] [ref=f11e18]:
+          - link "21st-dev/magic-mcp - GitHub" [ref=f11e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp&rut=6b1334fd033af688ae0865d5ada24b6e61ef3f2ea11023eadb7dc238afe6ba10
+        - generic [ref=f11e21]:
+          - link [ref=f11e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp&rut=6b1334fd033af688ae0865d5ada24b6e61ef3f2ea11023eadb7dc238afe6ba10
+          - link "github.com/21st-dev/magic-mcp" [ref=f11e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp&rut=6b1334fd033af688ae0865d5ada24b6e61ef3f2ea11023eadb7dc238afe6ba10
+        - link "21st.dev Magic AI Agent Magic Component Platform (MCP) is a powerful AI-driven tool that helps developers create beautiful, modern UI components instantly through natural language descriptions. It integrates seamlessly with popular IDEs and provides a streamlined workflow for UI development." [ref=f11e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp&rut=6b1334fd033af688ae0865d5ada24b6e61ef3f2ea11023eadb7dc238afe6ba10
+      - generic [ref=f11e27]:
+        - 'heading "21st.dev Magic + Claude Code: MCP Setup Guide (2026)" [level=2] [ref=f11e28]':
+          - 'link "21st.dev Magic + Claude Code: MCP Setup Guide (2026)" [ref=f11e29] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Dcode&rut=34bb3ae2b80ab13352bf74a13958330595c61f819842ace84a34f02f9460333e
+        - generic [ref=f11e31]:
+          - link [ref=f11e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Dcode&rut=34bb3ae2b80ab13352bf74a13958330595c61f819842ace84a34f02f9460333e
+          - link "mcp.harishgarg.com/use/21stdev-magic/mcp-server/with/claude-code" [ref=f11e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Dcode&rut=34bb3ae2b80ab13352bf74a13958330595c61f819842ace84a34f02f9460333e
+        - link "Connect 21st.dev Magic to Claude Code in minutes. Copy-paste configuration, step-by-step setup, and troubleshooting tips. Works with the latest Claude Code version." [ref=f11e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Dcode&rut=34bb3ae2b80ab13352bf74a13958330595c61f819842ace84a34f02f9460333e
+      - generic [ref=f11e37]:
+        - 'heading "21st.dev Magic + Claude Desktop App: MCP Setup Guide (2026)" [level=2] [ref=f11e38]':
+          - 'link "21st.dev Magic + Claude Desktop App: MCP Setup Guide (2026)" [ref=f11e39] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Ddesktop%2Dapp&rut=4aeee310a16003e68b377b08cd15b095fc33cb37a46123efbb0bc7d34dbcef39
+        - generic [ref=f11e41]:
+          - link [ref=f11e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Ddesktop%2Dapp&rut=4aeee310a16003e68b377b08cd15b095fc33cb37a46123efbb0bc7d34dbcef39
+          - link "mcp.harishgarg.com/use/21stdev-magic/mcp-server/with/claude-desktop-app" [ref=f11e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Ddesktop%2Dapp&rut=4aeee310a16003e68b377b08cd15b095fc33cb37a46123efbb0bc7d34dbcef39
+        - 'link "21st.dev Magic is a MCP server that Create crafted UI components inspired by the best 21st.dev design engineers.. When integrated with Claude Desktop App, you can: Generate crafted UI components using AI design patterns Live preview of generated components Full TypeScript support for generated components This guide provides step-by-step instructions to set up 21st.dev Magic in Claude Desktop ..." [ref=f11e45] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.harishgarg.com%2Fuse%2F21stdev%2Dmagic%2Fmcp%2Dserver%2Fwith%2Fclaude%2Ddesktop%2Dapp&rut=4aeee310a16003e68b377b08cd15b095fc33cb37a46123efbb0bc7d34dbcef39
+      - generic [ref=f11e47]:
+        - heading "Magic - Generate Multiple UI Variations, Pick Your Favorite | 21st" [level=2] [ref=f11e48]:
+          - link "Magic - Generate Multiple UI Variations, Pick Your Favorite | 21st" [ref=f11e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmagic&rut=c01ace29491652cef072c3abae2fa9bb1640bfaec526fd7693cff9ba04577d3d
+        - generic [ref=f11e51]:
+          - link [ref=f11e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmagic&rut=c01ace29491652cef072c3abae2fa9bb1640bfaec526fd7693cff9ba04577d3d
+          - link "21st.dev/magic" [ref=f11e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmagic&rut=c01ace29491652cef072c3abae2fa9bb1640bfaec526fd7693cff9ba04577d3d
+        - link "AI agent that generates multiple component styles for every request. Compare variations, pick the best one. Available as MCP server for Cursor, Windsurf, VS Code or web interface." [ref=f11e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmagic&rut=c01ace29491652cef072c3abae2fa9bb1640bfaec526fd7693cff9ba04577d3d
+      - generic [ref=f11e57]:
+        - heading "21st.dev Magic MCP Server by 21st-dev | AI UI Component Generation" [level=2] [ref=f11e58]:
+          - link "21st.dev Magic MCP Server by 21st-dev | AI UI Component Generation" [ref=f11e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.augmentcode.com%2Fmcp%2F21st%2Ddev%2Dmagic%2Dmcp%2Dserver&rut=aec2909ccfee3e547cbb2910cd4058eaef70d471a06a71dbec7be5fbbed0b0c3
+        - generic [ref=f11e61]:
+          - link [ref=f11e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.augmentcode.com%2Fmcp%2F21st%2Ddev%2Dmagic%2Dmcp%2Dserver&rut=aec2909ccfee3e547cbb2910cd4058eaef70d471a06a71dbec7be5fbbed0b0c3
+          - link "www.augmentcode.com/mcp/21st-dev-magic-mcp-server" [ref=f11e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.augmentcode.com%2Fmcp%2F21st%2Ddev%2Dmagic%2Dmcp%2Dserver&rut=aec2909ccfee3e547cbb2910cd4058eaef70d471a06a71dbec7be5fbbed0b0c3
+        - 'link "21st.dev \"Magic AI Agent\" MCP server that generates modern UI components from natural-language prompts inside IDE agents (Cursor, Windsurf, VS Code/Cline, Claude). Works like \"v0 in your IDE\": you type `/ui …`, the server generates and writes UI component files into your project following your code style." [ref=f11e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.augmentcode.com%2Fmcp%2F21st%2Ddev%2Dmagic%2Dmcp%2Dserver&rut=aec2909ccfee3e547cbb2910cd4058eaef70d471a06a71dbec7be5fbbed0b0c3
+      - generic [ref=f11e67]:
+        - heading "magic-mcp/README.md at main · 21st-dev/magic-mcp · GitHub" [level=2] [ref=f11e68]:
+          - link "magic-mcp/README.md at main · 21st-dev/magic-mcp · GitHub" [ref=f11e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp%2Fblob%2Fmain%2FREADME.md&rut=766ca0a8822052ef3f4bd079fb8ee2e152565b0d51880995bde60cf3161c0f23
+        - generic [ref=f11e71]:
+          - link [ref=f11e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp%2Fblob%2Fmain%2FREADME.md&rut=766ca0a8822052ef3f4bd079fb8ee2e152565b0d51880995bde60cf3161c0f23
+          - link "github.com/21st-dev/magic-mcp/blob/main/README.md" [ref=f11e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp%2Fblob%2Fmain%2FREADME.md&rut=766ca0a8822052ef3f4bd079fb8ee2e152565b0d51880995bde60cf3161c0f23
+        - link "21st.dev Magic AI Agent Magic Component Platform (MCP) is a powerful AI-driven tool that helps developers create beautiful, modern UI components instantly through natural language descriptions. It integrates seamlessly with popular IDEs and provides a streamlined workflow for UI development." [ref=f11e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2F21st%2Ddev%2Fmagic%2Dmcp%2Fblob%2Fmain%2FREADME.md&rut=766ca0a8822052ef3f4bd079fb8ee2e152565b0d51880995bde60cf3161c0f23
+      - generic [ref=f11e77]:
+        - 'heading "21st: Crafted React components and templates that fight AI slop" [level=2] [ref=f11e78]':
+          - 'link "21st: Crafted React components and templates that fight AI slop" [ref=f11e79] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmcp&rut=7b524b9335f9ea1218a7883177daae395aa87064b6c848e03bc82fe46e27a1ee
+        - generic [ref=f11e81]:
+          - link [ref=f11e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmcp&rut=7b524b9335f9ea1218a7883177daae395aa87064b6c848e03bc82fe46e27a1ee
+          - link "21st.dev/mcp" [ref=f11e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmcp&rut=7b524b9335f9ea1218a7883177daae395aa87064b6c848e03bc82fe46e27a1ee
+        - link "A community registry of hand-crafted React components and templates. Start from real, polished UI instead of the bland AI average, and ship products that look like you, not everyone else." [ref=f11e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F21st.dev%2Fmcp&rut=7b524b9335f9ea1218a7883177daae395aa87064b6c848e03bc82fe46e27a1ee
+      - generic [ref=f11e87]:
+        - heading "Official 21st Dev Magic MCP Server | Awesome MCP Servers" [level=2] [ref=f11e88]:
+          - link "Official 21st Dev Magic MCP Server | Awesome MCP Servers" [ref=f11e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2F21st%2Ddev%2Fmagic%2Dmcp&rut=c5fc9bd9a00b0f364f8b5074f767717d2654c629a12e1c3c68f9f1f68356c1aa
+        - generic [ref=f11e91]:
+          - link [ref=f11e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2F21st%2Ddev%2Fmagic%2Dmcp&rut=c5fc9bd9a00b0f364f8b5074f767717d2654c629a12e1c3c68f9f1f68356c1aa
+          - link "mcpservers.org/servers/21st-dev/magic-mcp" [ref=f11e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2F21st%2Ddev%2Fmagic%2Dmcp&rut=c5fc9bd9a00b0f364f8b5074f767717d2654c629a12e1c3c68f9f1f68356c1aa
+        - link "Create crafted UI components inspired by the best 21st.dev design engineers. Browse Official 21st Dev Magic MCP Server for Claude, Cursor, VS Code, and..." [ref=f11e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2F21st%2Ddev%2Fmagic%2Dmcp&rut=c5fc9bd9a00b0f364f8b5074f767717d2654c629a12e1c3c68f9f1f68356c1aa
+      - generic [ref=f11e97]:
+        - heading "21st.dev Magic AI Agent for Claude Code | mdskills.ai" [level=2] [ref=f11e98]:
+          - link "21st.dev Magic AI Agent for Claude Code | mdskills.ai" [ref=f11e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.mdskills.ai%2Fmcp%2Dservers%2Fmagic%2Dmcp&rut=d17a1d04e5168d512f391c68808eee611e5246f792706fd0ebaf367fc08ac54a
+        - generic [ref=f11e101]:
+          - link [ref=f11e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.mdskills.ai%2Fmcp%2Dservers%2Fmagic%2Dmcp&rut=d17a1d04e5168d512f391c68808eee611e5246f792706fd0ebaf367fc08ac54a
+          - link "www.mdskills.ai/mcp-servers/magic-mcp" [ref=f11e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.mdskills.ai%2Fmcp%2Dservers%2Fmagic%2Dmcp&rut=d17a1d04e5168d512f391c68808eee611e5246f792706fd0ebaf367fc08ac54a
+          - text: 2026-02-24T00:00:00.0000000
+        - link "Magic Component Platform (MCP) is a powerful AI-driven tool that helps developers create beautiful, modern UI compone... Free and open source. Install in one command for Claude Code, Claude Desktop, Cursor." [ref=f11e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.mdskills.ai%2Fmcp%2Dservers%2Fmagic%2Dmcp&rut=d17a1d04e5168d512f391c68808eee611e5246f792706fd0ebaf367fc08ac54a
+      - generic [ref=f11e107]:
+        - 'heading "Magic UI: Component Builder for Claude Code Skill" [level=2] [ref=f11e108]':
+          - 'link "Magic UI: Component Builder for Claude Code Skill" [ref=f11e109] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpmarket.com%2Ftools%2Fskills%2Fmagic%2Dui%2Dcomponent%2Dbuilder&rut=5494744acd278373c7bf23099629abe8a895719410ac16e82ab52141cbbdd3db
+        - generic [ref=f11e111]:
+          - link [ref=f11e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpmarket.com%2Ftools%2Fskills%2Fmagic%2Dui%2Dcomponent%2Dbuilder&rut=5494744acd278373c7bf23099629abe8a895719410ac16e82ab52141cbbdd3db
+          - link "mcpmarket.com/tools/skills/magic-ui-component-builder" [ref=f11e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpmarket.com%2Ftools%2Fskills%2Fmagic%2Dui%2Dcomponent%2Dbuilder&rut=5494744acd278373c7bf23099629abe8a895719410ac16e82ab52141cbbdd3db
+        - link "Magic UI is a specialized Claude Code skill designed to accelerate frontend development by bridging the gap between design patterns and implementation. By invoking simple commands like /ui or /21, users can instantly generate high-quality, reusable components ranging from basic buttons to complex, sortable data tables. The skill leverages the extensive pattern library of 21st.dev and ..." [ref=f11e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpmarket.com%2Ftools%2Fskills%2Fmagic%2Dui%2Dcomponent%2Dbuilder&rut=5494744acd278373c7bf23099629abe8a895719410ac16e82ab52141cbbdd3db
+      - button "Next" [ref=f11e118] [cursor=pointer]
+      - link "Feedback" [ref=f11e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f11e121]

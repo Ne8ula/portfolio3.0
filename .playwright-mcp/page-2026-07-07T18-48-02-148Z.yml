@@ -1,0 +1,218 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]:
+            - generic [ref=e7]:
+              - link "Home" [ref=e8] [cursor=pointer]:
+                - /url: /en
+                - img [ref=e9]
+              - generic [ref=e18]: Docs
+            - generic [ref=e19]:
+              - button "Search docs... Ctrl K" [ref=e21] [cursor=pointer]:
+                - img [ref=e22]
+                - text: Search docs...
+                - generic [ref=e24]: Ctrl K
+              - generic [ref=e25]:
+                - button "Switch to dark theme" [ref=e27] [cursor=pointer]:
+                  - img [ref=e28]
+                - combobox [ref=e31] [cursor=pointer]:
+                  - generic: English
+                  - img [ref=e32]
+                - generic [ref=e34]:
+                  - link "Open API Playground" [ref=e35] [cursor=pointer]:
+                    - /url: https://www.meshy.ai/api-playground
+                  - link "Open Web App" [ref=e36] [cursor=pointer]:
+                    - /url: https://www.meshy.ai/
+          - navigation "Document sections" [ref=e39]:
+            - link "Overview" [ref=e40] [cursor=pointer]:
+              - /url: /en
+            - link "API" [ref=e41] [cursor=pointer]:
+              - /url: /en/api
+              - text: API
+            - link "Webapp" [ref=e43] [cursor=pointer]:
+              - /url: /en/webapp/getting-started
+            - link "Plugins" [ref=e44] [cursor=pointer]:
+              - /url: /en/webapp/plugins/blender/introduction
+            - link "3D Printing" [ref=e45] [cursor=pointer]:
+              - /url: /en/webapp/3d-printing-platforms/introduction
+        - navigation [ref=e46]:
+          - list [ref=e47]:
+            - listitem [ref=e48]:
+              - link "API" [ref=e49] [cursor=pointer]:
+                - /url: /en/api
+              - list [ref=e50]:
+                - listitem [ref=e51]:
+                  - heading "Getting Started" [level=3] [ref=e52]
+                  - list [ref=e55]:
+                    - listitem [ref=e56]:
+                      - link "Quickstart" [ref=e57] [cursor=pointer]:
+                        - /url: /en/api/quick-start
+                        - generic [ref=e58]: Quickstart
+                    - listitem [ref=e59]:
+                      - link "API Playground" [ref=e60] [cursor=pointer]:
+                        - /url: /en/api/playground
+                        - generic [ref=e61]: API Playground
+                    - listitem [ref=e62]:
+                      - link "Authentication" [ref=e63] [cursor=pointer]:
+                        - /url: /en/api/authentication
+                        - generic [ref=e64]: Authentication
+                    - listitem [ref=e65]:
+                      - link "Errors" [ref=e66] [cursor=pointer]:
+                        - /url: /en/api/errors
+                        - generic [ref=e67]: Errors
+                    - listitem [ref=e68]:
+                      - link "Pricing" [ref=e69] [cursor=pointer]:
+                        - /url: /en/api/pricing
+                        - generic [ref=e70]: Pricing
+                    - listitem [ref=e71]:
+                      - link "Rate Limits" [ref=e72] [cursor=pointer]:
+                        - /url: /en/api/rate-limits
+                        - generic [ref=e73]: Rate Limits
+                    - listitem [ref=e74]:
+                      - link "Asset Retention" [ref=e75] [cursor=pointer]:
+                        - /url: /en/api/asset-retention
+                        - generic [ref=e76]: Asset Retention
+                    - listitem [ref=e77]:
+                      - link "Webhooks" [ref=e78] [cursor=pointer]:
+                        - /url: /en/api/webhooks
+                        - generic [ref=e79]: Webhooks
+                    - listitem [ref=e80]:
+                      - link "AI Integration" [ref=e81] [cursor=pointer]:
+                        - /url: /en/api/ai
+                        - generic [ref=e82]: AI Integration
+                    - listitem [ref=e83]:
+                      - link "Changelog" [ref=e84] [cursor=pointer]:
+                        - /url: /en/api/changelog
+                        - generic [ref=e85]: Changelog
+                - listitem [ref=e86]:
+                  - heading "API Endpoints" [level=3] [ref=e87]
+                  - list [ref=e90]:
+                    - listitem [ref=e91]:
+                      - link "Text to 3D v2" [ref=e92] [cursor=pointer]:
+                        - /url: /en/api/text-to-3d
+                        - generic [ref=e93]: Text to 3D
+                        - generic [ref=e94]: v2
+                    - listitem [ref=e95]:
+                      - link "Image to 3D" [ref=e96] [cursor=pointer]:
+                        - /url: /en/api/image-to-3d
+                        - generic [ref=e97]: Image to 3D
+                    - listitem [ref=e98]:
+                      - link "Multi Image to 3D" [ref=e99] [cursor=pointer]:
+                        - /url: /en/api/multi-image-to-3d
+                        - generic [ref=e100]: Multi Image to 3D
+                    - listitem [ref=e101]:
+                      - link "Remesh" [ref=e102] [cursor=pointer]:
+                        - /url: /en/api/remesh
+                        - generic [ref=e103]: Remesh
+                    - listitem [ref=e104]:
+                      - link "Convert" [ref=e105] [cursor=pointer]:
+                        - /url: /en/api/convert
+                        - generic [ref=e106]: Convert
+                    - listitem [ref=e107]:
+                      - link "Resize" [ref=e108] [cursor=pointer]:
+                        - /url: /en/api/resize
+                        - generic [ref=e109]: Resize
+                    - listitem [ref=e110]:
+                      - link "UV Unwrap" [ref=e111] [cursor=pointer]:
+                        - /url: /en/api/uv-unwrap
+                        - generic [ref=e112]: UV Unwrap
+                    - listitem [ref=e113]:
+                      - link "Rigging" [ref=e114] [cursor=pointer]:
+                        - /url: /en/api/rigging
+                        - generic [ref=e115]: Rigging
+                    - listitem [ref=e116]:
+                      - link "Animation" [ref=e117] [cursor=pointer]:
+                        - /url: /en/api/animation
+                        - generic [ref=e118]: Animation
+                    - listitem [ref=e119]:
+                      - link "Retexture" [ref=e120] [cursor=pointer]:
+                        - /url: /en/api/retexture
+                        - generic [ref=e121]: Retexture
+                    - listitem [ref=e122]:
+                      - link "Text to Image" [ref=e123] [cursor=pointer]:
+                        - /url: /en/api/text-to-image
+                        - generic [ref=e124]: Text to Image
+                    - listitem [ref=e125]:
+                      - link "Image to Image" [ref=e126] [cursor=pointer]:
+                        - /url: /en/api/image-to-image
+                        - generic [ref=e127]: Image to Image
+                    - listitem [ref=e128]:
+                      - link "Multi-Color Print" [ref=e129] [cursor=pointer]:
+                        - /url: /en/api/multi-color-print
+                        - generic [ref=e130]: Multi-Color Print
+                    - listitem [ref=e131]:
+                      - link "Analyze Printability" [ref=e132] [cursor=pointer]:
+                        - /url: /en/api/analyze-printability
+                        - generic [ref=e133]: Analyze Printability
+                    - listitem [ref=e134]:
+                      - link "Repair Printability" [ref=e135] [cursor=pointer]:
+                        - /url: /en/api/repair-printability
+                        - generic [ref=e136]: Repair Printability
+                    - listitem [ref=e137]:
+                      - link "Balance" [ref=e138] [cursor=pointer]:
+                        - /url: /en/api/balance
+                        - generic [ref=e139]: Balance
+                - listitem [ref=e140]:
+                  - heading "Creative Lab APIs" [level=3] [ref=e141]
+                  - list [ref=e144]:
+                    - listitem [ref=e145]:
+                      - link "Keychain" [ref=e146] [cursor=pointer]:
+                        - /url: /en/api/creative-lab-keychain
+                        - generic [ref=e147]: Keychain
+                    - listitem [ref=e148]:
+                      - link "Fridge Magnet" [ref=e149] [cursor=pointer]:
+                        - /url: /en/api/creative-lab-fridge-magnet
+                        - generic [ref=e150]: Fridge Magnet
+                    - listitem [ref=e151]:
+                      - link "Figure" [ref=e152] [cursor=pointer]:
+                        - /url: /en/api/creative-lab-figure
+                        - generic [ref=e153]: Figure
+                    - listitem [ref=e154]:
+                      - link "Lamp" [ref=e155] [cursor=pointer]:
+                        - /url: /en/api/creative-lab-lamp
+                        - generic [ref=e156]: Lamp
+    - generic [ref=e157]:
+      - main [ref=e158]:
+        - generic [ref=e160]:
+          - img [ref=e162]:
+            - img [ref=e164]
+          - img [ref=e169]
+        - generic [ref=e171]:
+          - paragraph [ref=e172]: "404"
+          - heading "Page Not Found" [level=1] [ref=e173]
+          - paragraph [ref=e174]: Sorry, we couldn't find the page you're looking for.
+          - link "Back to docs" [ref=e175] [cursor=pointer]:
+            - /url: /en
+            - text: Back to docs
+            - img [ref=e176]
+      - contentinfo [ref=e178]:
+        - generic [ref=e179]:
+          - paragraph [ref=e180]: © 2026 Meshy LLC. All rights reserved.
+          - generic [ref=e181]:
+            - link "Join our Discord server" [ref=e182] [cursor=pointer]:
+              - /url: https://discord.com/invite/KgD5yVM9Y4
+              - generic [ref=e183]: Join our Discord server
+              - img [ref=e184]
+            - link "Follow us on Twitter" [ref=e186] [cursor=pointer]:
+              - /url: https://twitter.com/MeshyAI
+              - generic [ref=e187]: Follow us on Twitter
+              - img [ref=e188]
+            - link "Subscribe on YouTube" [ref=e190] [cursor=pointer]:
+              - /url: https://www.youtube.com/@MeshyAI
+              - generic [ref=e191]: Subscribe on YouTube
+              - img [ref=e192]
+            - link "Follow us on Instagram" [ref=e194] [cursor=pointer]:
+              - /url: https://www.instagram.com/meshy.ai/
+              - generic [ref=e195]: Follow us on Instagram
+              - img [ref=e196]
+            - link "Follow us on TikTok" [ref=e199] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@meshy.ai
+              - generic [ref=e200]: Follow us on TikTok
+              - img [ref=e201]
+            - link "Follow us on LinkedIn" [ref=e204] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/meshyai/
+              - generic [ref=e205]: Follow us on LinkedIn
+              - img [ref=e206]
+  - alert [ref=e210]

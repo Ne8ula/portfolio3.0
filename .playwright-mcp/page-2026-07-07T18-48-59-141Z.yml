@@ -1,0 +1,331 @@
+- generic [ref=f2e3]:
+  - banner:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]:
+        - generic [ref=f2e6]:
+          - generic [ref=f2e7]:
+            - link "Home" [ref=f2e8] [cursor=pointer]:
+              - /url: /en
+              - img [ref=f2e9]
+            - generic [ref=f2e18]: Docs
+          - generic [ref=f2e19]:
+            - button "Search docs... K" [ref=f2e21] [cursor=pointer]:
+              - img [ref=f2e22]
+              - text: Search docs...
+              - generic [ref=f2e24]: K
+            - generic [ref=f2e25]:
+              - button "Toggle theme" [ref=f2e27] [cursor=pointer]:
+                - img [ref=f2e28]
+              - combobox [ref=f2e31] [cursor=pointer]:
+                - img [ref=f2e32]
+              - combobox [ref=f2e34]
+              - generic [ref=f2e35]:
+                - link "Open API Playground" [ref=f2e36] [cursor=pointer]:
+                  - /url: https://www.meshy.ai/api-playground
+                - link "Open Web App" [ref=f2e37] [cursor=pointer]:
+                  - /url: https://www.meshy.ai/
+        - navigation "Document sections" [ref=f2e40]:
+          - link "Overview" [ref=f2e41] [cursor=pointer]:
+            - /url: /en
+          - link "API" [ref=f2e42] [cursor=pointer]:
+            - /url: /en/api
+            - text: API
+          - link "Webapp" [ref=f2e44] [cursor=pointer]:
+            - /url: /en/webapp/getting-started
+          - link "Plugins" [ref=f2e45] [cursor=pointer]:
+            - /url: /en/webapp/plugins/blender/introduction
+          - link "3D Printing" [ref=f2e46] [cursor=pointer]:
+            - /url: /en/webapp/3d-printing-platforms/introduction
+      - navigation [ref=f2e47]:
+        - list [ref=f2e48]:
+          - listitem [ref=f2e49]:
+            - link "API" [ref=f2e50] [cursor=pointer]:
+              - /url: /en/api
+            - list [ref=f2e51]:
+              - listitem [ref=f2e52]:
+                - heading "Getting Started" [level=3] [ref=f2e53]
+                - list [ref=f2e58]:
+                  - listitem [ref=f2e59]:
+                    - link "Quickstart" [ref=f2e60] [cursor=pointer]:
+                      - /url: /en/api/quick-start
+                      - generic [ref=f2e61]: Quickstart
+                  - listitem [ref=f2e62]:
+                    - link "API Playground" [ref=f2e63] [cursor=pointer]:
+                      - /url: /en/api/playground
+                      - generic [ref=f2e64]: API Playground
+                  - listitem [ref=f2e65]:
+                    - link "Authentication" [ref=f2e66] [cursor=pointer]:
+                      - /url: /en/api/authentication
+                      - generic [ref=f2e67]: Authentication
+                  - listitem [ref=f2e68]:
+                    - link "Errors" [ref=f2e69] [cursor=pointer]:
+                      - /url: /en/api/errors
+                      - generic [ref=f2e70]: Errors
+                  - listitem [ref=f2e71]:
+                    - link "Pricing" [ref=f2e72] [cursor=pointer]:
+                      - /url: /en/api/pricing
+                      - generic [ref=f2e73]: Pricing
+                  - listitem [ref=f2e74]:
+                    - link "Rate Limits" [ref=f2e75] [cursor=pointer]:
+                      - /url: /en/api/rate-limits
+                      - generic [ref=f2e76]: Rate Limits
+                  - listitem [ref=f2e77]:
+                    - link "Asset Retention" [ref=f2e78] [cursor=pointer]:
+                      - /url: /en/api/asset-retention
+                      - generic [ref=f2e79]: Asset Retention
+                  - listitem [ref=f2e80]:
+                    - link "Webhooks" [ref=f2e81] [cursor=pointer]:
+                      - /url: /en/api/webhooks
+                      - generic [ref=f2e82]: Webhooks
+                  - listitem [ref=f2e83]:
+                    - link "AI Integration" [ref=f2e84] [cursor=pointer]:
+                      - /url: /en/api/ai
+                      - generic [ref=f2e85]: AI Integration
+                  - listitem [ref=f2e86]:
+                    - link "Changelog" [ref=f2e87] [cursor=pointer]:
+                      - /url: /en/api/changelog
+                      - generic [ref=f2e88]: Changelog
+              - listitem [ref=f2e89]:
+                - heading "API Endpoints" [level=3] [ref=f2e90]
+                - list [ref=f2e93]:
+                  - listitem [ref=f2e94]:
+                    - link "Text to 3D v2" [ref=f2e95] [cursor=pointer]:
+                      - /url: /en/api/text-to-3d
+                      - generic [ref=f2e96]: Text to 3D
+                      - generic [ref=f2e97]: v2
+                  - listitem [ref=f2e98]:
+                    - link "Image to 3D" [ref=f2e99] [cursor=pointer]:
+                      - /url: /en/api/image-to-3d
+                      - generic [ref=f2e100]: Image to 3D
+                  - listitem [ref=f2e101]:
+                    - link "Multi Image to 3D" [ref=f2e102] [cursor=pointer]:
+                      - /url: /en/api/multi-image-to-3d
+                      - generic [ref=f2e103]: Multi Image to 3D
+                  - listitem [ref=f2e104]:
+                    - link "Remesh" [ref=f2e105] [cursor=pointer]:
+                      - /url: /en/api/remesh
+                      - generic [ref=f2e106]: Remesh
+                  - listitem [ref=f2e107]:
+                    - link "Convert" [ref=f2e108] [cursor=pointer]:
+                      - /url: /en/api/convert
+                      - generic [ref=f2e109]: Convert
+                  - listitem [ref=f2e110]:
+                    - link "Resize" [ref=f2e111] [cursor=pointer]:
+                      - /url: /en/api/resize
+                      - generic [ref=f2e112]: Resize
+                  - listitem [ref=f2e113]:
+                    - link "UV Unwrap" [ref=f2e114] [cursor=pointer]:
+                      - /url: /en/api/uv-unwrap
+                      - generic [ref=f2e115]: UV Unwrap
+                  - listitem [ref=f2e116]:
+                    - link "Rigging" [ref=f2e117] [cursor=pointer]:
+                      - /url: /en/api/rigging
+                      - generic [ref=f2e118]: Rigging
+                  - listitem [ref=f2e119]:
+                    - link "Animation" [ref=f2e120] [cursor=pointer]:
+                      - /url: /en/api/animation
+                      - generic [ref=f2e121]: Animation
+                  - listitem [ref=f2e122]:
+                    - link "Retexture" [ref=f2e123] [cursor=pointer]:
+                      - /url: /en/api/retexture
+                      - generic [ref=f2e124]: Retexture
+                  - listitem [ref=f2e125]:
+                    - link "Text to Image" [ref=f2e126] [cursor=pointer]:
+                      - /url: /en/api/text-to-image
+                      - generic [ref=f2e127]: Text to Image
+                  - listitem [ref=f2e128]:
+                    - link "Image to Image" [ref=f2e129] [cursor=pointer]:
+                      - /url: /en/api/image-to-image
+                      - generic [ref=f2e130]: Image to Image
+                  - listitem [ref=f2e131]:
+                    - link "Multi-Color Print" [ref=f2e132] [cursor=pointer]:
+                      - /url: /en/api/multi-color-print
+                      - generic [ref=f2e133]: Multi-Color Print
+                  - listitem [ref=f2e134]:
+                    - link "Analyze Printability" [ref=f2e135] [cursor=pointer]:
+                      - /url: /en/api/analyze-printability
+                      - generic [ref=f2e136]: Analyze Printability
+                  - listitem [ref=f2e137]:
+                    - link "Repair Printability" [ref=f2e138] [cursor=pointer]:
+                      - /url: /en/api/repair-printability
+                      - generic [ref=f2e139]: Repair Printability
+                  - listitem [ref=f2e140]:
+                    - link "Balance" [ref=f2e141] [cursor=pointer]:
+                      - /url: /en/api/balance
+                      - generic [ref=f2e142]: Balance
+              - listitem [ref=f2e143]:
+                - heading "Creative Lab APIs" [level=3] [ref=f2e144]
+                - list [ref=f2e147]:
+                  - listitem [ref=f2e148]:
+                    - link "Keychain" [ref=f2e149] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-keychain
+                      - generic [ref=f2e150]: Keychain
+                  - listitem [ref=f2e151]:
+                    - link "Fridge Magnet" [ref=f2e152] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-fridge-magnet
+                      - generic [ref=f2e153]: Fridge Magnet
+                  - listitem [ref=f2e154]:
+                    - link "Figure" [ref=f2e155] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-figure
+                      - generic [ref=f2e156]: Figure
+                  - listitem [ref=f2e157]:
+                    - link "Lamp" [ref=f2e158] [cursor=pointer]:
+                      - /url: /en/api/creative-lab-lamp
+                      - generic [ref=f2e159]: Lamp
+  - generic [ref=f2e160]:
+    - main [ref=f2e161]:
+      - article [ref=f2e162]:
+        - generic [ref=f2e163]:
+          - generic [ref=f2e165]:
+            - img [ref=f2e167]:
+              - img [ref=f2e169]
+            - img [ref=f2e174]
+          - heading "Pricing" [level=1] [ref=f2e176]
+          - paragraph [ref=f2e177]: Simple and flexible pricing.
+          - separator [ref=f2e178]
+          - paragraph [ref=f2e179]:
+            - text: Meshy API for generation is a pay-before-you-go product. You need to purchase API usage based on your application's need before using Meshy API. You can purchase additional credits for API usage from your
+            - link "subscription settings page" [ref=f2e180] [cursor=pointer]:
+              - /url: https://www.meshy.ai/settings/subscription
+              - text: subscription settings page
+              - img [ref=f2e181]
+            - text: . For volume API pricing and custom contracts, please
+            - link "contact sales" [ref=f2e183] [cursor=pointer]:
+              - /url: https://www.meshy.ai/contact
+              - text: contact sales
+              - img [ref=f2e184]
+            - text: .
+          - paragraph [ref=f2e186]: "The Meshy API pricing is based on credits. Here's a detailed breakdown of the API pricing:"
+          - table [ref=f2e187]:
+            - rowgroup [ref=f2e188]:
+              - row "API Price per call" [ref=f2e189]:
+                - columnheader "API" [ref=f2e190]
+                - columnheader "Price per call" [ref=f2e191]
+            - rowgroup [ref=f2e192]:
+              - 'row "Text to 3D (Preview) - Mesh Generation Meshy-6 models and low poly models: 20 credits Other models: 5 credits" [ref=f2e193]':
+                - cell "Text to 3D (Preview) - Mesh Generation" [ref=f2e194]
+                - 'cell "Meshy-6 models and low poly models: 20 credits Other models: 5 credits" [ref=f2e195]':
+                  - text: "Meshy-6 models and low poly models: 20 credits"
+                  - text: "Other models: 5 credits"
+              - row "Text to 3D (Refine) - Texture Generation 10 credits (texture generation)" [ref=f2e196]:
+                - cell "Text to 3D (Refine) - Texture Generation" [ref=f2e197]
+                - cell "10 credits (texture generation)" [ref=f2e198]
+              - 'row "Image to 3D Meshy-6 models and low poly models: 20 credits (without texture), 30 credits (with texture) Other models: 5 credits (without texture), 15 credits (with texture)" [ref=f2e199]':
+                - cell "Image to 3D" [ref=f2e200]
+                - 'cell "Meshy-6 models and low poly models: 20 credits (without texture), 30 credits (with texture) Other models: 5 credits (without texture), 15 credits (with texture)" [ref=f2e201]':
+                  - text: "Meshy-6 models and low poly models: 20 credits (without texture), 30 credits (with texture)"
+                  - text: "Other models: 5 credits (without texture), 15 credits (with texture)"
+              - 'row "Multi Image to 3D Meshy-6 models: 20 credits (without texture), 30 credits (with texture) Other models: 5 credits (without texture), 15 credits (with texture)" [ref=f2e202]':
+                - cell "Multi Image to 3D" [ref=f2e203]
+                - 'cell "Meshy-6 models: 20 credits (without texture), 30 credits (with texture) Other models: 5 credits (without texture), 15 credits (with texture)" [ref=f2e204]':
+                  - text: "Meshy-6 models: 20 credits (without texture), 30 credits (with texture)"
+                  - text: "Other models: 5 credits (without texture), 15 credits (with texture)"
+              - row "Retexture 10 credits (texture generation)" [ref=f2e205]:
+                - cell "Retexture" [ref=f2e206]
+                - cell "10 credits (texture generation)" [ref=f2e207]
+              - row "Remesh 5 credits" [ref=f2e208]:
+                - cell "Remesh" [ref=f2e209]
+                - cell "5 credits" [ref=f2e210]
+              - row "Convert 1 credit" [ref=f2e211]:
+                - cell "Convert" [ref=f2e212]
+                - cell "1 credit" [ref=f2e213]
+              - row "Resize 1 credit" [ref=f2e214]:
+                - cell "Resize" [ref=f2e215]
+                - cell "1 credit" [ref=f2e216]
+              - row "Auto-Rigging 5 credits" [ref=f2e217]:
+                - cell "Auto-Rigging" [ref=f2e218]
+                - cell "5 credits" [ref=f2e219]
+              - row "Animation 3 credits" [ref=f2e220]:
+                - cell "Animation" [ref=f2e221]
+                - cell "3 credits" [ref=f2e222]
+              - 'row "Text to Image nano-banana: 3 credits, nano-banana-2: 6 credits, nano-banana-pro: 9 credits, gpt-image-2: 9 credits" [ref=f2e223]':
+                - cell "Text to Image" [ref=f2e224]
+                - 'cell "nano-banana: 3 credits, nano-banana-2: 6 credits, nano-banana-pro: 9 credits, gpt-image-2: 9 credits" [ref=f2e225]'
+              - 'row "Image to Image nano-banana: 3 credits, nano-banana-2: 6 credits, nano-banana-pro: 9 credits, gpt-image-2: 12 credits" [ref=f2e226]':
+                - cell "Image to Image" [ref=f2e227]
+                - 'cell "nano-banana: 3 credits, nano-banana-2: 6 credits, nano-banana-pro: 9 credits, gpt-image-2: 12 credits" [ref=f2e228]'
+              - row "3D Print (Multi-Color) 10 credits" [ref=f2e229]:
+                - cell "3D Print (Multi-Color)" [ref=f2e230]
+                - cell "10 credits" [ref=f2e231]
+              - row "3D Print (Analyze Printability) Free" [ref=f2e232]:
+                - cell "3D Print (Analyze Printability)" [ref=f2e233]
+                - cell "Free" [ref=f2e234]
+              - row "3D Print (Repair Printability) 10 credits" [ref=f2e235]:
+                - cell "3D Print (Repair Printability)" [ref=f2e236]
+                - cell "10 credits" [ref=f2e237]
+              - row "Creative Lab — Keychain (Prototype) 6 credits" [ref=f2e238]:
+                - cell "Creative Lab — Keychain (Prototype)" [ref=f2e239]
+                - cell "6 credits" [ref=f2e240]
+              - row "Creative Lab — Keychain (Build) 30 credits" [ref=f2e241]:
+                - cell "Creative Lab — Keychain (Build)" [ref=f2e242]
+                - cell "30 credits" [ref=f2e243]
+              - row "Creative Lab — Fridge Magnet (Prototype) 6 credits" [ref=f2e244]:
+                - cell "Creative Lab — Fridge Magnet (Prototype)" [ref=f2e245]
+                - cell "6 credits" [ref=f2e246]
+              - row "Creative Lab — Fridge Magnet (Build) 30 credits" [ref=f2e247]:
+                - cell "Creative Lab — Fridge Magnet (Build)" [ref=f2e248]
+                - cell "30 credits" [ref=f2e249]
+              - row "Creative Lab — Figure (Prototype) 6 credits" [ref=f2e250]:
+                - cell "Creative Lab — Figure (Prototype)" [ref=f2e251]
+                - cell "6 credits" [ref=f2e252]
+              - row "Creative Lab — Figure (Build) 30 credits" [ref=f2e253]:
+                - cell "Creative Lab — Figure (Build)" [ref=f2e254]
+                - cell "30 credits" [ref=f2e255]
+              - row "Creative Lab — Lamp (Prototype) 6 credits" [ref=f2e256]:
+                - cell "Creative Lab — Lamp (Prototype)" [ref=f2e257]
+                - cell "6 credits" [ref=f2e258]
+              - row "Creative Lab — Lamp (Build) 30 credits" [ref=f2e259]:
+                - cell "Creative Lab — Lamp (Build)" [ref=f2e260]
+                - cell "30 credits" [ref=f2e261]
+          - paragraph [ref=f2e262]:
+            - text: The API is subject to change in the future. If you need more API usage with a lower price, please
+            - link "contact sales by filling out this form" [ref=f2e263] [cursor=pointer]:
+              - /url: https://www.meshy.ai/contact
+              - text: contact sales by filling out this form
+              - img [ref=f2e264]
+            - text: .
+    - contentinfo [ref=f2e266]:
+      - generic [ref=f2e267]:
+        - generic [ref=f2e268]:
+          - 'link "Previous: Errors" [ref=f2e269] [cursor=pointer]':
+            - /url: /en/api/errors
+            - img [ref=f2e270]
+            - text: Previous
+          - link [ref=f2e272] [cursor=pointer]:
+            - /url: /en/api/errors
+            - text: Errors
+        - generic [ref=f2e273]:
+          - 'link "Next: Rate Limits" [ref=f2e274] [cursor=pointer]':
+            - /url: /en/api/rate-limits
+            - text: Next
+            - img [ref=f2e275]
+          - link [ref=f2e277] [cursor=pointer]:
+            - /url: /en/api/rate-limits
+            - text: Rate Limits
+      - generic [ref=f2e278]:
+        - paragraph [ref=f2e279]: © 2026 Meshy LLC. All rights reserved.
+        - generic [ref=f2e280]:
+          - link "Join our Discord server" [ref=f2e281] [cursor=pointer]:
+            - /url: https://discord.com/invite/KgD5yVM9Y4
+            - generic [ref=f2e282]: Join our Discord server
+            - img [ref=f2e283]
+          - link "Follow us on Twitter" [ref=f2e285] [cursor=pointer]:
+            - /url: https://twitter.com/MeshyAI
+            - generic [ref=f2e286]: Follow us on Twitter
+            - img [ref=f2e287]
+          - link "Subscribe on YouTube" [ref=f2e289] [cursor=pointer]:
+            - /url: https://www.youtube.com/@MeshyAI
+            - generic [ref=f2e290]: Subscribe on YouTube
+            - img [ref=f2e291]
+          - link "Follow us on Instagram" [ref=f2e293] [cursor=pointer]:
+            - /url: https://www.instagram.com/meshy.ai/
+            - generic [ref=f2e294]: Follow us on Instagram
+            - img [ref=f2e295]
+          - link "Follow us on TikTok" [ref=f2e298] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@meshy.ai
+            - generic [ref=f2e299]: Follow us on TikTok
+            - img [ref=f2e300]
+          - link "Follow us on LinkedIn" [ref=f2e303] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/meshyai/
+            - generic [ref=f2e304]: Follow us on LinkedIn
+            - img [ref=f2e305]

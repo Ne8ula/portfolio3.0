@@ -5,11 +5,13 @@
 // Lambert fills + dark edge wireframes + jade as the only chromatic accent.
 // Decorative (platter spins); no interactions yet.
 import * as THREE from "three"
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import { PALETTE, makeHeroGlass } from "./materials"
 
 export function buildTurntable(scene, tableGroup){
   const group = new THREE.Group();
   group.position.set(0, 0.18, 0.8);
-  group.rotation.y = -0.12;
+  group.rotation.y = 0;   // faces the viewer dead-on
   group.scale.setScalar(1.4);
   tableGroup.add(group);
   window.__cockpitTurntable = group;
@@ -21,12 +23,15 @@ export function buildTurntable(scene, tableGroup){
     if (typeof s === 'number') group.scale.setScalar(s);
   };
 
-  const silver = new THREE.MeshLambertMaterial({ color: 0xC9C4BA });
-  const dark   = new THREE.MeshLambertMaterial({ color: 0x2A2722 });
-  const darker = new THREE.MeshLambertMaterial({ color: 0x17150F });
-  const jade   = new THREE.MeshLambertMaterial({ color: 0x4B6E4F });
-  const jadeLt = new THREE.MeshLambertMaterial({ color: 0x7A9A7E });
-  const edgeMat = new THREE.LineBasicMaterial({ color: 0x55514B, transparent: true, opacity: 0.6 });
+  // Brushed metal + soft-touch darks (was flat Lambert); jade stays the
+  // only chromatic accent. PBR responds to the PMREM env like the PC does.
+  const silver = new THREE.MeshStandardMaterial({ color: 0xC9C4BA, roughness: 0.35, metalness: 0.55 });
+  const dark   = new THREE.MeshStandardMaterial({ color: 0x2A2722, roughness: 0.5,  metalness: 0.15 });
+  const darker = new THREE.MeshPhysicalMaterial({ color: 0x17150F, roughness: 0.5,  clearcoat: 1, clearcoatRoughness: 0.12 });
+  const jade   = new THREE.MeshLambertMaterial({ color: PALETTE.jade });
+  const jadeLt = new THREE.MeshLambertMaterial({ color: PALETTE.jadeLt });
+  const edgeMat = new THREE.LineBasicMaterial({ color: PALETTE.lineInk, transparent: true, opacity: 0.6 });
+  const glassEdge = new THREE.LineBasicMaterial({ color: PALETTE.line, transparent: true, opacity: 0.5, depthWrite: false });
 
   const addEdges = (mesh) => {
     const seg = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), edgeMat);
@@ -43,8 +48,10 @@ export function buildTurntable(scene, tableGroup){
   const topY = PLINTH_H;
 
   // ── Platter + record (spin) ───────────────────────────────────
+  // NOTE: every cap here floats a few mm above the surface below it —
+  // coplanar faces z-fight and flash while the platter spins.
   const platter = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.56, 0.07, 44), dark);
-  platter.position.set(-0.28, topY + 0.035, 0);
+  platter.position.set(-0.28, topY + 0.047, 0);
   group.add(platter);
   // strobe-dot rim — jade ring around the platter edge
   const rim = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.008, 6, 44), jade);
@@ -53,13 +60,13 @@ export function buildTurntable(scene, tableGroup){
   rim.position.y += 0.03;
   group.add(rim);
   const record = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.014, 44), darker);
-  record.position.set(platter.position.x, topY + 0.078, 0);
+  record.position.set(platter.position.x, topY + 0.09, 0);
   group.add(record);
   const label = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.016, 32), jadeLt);
   label.position.copy(record.position);
   group.add(label);
   const spindle = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.05, 10), silver);
-  spindle.position.set(platter.position.x, topY + 0.1, 0);
+  spindle.position.set(platter.position.x, topY + 0.112, 0);
   group.add(spindle);
 
   // ── Tonearm (pivot base, arm over the record, counterweight) ──
@@ -100,6 +107,28 @@ export function buildTurntable(scene, tableGroup){
   const pitchKnob = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.035, 0.06), silver);
   pitchKnob.position.set(0.78, topY + 0.01, 0.1);
   group.add(pitchKnob); addEdges(pitchKnob);
+
+  // ── Polar grid — jade calibration ring etched around the platter
+  // (three.js PolarGridHelper — the webgl_helpers diagnostic look) ──
+  const polar = new THREE.PolarGridHelper(0.63, 8, 3, 48, PALETTE.jadeLt, PALETTE.jade);
+  polar.material.transparent = true;
+  polar.material.opacity = 0.3;
+  polar.material.depthWrite = false;
+  polar.position.set(platter.position.x, topY + 0.012, 0);
+  group.add(polar);
+
+  // ── Dust cover — hero glass over the whole deck. Same enclosure
+  // pattern as the PC head: one solid glass volume, depthWrite off so
+  // the edge lines + polar grid inside stay visible through it. ────
+  const cover = new THREE.Mesh(
+    new RoundedBoxGeometry(PLINTH_W + 0.1, 0.55, PLINTH_D + 0.1, 3, 0.07),
+    makeHeroGlass({ thickness: 0.35, roughness: 0.1, aberration: 0.015 })
+  );
+  cover.position.y = topY + 0.283;   // bottom face floats above the plinth top — coplanar = flicker
+  group.add(cover);
+  const coverEdge = new THREE.LineSegments(new THREE.EdgesGeometry(cover.geometry, 24), glassEdge);
+  coverEdge.position.copy(cover.position);
+  group.add(coverEdge);
 
   // ── Spin ──────────────────────────────────────────────────────
   group.tick = function(dt){

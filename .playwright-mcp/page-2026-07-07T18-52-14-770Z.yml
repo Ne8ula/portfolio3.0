@@ -1,0 +1,595 @@
+- generic [ref=f17e2]:
+  - banner [ref=f17e4]:
+    - generic [ref=f17e5]:
+      - link "Open Design" [ref=f17e6] [cursor=pointer]:
+        - /url: "#top"
+        - img "Open Design" [ref=f17e7]
+      - navigation [ref=f17e8]:
+        - list [ref=f17e9]:
+          - listitem [ref=f17e10]:
+            - button "Product" [ref=f17e11] [cursor=pointer]:
+              - text: Product
+              - generic [ref=f17e12]: ▾
+          - listitem [ref=f17e13]:
+            - link "Solution" [ref=f17e14] [cursor=pointer]:
+              - /url: /solutions/
+              - text: Solution
+              - generic [ref=f17e15]: ▾
+          - listitem [ref=f17e16]:
+            - link "Agent" [ref=f17e17] [cursor=pointer]:
+              - /url: /agents/
+              - text: Agent
+              - generic [ref=f17e18]: ▾
+          - listitem [ref=f17e19]:
+            - link "Plugins" [ref=f17e20] [cursor=pointer]:
+              - /url: /plugins/
+              - text: Plugins
+              - generic [ref=f17e21]: ▾
+          - listitem [ref=f17e22]:
+            - link "Pricing" [ref=f17e23] [cursor=pointer]:
+              - /url: /pricing/
+          - listitem [ref=f17e24]:
+            - button "Resources" [ref=f17e25] [cursor=pointer]:
+              - text: Resources
+              - generic [ref=f17e26]: ▾
+          - listitem [ref=f17e27]:
+            - link "Community" [ref=f17e28] [cursor=pointer]:
+              - /url: /community/
+              - text: Community
+              - generic [ref=f17e29]: ▾
+      - generic [ref=f17e30]:
+        - group [ref=f17e31]:
+          - generic "Switch language" [ref=f17e32] [cursor=pointer]:
+            - generic [ref=f17e33]: 
+            - generic [ref=f17e34]: 
+        - link "Download Open Design desktop" [ref=f17e35] [cursor=pointer]:
+          - /url: /download/
+          - text: Download
+        - link "Sign in" [ref=f17e37] [cursor=pointer]:
+          - /url: https://open-design.ai/cloud/login
+  - generic [ref=f17e38]:
+    - img
+    - generic [ref=f17e40]:
+      - paragraph [ref=f17e41]: Open Source Claude Design Alternative
+      - heading "Open Design The Vibe Design Workspace" [level=1] [ref=f17e42]:
+        - generic [ref=f17e47]:
+          - generic [ref=f17e48]: Open
+          - generic [ref=f17e49]: Design
+        - generic [ref=f17e50]:
+          - generic [ref=f17e51]: The
+          - generic [ref=f17e52]: Vibe
+          - generic [ref=f17e53]: Design
+          - generic [ref=f17e54]: Workspace
+      - generic [ref=f17e55]:
+        - link "Download desktop · Windows" [ref=f17e56] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e58]: 
+          - text: Download desktop
+          - generic [ref=f17e59]: · Windows
+        - link "Star 75.9K" [ref=f17e60] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design
+          - generic [ref=f17e62]: 
+          - generic [ref=f17e63]: Star 75.9K
+      - paragraph [ref=f17e64]: Open Design is the open-source, local vibe design workspace — it turns the coding agents you already run into a design engine that carries you from idea to prototype, web, slides, and HTML video, all finished on your own machine. Agent-native, with 21 coding agents, 129 design systems, and an Apache-2.0 license.
+      - img "Open Design desktop — design files & index.html preview" [ref=f17e66]
+  - generic [ref=f17e70]:
+    - paragraph [ref=f17e71]: Why Open Design?
+    - 'heading "Open Design is the open-source, agentic vibe design workspace — it turns the coding agent you already run into a design engine whose output you fully own. When an LLM first proved it can truly design — real design work, not just copy — that capability arrived closed, hosted, and model-locked. Open Design opens it up: local, BYOK, Apache-2.0." [level=2] [ref=f17e74]'
+    - generic [ref=f17e77]:
+      - radio " Desktop-native" [checked]
+      - radio " We don’t build agents, we plug them in"
+      - radio " It learns you over time"
+      - tablist [ref=f17e78]:
+        - generic [ref=f17e79] [cursor=pointer]:  Desktop-native
+        - generic [ref=f17e80] [cursor=pointer]:  We don’t build agents, we plug them in
+        - generic [ref=f17e81] [cursor=pointer]:  It learns you over time
+      - generic [ref=f17e83]:
+        - generic [ref=f17e85]:
+          - img "Design happens on the desktop. Local files, Figma exports, and code repos are directly readable, and the agent has full terminal-execution power." [ref=f17e86]
+          - paragraph [ref=f17e87]:
+            - text: Design happens on the desktop.
+            - generic [ref=f17e88]: Local files, Figma exports, and code repos are directly readable, and the agent has full terminal-execution power.
+        - generic [ref=f17e90]:
+          - img "The Claude Code / Codex / Cursor on your machine are already strong enough. Open Design wires them into a complete design workflow." [ref=f17e91]
+          - paragraph [ref=f17e92]:
+            - text: The Claude Code / Codex / Cursor on your machine are already strong enough.
+            - generic [ref=f17e93]: Open Design wires them into a complete design workflow.
+        - generic [ref=f17e95]:
+          - img "Every choice settles into a design system, preferences, and memory, so the next generation lands closer to what you want." [ref=f17e96]
+          - paragraph [ref=f17e97]: Every choice settles into a design system, preferences, and memory, so the next generation lands closer to what you want.
+      - generic [ref=f17e98]:
+        - link "Explore design systems" [ref=f17e99] [cursor=pointer]:
+          - /url: /plugins/systems/
+          - text: Explore design systems
+          - generic [ref=f17e101]: 
+        - link "Download desktop · Windows" [ref=f17e102] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e104]: 
+          - text: Download desktop
+          - generic [ref=f17e105]: · Windows
+  - generic [ref=f17e111]:
+    - generic [ref=f17e112]:
+      - heading "From idea to prototype, web, slides, and HTML video" [level=2] [ref=f17e113]
+      - img "Done 👌" [ref=f17e114]
+      - paragraph [ref=f17e115]: Brief → Template → Visual direction → Artifact → Memory
+    - generic [ref=f17e116]:
+      - generic [ref=f17e117]:
+        - list [ref=f17e118]:
+          - listitem [ref=f17e119] [cursor=pointer]:
+            - generic [ref=f17e120]: "01"
+            - generic [ref=f17e121]: Choose a starting point
+          - listitem [ref=f17e122] [cursor=pointer]:
+            - generic [ref=f17e123]: "02"
+            - generic [ref=f17e124]: Set the visual direction
+          - listitem [ref=f17e125] [cursor=pointer]:
+            - generic [ref=f17e126]: "03"
+            - generic [ref=f17e127]: Generate the artifact
+          - listitem [ref=f17e128] [cursor=pointer]:
+            - generic [ref=f17e129]: "04"
+            - generic [ref=f17e130]: Deliver or make a video
+        - generic [ref=f17e131]:
+          - link "Explore solutions" [ref=f17e132] [cursor=pointer]:
+            - /url: /solutions/
+            - text: Explore solutions
+            - generic [ref=f17e134]: 
+          - link "Download desktop" [ref=f17e135] [cursor=pointer]:
+            - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+            - generic [ref=f17e137]: 
+            - text: Download desktop
+      - generic [ref=f17e138]:
+        - generic [ref=f17e139]:
+          - generic: Describe your goal in one line, or start from a template / plugin.
+        - generic [ref=f17e140]:
+          - generic: Once a direction is set, palette, type, and spacing flow into generation automatically.
+        - generic [ref=f17e141]:
+          - generic: The agent reads all context, produces real runnable files, and previews and edits them live in a sandbox.
+        - generic [ref=f17e142]:
+          - generic: Export it to engineering to keep building, or turn it into a marketing video with HyperFrames.
+  - generic [ref=f17e144]:
+    - generic [ref=f17e146]:
+      - heading "What can you make with Open Design?" [level=2] [ref=f17e147]:
+        - text: What can you make with
+        - emphasis [ref=f17e148]: Open Design
+        - text: "?"
+      - paragraph [ref=f17e149]: Prototypes, landing pages, slide decks, dashboards, brand and design systems — even HTML video. Open Design turns each into real, runnable files, driven by your own coding agent and ready to ship or hand off to engineering.
+      - generic [ref=f17e150]:
+        - link "Browse all templates" [ref=f17e151] [cursor=pointer]:
+          - /url: /plugins/templates/
+          - text: Browse all templates
+          - generic [ref=f17e153]: 
+        - link "Download desktop · Windows" [ref=f17e154] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e156]: 
+          - text: Download desktop
+          - generic [ref=f17e157]: · Windows
+    - generic [ref=f17e159]:
+      - link "Prototype" [ref=f17e160] [cursor=pointer]:
+        - /url: /plugins/templates/prototype/
+        - generic [ref=f17e161]: 
+        - generic: Prototype
+      - link "Live Artifact" [ref=f17e162] [cursor=pointer]:
+        - /url: /plugins/templates/live-artifact/
+        - generic [ref=f17e163]: 
+        - generic: Live Artifact
+      - link "Slides" [ref=f17e164] [cursor=pointer]:
+        - /url: /plugins/templates/deck/
+        - generic [ref=f17e165]: 
+        - generic: Slides
+      - link "Image" [ref=f17e166] [cursor=pointer]:
+        - /url: /plugins/templates/image/
+        - generic [ref=f17e167]: 
+        - generic: Image
+      - link "HyperFrames" [ref=f17e168] [cursor=pointer]:
+        - /url: /plugins/templates/hyperframes/
+        - generic [ref=f17e169]: 
+        - generic: HyperFrames
+      - link "Video" [ref=f17e170] [cursor=pointer]:
+        - /url: /plugins/templates/video/
+        - generic [ref=f17e171]: 
+        - generic: Video
+  - generic [ref=f17e173]:
+    - generic [ref=f17e174]:
+      - heading "Plug in 21+ coding agents, zero config" [level=2] [ref=f17e176]
+      - paragraph [ref=f17e178]: Every stage is iterative, visual, and research-driven — composable files, not opaque prompts.
+      - link "Browse all 21+ agents" [ref=f17e179] [cursor=pointer]:
+        - /url: /agents/
+        - text: Browse all 21+ agents
+        - generic [ref=f17e181]: 
+    - generic [ref=f17e182]:
+      - generic [ref=f17e183]:
+        - generic [ref=f17e184]:
+          - img "Claude"
+        - generic [ref=f17e185]:
+          - img "Codex"
+        - generic [ref=f17e186]:
+          - img "Gemini"
+        - generic [ref=f17e187]:
+          - img "Cursor"
+        - generic [ref=f17e188]:
+          - img "GitHub Copilot"
+        - generic [ref=f17e189]:
+          - img "OpenCode"
+        - generic [ref=f17e190]:
+          - img "Devin"
+        - generic [ref=f17e191]:
+          - img "Hermes"
+        - generic [ref=f17e192]:
+          - img "Pi"
+        - generic [ref=f17e193]:
+          - img "Kimi"
+        - generic [ref=f17e194]:
+          - img "Kiro"
+        - generic [ref=f17e195]:
+          - img "Qwen"
+        - generic [ref=f17e196]:
+          - img "Grok"
+        - generic [ref=f17e197]:
+          - img "DeepSeek"
+        - generic [ref=f17e198]:
+          - img "Qoder"
+        - generic [ref=f17e199]:
+          - img "AMR"
+        - generic [ref=f17e200]:
+          - img "Kilo"
+        - generic [ref=f17e201]:
+          - img "Aider"
+        - generic [ref=f17e202]:
+          - img "Trae"
+        - generic [ref=f17e203]:
+          - img "Mistral Vibe"
+        - generic [ref=f17e204]:
+          - img "MiMo"
+        - generic [ref=f17e205]:
+          - img "Antigravity"
+        - generic [ref=f17e206]:
+          - img "Reasonix"
+      - img "21+ Coding Agent"
+  - generic [ref=f17e210]:
+    - generic [ref=f17e211]:
+      - heading "From around the world, 360 contributors are building Open Design together" [level=2] [ref=f17e212]:
+        - text: From around the world, 360 contributors
+        - text: are building Open Design together
+      - generic [ref=f17e213]:
+        - link "View all contributors" [ref=f17e214] [cursor=pointer]:
+          - /url: /community/contributors/
+          - text: View all contributors
+          - generic [ref=f17e216]: 
+        - link "Download desktop · Windows" [ref=f17e217] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e219]: 
+          - text: Download desktop
+          - generic [ref=f17e220]: · Windows
+    - generic "Open Design global contributor map" [ref=f17e222]
+  - generic [ref=f17e223]:
+    - heading "The open-source vibe design workspace, by the numbers" [level=2] [ref=f17e224]
+    - generic [ref=f17e226]:
+      - link "GitHub Stars 75.9K GitHub Stars" [ref=f17e227] [cursor=pointer]:
+        - /url: https://github.com/nexu-io/open-design
+        - img "GitHub Stars" [ref=f17e228]
+        - generic:
+          - generic: 
+        - heading "75.9K GitHub Stars" [level=3] [ref=f17e229]:
+          - generic [ref=f17e230]: 75.9K
+          - emphasis [ref=f17e231]: GitHub Stars
+      - link "Contributors 360 Contributors" [ref=f17e232] [cursor=pointer]:
+        - /url: https://github.com/nexu-io/open-design/graphs/contributors
+        - img "Contributors" [ref=f17e233]
+        - generic:
+          - generic: 
+        - heading "360 Contributors" [level=3] [ref=f17e234]:
+          - generic [ref=f17e235]: "360"
+          - emphasis [ref=f17e236]: Contributors
+      - link "Plugins 217+ Plugins" [ref=f17e237] [cursor=pointer]:
+        - /url: /plugins/
+        - img "Plugins" [ref=f17e238]
+        - generic:
+          - generic: 
+        - heading "217+ Plugins" [level=3] [ref=f17e239]:
+          - generic [ref=f17e240]: 217+
+          - emphasis [ref=f17e241]: Plugins
+      - link "Design Systems 129+ Design Systems" [ref=f17e242] [cursor=pointer]:
+        - /url: /plugins/systems/
+        - img "Design Systems" [ref=f17e243]
+        - generic:
+          - generic: 
+        - heading "129+ Design Systems" [level=3] [ref=f17e244]:
+          - generic [ref=f17e245]: 129+
+          - emphasis [ref=f17e246]: Design Systems
+      - link "Coding Agents 21 Coding Agents" [ref=f17e247] [cursor=pointer]:
+        - /url: /agents/
+        - img "Coding Agents" [ref=f17e248]
+        - generic:
+          - generic: 
+        - heading "21 Coding Agents" [level=3] [ref=f17e249]:
+          - generic [ref=f17e250]: "21"
+          - emphasis [ref=f17e251]: Coding Agents
+      - link "Star us Star us" [ref=f17e252] [cursor=pointer]:
+        - /url: https://github.com/nexu-io/open-design
+        - img "Star us" [ref=f17e253]
+        - generic:
+          - generic: 
+        - heading "Star us" [level=3] [ref=f17e254]:
+          - emphasis [ref=f17e255]: Star us
+  - generic [ref=f17e258]:
+    - img "Open Design 桌面端首页"
+    - generic [ref=f17e259]:
+      - heading "Bring frontier AI design power back to every creator’s desk" [level=2] [ref=f17e260]
+      - paragraph [ref=f17e261]: Open · Local · Agent-native
+      - generic [ref=f17e262]:
+        - link "Download desktop · Windows" [ref=f17e263] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e265]: 
+          - text: Download desktop
+          - generic [ref=f17e266]: · Windows
+        - link "Star on GitHub" [ref=f17e267] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design
+          - generic [ref=f17e269]: 
+          - text: Star on GitHub
+  - generic [ref=f17e272]:
+    - generic [ref=f17e273]:
+      - heading "The Open Design newsletter" [level=2] [ref=f17e274]
+      - paragraph [ref=f17e275]: New templates, design-system updates, ambassador events, and product news — straight to your inbox.
+    - generic [ref=f17e276]:
+      - textbox "The Open Design newsletter" [ref=f17e277]:
+        - /placeholder: you@studio.com
+      - button "Subscribe" [ref=f17e278] [cursor=pointer]
+  - generic [ref=f17e281]:
+    - generic [ref=f17e282]:
+      - heading "Open Design FAQ — open source, local-first, and Claude Design alternative" [level=2] [ref=f17e283]
+      - generic [ref=f17e284]:
+        - link "Download desktop · Windows" [ref=f17e285] [cursor=pointer]:
+          - /url: https://github.com/nexu-io/open-design/releases/download/open-design-v0.13.0/open-design-0.13.0-win-x64-setup.exe
+          - generic [ref=f17e287]: 
+          - text: Download desktop
+          - generic [ref=f17e288]: · Windows
+        - paragraph [ref=f17e289]: 74K+ stars · Apache-2.0 · Free
+    - list [ref=f17e290]:
+      - listitem [ref=f17e291]:
+        - group [ref=f17e292]:
+          - generic "01 What is Open Design?" [ref=f17e293] [cursor=pointer]:
+            - generic [ref=f17e294]: "01"
+            - generic [ref=f17e295]: What is Open Design?
+            - generic [ref=f17e296]: +
+      - listitem [ref=f17e297]:
+        - group [ref=f17e298]:
+          - generic "02 Is Open Design official?" [ref=f17e299] [cursor=pointer]:
+            - generic [ref=f17e300]: "02"
+            - generic [ref=f17e301]: Is Open Design official?
+            - generic [ref=f17e302]: +
+      - listitem [ref=f17e303]:
+        - group [ref=f17e304]:
+          - generic "03 How is Open Design different from Claude Design?" [ref=f17e305] [cursor=pointer]:
+            - generic [ref=f17e306]: "03"
+            - generic [ref=f17e307]: How is Open Design different from Claude Design?
+            - generic [ref=f17e308]: +
+      - listitem [ref=f17e309]:
+        - group [ref=f17e310]:
+          - generic "04 Is Open Design an open-source Claude Design alternative?" [ref=f17e311] [cursor=pointer]:
+            - generic [ref=f17e312]: "04"
+            - generic [ref=f17e313]: Is Open Design an open-source Claude Design alternative?
+            - generic [ref=f17e314]: +
+      - listitem [ref=f17e315]:
+        - group [ref=f17e316]:
+          - generic "05 What is a vibe design workspace?" [ref=f17e317] [cursor=pointer]:
+            - generic [ref=f17e318]: "05"
+            - generic [ref=f17e319]: What is a vibe design workspace?
+            - generic [ref=f17e320]: +
+      - listitem [ref=f17e321]:
+        - group [ref=f17e322]:
+          - generic "06 Does Open Design run locally?" [ref=f17e323] [cursor=pointer]:
+            - generic [ref=f17e324]: "06"
+            - generic [ref=f17e325]: Does Open Design run locally?
+            - generic [ref=f17e326]: +
+      - listitem [ref=f17e327]:
+        - group [ref=f17e328]:
+          - generic "07 Which coding agents does Open Design support?" [ref=f17e329] [cursor=pointer]:
+            - generic [ref=f17e330]: "07"
+            - generic [ref=f17e331]: Which coding agents does Open Design support?
+            - generic [ref=f17e332]: +
+      - listitem [ref=f17e333]:
+        - group [ref=f17e334]:
+          - generic "08 Can I self-host or fork it?" [ref=f17e335] [cursor=pointer]:
+            - generic [ref=f17e336]: "08"
+            - generic [ref=f17e337]: Can I self-host or fork it?
+            - generic [ref=f17e338]: +
+      - listitem [ref=f17e339]:
+        - group [ref=f17e340]:
+          - generic "09 Is my data sent to Anthropic, OpenAI, or Google?" [ref=f17e341] [cursor=pointer]:
+            - generic [ref=f17e342]: "09"
+            - generic [ref=f17e343]: Is my data sent to Anthropic, OpenAI, or Google?
+            - generic [ref=f17e344]: +
+      - listitem [ref=f17e345]:
+        - group [ref=f17e346]:
+          - generic "10 Can I run Open Design without installing the CLI or desktop app?" [ref=f17e347] [cursor=pointer]:
+            - generic [ref=f17e348]: "10"
+            - generic [ref=f17e349]: Can I run Open Design without installing the CLI or desktop app?
+            - generic [ref=f17e350]: +
+      - listitem [ref=f17e351]:
+        - group [ref=f17e352]:
+          - generic "11 How much does Open Design cost?" [ref=f17e353] [cursor=pointer]:
+            - generic [ref=f17e354]: "11"
+            - generic [ref=f17e355]: How much does Open Design cost?
+            - generic [ref=f17e356]: +
+      - listitem [ref=f17e357]:
+        - group [ref=f17e358]:
+          - generic "12 Can I self-host Open Design on Vercel, Cloudflare, or my own server?" [ref=f17e359] [cursor=pointer]:
+            - generic [ref=f17e360]: "12"
+            - generic [ref=f17e361]: Can I self-host Open Design on Vercel, Cloudflare, or my own server?
+            - generic [ref=f17e362]: +
+      - listitem [ref=f17e363]:
+        - group [ref=f17e364]:
+          - generic "13 How do I move my brand into Open Design?" [ref=f17e365] [cursor=pointer]:
+            - generic [ref=f17e366]: "13"
+            - generic [ref=f17e367]: How do I move my brand into Open Design?
+            - generic [ref=f17e368]: +
+      - listitem [ref=f17e369]:
+        - group [ref=f17e370]:
+          - generic "14 Can I switch agents without redoing my work?" [ref=f17e371] [cursor=pointer]:
+            - generic [ref=f17e372]: "14"
+            - generic [ref=f17e373]: Can I switch agents without redoing my work?
+            - generic [ref=f17e374]: +
+      - listitem [ref=f17e375]:
+        - group [ref=f17e376]:
+          - generic "15 What's on the Open Design roadmap?" [ref=f17e377] [cursor=pointer]:
+            - generic [ref=f17e378]: "15"
+            - generic [ref=f17e379]: What's on the Open Design roadmap?
+            - generic [ref=f17e380]: +
+  - contentinfo [ref=f17e381]:
+    - generic [ref=f17e382]:
+      - generic [ref=f17e383]:
+        - generic [ref=f17e384]:
+          - heading "Product" [level=5] [ref=f17e385]
+          - list [ref=f17e386]:
+            - listitem [ref=f17e387]:
+              - link "Open Design" [ref=f17e388] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=f17e389]:
+              - link "HTML Anything" [ref=f17e390] [cursor=pointer]:
+                - /url: /html-anything/
+            - listitem [ref=f17e391]:
+              - link "HTML Video" [ref=f17e392] [cursor=pointer]:
+                - /url: /html-video/
+        - generic [ref=f17e393]:
+          - heading "Solution" [level=5] [ref=f17e394]:
+            - link "Solution" [ref=f17e395] [cursor=pointer]:
+              - /url: /solutions/
+          - list [ref=f17e396]:
+            - listitem [ref=f17e397]:
+              - link "Prototype" [ref=f17e398] [cursor=pointer]:
+                - /url: /solutions/prototype/
+            - listitem [ref=f17e399]:
+              - link "Dashboard" [ref=f17e400] [cursor=pointer]:
+                - /url: /solutions/dashboard/
+            - listitem [ref=f17e401]:
+              - link "Slides" [ref=f17e402] [cursor=pointer]:
+                - /url: /solutions/slides/
+            - listitem [ref=f17e403]:
+              - link "Image" [ref=f17e404] [cursor=pointer]:
+                - /url: /solutions/image/
+            - listitem [ref=f17e405]:
+              - link "Video" [ref=f17e406] [cursor=pointer]:
+                - /url: /solutions/video/
+            - listitem [ref=f17e407]:
+              - link "Design System" [ref=f17e408] [cursor=pointer]:
+                - /url: /solutions/design-system/
+        - generic [ref=f17e409]:
+          - heading "Agent" [level=5] [ref=f17e410]:
+            - link "Agent" [ref=f17e411] [cursor=pointer]:
+              - /url: /agents/
+          - list [ref=f17e412]:
+            - listitem [ref=f17e413]:
+              - link "Claude Code" [ref=f17e414] [cursor=pointer]:
+                - /url: /agents/claude-code-design/
+            - listitem [ref=f17e415]:
+              - link "Codex" [ref=f17e416] [cursor=pointer]:
+                - /url: /agents/codex-design/
+            - listitem [ref=f17e417]:
+              - link "Cursor" [ref=f17e418] [cursor=pointer]:
+                - /url: /agents/cursor-design/
+            - listitem [ref=f17e419]:
+              - link "Gemini CLI" [ref=f17e420] [cursor=pointer]:
+                - /url: /agents/gemini-design/
+            - listitem [ref=f17e421]:
+              - link "OpenCode" [ref=f17e422] [cursor=pointer]:
+                - /url: /agents/opencode-design/
+            - listitem [ref=f17e423]:
+              - link "All agents →" [ref=f17e424] [cursor=pointer]:
+                - /url: /agents/
+        - generic [ref=f17e425]:
+          - heading "Plugins" [level=5] [ref=f17e426]:
+            - link "Plugins" [ref=f17e427] [cursor=pointer]:
+              - /url: /plugins/
+          - list [ref=f17e428]:
+            - listitem [ref=f17e429]:
+              - link "Templates" [ref=f17e430] [cursor=pointer]:
+                - /url: /plugins/templates/
+            - listitem [ref=f17e431]:
+              - link "Skills" [ref=f17e432] [cursor=pointer]:
+                - /url: /plugins/skills/
+            - listitem [ref=f17e433]:
+              - link "Systems" [ref=f17e434] [cursor=pointer]:
+                - /url: /plugins/systems/
+        - generic [ref=f17e435]:
+          - heading "Compare" [level=5] [ref=f17e436]:
+            - link "Compare" [ref=f17e437] [cursor=pointer]:
+              - /url: /compare/
+          - list [ref=f17e438]:
+            - listitem [ref=f17e439]:
+              - link "Claude Design" [ref=f17e440] [cursor=pointer]:
+                - /url: /alternatives/claude-design/
+            - listitem [ref=f17e441]:
+              - link "Figma" [ref=f17e442] [cursor=pointer]:
+                - /url: /alternatives/figma/
+            - listitem [ref=f17e443]:
+              - link "Lovable" [ref=f17e444] [cursor=pointer]:
+                - /url: /alternatives/lovable/
+            - listitem [ref=f17e445]:
+              - link "Bolt" [ref=f17e446] [cursor=pointer]:
+                - /url: /alternatives/bolt/
+            - listitem [ref=f17e447]:
+              - link "v0" [ref=f17e448] [cursor=pointer]:
+                - /url: /alternatives/v0/
+            - listitem [ref=f17e449]:
+              - link "Framer" [ref=f17e450] [cursor=pointer]:
+                - /url: /alternatives/framer/
+        - generic [ref=f17e451]:
+          - heading "Resources" [level=5] [ref=f17e452]
+          - list [ref=f17e453]:
+            - listitem [ref=f17e454]:
+              - link "Blog" [ref=f17e455] [cursor=pointer]:
+                - /url: /blog/
+            - listitem [ref=f17e456]:
+              - link "Tutorials" [ref=f17e457] [cursor=pointer]:
+                - /url: /tutorials/
+            - listitem [ref=f17e458]:
+              - link "Download" [ref=f17e459] [cursor=pointer]:
+                - /url: /download/
+            - listitem [ref=f17e460]:
+              - link "Quickstart" [ref=f17e461] [cursor=pointer]:
+                - /url: /quickstart/
+            - listitem [ref=f17e462]:
+              - link "Official source page" [ref=f17e463] [cursor=pointer]:
+                - /url: /official/
+        - generic [ref=f17e464]:
+          - heading "Company" [level=5] [ref=f17e465]
+          - list [ref=f17e466]:
+            - listitem [ref=f17e467]:
+              - link "About" [ref=f17e468] [cursor=pointer]:
+                - /url: /about/
+            - listitem [ref=f17e469]:
+              - link "FAQ" [ref=f17e470] [cursor=pointer]:
+                - /url: /faq/
+            - listitem [ref=f17e471]:
+              - link "Privacy Policy" [ref=f17e472] [cursor=pointer]:
+                - /url: /privacy/
+            - listitem [ref=f17e473]:
+              - link "Terms" [ref=f17e474] [cursor=pointer]:
+                - /url: /terms/
+            - listitem [ref=f17e475]:
+              - link "GitHub" [ref=f17e476] [cursor=pointer]:
+                - /url: https://github.com/nexu-io/open-design
+            - listitem [ref=f17e477]:
+              - link "Discord" [ref=f17e478] [cursor=pointer]:
+                - /url: https://discord.gg/mHAjSMV6gz
+      - generic [ref=f17e479]:
+        - generic [ref=f17e480]:
+          - generic [ref=f17e481]: © 2026 Powerformer, Inc. · Apache-2.0
+          - link "Privacy Policy" [ref=f17e482] [cursor=pointer]:
+            - /url: /privacy/
+          - generic [ref=f17e483]: ·
+          - link "Terms" [ref=f17e484] [cursor=pointer]:
+            - /url: /terms/
+        - generic [ref=f17e485]:
+          - link "X" [ref=f17e486] [cursor=pointer]:
+            - /url: https://x.com/OpenDesignHQ
+            - img [ref=f17e487]
+          - link "Discord" [ref=f17e489] [cursor=pointer]:
+            - /url: https://discord.gg/mHAjSMV6gz
+            - img [ref=f17e490]
+          - link "GitHub" [ref=f17e492] [cursor=pointer]:
+            - /url: https://github.com/nexu-io/open-design
+            - img [ref=f17e493]
+          - link "YouTube" [ref=f17e495] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UChtshixMhvtgBWzoD9R_Qfg
+            - img [ref=f17e496]
+      - paragraph [ref=f17e499]: Open Design.

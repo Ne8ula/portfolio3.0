@@ -1,0 +1,198 @@
+- generic [active] [ref=f15e1]:
+  - generic [ref=f15e2]:
+    - generic [ref=f15e3]:
+      - link "DuckDuckGo" [ref=f15e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f15e5]:
+        - generic [ref=f15e6]:
+          - textbox [ref=f15e7]: Tripo MCP server github tripo3d official
+          - button "Submit" [ref=f15e8] [cursor=pointer]
+        - combobox [ref=f15e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f15e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f15e15]:
+      - generic [ref=f15e17]:
+        - 'heading "GitHub - VAST-AI-Research/tripo-mcp: Official MCP server for Tripo" [level=2] [ref=f15e18]':
+          - 'link "GitHub - VAST-AI-Research/tripo-mcp: Official MCP server for Tripo" [ref=f15e19] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=f38b5108ddc2cadf482591a74ff435aa5d38d3ac3dcd69f9e317b153082bcfff
+        - generic [ref=f15e21]:
+          - link [ref=f15e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=f38b5108ddc2cadf482591a74ff435aa5d38d3ac3dcd69f9e317b153082bcfff
+          - link "github.com/VAST-AI-Research/tripo-mcp" [ref=f15e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=f38b5108ddc2cadf482591a74ff435aa5d38d3ac3dcd69f9e317b153082bcfff
+        - link "Official MCP server for Tripo. Contribute to VAST-AI-Research/tripo-mcp development by creating an account on GitHub." [ref=f15e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=f38b5108ddc2cadf482591a74ff435aa5d38d3ac3dcd69f9e317b153082bcfff
+      - generic [ref=f15e27]:
+        - 'heading "GitHub - frrabelo/server-tripo-mcp: Servidor MCP oficial para Tripo ..." [level=2] [ref=f15e28]':
+          - 'link "GitHub - frrabelo/server-tripo-mcp: Servidor MCP oficial para Tripo ..." [ref=f15e29] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Ffrrabelo%2Fserver%2Dtripo%2Dmcp&rut=540dc8cba5e3b905c758a665dd1e527f9d00eb0d5e4daf56c97575baf8c463bf
+        - generic [ref=f15e31]:
+          - link [ref=f15e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Ffrrabelo%2Fserver%2Dtripo%2Dmcp&rut=540dc8cba5e3b905c758a665dd1e527f9d00eb0d5e4daf56c97575baf8c463bf
+          - link "github.com/frrabelo/server-tripo-mcp" [ref=f15e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Ffrrabelo%2Fserver%2Dtripo%2Dmcp&rut=540dc8cba5e3b905c758a665dd1e527f9d00eb0d5e4daf56c97575baf8c463bf
+        - link "Install Tripo AI Blender Addon from Tripo AI's website Configure the MCP server in Claude Desktop or Cursor. Happy creating in 3D! E.g., \"Generate a 3D model of a futuristic chair\"." [ref=f15e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Ffrrabelo%2Fserver%2Dtripo%2Dmcp&rut=540dc8cba5e3b905c758a665dd1e527f9d00eb0d5e4daf56c97575baf8c463bf
+      - generic [ref=f15e37]:
+        - heading "Tripo MCP Server" [level=2] [ref=f15e38]:
+          - link "Tripo MCP Server" [ref=f15e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.so%2Fserver%2Ftripo%2Dmcp&rut=37e94505ff227864b7732459ce908238471279610e5242a478105904a16b3a59
+        - generic [ref=f15e41]:
+          - link [ref=f15e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.so%2Fserver%2Ftripo%2Dmcp&rut=37e94505ff227864b7732459ce908238471279610e5242a478105904a16b3a59
+          - link "mcp.so/server/tripo-mcp" [ref=f15e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.so%2Fserver%2Ftripo%2Dmcp&rut=37e94505ff227864b7732459ce908238471279610e5242a478105904a16b3a59
+        - link "Official MCP server for Tripo what is Tripo MCP? Tripo MCP is a server that provides an interface between AI assistants and Tripo AI via the Model Context Protocol (MCP). It allows users to generate 3D assets from natural language commands. how to use Tripo MCP? To use Tripo MCP, install the Tripo AI Blender Addon, configure the MCP server in Claude Desktop or Cursor, and then input natural ..." [ref=f15e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.so%2Fserver%2Ftripo%2Dmcp&rut=37e94505ff227864b7732459ce908238471279610e5242a478105904a16b3a59
+      - generic [ref=f15e47]:
+        - heading "Tripo MCP Server | Awesome MCP Servers" [level=2] [ref=f15e48]:
+          - link "Tripo MCP Server | Awesome MCP Servers" [ref=f15e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=9ae5048bedd150d4fe063dad14b4de19f66ae832770d0dbe1c801cde73714f6b
+        - generic [ref=f15e51]:
+          - link [ref=f15e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=9ae5048bedd150d4fe063dad14b4de19f66ae832770d0dbe1c801cde73714f6b
+          - link "mcpservers.org/servers/VAST-AI-Research/tripo-mcp" [ref=f15e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=9ae5048bedd150d4fe063dad14b4de19f66ae832770d0dbe1c801cde73714f6b
+        - link "Generate 3D models with Tripo AI. Requires the external Tripo AI Blender Addon. Browse Tripo MCP Server for Claude, Cursor, VS Code, and other AI agents." [ref=f15e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2FVAST%2DAI%2DResearch%2Ftripo%2Dmcp&rut=9ae5048bedd150d4fe063dad14b4de19f66ae832770d0dbe1c801cde73714f6b
+      - generic [ref=f15e57]:
+        - heading "https://github.com/vast-ai-research/tripo-mcp - awesome.ecosyste.ms" [level=2] [ref=f15e58]:
+          - link "https://github.com/vast-ai-research/tripo-mcp - awesome.ecosyste.ms" [ref=f15e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fawesome.ecosyste.ms%2Fprojects%2Fgithub.com%252Fvast%2Dai%2Dresearch%252Ftripo%2Dmcp&rut=e6d67d4bd0923f1ff83b3b0b944b7c7204ff7f63355c1735937316d25974af38
+        - generic [ref=f15e61]:
+          - link [ref=f15e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fawesome.ecosyste.ms%2Fprojects%2Fgithub.com%252Fvast%2Dai%2Dresearch%252Ftripo%2Dmcp&rut=e6d67d4bd0923f1ff83b3b0b944b7c7204ff7f63355c1735937316d25974af38
+          - link "awesome.ecosyste.ms/projects/github.com/vast-ai-research/tripo-mcp" [ref=f15e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fawesome.ecosyste.ms%2Fprojects%2Fgithub.com%252Fvast%2Dai%2Dresearch%252Ftripo%2Dmcp&rut=e6d67d4bd0923f1ff83b3b0b944b7c7204ff7f63355c1735937316d25974af38
+          - text: 2025-03-21T00:00:00.0000000
+        - link "toolsdk-mcp-registry - tripo-mcp - to-3D model creation and manipulation through Blender addon integration for seamless 3D content creation workflows. (python) (Other Tools and Integrations / How to Submit)" [ref=f15e65] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fawesome.ecosyste.ms%2Fprojects%2Fgithub.com%252Fvast%2Dai%2Dresearch%252Ftripo%2Dmcp&rut=e6d67d4bd0923f1ff83b3b0b944b7c7204ff7f63355c1735937316d25974af38
+      - generic [ref=f15e67]:
+        - heading "Tripo 3D MCP Server — Install & Setup — MCP.Directory" [level=2] [ref=f15e68]:
+          - link "Tripo 3D MCP Server — Install & Setup — MCP.Directory" [ref=f15e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Ftripo%2D3d&rut=46fec391e382232e0bc2e8f923186e045d467fda5f9273d308f76a055291bd89
+        - generic [ref=f15e71]:
+          - link [ref=f15e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Ftripo%2D3d&rut=46fec391e382232e0bc2e8f923186e045d467fda5f9273d308f76a055291bd89
+          - link "mcp.directory/servers/tripo-3d" [ref=f15e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Ftripo%2D3d&rut=46fec391e382232e0bc2e8f923186e045d467fda5f9273d308f76a055291bd89
+        - link "Connects AI assistants to Tripo's text-to-3D generation API and provides Blender scene manipulation tools. Install for Claude, Cursor & VS Code in seconds." [ref=f15e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Ftripo%2D3d&rut=46fec391e382232e0bc2e8f923186e045d467fda5f9273d308f76a055291bd89
+      - generic [ref=f15e77]:
+        - heading "The AI Engineer's Guide to the Official Tripo 3D MCP Server" [level=2] [ref=f15e78]:
+          - link "The AI Engineer's Guide to the Official Tripo 3D MCP Server" [ref=f15e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fskywork.ai%2Fskypage%2Fen%2Fai%2Dengineer%2Dguide%2Dtripo%2D3d%2Dserver%2F1977930052563046400&rut=8151b8b27370f39af79969a84228d1f17e13f8f6d27777f7243c78d22b4dec59
+        - generic [ref=f15e81]:
+          - link [ref=f15e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fskywork.ai%2Fskypage%2Fen%2Fai%2Dengineer%2Dguide%2Dtripo%2D3d%2Dserver%2F1977930052563046400&rut=8151b8b27370f39af79969a84228d1f17e13f8f6d27777f7243c78d22b4dec59
+          - link "skywork.ai/skypage/en/ai-engineer-guide-tripo-3d-server/1977930052563046400" [ref=f15e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fskywork.ai%2Fskypage%2Fen%2Fai%2Dengineer%2Dguide%2Dtripo%2D3d%2Dserver%2F1977930052563046400&rut=8151b8b27370f39af79969a84228d1f17e13f8f6d27777f7243c78d22b4dec59
+          - text: 2025-10-19T00:00:00.0000000
+        - link "Unlock the power of AI with the Official Tripo 3D MCP Server. Easily create and manipulate 3D models in Blender using natural language prompts." [ref=f15e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fskywork.ai%2Fskypage%2Fen%2Fai%2Dengineer%2Dguide%2Dtripo%2D3d%2Dserver%2F1977930052563046400&rut=8151b8b27370f39af79969a84228d1f17e13f8f6d27777f7243c78d22b4dec59
+      - generic [ref=f15e87]:
+        - 'heading "Boost Your 3D Workflow: How to Set Up Tripo in Blender and ... - tripo3d.ai" [level=2] [ref=f15e88]':
+          - 'link "Boost Your 3D Workflow: How to Set Up Tripo in Blender and ... - tripo3d.ai" [ref=f15e89] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Fcursor%2Dtripo%2Dmcp%2Dtutorial&rut=bc81ca338e673ebad20afbffe20584a6457da896555f6185a78ec73262b883e6
+        - generic [ref=f15e91]:
+          - link [ref=f15e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Fcursor%2Dtripo%2Dmcp%2Dtutorial&rut=bc81ca338e673ebad20afbffe20584a6457da896555f6185a78ec73262b883e6
+          - link "www.tripo3d.ai/blog/cursor-tripo-mcp-tutorial" [ref=f15e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Fcursor%2Dtripo%2Dmcp%2Dtutorial&rut=bc81ca338e673ebad20afbffe20584a6457da896555f6185a78ec73262b883e6
+        - link "Learn how to install the Tripo plugin in Blender, set up the MCP server, and connect it to Cursor for an AI-powered 3D modeling workflow." [ref=f15e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Fcursor%2Dtripo%2Dmcp%2Dtutorial&rut=bc81ca338e673ebad20afbffe20584a6457da896555f6185a78ec73262b883e6
+      - generic [ref=f15e97]:
+        - heading "Tripo MCP Server - vast-ai-research/tripo-mcp" [level=2] [ref=f15e98]:
+          - link "Tripo MCP Server - vast-ai-research/tripo-mcp" [ref=f15e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Fvast%2Dai%2Dtripo%2D3d&rut=1d94bfc630bccada0741c2a25b4dceb2cac037ab1d2a656d9f33b55a69511b2a
+        - generic [ref=f15e101]:
+          - link [ref=f15e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Fvast%2Dai%2Dtripo%2D3d&rut=1d94bfc630bccada0741c2a25b4dceb2cac037ab1d2a656d9f33b55a69511b2a
+          - link "playbooks.com/mcp/vast-ai-tripo-3d" [ref=f15e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Fvast%2Dai%2Dtripo%2D3d&rut=1d94bfc630bccada0741c2a25b4dceb2cac037ab1d2a656d9f33b55a69511b2a
+        - link "Official MCP server for Tripo" [ref=f15e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Fvast%2Dai%2Dtripo%2D3d&rut=1d94bfc630bccada0741c2a25b4dceb2cac037ab1d2a656d9f33b55a69511b2a
+      - generic [ref=f15e107]:
+        - heading "Official Tripo 3D MCP Server | PulseMCP" [level=2] [ref=f15e108]:
+          - link "Official Tripo 3D MCP Server | PulseMCP" [ref=f15e109] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pulsemcp.com%2Fservers%2Fvast%2Dai%2Dtripo%2D3d&rut=d2995f13a5b09ed20427071b74d4c542acbca29b3ab68454c4c2a34e4b80fccc
+        - generic [ref=f15e111]:
+          - link [ref=f15e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pulsemcp.com%2Fservers%2Fvast%2Dai%2Dtripo%2D3d&rut=d2995f13a5b09ed20427071b74d4c542acbca29b3ab68454c4c2a34e4b80fccc
+          - link "www.pulsemcp.com/servers/vast-ai-tripo-3d" [ref=f15e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pulsemcp.com%2Fservers%2Fvast%2Dai%2Dtripo%2D3d&rut=d2995f13a5b09ed20427071b74d4c542acbca29b3ab68454c4c2a34e4b80fccc
+          - text: 2025-03-21T00:00:00.0000000
+        - link "MCP (Model Context Protocol) Server. Bridges AI systems with the Tripo 3D generation API, enabling text-to-3D model creation and manipulation through Blender addon integration for seamless 3D content creation workflows." [ref=f15e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pulsemcp.com%2Fservers%2Fvast%2Dai%2Dtripo%2D3d&rut=d2995f13a5b09ed20427071b74d4c542acbca29b3ab68454c4c2a34e4b80fccc
+      - button "Next" [ref=f15e118] [cursor=pointer]
+      - link "Feedback" [ref=f15e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f15e121]

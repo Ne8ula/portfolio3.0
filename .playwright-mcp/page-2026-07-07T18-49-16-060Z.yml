@@ -1,0 +1,1334 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e2]:
+    - banner [ref=f3e3]:
+      - generic [ref=f3e4]:
+        - generic [ref=f3e5]:
+          - link "Vercel" [ref=f3e6] [cursor=pointer]:
+            - /url: https://vercel.com/
+            - img "Vercel" [ref=f3e7]
+          - img [ref=f3e9]
+          - link [ref=f3e11] [cursor=pointer]:
+            - /url: /docs/en
+            - img [ref=f3e12]
+        - navigation "Main" [ref=f3e15]:
+          - list [ref=f3e17]:
+            - listitem [ref=f3e18]:
+              - link "Docs" [ref=f3e19] [cursor=pointer]:
+                - /url: /docs
+            - listitem [ref=f3e20]:
+              - link "API" [ref=f3e21] [cursor=pointer]:
+                - /url: /docs/api
+        - generic [ref=f3e22]:
+          - button [ref=f3e23] [cursor=pointer]:
+            - img
+          - button "Search... ⌘K" [ref=f3e24] [cursor=pointer]:
+            - generic [ref=f3e25]: Search...
+            - generic: ⌘K
+          - button "Ask AI" [ref=f3e26] [cursor=pointer]:
+            - img
+            - generic [ref=f3e27]: Ask AI
+    - generic [ref=f3e28]:
+      - complementary [ref=f3e29]:
+        - generic [ref=f3e30]:
+          - generic:
+            - link:
+              - /url: /docs
+          - generic [ref=f3e31]:
+            - generic [ref=f3e32]:
+              - link [ref=f3e33] [cursor=pointer]:
+                - /url: /docs/api/platform/overview
+                - text: Prefetch v1
+              - link [ref=f3e34] [cursor=pointer]:
+                - /url: /docs/api/v2
+                - text: Prefetch v2
+            - button "Select API version" [ref=f3e35] [cursor=pointer]:
+              - generic [ref=f3e36]:
+                - generic [ref=f3e37]: API version
+                - generic [ref=f3e38]: v1
+              - img
+        - generic [ref=f3e41]:
+          - link "Overview" [ref=f3e42] [cursor=pointer]:
+            - /url: /docs/api
+            - generic [ref=f3e43]: Overview
+          - generic [ref=f3e44]:
+            - button "v0 Platform API" [expanded] [ref=f3e45] [cursor=pointer]:
+              - text: v0 Platform API
+              - img [ref=f3e46]
+            - generic [ref=f3e48]:
+              - link "Quickstart" [ref=f3e49] [cursor=pointer]:
+                - /url: /docs/api/platform/quickstart
+                - generic [ref=f3e50]: Quickstart
+              - link "Overview" [ref=f3e51] [cursor=pointer]:
+                - /url: /docs/api/platform/overview
+                - generic [ref=f3e52]: Overview
+              - generic [ref=f3e53]:
+                - button "Guides" [expanded] [ref=f3e54] [cursor=pointer]:
+                  - text: Guides
+                  - img [ref=f3e55]
+                - generic [ref=f3e57]:
+                  - link "Displaying Chat Messages" [ref=f3e58] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/displaying-chat-messages
+                    - generic [ref=f3e59]: Displaying Chat Messages
+                  - link "Start from Existing Code" [ref=f3e60] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/start-from-existing-code
+                    - generic [ref=f3e61]: Start from Existing Code
+                  - link "Environment Variables" [ref=f3e62] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/environment-variables
+                    - generic [ref=f3e63]: Environment Variables
+                  - link "Handling Integrations" [ref=f3e64] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/handling-integrations
+                    - generic [ref=f3e65]: Handling Integrations
+                  - link "OAuth MCP Servers" [ref=f3e66] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/oauth-mcp-servers
+                    - generic [ref=f3e67]: OAuth MCP Servers
+                  - link "Lock Files from AI Changes" [ref=f3e68] [cursor=pointer]:
+                    - /url: /docs/api/platform/guides/lock-files-from-ai-changes
+                    - generic [ref=f3e69]: Lock Files from AI Changes
+              - generic [ref=f3e70]:
+                - button "Examples" [expanded] [ref=f3e71] [cursor=pointer]:
+                  - text: Examples
+                  - img [ref=f3e72]
+                - generic [ref=f3e74]:
+                  - link "v0 Clone" [ref=f3e75] [cursor=pointer]:
+                    - /url: /docs/api/platform/examples/v0-clone
+                    - generic [ref=f3e76]: v0 Clone
+                  - link "Classic v0" [ref=f3e77] [cursor=pointer]:
+                    - /url: /docs/api/platform/examples/classic-v0
+                    - generic [ref=f3e78]: Classic v0
+                  - link "AI Tools Example" [ref=f3e79] [cursor=pointer]:
+                    - /url: /docs/api/platform/examples/ai-tools
+                    - generic [ref=f3e80]: AI Tools Example
+                  - link "React Components Example" [ref=f3e81] [cursor=pointer]:
+                    - /url: /docs/api/platform/examples/react-components
+                    - generic [ref=f3e82]: React Components Example
+              - generic [ref=f3e83]:
+                - button "Adapters" [expanded] [ref=f3e84] [cursor=pointer]:
+                  - text: Adapters
+                  - img [ref=f3e85]
+                - generic [ref=f3e87]:
+                  - link "MCP Server" [ref=f3e88] [cursor=pointer]:
+                    - /url: /docs/api/platform/adapters/mcp-server
+                    - generic [ref=f3e89]: MCP Server
+                  - link "AI Tools" [ref=f3e90] [cursor=pointer]:
+                    - /url: /docs/api/platform/adapters/ai-tools
+                    - generic [ref=f3e91]: AI Tools
+              - generic [ref=f3e92]:
+                - button "Packages" [expanded] [ref=f3e93] [cursor=pointer]:
+                  - text: Packages
+                  - img [ref=f3e94]
+                - generic [ref=f3e96]:
+                  - link "v0-sdk" [ref=f3e97] [cursor=pointer]:
+                    - /url: /docs/api/platform/packages/v0-sdk
+                    - generic [ref=f3e98]: v0-sdk
+                  - link "create-v0-sdk-app" [ref=f3e99] [cursor=pointer]:
+                    - /url: /docs/api/platform/packages/create-v0-sdk-app
+                    - generic [ref=f3e100]: create-v0-sdk-app
+                  - link "@v0-sdk/react" [ref=f3e101] [cursor=pointer]:
+                    - /url: /docs/api/platform/packages/react
+                    - generic [ref=f3e102]: "@v0-sdk/react"
+                  - link "@v0-sdk/ai-tools" [ref=f3e103] [cursor=pointer]:
+                    - /url: /docs/api/platform/packages/ai-tools
+                    - generic [ref=f3e104]: "@v0-sdk/ai-tools"
+              - generic [ref=f3e105]:
+                - button "API Reference" [expanded] [ref=f3e106] [cursor=pointer]:
+                  - text: API Reference
+                  - img [ref=f3e107]
+                - generic [ref=f3e109]:
+                  - button "Projects" [ref=f3e111] [cursor=pointer]:
+                    - text: Projects
+                    - img [ref=f3e112]
+                  - button "Chats" [ref=f3e115] [cursor=pointer]:
+                    - text: Chats
+                    - img [ref=f3e116]
+                  - button "Deployments" [ref=f3e119] [cursor=pointer]:
+                    - text: Deployments
+                    - img [ref=f3e120]
+                  - button "Integrations" [ref=f3e123] [cursor=pointer]:
+                    - text: Integrations
+                    - img [ref=f3e124]
+                  - button "Hooks" [ref=f3e127] [cursor=pointer]:
+                    - text: Hooks
+                    - img [ref=f3e128]
+                  - button "Rate limits" [ref=f3e131] [cursor=pointer]:
+                    - text: Rate limits
+                    - img [ref=f3e132]
+                  - button "User" [ref=f3e135] [cursor=pointer]:
+                    - text: User
+                    - img [ref=f3e136]
+                  - button "MCP Servers" [ref=f3e139] [cursor=pointer]:
+                    - text: MCP Servers
+                    - img [ref=f3e140]
+                  - generic [ref=f3e142]:
+                    - button "Reports" [expanded] [ref=f3e143] [cursor=pointer]:
+                      - text: Reports
+                      - img [ref=f3e144]
+                    - generic [ref=f3e146]:
+                      - link "Get Usage Report GET" [ref=f3e147] [cursor=pointer]:
+                        - /url: /docs/api/platform/reference/reports/get-usage
+                        - generic [ref=f3e148]: Get Usage Report
+                        - generic [ref=f3e149]: GET
+                      - link "Get User Activity Report GET" [ref=f3e150] [cursor=pointer]:
+                        - /url: /docs/api/platform/reference/reports/get-user-activity
+                        - generic [ref=f3e151]: Get User Activity Report
+                        - generic [ref=f3e152]: GET
+        - button "Choose a language" [ref=f3e154] [cursor=pointer]:
+          - img [ref=f3e155]
+          - generic [ref=f3e159]: English
+          - img [ref=f3e160]
+      - generic:
+        - button "Collapse Sidebar":
+          - img
+        - button "Open Search":
+          - img
+      - article [ref=f3e162]:
+        - generic [ref=f3e164]: v0 Platform API
+        - heading "Overview" [level=1] [ref=f3e165]:
+          - generic [ref=f3e166]: Overview
+        - paragraph [ref=f3e167]: Core concepts, capabilities, and architecture
+        - generic [ref=f3e168]:
+          - paragraph [ref=f3e169]: v0 turns your ideas into real web apps using natural language—describe what you want and v0's intelligent agent builds it for you with modern frontend tools. The v0 Platform API gives you programmatic access to all of v0's capabilities, letting you integrate v0's AI-powered code generation, chat interface, project management, and deployment features into your own applications and workflows.
+          - heading "What can you build with the Platform API? Copy Anchor Link" [level=2] [ref=f3e170]:
+            - link "What can you build with the Platform API?" [ref=f3e171] [cursor=pointer]:
+              - /url: "#what-can-you-build-with-the-platform-api"
+            - button "Copy Anchor Link" [ref=f3e172] [cursor=pointer]:
+              - img [ref=f3e173]
+          - paragraph [ref=f3e176]: "With the v0 Platform API, you can create your own experiences around v0's core functionality:"
+          - list [ref=f3e177]:
+            - listitem [ref=f3e178]:
+              - strong [ref=f3e179]: Custom chat interfaces
+              - text: "- Build your own UI for v0's AI-powered code generation"
+            - listitem [ref=f3e180]:
+              - strong [ref=f3e181]: Automated workflows
+              - text: "- Trigger code generation, iterate on projects, and deploy automatically"
+            - listitem [ref=f3e182]:
+              - strong [ref=f3e183]: Development tools
+              - text: "- Integrate v0 into IDEs, CI/CD pipelines, or internal tools"
+            - listitem [ref=f3e184]:
+              - strong [ref=f3e185]: Team dashboards
+              - text: "- Create custom project management and collaboration interfaces"
+            - listitem [ref=f3e186]:
+              - strong [ref=f3e187]: AI agents
+              - text: "- Build autonomous systems that use v0 to generate and deploy code"
+            - listitem [ref=f3e188]:
+              - strong [ref=f3e189]: Educational platforms
+              - text: "- Create coding tutorials and interactive learning experiences"
+          - heading "Core Concepts Copy Anchor Link" [level=2] [ref=f3e190]:
+            - link "Core Concepts" [ref=f3e191] [cursor=pointer]:
+              - /url: "#core-concepts"
+            - button "Copy Anchor Link" [ref=f3e192] [cursor=pointer]:
+              - img [ref=f3e193]
+          - heading "Projects Copy Anchor Link" [level=3] [ref=f3e196]:
+            - link "Projects" [ref=f3e197] [cursor=pointer]:
+              - /url: "#projects"
+            - button "Copy Anchor Link" [ref=f3e198] [cursor=pointer]:
+              - img [ref=f3e199]
+          - paragraph [ref=f3e202]: "Projects are containers for your code and development work. They can be:"
+          - list [ref=f3e203]:
+            - listitem [ref=f3e204]:
+              - strong [ref=f3e205]: Created from scratch
+              - text: with AI assistance
+            - listitem [ref=f3e206]:
+              - strong [ref=f3e207]: Imported from GitHub repositories
+            - listitem [ref=f3e208]:
+              - strong [ref=f3e209]: Initialized with existing files
+              - text: you upload
+            - listitem [ref=f3e210]:
+              - strong [ref=f3e211]: Built from community templates
+          - generic [ref=f3e212]:
+            - code [ref=f3e214]:
+              - generic [ref=f3e215]: // Create a new project
+              - generic [ref=f3e216]: "const project = await v0.projects.create({"
+              - generic [ref=f3e217]: "name: 'My React App',"
+              - generic [ref=f3e218]: "})"
+              - generic [ref=f3e220]: "// Most common: Initialize from existing files"
+              - generic [ref=f3e221]: "const chat = await v0.chats.init({"
+              - generic [ref=f3e222]: "type: 'files',"
+              - generic [ref=f3e223]: "files: ["
+              - generic [ref=f3e224]: "{ name: 'src/App.tsx', content: appCode },"
+              - generic [ref=f3e225]: "{ name: 'package.json', content: packageJson },"
+              - generic [ref=f3e226]: "],"
+              - generic [ref=f3e227]: "})"
+            - button [ref=f3e228] [cursor=pointer]:
+              - img
+          - heading "Chats Copy Anchor Link" [level=3] [ref=f3e229]:
+            - link "Chats" [ref=f3e230] [cursor=pointer]:
+              - /url: "#chats"
+            - button "Copy Anchor Link" [ref=f3e231] [cursor=pointer]:
+              - img [ref=f3e232]
+          - paragraph [ref=f3e235]: "Chats are AI-powered conversations that help you develop your projects:"
+          - list [ref=f3e236]:
+            - listitem [ref=f3e237]:
+              - strong [ref=f3e238]:
+                - code [ref=f3e239]: v0.chats.create()
+              - text: "- Start from scratch with AI code generation"
+            - listitem [ref=f3e240]:
+              - strong [ref=f3e241]:
+                - code [ref=f3e242]: v0.chats.init()
+              - text: "- Start with existing files (fast, no tokens)"
+          - generic [ref=f3e243]:
+            - code [ref=f3e245]:
+              - generic [ref=f3e246]: // Start chat with existing code (recommended)
+              - generic [ref=f3e247]: "const chat = await v0.chats.init({"
+              - generic [ref=f3e248]: "files: existingFiles,"
+              - generic [ref=f3e249]: "initialContext: 'Help me optimize this React component',"
+              - generic [ref=f3e250]: "})"
+              - generic [ref=f3e252]: // Start chat from scratch with AI generation
+              - generic [ref=f3e253]: "const chat = await v0.chats.create({"
+              - generic [ref=f3e254]: "initialMessage: 'Create a todo app with React and TypeScript',"
+              - generic [ref=f3e255]: "})"
+            - button [ref=f3e256] [cursor=pointer]:
+              - img
+          - heading "Messages Copy Anchor Link" [level=3] [ref=f3e257]:
+            - link "Messages" [ref=f3e258] [cursor=pointer]:
+              - /url: "#messages"
+            - button "Copy Anchor Link" [ref=f3e259] [cursor=pointer]:
+              - img [ref=f3e260]
+          - paragraph [ref=f3e263]: "Messages flow through chats and can contain:"
+          - list [ref=f3e264]:
+            - listitem [ref=f3e265]:
+              - strong [ref=f3e266]: Text content
+              - text: with markdown formatting
+            - listitem [ref=f3e267]:
+              - strong [ref=f3e268]: Code blocks
+              - text: with syntax highlighting
+            - listitem [ref=f3e269]:
+              - strong [ref=f3e270]: Component previews
+              - text: with live rendering
+            - listitem [ref=f3e271]:
+              - strong [ref=f3e272]: System notifications
+              - text: and status updates
+          - heading "Deployments Copy Anchor Link" [level=3] [ref=f3e273]:
+            - link "Deployments" [ref=f3e274] [cursor=pointer]:
+              - /url: "#deployments"
+            - button "Copy Anchor Link" [ref=f3e275] [cursor=pointer]:
+              - img [ref=f3e276]
+          - paragraph [ref=f3e279]: "Deploy your projects to production with built-in hosting:"
+          - generic [ref=f3e280]:
+            - code [ref=f3e282]:
+              - generic [ref=f3e283]: "const deployment = await v0.deployments.create({"
+              - generic [ref=f3e284]: "chatId: chat.id,"
+              - generic [ref=f3e285]: "versionId: chat.latestVersion.id,"
+              - generic [ref=f3e286]: "})"
+            - button [ref=f3e287] [cursor=pointer]:
+              - img
+          - heading "API Architecture Copy Anchor Link" [level=2] [ref=f3e288]:
+            - link "API Architecture" [ref=f3e289] [cursor=pointer]:
+              - /url: "#api-architecture"
+            - button "Copy Anchor Link" [ref=f3e290] [cursor=pointer]:
+              - img [ref=f3e291]
+          - heading "Base URL Copy Anchor Link" [level=3] [ref=f3e294]:
+            - link "Base URL" [ref=f3e295] [cursor=pointer]:
+              - /url: "#base-url"
+            - button "Copy Anchor Link" [ref=f3e296] [cursor=pointer]:
+              - img [ref=f3e297]
+          - paragraph [ref=f3e300]: "All API requests are made to:"
+          - generic [ref=f3e301]:
+            - code [ref=f3e303]:
+              - generic [ref=f3e304]: https://api.v0.dev
+            - button [ref=f3e305] [cursor=pointer]:
+              - img
+          - heading "RESTful Design Copy Anchor Link" [level=3] [ref=f3e306]:
+            - link "RESTful Design" [ref=f3e307] [cursor=pointer]:
+              - /url: "#restful-design"
+            - button "Copy Anchor Link" [ref=f3e308] [cursor=pointer]:
+              - img [ref=f3e309]
+          - paragraph [ref=f3e312]: "The API follows REST principles with predictable resource URLs:"
+          - generic [ref=f3e313]:
+            - code [ref=f3e315]:
+              - generic [ref=f3e316]: "GET https://api.v0.dev/v1/projects # List projects"
+              - generic [ref=f3e317]: "POST https://api.v0.dev/v1/projects # Create project"
+              - generic [ref=f3e318]: "GET https://api.v0.dev/v1/projects/:id # Get project"
+              - generic [ref=f3e319]: "PUT https://api.v0.dev/v1/projects/:id # Update project"
+              - generic [ref=f3e320]: "DELETE https://api.v0.dev/v1/projects/:id # Delete project"
+              - generic [ref=f3e321]: "POST https://api.v0.dev/v1/chats # Create/init chat"
+              - generic [ref=f3e322]: "GET https://api.v0.dev/v1/chats/:id/messages # Get messages"
+              - generic [ref=f3e323]: "POST https://api.v0.dev/v1/chats/:id/messages # Send message"
+            - button [ref=f3e324] [cursor=pointer]:
+              - img
+          - heading "Authentication Copy Anchor Link" [level=3] [ref=f3e325]:
+            - link "Authentication" [ref=f3e326] [cursor=pointer]:
+              - /url: "#authentication"
+            - button "Copy Anchor Link" [ref=f3e327] [cursor=pointer]:
+              - img [ref=f3e328]
+          - paragraph [ref=f3e331]: "All requests require API key authentication. The SDK provides two ways to authenticate:"
+          - 'heading "Option 1: Default Client (Recommended) Copy Anchor Link" [level=4] [ref=f3e332]':
+            - 'link "Option 1: Default Client (Recommended)" [ref=f3e333] [cursor=pointer]':
+              - /url: "#option-1-default-client-recommended"
+            - button "Copy Anchor Link" [ref=f3e334] [cursor=pointer]:
+              - img [ref=f3e335]
+          - paragraph [ref=f3e338]:
+            - text: The simplest approach uses the default
+            - code [ref=f3e339]: v0
+            - text: client, which automatically reads from the
+            - code [ref=f3e340]: V0_API_KEY
+            - text: "environment variable:"
+          - generic [ref=f3e341]:
+            - code [ref=f3e343]:
+              - generic [ref=f3e344]: "import { v0 } from 'v0-sdk'"
+              - generic [ref=f3e346]: // Automatically uses process.env.V0_API_KEY
+              - generic [ref=f3e347]: const projects = await v0.projects.find()
+            - button [ref=f3e348] [cursor=pointer]:
+              - img
+          - paragraph [ref=f3e349]: "Set your API key in your environment:"
+          - generic [ref=f3e350]:
+            - code [ref=f3e352]:
+              - generic [ref=f3e353]: "# .env file or environment"
+              - generic [ref=f3e354]: V0_API_KEY=your_api_key_here
+            - button [ref=f3e355] [cursor=pointer]:
+              - img
+          - 'heading "Option 2: Custom Client Configuration Copy Anchor Link" [level=4] [ref=f3e356]':
+            - 'link "Option 2: Custom Client Configuration" [ref=f3e357] [cursor=pointer]':
+              - /url: "#option-2-custom-client-configuration"
+            - button "Copy Anchor Link" [ref=f3e358] [cursor=pointer]:
+              - img [ref=f3e359]
+          - paragraph [ref=f3e362]:
+            - text: Use
+            - code [ref=f3e363]: createClient()
+            - text: "when you need to:"
+          - list [ref=f3e364]:
+            - listitem [ref=f3e365]: Use a different environment variable name
+            - listitem [ref=f3e366]: Use multiple API keys in the same application
+            - listitem [ref=f3e367]: Customize the base URL or other settings
+          - generic [ref=f3e368]:
+            - code [ref=f3e370]:
+              - generic [ref=f3e371]: "import { createClient } from 'v0-sdk'"
+              - generic [ref=f3e373]: // Custom API key
+              - generic [ref=f3e374]: "const v0 = createClient({"
+              - generic [ref=f3e375]: "apiKey: process.env.CUSTOM_V0_KEY,"
+              - generic [ref=f3e376]: "})"
+              - generic [ref=f3e378]: // Multiple clients for different accounts
+              - generic [ref=f3e379]: "const personalV0 = createClient({"
+              - generic [ref=f3e380]: "apiKey: process.env.PERSONAL_V0_KEY,"
+              - generic [ref=f3e381]: "})"
+              - generic [ref=f3e383]: "const teamV0 = createClient({"
+              - generic [ref=f3e384]: "apiKey: process.env.TEAM_V0_KEY,"
+              - generic [ref=f3e385]: "})"
+              - generic [ref=f3e387]: // Custom base URL (for enterprise)
+              - generic [ref=f3e388]: "const enterpriseV0 = createClient({"
+              - generic [ref=f3e389]: "apiKey: process.env.V0_API_KEY,"
+              - generic [ref=f3e390]: "baseUrl: 'https://api.enterprise.v0.dev',"
+              - generic [ref=f3e391]: "})"
+            - button [ref=f3e392] [cursor=pointer]:
+              - img
+          - paragraph [ref=f3e393]:
+            - text: Get your API key from
+            - link "v0.dev/chat/settings/keys" [ref=f3e394] [cursor=pointer]:
+              - /url: https://v0.dev/chat/settings/keys
+            - text: .
+          - heading "Error Handling Copy Anchor Link" [level=3] [ref=f3e395]:
+            - link "Error Handling" [ref=f3e396] [cursor=pointer]:
+              - /url: "#error-handling"
+            - button "Copy Anchor Link" [ref=f3e397] [cursor=pointer]:
+              - img [ref=f3e398]
+          - paragraph [ref=f3e401]: "Consistent error responses across all endpoints:"
+          - generic [ref=f3e402]:
+            - code [ref=f3e404]:
+              - generic [ref=f3e405]: "{"
+              - generic [ref=f3e406]: "\"error\": {"
+              - generic [ref=f3e407]: "\"code\": \"project_not_found\","
+              - generic [ref=f3e408]: "\"type\": \"not_found_error\","
+              - generic [ref=f3e409]: "\"message\": \"Project not found\","
+              - generic [ref=f3e410]: "\"userMessage\": \"The project you're looking for doesn't exist.\""
+              - generic [ref=f3e411]: "}"
+              - generic [ref=f3e412]: "}"
+            - button [ref=f3e413] [cursor=pointer]:
+              - img
+          - heading "Key Capabilities Copy Anchor Link" [level=2] [ref=f3e414]:
+            - link "Key Capabilities" [ref=f3e415] [cursor=pointer]:
+              - /url: "#key-capabilities"
+            - button "Copy Anchor Link" [ref=f3e416] [cursor=pointer]:
+              - img [ref=f3e417]
+          - heading "1. Code Generation & AI Chat Copy Anchor Link" [level=3] [ref=f3e420]:
+            - link "1. Code Generation & AI Chat" [ref=f3e421] [cursor=pointer]:
+              - /url: "#1-code-generation--ai-chat"
+            - button "Copy Anchor Link" [ref=f3e422] [cursor=pointer]:
+              - img [ref=f3e423]
+          - list [ref=f3e426]:
+            - listitem [ref=f3e427]:
+              - strong [ref=f3e428]: Natural language
+              - text: to code conversion
+            - listitem [ref=f3e429]:
+              - strong [ref=f3e430]: Context-aware
+              - text: suggestions and improvements
+            - listitem [ref=f3e431]:
+              - strong [ref=f3e432]: Multi-turn conversations
+              - text: for iterative development
+            - listitem [ref=f3e433]:
+              - strong [ref=f3e434]: Framework-specific
+              - text: optimizations (React, Next.js, Vue, etc.)
+          - heading "2. Project Management Copy Anchor Link" [level=3] [ref=f3e435]:
+            - link "2. Project Management" [ref=f3e436] [cursor=pointer]:
+              - /url: "#2-project-management"
+            - button "Copy Anchor Link" [ref=f3e437] [cursor=pointer]:
+              - img [ref=f3e438]
+          - list [ref=f3e441]:
+            - listitem [ref=f3e442]:
+              - strong [ref=f3e443]: Version control
+              - text: integration with Git
+            - listitem [ref=f3e444]:
+              - strong [ref=f3e445]: File management
+              - text: with conflict resolution
+            - listitem [ref=f3e446]:
+              - strong [ref=f3e447]: Template system
+              - text: for rapid project setup
+            - listitem [ref=f3e448]:
+              - strong [ref=f3e449]: Workspace organization
+              - text: for team collaboration
+          - heading "3. Import & Export Copy Anchor Link" [level=3] [ref=f3e450]:
+            - link "3. Import & Export" [ref=f3e451] [cursor=pointer]:
+              - /url: "#3-import--export"
+            - button "Copy Anchor Link" [ref=f3e452] [cursor=pointer]:
+              - img [ref=f3e453]
+          - list [ref=f3e456]:
+            - listitem [ref=f3e457]:
+              - strong [ref=f3e458]: GitHub integration
+              - text: for repository imports
+            - listitem [ref=f3e459]:
+              - strong [ref=f3e460]: File uploads
+              - text: for existing codebases
+            - listitem [ref=f3e461]:
+              - strong [ref=f3e462]: Template creation
+              - text: from existing projects
+            - listitem [ref=f3e463]:
+              - strong [ref=f3e464]: Export capabilities
+              - text: for backup and migration
+          - heading "4. Deployment & Hosting Copy Anchor Link" [level=3] [ref=f3e465]:
+            - link "4. Deployment & Hosting" [ref=f3e466] [cursor=pointer]:
+              - /url: "#4-deployment--hosting"
+            - button "Copy Anchor Link" [ref=f3e467] [cursor=pointer]:
+              - img [ref=f3e468]
+          - list [ref=f3e471]:
+            - listitem [ref=f3e472]:
+              - strong [ref=f3e473]: One-click deployments
+              - text: to v0's hosting platform
+            - listitem [ref=f3e474]:
+              - strong [ref=f3e475]: Custom domains
+              - text: and SSL certificates
+            - listitem [ref=f3e476]:
+              - strong [ref=f3e477]: Environment management
+              - text: (staging, production)
+            - listitem [ref=f3e478]:
+              - strong [ref=f3e479]: Deployment logs
+              - text: and monitoring
+          - heading "5. Team Collaboration Copy Anchor Link" [level=3] [ref=f3e480]:
+            - link "5. Team Collaboration" [ref=f3e481] [cursor=pointer]:
+              - /url: "#5-team-collaboration"
+            - button "Copy Anchor Link" [ref=f3e482] [cursor=pointer]:
+              - img [ref=f3e483]
+          - list [ref=f3e486]:
+            - listitem [ref=f3e487]:
+              - strong [ref=f3e488]: Shared projects
+              - text: with permission management
+            - listitem [ref=f3e489]:
+              - strong [ref=f3e490]: Real-time collaboration
+              - text: on code and chats
+            - listitem [ref=f3e491]:
+              - strong [ref=f3e492]: Activity feeds
+              - text: and notifications
+            - listitem [ref=f3e493]:
+              - strong [ref=f3e494]: Role-based access
+              - text: control
+          - heading "Integration Patterns Copy Anchor Link" [level=2] [ref=f3e495]:
+            - link "Integration Patterns" [ref=f3e496] [cursor=pointer]:
+              - /url: "#integration-patterns"
+            - button "Copy Anchor Link" [ref=f3e497] [cursor=pointer]:
+              - img [ref=f3e498]
+          - heading "1. Direct API Usage Copy Anchor Link" [level=3] [ref=f3e501]:
+            - link "1. Direct API Usage" [ref=f3e502] [cursor=pointer]:
+              - /url: "#1-direct-api-usage"
+            - button "Copy Anchor Link" [ref=f3e503] [cursor=pointer]:
+              - img [ref=f3e504]
+          - paragraph [ref=f3e507]: "Use the core SDK for full control:"
+          - generic [ref=f3e508]:
+            - code [ref=f3e510]:
+              - generic [ref=f3e511]: "import { v0 } from 'v0-sdk'"
+              - generic [ref=f3e512]: "// Or with custom configuration:"
+              - generic [ref=f3e513]: "// import { createClient } from 'v0-sdk'"
+              - generic [ref=f3e514]: "// const v0 = createClient({ apiKey: process.env.V0_API_KEY })"
+              - generic [ref=f3e516]: // Create chat
+              - generic [ref=f3e517]: "const chat = await v0.chats.init({"
+              - generic [ref=f3e518]: "type: 'files',"
+              - generic [ref=f3e519]: "files: myFiles,"
+              - generic [ref=f3e520]: "})"
+            - button [ref=f3e521] [cursor=pointer]:
+              - img
+          - heading "2. AI Agent Integration Copy Anchor Link" [level=3] [ref=f3e522]:
+            - link "2. AI Agent Integration" [ref=f3e523] [cursor=pointer]:
+              - /url: "#2-ai-agent-integration"
+            - button "Copy Anchor Link" [ref=f3e524] [cursor=pointer]:
+              - img [ref=f3e525]
+          - paragraph [ref=f3e528]: "Build autonomous agents with AI SDK:"
+          - generic [ref=f3e529]:
+            - code [ref=f3e531]:
+              - generic [ref=f3e532]: "import { generateText } from 'ai'"
+              - generic [ref=f3e533]: "import { v0Tools } from '@v0-sdk/ai-tools'"
+              - generic [ref=f3e535]: "const result = await generateText({"
+              - generic [ref=f3e536]: "model: openai('gpt-4o-mini'),"
+              - generic [ref=f3e537]: "prompt: 'Create and deploy a React dashboard',"
+              - generic [ref=f3e538]: "tools: v0Tools({ apiKey: process.env.V0_API_KEY }),"
+              - generic [ref=f3e539]: "})"
+            - button [ref=f3e540] [cursor=pointer]:
+              - img
+          - heading "3. Workflow Automation Copy Anchor Link" [level=3] [ref=f3e541]:
+            - link "3. Workflow Automation" [ref=f3e542] [cursor=pointer]:
+              - /url: "#3-workflow-automation"
+            - button "Copy Anchor Link" [ref=f3e543] [cursor=pointer]:
+              - img [ref=f3e544]
+          - paragraph [ref=f3e547]: "Integrate with CI/CD and development tools:"
+          - generic [ref=f3e548]:
+            - code [ref=f3e550]:
+              - generic [ref=f3e551]: // GitHub Actions integration
+              - generic [ref=f3e552]: "const chat = await v0.chats.init({"
+              - generic [ref=f3e553]: "type: 'repo',"
+              - generic [ref=f3e554]: "repo: {"
+              - generic [ref=f3e555]: "url: `https://github.com/${context.payload.repository.full_name}`,"
+              - generic [ref=f3e556]: "},"
+              - generic [ref=f3e557]: "})"
+              - generic [ref=f3e559]: "const deployment = await v0.deployments.create({"
+              - generic [ref=f3e560]: "chatId: chat.id,"
+              - generic [ref=f3e561]: "versionId: chat.latestVersion.id,"
+              - generic [ref=f3e562]: "})"
+            - button [ref=f3e563] [cursor=pointer]:
+              - img
+          - heading "4. Custom Development Tools Copy Anchor Link" [level=3] [ref=f3e564]:
+            - link "4. Custom Development Tools" [ref=f3e565] [cursor=pointer]:
+              - /url: "#4-custom-development-tools"
+            - button "Copy Anchor Link" [ref=f3e566] [cursor=pointer]:
+              - img [ref=f3e567]
+          - paragraph [ref=f3e570]: "Build custom interfaces and experiences:"
+          - generic [ref=f3e571]:
+            - code [ref=f3e573]:
+              - generic [ref=f3e574]: // Custom project dashboard
+              - generic [ref=f3e575]: "function ProjectDashboard({ projectId }) {"
+              - generic [ref=f3e576]: "const { data: project } = useProject(projectId)"
+              - generic [ref=f3e577]: "const { data: chats } = useProjectChats(projectId)"
+              - generic [ref=f3e578]: "const { data: deployments } = useProjectDeployments(projectId)"
+              - generic [ref=f3e580]: return (
+              - generic [ref=f3e581]: <div>
+              - generic [ref=f3e582]: "<ProjectHeader project={project} />"
+              - generic [ref=f3e583]: "<ChatsList chats={chats} />"
+              - generic [ref=f3e584]: "<DeploymentStatus deployments={deployments} />"
+              - generic [ref=f3e585]: </div>
+              - generic [ref=f3e586]: )
+              - generic [ref=f3e587]: "}"
+            - button [ref=f3e588] [cursor=pointer]:
+              - img
+          - heading "Development Workflow Copy Anchor Link" [level=2] [ref=f3e589]:
+            - link "Development Workflow" [ref=f3e590] [cursor=pointer]:
+              - /url: "#development-workflow"
+            - button "Copy Anchor Link" [ref=f3e591] [cursor=pointer]:
+              - img [ref=f3e592]
+          - heading "Typical Development Flow Copy Anchor Link" [level=3] [ref=f3e595]:
+            - link "Typical Development Flow" [ref=f3e596] [cursor=pointer]:
+              - /url: "#typical-development-flow"
+            - button "Copy Anchor Link" [ref=f3e597] [cursor=pointer]:
+              - img [ref=f3e598]
+          - list [ref=f3e601]:
+            - listitem [ref=f3e602]:
+              - paragraph [ref=f3e603]:
+                - strong [ref=f3e604]: Start Development Chat
+              - list [ref=f3e605]:
+                - listitem [ref=f3e606]:
+                  - text: Use
+                  - code [ref=f3e607]: init()
+                  - text: for existing code or
+                  - code [ref=f3e608]: create()
+                  - text: for new features
+                - listitem [ref=f3e609]: Provide context about requirements and goals
+            - listitem [ref=f3e610]:
+              - paragraph [ref=f3e611]:
+                - strong [ref=f3e612]: Iterative Development
+              - list [ref=f3e613]:
+                - listitem [ref=f3e614]: Chat with AI to generate and refine code
+                - listitem [ref=f3e615]: Review and modify generated components
+                - listitem [ref=f3e616]: Test and validate functionality
+            - listitem [ref=f3e617]:
+              - paragraph [ref=f3e618]:
+                - strong [ref=f3e619]: Deploy and Monitor
+              - list [ref=f3e620]:
+                - listitem [ref=f3e621]: Deploy to staging for testing
+                - listitem [ref=f3e622]: Deploy to production when ready
+                - listitem [ref=f3e623]: Monitor performance and usage
+          - heading "Best Practices Copy Anchor Link" [level=3] [ref=f3e624]:
+            - link "Best Practices" [ref=f3e625] [cursor=pointer]:
+              - /url: "#best-practices"
+            - button "Copy Anchor Link" [ref=f3e626] [cursor=pointer]:
+              - img [ref=f3e627]
+          - heading "Performance Optimization Copy Anchor Link" [level=4] [ref=f3e630]:
+            - link "Performance Optimization" [ref=f3e631] [cursor=pointer]:
+              - /url: "#performance-optimization"
+            - button "Copy Anchor Link" [ref=f3e632] [cursor=pointer]:
+              - img [ref=f3e633]
+          - list [ref=f3e636]:
+            - listitem [ref=f3e637]:
+              - strong [ref=f3e638]:
+                - text: Use
+                - code [ref=f3e639]: init()
+                - text: over
+                - code [ref=f3e640]: create()
+              - text: when you have existing files
+            - listitem [ref=f3e641]:
+              - strong [ref=f3e642]: Batch operations
+              - text: when possible to reduce API calls
+            - listitem [ref=f3e643]:
+              - strong [ref=f3e644]: Cache responses
+              - text: for frequently accessed data
+            - listitem [ref=f3e645]:
+              - strong [ref=f3e646]: Use selective file imports
+              - text: to minimize payload sizes
+          - heading "Cost Management Copy Anchor Link" [level=4] [ref=f3e647]:
+            - link "Cost Management" [ref=f3e648] [cursor=pointer]:
+              - /url: "#cost-management"
+            - button "Copy Anchor Link" [ref=f3e649] [cursor=pointer]:
+              - img [ref=f3e650]
+          - list [ref=f3e653]:
+            - listitem [ref=f3e654]:
+              - strong [ref=f3e655]: Monitor token usage
+              - text: for AI operations
+            - listitem [ref=f3e656]:
+              - strong [ref=f3e657]: Use templates
+              - text: to reduce generation needs
+            - listitem [ref=f3e658]:
+              - strong [ref=f3e659]: Implement caching
+              - text: for repeated operations
+            - listitem [ref=f3e660]:
+              - strong [ref=f3e661]: Set reasonable timeouts
+              - text: for long-running operations
+          - heading "Error Resilience Copy Anchor Link" [level=4] [ref=f3e662]:
+            - link "Error Resilience" [ref=f3e663] [cursor=pointer]:
+              - /url: "#error-resilience"
+            - button "Copy Anchor Link" [ref=f3e664] [cursor=pointer]:
+              - img [ref=f3e665]
+          - list [ref=f3e668]:
+            - listitem [ref=f3e669]:
+              - strong [ref=f3e670]: Implement retry logic
+              - text: with exponential backoff
+            - listitem [ref=f3e671]:
+              - strong [ref=f3e672]: Handle API errors
+              - text: gracefully with proper error handling
+            - listitem [ref=f3e673]:
+              - strong [ref=f3e674]: Validate inputs
+              - text: before making API calls
+            - listitem [ref=f3e675]:
+              - strong [ref=f3e676]: Use proper error boundaries
+              - text: in React applications
+          - heading "Security & Privacy Copy Anchor Link" [level=2] [ref=f3e677]:
+            - link "Security & Privacy" [ref=f3e678] [cursor=pointer]:
+              - /url: "#security--privacy"
+            - button "Copy Anchor Link" [ref=f3e679] [cursor=pointer]:
+              - img [ref=f3e680]
+          - heading "API Security Copy Anchor Link" [level=3] [ref=f3e683]:
+            - link "API Security" [ref=f3e684] [cursor=pointer]:
+              - /url: "#api-security"
+            - button "Copy Anchor Link" [ref=f3e685] [cursor=pointer]:
+              - img [ref=f3e686]
+          - list [ref=f3e689]:
+            - listitem [ref=f3e690]:
+              - strong [ref=f3e691]: API keys
+              - text: are scoped to your account and can be rotated
+            - listitem [ref=f3e692]:
+              - strong [ref=f3e693]: HTTPS encryption
+              - text: for all API communications
+            - listitem [ref=f3e694]:
+              - strong [ref=f3e695]: Input validation
+              - text: protects against malicious payloads
+          - heading "Data Privacy Copy Anchor Link" [level=3] [ref=f3e696]:
+            - link "Data Privacy" [ref=f3e697] [cursor=pointer]:
+              - /url: "#data-privacy"
+            - button "Copy Anchor Link" [ref=f3e698] [cursor=pointer]:
+              - img [ref=f3e699]
+          - list [ref=f3e702]:
+            - listitem [ref=f3e703]:
+              - strong [ref=f3e704]: Your code
+              - text: remains private and is not used for training
+            - listitem [ref=f3e705]:
+              - strong [ref=f3e706]: Project data
+              - text: is encrypted at rest and in transit
+            - listitem [ref=f3e707]:
+              - strong [ref=f3e708]: Access logs
+              - text: are maintained for security auditing
+            - listitem [ref=f3e709]:
+              - strong [ref=f3e710]: GDPR compliance
+              - text: for European users
+          - heading "Best Practices Copy Anchor Link" [level=3] [ref=f3e711]:
+            - link "Best Practices" [ref=f3e712] [cursor=pointer]:
+              - /url: "#best-practices-1"
+            - button "Copy Anchor Link" [ref=f3e713] [cursor=pointer]:
+              - img [ref=f3e714]
+          - list [ref=f3e717]:
+            - listitem [ref=f3e718]:
+              - strong [ref=f3e719]: Store API keys securely
+              - text: using environment variables
+            - listitem [ref=f3e720]:
+              - strong [ref=f3e721]: Use least-privilege access
+              - text: with scoped permissions
+            - listitem [ref=f3e722]:
+              - strong [ref=f3e723]: Rotate keys regularly
+              - text: for enhanced security
+            - listitem [ref=f3e724]:
+              - strong [ref=f3e725]: Monitor usage
+              - text: for unusual activity patterns
+          - heading "Limits & Quotas Copy Anchor Link" [level=2] [ref=f3e726]:
+            - link "Limits & Quotas" [ref=f3e727] [cursor=pointer]:
+              - /url: "#limits--quotas"
+            - button "Copy Anchor Link" [ref=f3e728] [cursor=pointer]:
+              - img [ref=f3e729]
+          - heading "API Limits Copy Anchor Link" [level=3] [ref=f3e732]:
+            - link "API Limits" [ref=f3e733] [cursor=pointer]:
+              - /url: "#api-limits"
+            - button "Copy Anchor Link" [ref=f3e734] [cursor=pointer]:
+              - img [ref=f3e735]
+          - table [ref=f3e739]:
+            - rowgroup [ref=f3e740]:
+              - row "Resource Limit Notes" [ref=f3e741]:
+                - columnheader "Resource" [ref=f3e742]
+                - columnheader "Limit" [ref=f3e743]
+                - columnheader "Notes" [ref=f3e744]
+            - rowgroup [ref=f3e745]:
+              - row "Messages 10,000 per chat Older messages are automatically archived" [ref=f3e746]:
+                - cell "Messages" [ref=f3e747]
+                - cell "10,000 per chat" [ref=f3e748]
+                - cell "Older messages are automatically archived" [ref=f3e749]
+              - row "Files 1,000 per chat 3MB max file size" [ref=f3e750]:
+                - cell "Files" [ref=f3e751]
+                - cell "1,000 per chat" [ref=f3e752]
+                - cell "3MB max file size" [ref=f3e753]
+          - heading "Usage Quotas Copy Anchor Link" [level=3] [ref=f3e754]:
+            - link "Usage Quotas" [ref=f3e755] [cursor=pointer]:
+              - /url: "#usage-quotas"
+            - button "Copy Anchor Link" [ref=f3e756] [cursor=pointer]:
+              - img [ref=f3e757]
+          - table [ref=f3e761]:
+            - rowgroup [ref=f3e762]:
+              - row "Operation Quota Reset Period" [ref=f3e763]:
+                - columnheader "Operation" [ref=f3e764]
+                - columnheader "Quota" [ref=f3e765]
+                - columnheader "Reset Period" [ref=f3e766]
+            - rowgroup [ref=f3e767]:
+              - row "API Requests 10,000 Daily" [ref=f3e768]:
+                - cell "API Requests" [ref=f3e769]
+                - cell "10,000" [ref=f3e770]
+                - cell "Daily" [ref=f3e771]
+              - row "Chat Messages 1,000 Daily" [ref=f3e772]:
+                - cell "Chat Messages" [ref=f3e773]
+                - cell "1,000" [ref=f3e774]
+                - cell "Daily" [ref=f3e775]
+              - row "Deployments 100 Daily" [ref=f3e776]:
+                - cell "Deployments" [ref=f3e777]
+                - cell "100" [ref=f3e778]
+                - cell "Daily" [ref=f3e779]
+              - row "File Uploads 1GB Daily" [ref=f3e780]:
+                - cell "File Uploads" [ref=f3e781]
+                - cell "1GB" [ref=f3e782]
+                - cell "Daily" [ref=f3e783]
+              - row "GitHub Imports 50 Daily" [ref=f3e784]:
+                - cell "GitHub Imports" [ref=f3e785]
+                - cell "50" [ref=f3e786]
+                - cell "Daily" [ref=f3e787]
+          - heading "Getting Started Copy Anchor Link" [level=2] [ref=f3e788]:
+            - link "Getting Started" [ref=f3e789] [cursor=pointer]:
+              - /url: "#getting-started"
+            - button "Copy Anchor Link" [ref=f3e790] [cursor=pointer]:
+              - img [ref=f3e791]
+          - heading "1. Get Your API Key Copy Anchor Link" [level=3] [ref=f3e794]:
+            - link "1. Get Your API Key" [ref=f3e795] [cursor=pointer]:
+              - /url: "#1-get-your-api-key"
+            - button "Copy Anchor Link" [ref=f3e796] [cursor=pointer]:
+              - img [ref=f3e797]
+          - paragraph [ref=f3e800]:
+            - text: Visit
+            - link "v0.dev/chat/settings/keys" [ref=f3e801] [cursor=pointer]:
+              - /url: https://v0.dev/chat/settings/keys
+            - text: to generate your API key.
+          - heading "2. Install the SDK Copy Anchor Link" [level=3] [ref=f3e802]:
+            - link "2. Install the SDK" [ref=f3e803] [cursor=pointer]:
+              - /url: "#2-install-the-sdk"
+            - button "Copy Anchor Link" [ref=f3e804] [cursor=pointer]:
+              - img [ref=f3e805]
+          - generic [ref=f3e808]:
+            - code [ref=f3e810]:
+              - generic [ref=f3e811]: npm install v0-sdk
+              - generic [ref=f3e812]: "# or"
+              - generic [ref=f3e813]: pnpm add v0-sdk
+            - button [ref=f3e814] [cursor=pointer]:
+              - img
+          - heading "3. Make Your First Call Copy Anchor Link" [level=3] [ref=f3e815]:
+            - link "3. Make Your First Call" [ref=f3e816] [cursor=pointer]:
+              - /url: "#3-make-your-first-call"
+            - button "Copy Anchor Link" [ref=f3e817] [cursor=pointer]:
+              - img [ref=f3e818]
+          - generic [ref=f3e821]:
+            - code [ref=f3e823]:
+              - generic [ref=f3e824]: "import { v0 } from 'v0-sdk'"
+              - generic [ref=f3e826]: // List your chats
+              - generic [ref=f3e827]: const chats = await v0.chats.find()
+              - generic [ref=f3e828]: console.log('Your chats:', chats)
+            - button [ref=f3e829] [cursor=pointer]:
+              - img
+          - heading "4. Explore the Guides Copy Anchor Link" [level=3] [ref=f3e830]:
+            - link "4. Explore the Guides" [ref=f3e831] [cursor=pointer]:
+              - /url: "#4-explore-the-guides"
+            - button "Copy Anchor Link" [ref=f3e832] [cursor=pointer]:
+              - img [ref=f3e833]
+          - list [ref=f3e836]:
+            - listitem [ref=f3e837]:
+              - link "Start from Existing Code" [ref=f3e838] [cursor=pointer]:
+                - /url: /docs/api/platform/guides/start-from-existing-code
+              - text: "- Import your codebase"
+            - listitem [ref=f3e839]:
+              - link "Displaying Chat Messages" [ref=f3e840] [cursor=pointer]:
+                - /url: /docs/api/platform/guides/displaying-chat-messages
+              - text: "- Build chat interfaces"
+            - listitem [ref=f3e841]:
+              - link "OAuth MCP Servers" [ref=f3e842] [cursor=pointer]:
+                - /url: /docs/api/platform/guides/oauth-mcp-servers
+              - text: "- Connect OAuth-protected MCP tools"
+            - listitem [ref=f3e843]:
+              - link "Lock Files from AI Changes" [ref=f3e844] [cursor=pointer]:
+                - /url: /docs/api/platform/guides/lock-files-from-ai-changes
+              - text: "- Handle concurrent editing"
+          - heading "5. Try the Examples Copy Anchor Link" [level=3] [ref=f3e845]:
+            - link "5. Try the Examples" [ref=f3e846] [cursor=pointer]:
+              - /url: "#5-try-the-examples"
+            - button "Copy Anchor Link" [ref=f3e847] [cursor=pointer]:
+              - img [ref=f3e848]
+          - list [ref=f3e851]:
+            - listitem [ref=f3e852]:
+              - link "Classic v0" [ref=f3e853] [cursor=pointer]:
+                - /url: /docs/api/platform/examples/classic-v0
+              - text: "- Recreate the v0.dev experience"
+            - listitem [ref=f3e854]:
+              - link "AI Tools" [ref=f3e855] [cursor=pointer]:
+                - /url: /docs/api/platform/examples/ai-tools
+              - text: "- Build autonomous agents"
+            - listitem [ref=f3e856]:
+              - link "React Components" [ref=f3e857] [cursor=pointer]:
+                - /url: /docs/api/platform/examples/react-components
+              - text: "- Component development workflow"
+          - heading "Support & Resources Copy Anchor Link" [level=2] [ref=f3e858]:
+            - link "Support & Resources" [ref=f3e859] [cursor=pointer]:
+              - /url: "#support--resources"
+            - button "Copy Anchor Link" [ref=f3e860] [cursor=pointer]:
+              - img [ref=f3e861]
+          - heading "Documentation Copy Anchor Link" [level=3] [ref=f3e864]:
+            - link "Documentation" [ref=f3e865] [cursor=pointer]:
+              - /url: "#documentation"
+            - button "Copy Anchor Link" [ref=f3e866] [cursor=pointer]:
+              - img [ref=f3e867]
+          - list [ref=f3e870]:
+            - listitem [ref=f3e871]:
+              - strong [ref=f3e872]:
+                - link "API Reference" [ref=f3e873] [cursor=pointer]:
+                  - /url: /docs/api/platform/quickstart
+              - text: "- Complete endpoint documentation"
+            - listitem [ref=f3e874]:
+              - strong [ref=f3e875]:
+                - link "SDK Packages" [ref=f3e876] [cursor=pointer]:
+                  - /url: /docs/api/platform/packages/v0-sdk
+              - text: "- Available SDKs and tools"
+            - listitem [ref=f3e877]:
+              - strong [ref=f3e878]:
+                - link "Examples" [ref=f3e879] [cursor=pointer]:
+                  - /url: /docs/api/platform/examples/v0-clone
+              - text: "- Working code examples"
+          - heading "Community Copy Anchor Link" [level=3] [ref=f3e880]:
+            - link "Community" [ref=f3e881] [cursor=pointer]:
+              - /url: "#community"
+            - button "Copy Anchor Link" [ref=f3e882] [cursor=pointer]:
+              - img [ref=f3e883]
+          - list [ref=f3e886]:
+            - listitem [ref=f3e887]:
+              - strong [ref=f3e888]:
+                - link "GitHub Discussions" [ref=f3e889] [cursor=pointer]:
+                  - /url: https://github.com/vercel/v0-sdk/discussions
+              - text: "- Community support"
+            - listitem [ref=f3e890]:
+              - strong [ref=f3e891]:
+                - link "Discord" [ref=f3e892] [cursor=pointer]:
+                  - /url: https://discord.gg/v0-dev
+              - text: "- Real-time chat with other developers"
+            - listitem [ref=f3e893]:
+              - strong [ref=f3e894]:
+                - link "Twitter" [ref=f3e895] [cursor=pointer]:
+                  - /url: https://twitter.com/v0
+              - text: "- Latest updates and announcements"
+          - heading "Enterprise Copy Anchor Link" [level=3] [ref=f3e896]:
+            - link "Enterprise" [ref=f3e897] [cursor=pointer]:
+              - /url: "#enterprise"
+            - button "Copy Anchor Link" [ref=f3e898] [cursor=pointer]:
+              - img [ref=f3e899]
+          - list [ref=f3e902]:
+            - listitem [ref=f3e903]:
+              - strong [ref=f3e904]: Custom integrations
+              - text: for enterprise workflows
+            - listitem [ref=f3e905]:
+              - strong [ref=f3e906]: Dedicated support
+              - text: and priority assistance
+            - listitem [ref=f3e907]:
+              - strong [ref=f3e908]: On-premises deployment
+              - text: options
+            - listitem [ref=f3e909]:
+              - strong [ref=f3e910]: SLA guarantees
+              - text: and priority support
+          - paragraph [ref=f3e911]:
+            - text: Contact
+            - link "enterprise@v0.dev" [ref=f3e912] [cursor=pointer]:
+              - /url: mailto:enterprise@v0.dev
+            - text: for enterprise inquiries.
+          - heading "What's Next? Copy Anchor Link" [level=2] [ref=f3e913]:
+            - link "What's Next?" [ref=f3e914] [cursor=pointer]:
+              - /url: "#whats-next"
+            - button "Copy Anchor Link" [ref=f3e915] [cursor=pointer]:
+              - img [ref=f3e916]
+          - paragraph [ref=f3e919]: "Ready to start building with the v0 Platform API? Here are some suggested next steps:"
+          - list [ref=f3e920]:
+            - listitem [ref=f3e921]:
+              - strong [ref=f3e922]:
+                - link "Get Started with Quickstart" [ref=f3e923] [cursor=pointer]:
+                  - /url: /docs/api/platform/quickstart
+              - text: "- 5-minute setup guide"
+            - listitem [ref=f3e924]:
+              - strong [ref=f3e925]:
+                - link "Choose Your Integration Pattern" [ref=f3e926] [cursor=pointer]:
+                  - /url: /docs/api/platform/examples/v0-clone
+              - text: "- Find the right example for your use case"
+            - listitem [ref=f3e927]:
+              - strong [ref=f3e928]:
+                - link "Join the Community" [ref=f3e929] [cursor=pointer]:
+                  - /url: https://github.com/vercel/v0-sdk/discussions
+              - text: "- Connect with other developers"
+            - listitem [ref=f3e930]:
+              - strong [ref=f3e931]:
+                - link "Build Something Amazing" [ref=f3e932] [cursor=pointer]:
+                  - /url: https://v0.dev
+              - text: "- Start creating with v0"
+          - paragraph [ref=f3e933]: The v0 Platform API opens up endless possibilities for AI-powered development. Whether you're building custom tools, automating workflows, or creating entirely new development experiences, we can't wait to see what you build!
+        - generic [ref=f3e934]:
+          - link "Quickstart Get started with the v0 Platform API in minutes" [ref=f3e935] [cursor=pointer]:
+            - /url: /docs/api/platform/quickstart
+            - generic [ref=f3e936]:
+              - img [ref=f3e937]
+              - paragraph [ref=f3e939]: Quickstart
+            - paragraph [ref=f3e940]: Get started with the v0 Platform API in minutes
+          - link "Displaying Chat Messages Learn how to render and format chat messages from the v0 Platform API using @v0-sdk/react" [ref=f3e941] [cursor=pointer]:
+            - /url: /docs/api/platform/guides/displaying-chat-messages
+            - generic [ref=f3e942]:
+              - img [ref=f3e943]
+              - paragraph [ref=f3e945]: Displaying Chat Messages
+            - paragraph [ref=f3e946]: Learn how to render and format chat messages from the v0 Platform API using @v0-sdk/react
+      - generic [ref=f3e947]:
+        - heading "On this page" [level=3] [ref=f3e948]:
+          - img [ref=f3e949]
+          - text: On this page
+        - generic [ref=f3e951]:
+          - img [ref=f3e953]
+          - link "What can you build with the Platform API?" [ref=f3e956] [cursor=pointer]:
+            - /url: "#what-can-you-build-with-the-platform-api"
+            - img [ref=f3e957]
+            - text: What can you build with the Platform API?
+          - link "Core Concepts" [ref=f3e958] [cursor=pointer]:
+            - /url: "#core-concepts"
+            - img [ref=f3e959]
+            - text: Core Concepts
+          - link "Projects" [ref=f3e960] [cursor=pointer]:
+            - /url: "#projects"
+            - img [ref=f3e961]
+            - text: Projects
+          - link "Chats" [ref=f3e963] [cursor=pointer]:
+            - /url: "#chats"
+            - img [ref=f3e964]
+            - text: Chats
+          - link "Messages" [ref=f3e965] [cursor=pointer]:
+            - /url: "#messages"
+            - img [ref=f3e966]
+            - text: Messages
+          - link "Deployments" [ref=f3e967] [cursor=pointer]:
+            - /url: "#deployments"
+            - img [ref=f3e968]
+            - text: Deployments
+          - link "API Architecture" [ref=f3e969] [cursor=pointer]:
+            - /url: "#api-architecture"
+            - img [ref=f3e970]
+            - text: API Architecture
+          - link "Base URL" [ref=f3e972] [cursor=pointer]:
+            - /url: "#base-url"
+            - img [ref=f3e973]
+            - text: Base URL
+          - link "RESTful Design" [ref=f3e975] [cursor=pointer]:
+            - /url: "#restful-design"
+            - img [ref=f3e976]
+            - text: RESTful Design
+          - link "Authentication" [ref=f3e977] [cursor=pointer]:
+            - /url: "#authentication"
+            - img [ref=f3e978]
+            - text: Authentication
+          - 'link "Option 1: Default Client (Recommended)" [ref=f3e979] [cursor=pointer]':
+            - /url: "#option-1-default-client-recommended"
+            - img [ref=f3e980]
+            - text: "Option 1: Default Client (Recommended)"
+          - 'link "Option 2: Custom Client Configuration" [ref=f3e982] [cursor=pointer]':
+            - /url: "#option-2-custom-client-configuration"
+            - img [ref=f3e983]
+            - text: "Option 2: Custom Client Configuration"
+          - link "Error Handling" [ref=f3e984] [cursor=pointer]:
+            - /url: "#error-handling"
+            - img [ref=f3e985]
+            - text: Error Handling
+          - link "Key Capabilities" [ref=f3e987] [cursor=pointer]:
+            - /url: "#key-capabilities"
+            - img [ref=f3e988]
+            - text: Key Capabilities
+          - link "1. Code Generation & AI Chat" [ref=f3e990] [cursor=pointer]:
+            - /url: "#1-code-generation--ai-chat"
+            - img [ref=f3e991]
+            - text: 1. Code Generation & AI Chat
+          - link "2. Project Management" [ref=f3e993] [cursor=pointer]:
+            - /url: "#2-project-management"
+            - img [ref=f3e994]
+            - text: 2. Project Management
+          - link "3. Import & Export" [ref=f3e995] [cursor=pointer]:
+            - /url: "#3-import--export"
+            - img [ref=f3e996]
+            - text: 3. Import & Export
+          - link "4. Deployment & Hosting" [ref=f3e997] [cursor=pointer]:
+            - /url: "#4-deployment--hosting"
+            - img [ref=f3e998]
+            - text: 4. Deployment & Hosting
+          - link "5. Team Collaboration" [ref=f3e999] [cursor=pointer]:
+            - /url: "#5-team-collaboration"
+            - img [ref=f3e1000]
+            - text: 5. Team Collaboration
+          - link "Integration Patterns" [ref=f3e1001] [cursor=pointer]:
+            - /url: "#integration-patterns"
+            - img [ref=f3e1002]
+            - text: Integration Patterns
+          - link "1. Direct API Usage" [ref=f3e1004] [cursor=pointer]:
+            - /url: "#1-direct-api-usage"
+            - img [ref=f3e1005]
+            - text: 1. Direct API Usage
+          - link "2. AI Agent Integration" [ref=f3e1007] [cursor=pointer]:
+            - /url: "#2-ai-agent-integration"
+            - img [ref=f3e1008]
+            - text: 2. AI Agent Integration
+          - link "3. Workflow Automation" [ref=f3e1009] [cursor=pointer]:
+            - /url: "#3-workflow-automation"
+            - img [ref=f3e1010]
+            - text: 3. Workflow Automation
+          - link "4. Custom Development Tools" [ref=f3e1011] [cursor=pointer]:
+            - /url: "#4-custom-development-tools"
+            - img [ref=f3e1012]
+            - text: 4. Custom Development Tools
+          - link "Development Workflow" [ref=f3e1013] [cursor=pointer]:
+            - /url: "#development-workflow"
+            - img [ref=f3e1014]
+            - text: Development Workflow
+          - link "Typical Development Flow" [ref=f3e1016] [cursor=pointer]:
+            - /url: "#typical-development-flow"
+            - img [ref=f3e1017]
+            - text: Typical Development Flow
+          - link "Best Practices" [ref=f3e1019] [cursor=pointer]:
+            - /url: "#best-practices"
+            - img [ref=f3e1020]
+            - text: Best Practices
+          - link "Performance Optimization" [ref=f3e1021] [cursor=pointer]:
+            - /url: "#performance-optimization"
+            - img [ref=f3e1022]
+            - text: Performance Optimization
+          - link "Cost Management" [ref=f3e1024] [cursor=pointer]:
+            - /url: "#cost-management"
+            - img [ref=f3e1025]
+            - text: Cost Management
+          - link "Error Resilience" [ref=f3e1026] [cursor=pointer]:
+            - /url: "#error-resilience"
+            - img [ref=f3e1027]
+            - text: Error Resilience
+          - link "Security & Privacy" [ref=f3e1028] [cursor=pointer]:
+            - /url: "#security--privacy"
+            - img [ref=f3e1029]
+            - text: Security & Privacy
+          - link "API Security" [ref=f3e1031] [cursor=pointer]:
+            - /url: "#api-security"
+            - img [ref=f3e1032]
+            - text: API Security
+          - link "Data Privacy" [ref=f3e1034] [cursor=pointer]:
+            - /url: "#data-privacy"
+            - img [ref=f3e1035]
+            - text: Data Privacy
+          - link "Best Practices" [ref=f3e1036] [cursor=pointer]:
+            - /url: "#best-practices-1"
+            - img [ref=f3e1037]
+            - text: Best Practices
+          - link "Limits & Quotas" [ref=f3e1038] [cursor=pointer]:
+            - /url: "#limits--quotas"
+            - img [ref=f3e1039]
+            - text: Limits & Quotas
+          - link "API Limits" [ref=f3e1041] [cursor=pointer]:
+            - /url: "#api-limits"
+            - img [ref=f3e1042]
+            - text: API Limits
+          - link "Usage Quotas" [ref=f3e1044] [cursor=pointer]:
+            - /url: "#usage-quotas"
+            - img [ref=f3e1045]
+            - text: Usage Quotas
+          - link "Getting Started" [ref=f3e1046] [cursor=pointer]:
+            - /url: "#getting-started"
+            - img [ref=f3e1047]
+            - text: Getting Started
+          - link "1. Get Your API Key" [ref=f3e1049] [cursor=pointer]:
+            - /url: "#1-get-your-api-key"
+            - img [ref=f3e1050]
+            - text: 1. Get Your API Key
+          - link "2. Install the SDK" [ref=f3e1052] [cursor=pointer]:
+            - /url: "#2-install-the-sdk"
+            - img [ref=f3e1053]
+            - text: 2. Install the SDK
+          - link "3. Make Your First Call" [ref=f3e1054] [cursor=pointer]:
+            - /url: "#3-make-your-first-call"
+            - img [ref=f3e1055]
+            - text: 3. Make Your First Call
+          - link "4. Explore the Guides" [ref=f3e1056] [cursor=pointer]:
+            - /url: "#4-explore-the-guides"
+            - img [ref=f3e1057]
+            - text: 4. Explore the Guides
+          - link "5. Try the Examples" [ref=f3e1058] [cursor=pointer]:
+            - /url: "#5-try-the-examples"
+            - img [ref=f3e1059]
+            - text: 5. Try the Examples
+          - link "Support & Resources" [ref=f3e1060] [cursor=pointer]:
+            - /url: "#support--resources"
+            - img [ref=f3e1061]
+            - text: Support & Resources
+          - link "Documentation" [ref=f3e1063] [cursor=pointer]:
+            - /url: "#documentation"
+            - img [ref=f3e1064]
+            - text: Documentation
+          - link "Community" [ref=f3e1066] [cursor=pointer]:
+            - /url: "#community"
+            - img [ref=f3e1067]
+            - text: Community
+          - link "Enterprise" [ref=f3e1068] [cursor=pointer]:
+            - /url: "#enterprise"
+            - img [ref=f3e1069]
+            - text: Enterprise
+          - link "What's Next?" [ref=f3e1070] [cursor=pointer]:
+            - /url: "#whats-next"
+            - img [ref=f3e1071]
+            - text: What's Next?
+        - generic [ref=f3e1073]:
+          - button "Scroll to top" [ref=f3e1074] [cursor=pointer]:
+            - img [ref=f3e1075]
+            - generic [ref=f3e1078]: Scroll to top
+          - button "Give feedback" [ref=f3e1079] [cursor=pointer]:
+            - img [ref=f3e1080]
+            - generic [ref=f3e1082]: Give feedback
+          - button "Copy page" [ref=f3e1083] [cursor=pointer]:
+            - img [ref=f3e1084]
+            - generic [ref=f3e1087]: Copy page
+          - button "Ask AI about this page" [ref=f3e1088] [cursor=pointer]:
+            - img [ref=f3e1089]
+            - generic [ref=f3e1091]: Ask AI about this page
+          - button "Open in chat" [ref=f3e1092] [cursor=pointer]:
+            - img [ref=f3e1093]
+            - text: Open in chat
+    - contentinfo [ref=f3e1098]:
+      - generic [ref=f3e1100]:
+        - link "v0 logo" [ref=f3e1101] [cursor=pointer]:
+          - /url: /
+          - img "v0 logo" [ref=f3e1102]
+        - generic [ref=f3e1105]:
+          - generic [ref=f3e1106]:
+            - heading "Product" [level=2] [ref=f3e1107]
+            - list [ref=f3e1108]:
+              - listitem [ref=f3e1109]:
+                - link "Home" [ref=f3e1110] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=f3e1111]:
+                - link "Enterprise" [ref=f3e1112] [cursor=pointer]:
+                  - /url: /enterprise
+              - listitem [ref=f3e1113]:
+                - link "Pricing" [ref=f3e1114] [cursor=pointer]:
+                  - /url: /pricing
+              - listitem [ref=f3e1115]:
+                - link "v0 for Students" [ref=f3e1116] [cursor=pointer]:
+                  - /url: /students
+          - generic [ref=f3e1117]:
+            - heading "Company" [level=2] [ref=f3e1118]
+            - list [ref=f3e1119]:
+              - listitem [ref=f3e1120]:
+                - link "Terms" [ref=f3e1121] [cursor=pointer]:
+                  - /url: https://vercel.com/legal/terms
+                  - text: Terms
+                  - img [ref=f3e1122]
+              - listitem [ref=f3e1124]:
+                - link "AI Policy" [ref=f3e1125] [cursor=pointer]:
+                  - /url: /policy
+              - listitem [ref=f3e1126]:
+                - link "Privacy" [ref=f3e1127] [cursor=pointer]:
+                  - /url: https://vercel.com/legal/privacy-policy
+                  - text: Privacy
+                  - img [ref=f3e1128]
+              - listitem [ref=f3e1130]:
+                - link "Cookies":
+                  - /url: ""
+          - generic [ref=f3e1131]:
+            - heading "Resources" [level=2] [ref=f3e1132]
+            - list [ref=f3e1133]:
+              - listitem [ref=f3e1134]:
+                - link "FAQs" [ref=f3e1135] [cursor=pointer]:
+                  - /url: /faq
+              - listitem [ref=f3e1136]:
+                - link "Docs" [ref=f3e1137] [cursor=pointer]:
+                  - /url: /docs
+              - listitem [ref=f3e1138]:
+                - link "Vercel Community" [ref=f3e1139] [cursor=pointer]:
+                  - /url: https://community.vercel.com/c/v0/59
+                  - text: Vercel Community
+                  - img [ref=f3e1140]
+              - listitem [ref=f3e1142]:
+                - link "Vercel" [ref=f3e1143] [cursor=pointer]:
+                  - /url: https://vercel.com/?utm_source=v0-site&utm_medium=banner&utm_campaign=home
+                  - text: Vercel
+                  - img [ref=f3e1144]
+          - generic [ref=f3e1146]:
+            - heading "Social" [level=2] [ref=f3e1147]
+            - list [ref=f3e1148]:
+              - listitem [ref=f3e1149]:
+                - link "Twitter" [ref=f3e1150] [cursor=pointer]:
+                  - /url: https://x.com/v0
+                  - img [ref=f3e1151]
+                  - text: Twitter
+              - listitem [ref=f3e1153]:
+                - link "LinkedIn" [ref=f3e1154] [cursor=pointer]:
+                  - /url: https://linkedin.com/company/vercel
+                  - img [ref=f3e1155]
+                  - text: LinkedIn
+    - region "Notifications alt+T"
+  - alert [ref=f3e1157]
+  - generic [ref=f3e1159]:
+    - generic [ref=f3e1160]:
+      - heading "Chat" [level=2] [ref=f3e1161]
+      - group [ref=f3e1163]:
+        - button [disabled]:
+          - img
+        - button [disabled]:
+          - img
+        - button [ref=f3e1164] [cursor=pointer]:
+          - img
+    - log [ref=f3e1165]
+    - generic [ref=f3e1168]:
+      - generic [ref=f3e1172]:
+        - button "What is v0?" [ref=f3e1173] [cursor=pointer]
+        - button "How does v0 work?" [ref=f3e1174] [cursor=pointer]
+        - button "Who can use v0?" [ref=f3e1175] [cursor=pointer]
+        - button "What does v0 integrate with?" [ref=f3e1176] [cursor=pointer]
+      - paragraph [ref=f3e1177]:
+        - text: "Tip: You can open and close chat with"
+        - generic [ref=f3e1178]:
+          - generic: ⌘
+          - generic: I
+      - group [ref=f3e1180]:
+        - textbox "What would you like to know?" [ref=f3e1182]
+        - group [ref=f3e1183]:
+          - paragraph [ref=f3e1184]: 0 / 1000
+          - button "Submit" [ref=f3e1185] [cursor=pointer]:
+            - img

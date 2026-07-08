@@ -1,0 +1,201 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - generic [ref=f20e3]:
+      - link "DuckDuckGo" [ref=f20e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f20e5]:
+        - generic [ref=f20e6]:
+          - textbox [ref=f20e7]: Midjourney official API 2026 available developers status
+          - button "Submit" [ref=f20e8] [cursor=pointer]
+        - combobox [ref=f20e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f20e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f20e15]:
+      - generic [ref=f20e17]:
+        - heading "Getting Started with Midjourney API (2026) — Complete Guide" [level=2] [ref=f20e18]:
+          - link "Getting Started with Midjourney API (2026) — Complete Guide" [ref=f20e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney%2Dapi.com%2Fgetting%2Dstarted&rut=fa3d3b8366f06316a6366356d0807479e0719263f747563e1e3f6c27820a7758
+        - generic [ref=f20e21]:
+          - link [ref=f20e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney%2Dapi.com%2Fgetting%2Dstarted&rut=fa3d3b8366f06316a6366356d0807479e0719263f747563e1e3f6c27820a7758
+          - link "www.midjourney-api.com/getting-started" [ref=f20e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney%2Dapi.com%2Fgetting%2Dstarted&rut=fa3d3b8366f06316a6366356d0807479e0719263f747563e1e3f6c27820a7758
+        - link "Learn how to use the Midjourney API in 2026. This complete getting-started guide covers API keys, image generation jobs, webhooks, polling, pricing, and code examples for real apps." [ref=f20e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney%2Dapi.com%2Fgetting%2Dstarted&rut=fa3d3b8366f06316a6366356d0807479e0719263f747563e1e3f6c27820a7758
+      - generic [ref=f20e27]:
+        - heading "Does Midjourney Have an API? | Blog — 10b.ai" [level=2] [ref=f20e28]:
+          - link "Does Midjourney Have an API? | Blog — 10b.ai" [ref=f20e29] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F10b.ai%2Fblog%2Fdoes%2Dmidjourney%2Dhave%2Dan%2Dapi&rut=5418002f3718d694de261a19b92c71ce08a841c8f290b6441e78ea481d9aedc5
+        - generic [ref=f20e31]:
+          - link [ref=f20e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F10b.ai%2Fblog%2Fdoes%2Dmidjourney%2Dhave%2Dan%2Dapi&rut=5418002f3718d694de261a19b92c71ce08a841c8f290b6441e78ea481d9aedc5
+          - link "10b.ai/blog/does-midjourney-have-an-api" [ref=f20e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F10b.ai%2Fblog%2Fdoes%2Dmidjourney%2Dhave%2Dan%2Dapi&rut=5418002f3718d694de261a19b92c71ce08a841c8f290b6441e78ea481d9aedc5
+          - text: 2026-04-20T00:00:00.0000000
+        - link "As of March 2026, Midjourney does not offer a broadly available official public API for standard developer use. There is no normal official setup for generating API keys, calling public endpoints, receiving structured job responses, and running stable production workflows around Midjourney." [ref=f20e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2F10b.ai%2Fblog%2Fdoes%2Dmidjourney%2Dhave%2Dan%2Dapi&rut=5418002f3718d694de261a19b92c71ce08a841c8f290b6441e78ea481d9aedc5
+      - generic [ref=f20e37]:
+        - heading "Is Midjourney free? What to know now (a 2026 update)" [level=2] [ref=f20e38]:
+          - link "Is Midjourney free? What to know now (a 2026 update)" [ref=f20e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.cometapi.com%2Fis%2Dmidjourney%2Dfree%2Dwhat%2Dto%2Dknow%2Dnow%2Da%2D2026%2Dupdate%2F&rut=8a30db87f3393f6dbfa4fdaf04e8d22480f551022105c997555abd316a997ec2
+        - generic [ref=f20e41]:
+          - link [ref=f20e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.cometapi.com%2Fis%2Dmidjourney%2Dfree%2Dwhat%2Dto%2Dknow%2Dnow%2Da%2D2026%2Dupdate%2F&rut=8a30db87f3393f6dbfa4fdaf04e8d22480f551022105c997555abd316a997ec2
+          - link "www.cometapi.com/is-midjourney-free-what-to-know-now-a-2026-update/" [ref=f20e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.cometapi.com%2Fis%2Dmidjourney%2Dfree%2Dwhat%2Dto%2Dknow%2Dnow%2Da%2D2026%2Dupdate%2F&rut=8a30db87f3393f6dbfa4fdaf04e8d22480f551022105c997555abd316a997ec2
+          - text: 2026-01-25T00:00:00.0000000
+        - link "As of early 2026, Midjourney does not offer an official developer API, REST endpoint, SDK, webhook interface, or documented API key system that you can obtain directly from Midjourney for programmatic use." [ref=f20e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.cometapi.com%2Fis%2Dmidjourney%2Dfree%2Dwhat%2Dto%2Dknow%2Dnow%2Da%2D2026%2Dupdate%2F&rut=8a30db87f3393f6dbfa4fdaf04e8d22480f551022105c997555abd316a997ec2
+      - generic [ref=f20e47]:
+        - 'heading "Midjourney API: The Complete Developer Guide (2026)" [level=2] [ref=f20e48]':
+          - 'link "Midjourney API: The Complete Developer Guide (2026)" [ref=f20e49] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkrapi.com%2Fblog%2Fmidjourney%2Dapi&rut=f6a27007b12033f4155075af521509241db1654a4df6dc00e8832140309e4dd2
+        - generic [ref=f20e51]:
+          - link [ref=f20e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkrapi.com%2Fblog%2Fmidjourney%2Dapi&rut=f6a27007b12033f4155075af521509241db1654a4df6dc00e8832140309e4dd2
+          - link "linkrapi.com/blog/midjourney-api" [ref=f20e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkrapi.com%2Fblog%2Fmidjourney%2Dapi&rut=f6a27007b12033f4155075af521509241db1654a4df6dc00e8832140309e4dd2
+          - text: 2026-01-10T00:00:00.0000000
+        - link "No official Midjourney API exists yet. Learn how proxy APIs work, what risks to avoid, and how to integrate Midjourney programmatically in 2026." [ref=f20e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkrapi.com%2Fblog%2Fmidjourney%2Dapi&rut=f6a27007b12033f4155075af521509241db1654a4df6dc00e8832140309e4dd2
+      - generic [ref=f20e57]:
+        - heading "Midjourney API - Generate AI Images Programmatically" [level=2] [ref=f20e58]:
+          - link "Midjourney API - Generate AI Images Programmatically" [ref=f20e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fjourneyapi.co%2Fmidjourney%2Dapi&rut=935a501da61843d82832e7aa3bb5c3f0ed94b513f83fe11cf99af421105c279d
+        - generic [ref=f20e61]:
+          - link [ref=f20e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fjourneyapi.co%2Fmidjourney%2Dapi&rut=935a501da61843d82832e7aa3bb5c3f0ed94b513f83fe11cf99af421105c279d
+          - link "journeyapi.co/midjourney-api" [ref=f20e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fjourneyapi.co%2Fmidjourney%2Dapi&rut=935a501da61843d82832e7aa3bb5c3f0ed94b513f83fe11cf99af421105c279d
+        - link "No — Midjourney does not offer an official public API. As of 2026, Midjourney is only accessible through their Discord bot and web interface. This makes it impossible to integrate Midjourney into your applications, SaaS products, or automated workflows directly. JourneyAPI solves this by providing a fully managed REST API that gives you programmatic access to all Midjourney features. No ..." [ref=f20e65] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fjourneyapi.co%2Fmidjourney%2Dapi&rut=935a501da61843d82832e7aa3bb5c3f0ed94b513f83fe11cf99af421105c279d
+      - generic [ref=f20e67]:
+        - heading "Quickstart - Midjourney Api" [level=2] [ref=f20e68]:
+          - link "Quickstart - Midjourney Api" [ref=f20e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdocs.midjourney%2Dapi.com%2Fquickstart&rut=df514ec2ae1a525556819393114bb44bb10726514e13b9b1eb8bc455b89de40d
+        - generic [ref=f20e71]:
+          - link [ref=f20e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdocs.midjourney%2Dapi.com%2Fquickstart&rut=df514ec2ae1a525556819393114bb44bb10726514e13b9b1eb8bc455b89de40d
+          - link "docs.midjourney-api.com/quickstart" [ref=f20e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdocs.midjourney%2Dapi.com%2Fquickstart&rut=df514ec2ae1a525556819393114bb44bb10726514e13b9b1eb8bc455b89de40d
+        - link "Create an API key, send your first request, and fetch the final result" [ref=f20e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdocs.midjourney%2Dapi.com%2Fquickstart&rut=df514ec2ae1a525556819393114bb44bb10726514e13b9b1eb8bc455b89de40d
+      - generic [ref=f20e77]:
+        - heading "Does Midjourney Have an API? Integration Insights" [level=2] [ref=f20e78]:
+          - link "Does Midjourney Have an API? Integration Insights" [ref=f20e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkgo.dev%2Ffaq%2Fmidjourney%2Dhave%2Dan%2Dapi%2Dfor%2Dintegration&rut=c1bb8777f3fcb5f702d0b6e5de730a28607a8ce90e91576abcc3b1bf5b4937fc
+        - generic [ref=f20e81]:
+          - link [ref=f20e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkgo.dev%2Ffaq%2Fmidjourney%2Dhave%2Dan%2Dapi%2Dfor%2Dintegration&rut=c1bb8777f3fcb5f702d0b6e5de730a28607a8ce90e91576abcc3b1bf5b4937fc
+          - link "linkgo.dev/faq/midjourney-have-an-api-for-integration" [ref=f20e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkgo.dev%2Ffaq%2Fmidjourney%2Dhave%2Dan%2Dapi%2Dfor%2Dintegration&rut=c1bb8777f3fcb5f702d0b6e5de730a28607a8ce90e91576abcc3b1bf5b4937fc
+          - text: 2025-10-04T00:00:00.0000000
+        - link "Key Points No official API available for Midjourney. Unofficial SDKs and community integrations exist. Automation features require an active subscription. Detailed Explanation Midjourney, known for its AI-generated art capabilities, currently lacks a public API that developers can directly utilize for integration into their applications." [ref=f20e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flinkgo.dev%2Ffaq%2Fmidjourney%2Dhave%2Dan%2Dapi%2Dfor%2Dintegration&rut=c1bb8777f3fcb5f702d0b6e5de730a28607a8ce90e91576abcc3b1bf5b4937fc
+      - generic [ref=f20e87]:
+        - 'heading "Using Midjourney API Workflows: How to Operate the Platform" [level=2] [ref=f20e88]':
+          - 'link "Using Midjourney API Workflows: How to Operate the Platform" [ref=f20e89] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2F%40juricavoda%2Fusing%2Dmidjourney%2Dapi%2Dworkflows%2Dhow%2Dto%2Doperate%2Dthe%2Dplatform%2D7711b0a807d9&rut=f31056864205f6b5b1f5a094c5792f6d06049978641830cd1f7e26e8bbcce747
+        - generic [ref=f20e91]:
+          - link [ref=f20e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2F%40juricavoda%2Fusing%2Dmidjourney%2Dapi%2Dworkflows%2Dhow%2Dto%2Doperate%2Dthe%2Dplatform%2D7711b0a807d9&rut=f31056864205f6b5b1f5a094c5792f6d06049978641830cd1f7e26e8bbcce747
+          - link "medium.com/@juricavoda/using-midjourney-api-workflows-how-to-operate-the-platform-7711b0a807d9" [ref=f20e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2F%40juricavoda%2Fusing%2Dmidjourney%2Dapi%2Dworkflows%2Dhow%2Dto%2Doperate%2Dthe%2Dplatform%2D7711b0a807d9&rut=f31056864205f6b5b1f5a094c5792f6d06049978641830cd1f7e26e8bbcce747
+          - text: 2026-05-05T00:00:00.0000000
+        - link "Official Midjourney API / developer access (if available) Third-party wrapper services that connect to Midjourney workflows Automation through Discord bots or browser automation (less reliable) 1." [ref=f20e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2F%40juricavoda%2Fusing%2Dmidjourney%2Dapi%2Dworkflows%2Dhow%2Dto%2Doperate%2Dthe%2Dplatform%2D7711b0a807d9&rut=f31056864205f6b5b1f5a094c5792f6d06049978641830cd1f7e26e8bbcce747
+      - generic [ref=f20e97]:
+        - 'heading "Midjourney API: Is There Finally an Official Version? (2026)" [level=2] [ref=f20e98]':
+          - 'link "Midjourney API: Is There Finally an Official Version? (2026)" [ref=f20e99] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fyourdreamai.com%2Fmidjourney%2Dapi%2F&rut=9082bed8f84d55a72956c7cac8065084a43b03e8e9647b195abe20a810063f0f
+        - generic [ref=f20e101]:
+          - link [ref=f20e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fyourdreamai.com%2Fmidjourney%2Dapi%2F&rut=9082bed8f84d55a72956c7cac8065084a43b03e8e9647b195abe20a810063f0f
+          - link "yourdreamai.com/midjourney-api/" [ref=f20e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fyourdreamai.com%2Fmidjourney%2Dapi%2F&rut=9082bed8f84d55a72956c7cac8065084a43b03e8e9647b195abe20a810063f0f
+          - text: 2025-06-03T00:00:00.0000000
+        - 'link "The Midjourney API has been a highly anticipated release in the tech community for years. Many developers have been eagerly waiting for an official version to be announced. So, is there finally an official Midjourney API? In this article, you will find out! Quick Answer: Does Midjourney have an API?" [ref=f20e105] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fyourdreamai.com%2Fmidjourney%2Dapi%2F&rut=9082bed8f84d55a72956c7cac8065084a43b03e8e9647b195abe20a810063f0f
+      - generic [ref=f20e107]:
+        - heading "Midjourney" [level=2] [ref=f20e108]:
+          - link "Midjourney" [ref=f20e109] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney.com%2F&rut=7cf7373d334afd550122dd1f2a278fdc61cd628324ab4d27a8e735e39c900caf
+        - generic [ref=f20e111]:
+          - link [ref=f20e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney.com%2F&rut=7cf7373d334afd550122dd1f2a278fdc61cd628324ab4d27a8e735e39c900caf
+          - link "www.midjourney.com" [ref=f20e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney.com%2F&rut=7cf7373d334afd550122dd1f2a278fdc61cd628324ab4d27a8e735e39c900caf
+        - link "An independent research lab exploring new mediums of thought and expanding the imaginative powers of the human species." [ref=f20e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.midjourney.com%2F&rut=7cf7373d334afd550122dd1f2a278fdc61cd628324ab4d27a8e735e39c900caf
+      - button "Next" [ref=f20e118] [cursor=pointer]
+      - link "Feedback" [ref=f20e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f20e121]

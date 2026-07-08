@@ -8,6 +8,7 @@ import React from "react"
 import * as THREE from "three"
 import { buildVinylCrate } from "./vinyl-crate"
 import { buildTurntable } from "./turntable"
+import { buildCoffee } from "./coffee"
 import { buildGlassMac } from "./glass-mac"
 import { CURSOR_POINTER } from "./cursors"
 
@@ -191,7 +192,8 @@ function GlobeCanvas({ yawRef, pitchRef }){
       const legWireMat = new THREE.LineBasicMaterial({ color: T().deskWire, transparent:true, opacity: T().legWireOp });
       themeTargets.legWire.push(legWireMat);
       const legWire = new THREE.LineSegments(
-        new THREE.EdgesGeometry(new THREE.CylinderGeometry(0.22, 0.22, 8, 10)),
+        // Triangulated lattice (webgl_helpers style) instead of edge outlines
+        new THREE.WireframeGeometry(new THREE.CylinderGeometry(0.22, 0.22, 8, 6, 6)),
         legWireMat
       );
       legWire.position.set(x, y, z);
@@ -209,31 +211,35 @@ function GlobeCanvas({ yawRef, pitchRef }){
     const shelfWireMat = new THREE.LineBasicMaterial({ color: T().deskWire, transparent:true, opacity: T().shelfWireOp });
     themeTargets.shelfWire.push(shelfWireMat);
     const shelfWire = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.BoxGeometry(20, 0.15, 7.5)),
+      new THREE.WireframeGeometry(new THREE.BoxGeometry(20, 0.15, 7.5, 8, 1, 3)),
       shelfWireMat
     );
     shelfWire.position.y = -4;
     tableGroup.add(shelfWire);
 
-    const gridSize = 9;
-    for (let i = -gridSize; i <= gridSize; i += 1.5){
-      const g = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(i, 0.19, -4.4),
-        new THREE.Vector3(i, 0.19,  4.4)
-      ]);
-      const gm = new THREE.LineBasicMaterial({ color: T().gridLine, transparent:true, opacity: T().gridOp });
-      themeTargets.gridLine.push(gm);
-      tableGroup.add(new THREE.Line(g, gm));
+    // Desk surface — webgl_helpers-style triangulated schematic mesh: a
+    // segmented plane rendered via WireframeGeometry (every triangle edge,
+    // diagonals included) replaces the old straight ruled grid.
+    const meshGridGeo = new THREE.PlaneGeometry(21.6, 8.8, 12, 5);
+    meshGridGeo.rotateX(-Math.PI/2);
+    const meshGridMat = new THREE.LineBasicMaterial({ color: T().gridLine, transparent:true, opacity: T().gridOp });
+    themeTargets.gridLine.push(meshGridMat);
+    const meshGrid = new THREE.LineSegments(new THREE.WireframeGeometry(meshGridGeo), meshGridMat);
+    meshGrid.position.y = 0.19;
+    tableGroup.add(meshGrid);
+
+    // Jade normal pins at every grid vertex — the VertexNormalsHelper look,
+    // built as static local-space segments so they track the desk transform
+    // (and the FPV offset) for free.
+    const pinPts = [];
+    const gridPos = meshGridGeo.getAttribute('position');
+    for (let i = 0; i < gridPos.count; i++){
+      const px = gridPos.getX(i), pz = gridPos.getZ(i);
+      pinPts.push(new THREE.Vector3(px, 0.19, pz), new THREE.Vector3(px, 0.53, pz));
     }
-    for (let i = -4; i <= 4; i += 1.5){
-      const g = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(-10.8, 0.19, i),
-        new THREE.Vector3( 10.8, 0.19, i)
-      ]);
-      const gm = new THREE.LineBasicMaterial({ color: T().gridLine, transparent:true, opacity: T().gridOp });
-      themeTargets.gridLine.push(gm);
-      tableGroup.add(new THREE.Line(g, gm));
-    }
+    const pinMat = new THREE.LineBasicMaterial({ color: T().jadeAccent, transparent:true, opacity: 0.35 });
+    themeTargets.jadeAccent.push(pinMat);
+    tableGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pinPts), pinMat));
 
     const tagCorners = [[-10.8, 4.4], [10.8, 4.4], [-10.8, -4.4], [10.8, -4.4]];
     tagCorners.forEach(([x,z]) => {
@@ -848,9 +854,12 @@ function GlobeCanvas({ yawRef, pitchRef }){
     try { crate = buildVinylCrate(scene, tableGroup, camera, renderer); } catch (e) { /* crate optional */ }
     let turntable = null;
     try { turntable = buildTurntable(scene, tableGroup); } catch (e) { /* turntable optional */ }
+    let coffeeStation = null;
+    try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer); } catch (e) { /* coffee optional */ }
     window.__cockpitTick = (dt, t) => {
       if (crate && crate.tick) crate.tick(dt, t);
       if (turntable && turntable.tick) turntable.tick(dt, t);
+      if (coffeeStation && coffeeStation.tick) coffeeStation.tick(dt, t);
     };
 
     const clock = new THREE.Clock();
@@ -872,8 +881,8 @@ function GlobeCanvas({ yawRef, pitchRef }){
       tBox.rotation.y += dt*.9;
       tRing.rotation.z += dt*.3;
 
-      // Tiny oscillation of the computer (no screen pulse — HTML overlay handles)
-      xray.rotation.y = pcYaw + Math.sin(t*0.25)*0.05;
+      // PC sits dead still — no idle oscillation.
+      xray.rotation.y = pcYaw;
 
       if (rubiks && rubiks.update) rubiks.update(t, dt);
 
@@ -895,12 +904,9 @@ function GlobeCanvas({ yawRef, pitchRef }){
       const yaw = smoothYaw;
       const pitch = smoothPitch;
 
-      // Cockpit target
-      const cockpitPos = new THREE.Vector3(
-        Math.sin(t*.4)*.12,
-        Math.sin(t*.6)*.15,
-        0
-      );
+      // Cockpit target — static seat, no breathing bob (desk objects must
+      // read as perfectly still).
+      const cockpitPos = new THREE.Vector3(0, 0, 0);
       const cockpitYaw = yaw;
       const cockpitPitch = pitch;
 
@@ -913,11 +919,11 @@ function GlobeCanvas({ yawRef, pitchRef }){
         const fovY = camera.fov * Math.PI / 180;
         // Distance so the record row (crate depth) fits the viewport height.
         const dist = Math.max(1.5, (info.fitDepth / 0.8) / (2 * Math.tan(fovY / 2)));
-        const dir = info.outward.clone().add(new THREE.Vector3(0, 0.85, 0)).normalize();
+        const dir = info.outward.clone().add(new THREE.Vector3(0, 1.8, 0)).normalize();   // steep top-down over the bin
         monitorPos = info.center.clone().add(dir.multiplyScalar(dist));
-        // Tiny cursor parallax
-        monitorPos.x += yaw * 0.18;
-        monitorPos.y += pitch * 0.12;
+        // NO cursor parallax here — the crate view must hold a fixed
+        // perspective while records are pulled/browsed (moving toward the
+        // HUD arrows would otherwise swing the camera).
         const look = new THREE.PerspectiveCamera();
         look.position.copy(monitorPos);
         look.up.set(0, 1, 0);
@@ -1002,6 +1008,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       if (crate && crate.disposeCrate) crate.disposeCrate();
+      if (coffeeStation && coffeeStation.dispose) coffeeStation.dispose();
       window.__cockpitTick = null;
       window.__cockpitScene = null;
       window.__cockpitCamera = null;

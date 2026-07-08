@@ -7,8 +7,8 @@
 //     glass keycaps with cream wireframe edges (one jade accent).
 //   • NECK      — short frosted pedestal connecting base to head.
 //   • HEAD      — iridescent clearcoat glass shell with a dark CRT block
-//     fully enclosed inside (screen fills its face, vent grille recessed
-//     into its right edge), wire looms + jade glow in the air gap.
+//     fully enclosed inside (screen fills its face), wire looms + jade
+//     glow in the air gap.
 //
 // Contract preserved:
 //   • builds INTO `xray` (transform/raycast machinery intact)
@@ -17,6 +17,7 @@
 //   • returns { keyboard (setOffset), applyTheme(theme) }
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import { makeHeroGlass, makeFrost } from "./materials"
 
 export function buildGlassMac(xray){
   // ── Textures ──────────────────────────────────────────────────
@@ -51,39 +52,20 @@ export function buildGlassMac(xray){
   };
 
   // ── Materials ─────────────────────────────────────────────────
-  // Head shell: clear acrylic with a clearcoat + faint iridescence so the
-  // glass picks up oil-slick highlights as the camera moves.
-  const glass = new THREE.MeshPhysicalMaterial({
-    color:               new THREE.Color(0xF4F1EA),
-    roughness:           0.22,
-    metalness:           0.02,
-    transmission:        0.92,
-    ior:                 1.45,
-    thickness:           0.7,
-    attenuationColor:    new THREE.Color(0xEDEAE2),
-    attenuationDistance: 2.8,
-    clearcoat:           0.6,
-    clearcoatRoughness:  0.25,
-    iridescence:         0.35,
-    iridescenceIOR:      1.3,
-    transparent:         true,
-    opacity:             0.32,
-    depthWrite:          false,
-    side:                THREE.DoubleSide,
-    envMapIntensity:     1.0,
-  });
+  // Head shell: real refractive glass (shared hero-glass recipe — rides
+  // three's built-in transmission buffer, no per-frame FBO pass needed).
+  const glass = makeHeroGlass({ thickness: 0.7, roughness: 0.18, aberration: 0.02 });
   const edgeMat  = new THREE.LineBasicMaterial({ color: 0xF0EBE1, transparent: true, opacity: 0.5, depthWrite: false });
   const edgeInk  = new THREE.LineBasicMaterial({ color: 0x55514B, transparent: true, opacity: 0.5 });
   // Wedge: opaque brushed cream (solid — keys and desk edges read against it).
   const wedgeMat = new THREE.MeshStandardMaterial({ color: 0xE3DED2, map: makeGrainTexture(), roughness: 0.6, metalness: 0.06 });
   // Neck: frosted solid.
   const neckMat  = new THREE.MeshStandardMaterial({ color: 0xD8D3C7, roughness: 0.45, metalness: 0.04 });
-  // Frosted glass keycaps.
-  const frost    = new THREE.MeshPhongMaterial({ color: 0xF2EEE6, transparent: true, opacity: 0.55, shininess: 90, depthWrite: false });
+  // Frosted glass keycaps — real transmission frost (dark tray blurs through).
+  const frost    = makeFrost({ transmission: 0.6, roughness: 0.35, thickness: 0.04 });
   // Theme-aware dark hardware.
   const ink      = new THREE.MeshLambertMaterial({ color: 0x26231F });   // CRT block
-  const inkSoft  = new THREE.MeshLambertMaterial({ color: 0x3A3733 });   // key tray + vent
-  const grooveMat= new THREE.MeshLambertMaterial({ color: 0x55514B });
+  const inkSoft  = new THREE.MeshLambertMaterial({ color: 0x3A3733 });   // key tray
   const screenMat= new THREE.MeshBasicMaterial({ color: 0x14120F });
   const trimMat  = new THREE.MeshStandardMaterial({ color: 0xB9B5AE, roughness: 0.3, metalness: 0.5 });
   const jade     = new THREE.MeshLambertMaterial({ color: 0x4B6E4F });
@@ -176,12 +158,14 @@ export function buildGlassMac(xray){
 
   // ══ NECK — frosted pedestal between base and head ═════════════
   const neck = new THREE.Mesh(new RoundedBoxGeometry(1.15, 0.24, 0.95, 2, 0.05), neckMat);
-  neck.position.set(0, 0.55, -0.55);
+  neck.position.set(0, 0.535, -0.55);   // top clears the glass head's bottom face (coplanar = z-fight flash)
   xray.add(neck);
   edge(neck, edgeMat);
 
   // ══ HEAD — one glass shell, CRT block fully enclosed ══════════
-  const HEAD_W = 2.3, HEAD_H = 1.9, HEAD_D = 1.5;
+  // Slightly wider than the 2.45 key tray so the monitor reads as the
+  // dominant mass of the terminal.
+  const HEAD_W = 2.6, HEAD_H = 2.05, HEAD_D = 1.5;
   const headY = 0.67 + HEAD_H/2;                 // bottom rests on the neck
   const headZ = -0.5;
   const head = new THREE.Mesh(new RoundedBoxGeometry(HEAD_W, HEAD_H, HEAD_D, 3, 0.13), glass);
@@ -202,7 +186,7 @@ export function buildGlassMac(xray){
   xray.add(handle);
 
   // CRT block — dark mass INSIDE the shell (clear air gap all around)
-  const CRT_W = 2.02, CRT_H = 1.62, CRT_D = 1.08;
+  const CRT_W = 2.3, CRT_H = 1.78, CRT_D = 1.08;
   const crt = new THREE.Mesh(new RoundedBoxGeometry(CRT_W, CRT_H, CRT_D, 2, 0.07), ink);
   crt.position.set(0, headY, headZ + 0.02);
   xray.add(crt);
@@ -210,8 +194,9 @@ export function buildGlassMac(xray){
   const crtFrontZ = headZ + 0.02 + CRT_D/2;      // ≈ 0.06
 
   // Screen — fills the CRT face (slim margins); overlay maps here
-  const SCREEN_W = 1.68, SCREEN_H = 1.3;
-  const screenX = -0.07;
+  // Even 0.15 margin all around inside the 2.3×1.78 CRT face.
+  const SCREEN_W = 2.0, SCREEN_H = 1.48;
+  const screenX = 0;
   const screenGroup = new THREE.Group();
   screenGroup.position.set(screenX, headY, crtFrontZ + 0.012);
   xray.add(screenGroup);
@@ -224,12 +209,6 @@ export function buildGlassMac(xray){
     br: new THREE.Vector3( SCREEN_W/2, -SCREEN_H/2, 0),
   };
 
-  // Vent grille — recessed into the CRT's right edge (not floating)
-  for (let i = 0; i < 7; i++){
-    const groove = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.016, 0.02), grooveMat);
-    groove.position.set(0.9, headY + 0.48 - i * 0.16, crtFrontZ + 0.005);
-    xray.add(groove);
-  }
   // Power LED + micro label under the screen
   const led = new THREE.Mesh(new THREE.SphereGeometry(0.026, 10, 10), jadeLt);
   led.position.set(0.72, headY - CRT_H/2 + 0.1, crtFrontZ + 0.01);
@@ -269,7 +248,6 @@ export function buildGlassMac(xray){
     const light = theme === 'light';
     ink.color.setHex(      light ? 0xE8E4DC : 0x26231F);   // CRT block
     inkSoft.color.setHex(  light ? 0xD8D3C7 : 0x3A3733);   // key tray
-    grooveMat.color.setHex(light ? 0xB9B5AE : 0x55514B);   // vent grooves
     screenMat.color.setHex(light ? 0xE8E4DC : 0x14120F);   // screen glass
     edgeInk.color.setHex(  light ? 0x8E8A83 : 0x55514B);   // silhouette lines
   };

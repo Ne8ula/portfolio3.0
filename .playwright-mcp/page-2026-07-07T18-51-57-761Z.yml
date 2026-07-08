@@ -1,0 +1,203 @@
+- generic [active] [ref=f16e1]:
+  - generic [ref=f16e2]:
+    - generic [ref=f16e3]:
+      - link "DuckDuckGo" [ref=f16e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f16e5]:
+        - generic [ref=f16e6]:
+          - textbox [ref=f16e7]: Anthropic Claude Code frontend design skill aesthetics improving agentic design output blog
+          - button "Submit" [ref=f16e8] [cursor=pointer]
+        - combobox [ref=f16e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f16e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f16e15]:
+      - generic [ref=f16e17]:
+        - heading "Improving frontend design through Skills | Claude by Anthropic" [level=2] [ref=f16e18]:
+          - link "Improving frontend design through Skills | Claude by Anthropic" [ref=f16e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fimproving%2Dfrontend%2Ddesign%2Dthrough%2Dskills&rut=2b4e30c40da08af7e8d73d580a6f36bfee2fcfbc621327d136a95d14677ce61b
+        - generic [ref=f16e21]:
+          - link [ref=f16e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fimproving%2Dfrontend%2Ddesign%2Dthrough%2Dskills&rut=2b4e30c40da08af7e8d73d580a6f36bfee2fcfbc621327d136a95d14677ce61b
+          - link "claude.com/blog/improving-frontend-design-through-skills" [ref=f16e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fimproving%2Dfrontend%2Ddesign%2Dthrough%2Dskills&rut=2b4e30c40da08af7e8d73d580a6f36bfee2fcfbc621327d136a95d14677ce61b
+          - text: 2025-11-12T00:00:00.0000000
+        - 'link "The core insight is to think about frontend design the way a frontend engineer would. The more you can map aesthetic improvements to implementable frontend code, the better Claude can execute. Leveraging this insight, we identified several areas where targeted prompting works well: typography, animations, background effects, and themes." [ref=f16e25] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fblog%2Fimproving%2Dfrontend%2Ddesign%2Dthrough%2Dskills&rut=2b4e30c40da08af7e8d73d580a6f36bfee2fcfbc621327d136a95d14677ce61b
+      - generic [ref=f16e27]:
+        - heading "Frontend Design Plugin | Claude by Anthropic" [level=2] [ref=f16e28]:
+          - link "Frontend Design Plugin | Claude by Anthropic" [ref=f16e29] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fplugins%2Ffrontend%2Ddesign&rut=f9266d91309bda65787764d072ce77c8dd39acc23450f9367617dfbfeda59530
+        - generic [ref=f16e31]:
+          - link [ref=f16e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fplugins%2Ffrontend%2Ddesign&rut=f9266d91309bda65787764d072ce77c8dd39acc23450f9367617dfbfeda59530
+          - link "claude.com/plugins/frontend-design" [ref=f16e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fplugins%2Ffrontend%2Ddesign&rut=f9266d91309bda65787764d072ce77c8dd39acc23450f9367617dfbfeda59530
+        - link "Generate distinctive, production-grade frontend interfaces that stand out from generic AI-generated designs. This plugin enables Claude to create polished code with bold aesthetic choices, distinctive typography and color palettes, high-impact animations, and context-aware visual details. The plugin establishes a design framework before coding—identifying purpose, audience, and a specific ..." [ref=f16e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaude.com%2Fplugins%2Ffrontend%2Ddesign&rut=f9266d91309bda65787764d072ce77c8dd39acc23450f9367617dfbfeda59530
+      - generic [ref=f16e37]:
+        - heading "How to Design Beautiful UIs With Claude Code (2026)" [level=2] [ref=f16e38]:
+          - link "How to Design Beautiful UIs With Claude Code (2026)" [ref=f16e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.aidesigner.ai%2Fblog%2Fclaude%2Dcode%2Dfrontend%2Ddesign&rut=916f0d58786699c69c60b48f8fc9f07a8d075d95c1b179ea63aae9f3a47f8a57
+        - generic [ref=f16e41]:
+          - link [ref=f16e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.aidesigner.ai%2Fblog%2Fclaude%2Dcode%2Dfrontend%2Ddesign&rut=916f0d58786699c69c60b48f8fc9f07a8d075d95c1b179ea63aae9f3a47f8a57
+          - link "www.aidesigner.ai/blog/claude-code-frontend-design" [ref=f16e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.aidesigner.ai%2Fblog%2Fclaude%2Dcode%2Dfrontend%2Ddesign&rut=916f0d58786699c69c60b48f8fc9f07a8d075d95c1b179ea63aae9f3a47f8a57
+          - text: 2026-05-02T00:00:00.0000000
+        - 'link "Three things move the needle most: install Anthropic''s official Frontend Design plugin, add a design-aesthetic block to your CLAUDE.md banning generic fonts and patterns, and pair Claude Code with AIDesigner''s MCP server so it always has a polished visual reference to build against." [ref=f16e45] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.aidesigner.ai%2Fblog%2Fclaude%2Dcode%2Dfrontend%2Ddesign&rut=916f0d58786699c69c60b48f8fc9f07a8d075d95c1b179ea63aae9f3a47f8a57
+      - generic [ref=f16e47]:
+        - heading "claude-code/plugins/frontend-design/README.md at main - GitHub" [level=2] [ref=f16e48]:
+          - link "claude-code/plugins/frontend-design/README.md at main - GitHub" [ref=f16e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Fblob%2Fmain%2Fplugins%2Ffrontend%2Ddesign%2FREADME.md&rut=58e0aca198ab56cc008643f9d028244d1edd4d7f61e5561bdf5238dae8b259f2
+        - generic [ref=f16e51]:
+          - link [ref=f16e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Fblob%2Fmain%2Fplugins%2Ffrontend%2Ddesign%2FREADME.md&rut=58e0aca198ab56cc008643f9d028244d1edd4d7f61e5561bdf5238dae8b259f2
+          - link "github.com/anthropics/claude-code/blob/main/plugins/frontend-design/README.md" [ref=f16e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Fblob%2Fmain%2Fplugins%2Ffrontend%2Ddesign%2FREADME.md&rut=58e0aca198ab56cc008643f9d028244d1edd4d7f61e5561bdf5238dae8b259f2
+        - 'link "Claude automatically uses this skill for frontend work. Creates production-ready code with: Bold aesthetic choices Distinctive typography and color palettes High-impact animations and visual details Context-aware implementation" [ref=f16e55] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Fblob%2Fmain%2Fplugins%2Ffrontend%2Ddesign%2FREADME.md&rut=58e0aca198ab56cc008643f9d028244d1edd4d7f61e5561bdf5238dae8b259f2
+      - generic [ref=f16e57]:
+        - heading "claude-code/plugins/frontend-design at main · anthropics ... - GitHub" [level=2] [ref=f16e58]:
+          - link "claude-code/plugins/frontend-design at main · anthropics ... - GitHub" [ref=f16e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Ftree%2Fmain%2Fplugins%2Ffrontend%2Ddesign&rut=bf4fa51a560b8679e1d4e744e32a331503838251a48a20611c5cf50183cf6474
+        - generic [ref=f16e61]:
+          - link [ref=f16e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Ftree%2Fmain%2Fplugins%2Ffrontend%2Ddesign&rut=bf4fa51a560b8679e1d4e744e32a331503838251a48a20611c5cf50183cf6474
+          - link "github.com/anthropics/claude-code/tree/main/plugins/frontend-design" [ref=f16e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Ftree%2Fmain%2Fplugins%2Ffrontend%2Ddesign&rut=bf4fa51a560b8679e1d4e744e32a331503838251a48a20611c5cf50183cf6474
+          - text: 2025-11-12T00:00:00.0000000
+        - 'link "Claude automatically uses this skill for frontend work. Creates production-ready code with: Bold aesthetic choices Distinctive typography and color palettes High-impact animations and visual details Context-aware implementation" [ref=f16e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fanthropics%2Fclaude%2Dcode%2Ftree%2Fmain%2Fplugins%2Ffrontend%2Ddesign&rut=bf4fa51a560b8679e1d4e744e32a331503838251a48a20611c5cf50183cf6474
+      - generic [ref=f16e67]:
+        - heading "How to Use Claude Code for Frontend Design (2026 Guide)" [level=2] [ref=f16e68]:
+          - link "How to Use Claude Code for Frontend Design (2026 Guide)" [ref=f16e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopen%2Ddesign.ai%2Fblog%2Fhow%2Dto%2Duse%2Dclaude%2Dcode%2Dfor%2Dfrontend%2Ddesign%2F&rut=a4e3c0b885e3e94cef737a73ff6c34029c83af9f916dc7a464f35d72c1f03fd2
+        - generic [ref=f16e71]:
+          - link [ref=f16e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopen%2Ddesign.ai%2Fblog%2Fhow%2Dto%2Duse%2Dclaude%2Dcode%2Dfor%2Dfrontend%2Ddesign%2F&rut=a4e3c0b885e3e94cef737a73ff6c34029c83af9f916dc7a464f35d72c1f03fd2
+          - link "open-design.ai/blog/how-to-use-claude-code-for-frontend-design/" [ref=f16e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopen%2Ddesign.ai%2Fblog%2Fhow%2Dto%2Duse%2Dclaude%2Dcode%2Dfor%2Dfrontend%2Ddesign%2F&rut=a4e3c0b885e3e94cef737a73ff6c34029c83af9f916dc7a464f35d72c1f03fd2
+          - text: 2026-06-30T00:00:00.0000000
+        - 'link "Claude Code can produce genuinely good frontend design — but only with the right setup and prompting. Here''s the practical guide: install the frontend-design plugin, prompt with aesthetic direction instead of pixels, guide the design dimensions, and take it from a one-off screen to an ownable design system." [ref=f16e75] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopen%2Ddesign.ai%2Fblog%2Fhow%2Dto%2Duse%2Dclaude%2Dcode%2Dfor%2Dfrontend%2Ddesign%2F&rut=a4e3c0b885e3e94cef737a73ff6c34029c83af9f916dc7a464f35d72c1f03fd2
+      - generic [ref=f16e77]:
+        - heading "frontend-design — anthropics/skills" [level=2] [ref=f16e78]:
+          - link "frontend-design — anthropics/skills" [ref=f16e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.skills.sh%2Fanthropics%2Fskills%2Ffrontend%2Ddesign&rut=bd14410ec2dacdc81cd7802bc5078dfe1e7cbca667ba95cb143823eb1a403ed7
+        - generic [ref=f16e81]:
+          - link [ref=f16e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.skills.sh%2Fanthropics%2Fskills%2Ffrontend%2Ddesign&rut=bd14410ec2dacdc81cd7802bc5078dfe1e7cbca667ba95cb143823eb1a403ed7
+          - link "www.skills.sh/anthropics/skills/frontend-design" [ref=f16e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.skills.sh%2Fanthropics%2Fskills%2Ffrontend%2Ddesign&rut=bd14410ec2dacdc81cd7802bc5078dfe1e7cbca667ba95cb143823eb1a403ed7
+          - text: 2026-01-19T00:00:00.0000000
+        - link "Guidance for distinctive, intentional visual design when building new UI or reshaping an existing one. Helps with aesthetic direction, typography, and making…" [ref=f16e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.skills.sh%2Fanthropics%2Fskills%2Ffrontend%2Ddesign&rut=bd14410ec2dacdc81cd7802bc5078dfe1e7cbca667ba95cb143823eb1a403ed7
+      - generic [ref=f16e87]:
+        - heading "Frontend Design — AI Agent Skill by Anthropic | AgenticSkills" [level=2] [ref=f16e88]:
+          - link "Frontend Design — AI Agent Skill by Anthropic | AgenticSkills" [ref=f16e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagenticskills.io%2Fskills%2Ffrontend%2Ddesign&rut=e7f9840ebdadc56bfec46994b04100d8e40bc8cdd7a20d5ba90508b99099176a
+        - generic [ref=f16e91]:
+          - link [ref=f16e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagenticskills.io%2Fskills%2Ffrontend%2Ddesign&rut=e7f9840ebdadc56bfec46994b04100d8e40bc8cdd7a20d5ba90508b99099176a
+          - link "agenticskills.io/skills/frontend-design" [ref=f16e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagenticskills.io%2Fskills%2Ffrontend%2Ddesign&rut=e7f9840ebdadc56bfec46994b04100d8e40bc8cdd7a20d5ba90508b99099176a
+          - text: 2026-07-06T00:00:00.0000000
+        - link "The Frontend Design skill from Anthropic is one of the most impactful skills in the ecosystem. It teaches AI agents to avoid the dreaded 'AI slop' aesthetic — generic purple gradients, cookie-cutter layouts, and uninspired design choices. Instead, it guides agents toward bold, intentional design decisions using React and Tailwind CSS." [ref=f16e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagenticskills.io%2Fskills%2Ffrontend%2Ddesign&rut=e7f9840ebdadc56bfec46994b04100d8e40bc8cdd7a20d5ba90508b99099176a
+      - generic [ref=f16e97]:
+        - 'heading "The 18 Best Claude Code Skills for UI/UX Design: Complete Guide" [level=2] [ref=f16e98]':
+          - 'link "The 18 Best Claude Code Skills for UI/UX Design: Complete Guide" [ref=f16e99] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpasqualepillitteri.it%2Fen%2Fnews%2F576%2Fclaude%2Dcode%2Dskills%2Ddesign%2Duiux%2Dguide&rut=fe68f45d3566ffe3558137e467a69a72697f01356ccff592f7813d33eaff1fe2
+        - generic [ref=f16e101]:
+          - link [ref=f16e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpasqualepillitteri.it%2Fen%2Fnews%2F576%2Fclaude%2Dcode%2Dskills%2Ddesign%2Duiux%2Dguide&rut=fe68f45d3566ffe3558137e467a69a72697f01356ccff592f7813d33eaff1fe2
+          - link "pasqualepillitteri.it/en/news/576/claude-code-skills-design-uiux-guide" [ref=f16e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpasqualepillitteri.it%2Fen%2Fnews%2F576%2Fclaude%2Dcode%2Dskills%2Ddesign%2Duiux%2Dguide&rut=fe68f45d3566ffe3558137e467a69a72697f01356ccff592f7813d33eaff1fe2
+          - text: 2026-03-31T00:00:00.0000000
+        - link "Discover the 13 best Claude Code skills for creating professional UI/UX interfaces. Complete guide with GitHub repositories, design styles and installation instructions for each skill." [ref=f16e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpasqualepillitteri.it%2Fen%2Fnews%2F576%2Fclaude%2Dcode%2Dskills%2Ddesign%2Duiux%2Dguide&rut=fe68f45d3566ffe3558137e467a69a72697f01356ccff592f7813d33eaff1fe2
+      - generic [ref=f16e107]:
+        - 'heading "Claude Frontend Design Skill: Install + 3 Worked Examples" [level=2] [ref=f16e108]':
+          - 'link "Claude Frontend Design Skill: Install + 3 Worked Examples" [ref=f16e109] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ffindskill.ai%2Fblog%2Fclaude%2Dfrontend%2Ddesign%2Dskill%2F&rut=d3b14f0fe975c24d211e9f66548b29613e4c7fe884b920c7e4a9c6f4e5592f6b
+        - generic [ref=f16e111]:
+          - link [ref=f16e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ffindskill.ai%2Fblog%2Fclaude%2Dfrontend%2Ddesign%2Dskill%2F&rut=d3b14f0fe975c24d211e9f66548b29613e4c7fe884b920c7e4a9c6f4e5592f6b
+          - link "findskill.ai/blog/claude-frontend-design-skill/" [ref=f16e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ffindskill.ai%2Fblog%2Fclaude%2Dfrontend%2Ddesign%2Dskill%2F&rut=d3b14f0fe975c24d211e9f66548b29613e4c7fe884b920c7e4a9c6f4e5592f6b
+          - text: 2026-05-15T00:00:00.0000000
+        - link "How to install Anthropic's Claude frontend-design skill in Claude Code and use it to ship a pixel-perfect UI in one prompt. Three worked examples included." [ref=f16e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ffindskill.ai%2Fblog%2Fclaude%2Dfrontend%2Ddesign%2Dskill%2F&rut=d3b14f0fe975c24d211e9f66548b29613e4c7fe884b920c7e4a9c6f4e5592f6b
+      - button "Next" [ref=f16e118] [cursor=pointer]
+      - link "Feedback" [ref=f16e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f16e121]

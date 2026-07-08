@@ -1,0 +1,201 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - generic [ref=f9e3]:
+      - link "DuckDuckGo" [ref=f9e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f9e5]:
+        - generic [ref=f9e6]:
+          - textbox [ref=f9e7]: Recraft V3 API pricing per image SVG vector UI design MCP server
+          - button "Submit" [ref=f9e8] [cursor=pointer]
+        - combobox [ref=f9e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f9e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f9e15]:
+      - generic [ref=f9e17]:
+        - heading "Pricing and plans - Recraft" [level=2] [ref=f9e18]:
+          - link "Pricing and plans - Recraft" [ref=f9e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fpricing%3Ftab%3Dapi&rut=9b5d787c910ee59f427c2b1a92c4f295719957bc8484f8c04e1e95ca7678f2da
+        - generic [ref=f9e21]:
+          - link [ref=f9e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fpricing%3Ftab%3Dapi&rut=9b5d787c910ee59f427c2b1a92c4f295719957bc8484f8c04e1e95ca7678f2da
+          - link "www.recraft.ai/pricing?tab=api" [ref=f9e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fpricing%3Ftab%3Dapi&rut=9b5d787c910ee59f427c2b1a92c4f295719957bc8484f8c04e1e95ca7678f2da
+        - link "Recraft API for production image generation Use Recraft's powerful raster and vector models in your apps with simple per-image pricing." [ref=f9e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fpricing%3Ftab%3Dapi&rut=9b5d787c910ee59f427c2b1a92c4f295719957bc8484f8c04e1e95ca7678f2da
+      - generic [ref=f9e27]:
+        - 'heading "Recraft Image Generation API: Vector, Style, Brand Output" [level=2] [ref=f9e28]':
+          - 'link "Recraft Image Generation API: Vector, Style, Brand Output" [ref=f9e29] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fblog%2Fdiscover%2Dthe%2Dpower%2Dof%2Drecrafts%2Dimage%2Dgeneration%2Dapi&rut=0b729afaab736976093b6792259f0aa955627fdf647e6b10b4da171dedd96d22
+        - generic [ref=f9e31]:
+          - link [ref=f9e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fblog%2Fdiscover%2Dthe%2Dpower%2Dof%2Drecrafts%2Dimage%2Dgeneration%2Dapi&rut=0b729afaab736976093b6792259f0aa955627fdf647e6b10b4da171dedd96d22
+          - link "www.recraft.ai/blog/discover-the-power-of-recrafts-image-generation-api" [ref=f9e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fblog%2Fdiscover%2Dthe%2Dpower%2Dof%2Drecrafts%2Dimage%2Dgeneration%2Dapi&rut=0b729afaab736976093b6792259f0aa955627fdf647e6b10b4da171dedd96d22
+          - text: 2024-11-08T00:00:00.0000000
+        - 'link "The price per image is fixed: at Recraft V3 it is $0.04 for one raster image generation and $0.08 for one vector image generation, making it accessible for businesses of all sizes." [ref=f9e35] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fblog%2Fdiscover%2Dthe%2Dpower%2Dof%2Drecrafts%2Dimage%2Dgeneration%2Dapi&rut=0b729afaab736976093b6792259f0aa955627fdf647e6b10b4da171dedd96d22
+      - generic [ref=f9e37]:
+        - heading "Recraft API Pricing 2026 — Compare 4 Models - Inference Hub" [level=2] [ref=f9e38]:
+          - link "Recraft API Pricing 2026 — Compare 4 Models - Inference Hub" [ref=f9e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Finferencehub.org%2Fproviders%2Frecraft&rut=3fe39e5a3ebd5d811e64bd4c96c5e759f28c8f351f023867e2af6584651efe92
+        - generic [ref=f9e41]:
+          - link [ref=f9e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Finferencehub.org%2Fproviders%2Frecraft&rut=3fe39e5a3ebd5d811e64bd4c96c5e759f28c8f351f023867e2af6584651efe92
+          - link "inferencehub.org/providers/recraft" [ref=f9e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Finferencehub.org%2Fproviders%2Frecraft&rut=3fe39e5a3ebd5d811e64bd4c96c5e759f28c8f351f023867e2af6584651efe92
+        - link "Creator of the Recraft image generation models. Offers raster and SVG vector image generation with per-image API pricing." [ref=f9e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Finferencehub.org%2Fproviders%2Frecraft&rut=3fe39e5a3ebd5d811e64bd4c96c5e759f28c8f351f023867e2af6584651efe92
+      - generic [ref=f9e47]:
+        - heading "Recraft Pricing | UsagePricing" [level=2] [ref=f9e48]:
+          - link "Recraft Pricing | UsagePricing" [ref=f9e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.usagepricing.com%2Fblueprint%2Frecraft&rut=f61875463b2ed71e93e6c0e33fb5eb98168eeb084d182d964672c7e95dc6f8e4
+        - generic [ref=f9e51]:
+          - link [ref=f9e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.usagepricing.com%2Fblueprint%2Frecraft&rut=f61875463b2ed71e93e6c0e33fb5eb98168eeb084d182d964672c7e95dc6f8e4
+          - link "www.usagepricing.com/blueprint/recraft" [ref=f9e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.usagepricing.com%2Fblueprint%2Frecraft&rut=f61875463b2ed71e93e6c0e33fb5eb98168eeb084d182d964672c7e95dc6f8e4
+          - text: 2026-06-01T00:00:00.0000000
+        - 'link "Recraft''s API is billed separately on pure usage: API units are sold at $1 = 1,000 units and consumed per image, from $0.022 (Recraft V2 raster) up to $0.30 (V4 Pro Vector)." [ref=f9e55] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.usagepricing.com%2Fblueprint%2Frecraft&rut=f61875463b2ed71e93e6c0e33fb5eb98168eeb084d182d964672c7e95dc6f8e4
+      - generic [ref=f9e57]:
+        - heading "Recraft Pricing — Plans & Cost per Image - Price Per Token" [level=2] [ref=f9e58]:
+          - link "Recraft Pricing — Plans & Cost per Image - Price Per Token" [ref=f9e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpricepertoken.com%2Frecraft%2Dpricing&rut=05c4f9f605da373d14914384acaa35ffb3eb63e86fae560d0fdda60d10c5c8a2
+        - generic [ref=f9e61]:
+          - link [ref=f9e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpricepertoken.com%2Frecraft%2Dpricing&rut=05c4f9f605da373d14914384acaa35ffb3eb63e86fae560d0fdda60d10c5c8a2
+          - link "pricepertoken.com/recraft-pricing" [ref=f9e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpricepertoken.com%2Frecraft%2Dpricing&rut=05c4f9f605da373d14914384acaa35ffb3eb63e86fae560d0fdda60d10c5c8a2
+        - 'link "Image Model Pricing / Recraft Pricing Recraft Pricing What Recraft costs per month — and per image. Recraft meters credits with a clean conversion: 1 credit = 1 raster image (vector/SVG images cost 2 credits), so cost per image is easy to pin down." [ref=f9e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpricepertoken.com%2Frecraft%2Dpricing&rut=05c4f9f605da373d14914384acaa35ffb3eb63e86fae560d0fdda60d10c5c8a2
+      - generic [ref=f9e67]:
+        - heading "Recraft Review & Pricing (2026)" [level=2] [ref=f9e68]:
+          - link "Recraft Review & Pricing (2026)" [ref=f9e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftoolcurrent.com%2Ftools%2Frecraft&rut=0907620b36d1e192490086be5e87870f361b6a386e0da852237bbbf3345e2479
+        - generic [ref=f9e71]:
+          - link [ref=f9e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftoolcurrent.com%2Ftools%2Frecraft&rut=0907620b36d1e192490086be5e87870f361b6a386e0da852237bbbf3345e2479
+          - link "toolcurrent.com/tools/recraft" [ref=f9e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftoolcurrent.com%2Ftools%2Frecraft&rut=0907620b36d1e192490086be5e87870f361b6a386e0da852237bbbf3345e2479
+          - text: 2026-04-24T00:00:00.0000000
+        - link "Recraft is an AI design platform specialising in native SVG vector generation, raster images, icons, mockups, and brand-consistent visual assets. The proprietary Recraft V3 model generates true scalable SVG files editable in Illustrator, Figma, Sketch, and Affinity Designer; accurate text rendering of any size in generated images; and batch ..." [ref=f9e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftoolcurrent.com%2Ftools%2Frecraft&rut=0907620b36d1e192490086be5e87870f361b6a386e0da852237bbbf3345e2479
+      - generic [ref=f9e77]:
+        - heading "Recraft - AI Image Generator | Point of AI" [level=2] [ref=f9e78]:
+          - link "Recraft - AI Image Generator | Point of AI" [ref=f9e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpointofai.com%2Ftools%2Frecraft&rut=5a72a56b7b24838634cb27aafa5e21c47dcecd6b218d70f16a9263f245cf12bc
+        - generic [ref=f9e81]:
+          - link [ref=f9e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpointofai.com%2Ftools%2Frecraft&rut=5a72a56b7b24838634cb27aafa5e21c47dcecd6b218d70f16a9263f245cf12bc
+          - link "pointofai.com/tools/recraft" [ref=f9e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpointofai.com%2Ftools%2Frecraft&rut=5a72a56b7b24838634cb27aafa5e21c47dcecd6b218d70f16a9263f245cf12bc
+          - text: 2026-06-18T00:00:00.0000000
+        - link "Recraft is a web based AI image and vector generation platform that offers a free plan with daily credits, supports generating both raster images and editable vector SVG illustrations, and provides a paid API with per image pricing for production use of its raster and vector models." [ref=f9e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fpointofai.com%2Ftools%2Frecraft&rut=5a72a56b7b24838634cb27aafa5e21c47dcecd6b218d70f16a9263f245cf12bc
+      - generic [ref=f9e87]:
+        - heading "Recraft V3 SVG | Text to SVG API - replicate.com" [level=2] [ref=f9e88]:
+          - link "Recraft V3 SVG | Text to SVG API - replicate.com" [ref=f9e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Freplicate.com%2Frecraft%2Dai%2Frecraft%2Dv3%2Dsvg&rut=a4bea2f10ba2bc7840d90463b0f0cbf38934296ee5e013b5f85bb99eeea528aa
+        - generic [ref=f9e91]:
+          - link [ref=f9e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Freplicate.com%2Frecraft%2Dai%2Frecraft%2Dv3%2Dsvg&rut=a4bea2f10ba2bc7840d90463b0f0cbf38934296ee5e013b5f85bb99eeea528aa
+          - link "replicate.com/recraft-ai/recraft-v3-svg" [ref=f9e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Freplicate.com%2Frecraft%2Dai%2Frecraft%2Dv3%2Dsvg&rut=a4bea2f10ba2bc7840d90463b0f0cbf38934296ee5e013b5f85bb99eeea528aa
+          - text: 2024-10-30T00:00:00.0000000
+        - link "Recraft V3 SVG (code-named red_panda) is a text-to-image model with the ability to generate high quality SVG images including logotypes, and icons. The model supports a wide list of styles." [ref=f9e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Freplicate.com%2Frecraft%2Dai%2Frecraft%2Dv3%2Dsvg&rut=a4bea2f10ba2bc7840d90463b0f0cbf38934296ee5e013b5f85bb99eeea528aa
+      - generic [ref=f9e97]:
+        - 'heading "Recraft AI Review 2026: Pricing, Features, Pros & Cons" [level=2] [ref=f9e98]':
+          - 'link "Recraft AI Review 2026: Pricing, Features, Pros & Cons" [ref=f9e99] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fen.ai%2Dpedias.com%2Ftools%2Frecraft%2Dai&rut=f9cedc096d29f20cf28c1d66d6d38485532bf29e5ff1634b741da94065eda6b3
+        - generic [ref=f9e101]:
+          - link [ref=f9e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fen.ai%2Dpedias.com%2Ftools%2Frecraft%2Dai&rut=f9cedc096d29f20cf28c1d66d6d38485532bf29e5ff1634b741da94065eda6b3
+          - link "en.ai-pedias.com/tools/recraft-ai" [ref=f9e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fen.ai%2Dpedias.com%2Ftools%2Frecraft%2Dai&rut=f9cedc096d29f20cf28c1d66d6d38485532bf29e5ff1634b741da94065eda6b3
+        - link "An API is offered with pay-per-use pricing at $0.04 per raster image and $0.08 per vector image, supporting automation and service integration. Pro plan and above ensures private generation with commercial use rights." [ref=f9e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fen.ai%2Dpedias.com%2Ftools%2Frecraft%2Dai&rut=f9cedc096d29f20cf28c1d66d6d38485532bf29e5ff1634b741da94065eda6b3
+      - generic [ref=f9e107]:
+        - heading "Recraft V3 - API Pricing & Benchmarks | OpenRouter" [level=2] [ref=f9e108]:
+          - link "Recraft V3 - API Pricing & Benchmarks | OpenRouter" [ref=f9e109] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopenrouter.ai%2Frecraft%2Frecraft%2Dv3&rut=48d772ea984424e3472596cb54636e9179dbe9df77736b568598ea9684bde9ad
+        - generic [ref=f9e111]:
+          - link [ref=f9e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopenrouter.ai%2Frecraft%2Frecraft%2Dv3&rut=48d772ea984424e3472596cb54636e9179dbe9df77736b568598ea9684bde9ad
+          - link "openrouter.ai/recraft/recraft-v3" [ref=f9e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopenrouter.ai%2Frecraft%2Frecraft%2Dv3&rut=48d772ea984424e3472596cb54636e9179dbe9df77736b568598ea9684bde9ad
+          - text: 2026-05-07T00:00:00.0000000
+        - link "Recraft V3 is an image generation model from Recraft. $0 per million input tokens, $0 per million output tokens. 65,536 token context window. Includes independent benchmarks from Artificial Analysis." [ref=f9e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fopenrouter.ai%2Frecraft%2Frecraft%2Dv3&rut=48d772ea984424e3472596cb54636e9179dbe9df77736b568598ea9684bde9ad
+      - button "Next" [ref=f9e118] [cursor=pointer]
+      - link "Feedback" [ref=f9e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f9e121]

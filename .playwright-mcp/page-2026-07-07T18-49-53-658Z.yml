@@ -1,0 +1,184 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - generic [ref=f8e3]:
+      - link "DuckDuckGo" [ref=f8e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f8e5]:
+        - generic [ref=f8e6]:
+          - textbox [ref=f8e7]: v0 model API v0-1.5-md composite model UI generation vercel
+          - button "Submit" [ref=f8e8] [cursor=pointer]
+        - combobox [ref=f8e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f8e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f8e15]:
+      - generic [ref=f8e17]:
+        - heading "Introducing the v0 composite model family - Vercel" [level=2] [ref=f8e18]:
+          - link "Introducing the v0 composite model family - Vercel" [ref=f8e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fblog%2Fv0%2Dcomposite%2Dmodel%2Dfamily&rut=450bd2f297ed879c53307cbc54138b128fc99ddd59ce0297ccbb2a6129f1bc57
+        - generic [ref=f8e21]:
+          - link [ref=f8e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fblog%2Fv0%2Dcomposite%2Dmodel%2Dfamily&rut=450bd2f297ed879c53307cbc54138b128fc99ddd59ce0297ccbb2a6129f1bc57
+          - link "vercel.com/blog/v0-composite-model-family" [ref=f8e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fblog%2Fv0%2Dcomposite%2Dmodel%2Dfamily&rut=450bd2f297ed879c53307cbc54138b128fc99ddd59ce0297ccbb2a6129f1bc57
+        - link "We recently launched our AI models v0 -1.5-md, v0 -1.5-lg, and v0 -1.0-md in v0. Today, we're sharing a deep dive into the composite model architecture behind those models." [ref=f8e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fblog%2Fv0%2Dcomposite%2Dmodel%2Dfamily&rut=450bd2f297ed879c53307cbc54138b128fc99ddd59ce0297ccbb2a6129f1bc57
+      - generic [ref=f8e27]:
+        - heading "v0-1.5-md & v0-1.5-lg now in beta on the Models API - Vercel" [level=2] [ref=f8e28]:
+          - link "v0-1.5-md & v0-1.5-lg now in beta on the Models API - Vercel" [ref=f8e29] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fchangelog%2Fmodels%2Dapi%2Dv0%2D1.5%2Dbeta&rut=c45c4ab8bd38f76db07aeb8d11d12cbb8bf6fca2f1dda14a309a6e0080f7ab91
+        - generic [ref=f8e31]:
+          - link [ref=f8e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fchangelog%2Fmodels%2Dapi%2Dv0%2D1.5%2Dbeta&rut=c45c4ab8bd38f76db07aeb8d11d12cbb8bf6fca2f1dda14a309a6e0080f7ab91
+          - link "vercel.com/changelog/models-api-v0-1.5-beta" [ref=f8e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fchangelog%2Fmodels%2Dapi%2Dv0%2D1.5%2Dbeta&rut=c45c4ab8bd38f76db07aeb8d11d12cbb8bf6fca2f1dda14a309a6e0080f7ab91
+        - link "Try v0-1.5-md and v0-1.5-lg in beta on the v0 Models API, now offering two new model sizes for more flexible performance and accuracy. Ideal for everything from quick responses to deep analysis." [ref=f8e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fvercel.com%2Fchangelog%2Fmodels%2Dapi%2Dv0%2D1.5%2Dbeta&rut=c45c4ab8bd38f76db07aeb8d11d12cbb8bf6fca2f1dda14a309a6e0080f7ab91
+      - generic [ref=f8e37]:
+        - 'heading "GitHub - vercel/v0-sdk: SDK for the v0 Platform API · GitHub" [level=2] [ref=f8e38]':
+          - 'link "GitHub - vercel/v0-sdk: SDK for the v0 Platform API · GitHub" [ref=f8e39] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0%2Dsdk&rut=504c1e0fb9a1c99347993dbfaa766bf889cd57ede9a9c44a38d24d26017d718b
+        - generic [ref=f8e41]:
+          - link [ref=f8e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0%2Dsdk&rut=504c1e0fb9a1c99347993dbfaa766bf889cd57ede9a9c44a38d24d26017d718b
+          - link "github.com/vercel/v0-sdk" [ref=f8e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0%2Dsdk&rut=504c1e0fb9a1c99347993dbfaa766bf889cd57ede9a9c44a38d24d26017d718b
+        - link "SDK for the v0 Platform API. Contribute to vercel/v0-sdk development by creating an account on GitHub." [ref=f8e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fvercel%2Fv0%2Dsdk&rut=504c1e0fb9a1c99347993dbfaa766bf889cd57ede9a9c44a38d24d26017d718b
+      - generic [ref=f8e47]:
+        - 'heading "GitHub - ak-skill/v0-api: Agent Skill: v0 API integration for AI ..." [level=2] [ref=f8e48]':
+          - 'link "GitHub - ak-skill/v0-api: Agent Skill: v0 API integration for AI ..." [ref=f8e49] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fak%2Dskill%2Fv0%2Dapi&rut=79610c935dd78a4b678e578309d99068037bd0c45280978ad290f4c2217f77fa
+        - generic [ref=f8e51]:
+          - link [ref=f8e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fak%2Dskill%2Fv0%2Dapi&rut=79610c935dd78a4b678e578309d99068037bd0c45280978ad290f4c2217f77fa
+          - link "github.com/ak-skill/v0-api" [ref=f8e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fak%2Dskill%2Fv0%2Dapi&rut=79610c935dd78a4b678e578309d99068037bd0c45280978ad290f4c2217f77fa
+        - link "This skill enables Claude Code to generate production-ready React and Next.js components from natural language descriptions using Vercel's v0 generative UI system. It provides access to both the Model API for component generation and the Platform API for project management." [ref=f8e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fak%2Dskill%2Fv0%2Dapi&rut=79610c935dd78a4b678e578309d99068037bd0c45280978ad290f4c2217f77fa
+      - generic [ref=f8e57]:
+        - heading "Vercel V0 SDK Announcement - v0 by Vercel - v0.app" [level=2] [ref=f8e58]:
+          - link "Vercel V0 SDK Announcement - v0 by Vercel - v0.app" [ref=f8e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fv0.app%2Fchat%2Fvercel%2Dv0%2Dsdk%2Dannouncement%2Ds2Wthw0niLD&rut=b5cfc1eedc183d41c04c60d97140e79a24131300df91909d6a6f529744954fa5
+        - generic [ref=f8e61]:
+          - link [ref=f8e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fv0.app%2Fchat%2Fvercel%2Dv0%2Dsdk%2Dannouncement%2Ds2Wthw0niLD&rut=b5cfc1eedc183d41c04c60d97140e79a24131300df91909d6a6f529744954fa5
+          - link "v0.app/chat/vercel-v0-sdk-announcement-s2Wthw0niLD" [ref=f8e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fv0.app%2Fchat%2Fvercel%2Dv0%2Dsdk%2Dannouncement%2Ds2Wthw0niLD&rut=b5cfc1eedc183d41c04c60d97140e79a24131300df91909d6a6f529744954fa5
+        - 'link "The v0 Model API offers different models tailored for various tasks: v0-1.5-md for everyday tasks and UI generation, and v0-1.5-lg for advanced thinking or reasoning 1 2. We''re excited to see what you''ll build with the Vercel v0 SDK! Start building smarter, faster, and with more confidence today." [ref=f8e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fv0.app%2Fchat%2Fvercel%2Dv0%2Dsdk%2Dannouncement%2Ds2Wthw0niLD&rut=b5cfc1eedc183d41c04c60d97140e79a24131300df91909d6a6f529744954fa5
+      - generic [ref=f8e67]:
+        - heading "We are introducing v0-1.5-md and v0-1.5-lg, our newest models for UI ..." [level=2] [ref=f8e68]:
+          - link "We are introducing v0-1.5-md and v0-1.5-lg, our newest models for UI ..." [ref=f8e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.linkedin.com%2Fposts%2Fv0dev_we%2Dare%2Dintroducing%2Dv0%2D15%2Dmd%2Dand%2Dv0%2D15%2Dlg%2Dactivity%2D7331743900899954688%2DnEpT&rut=e4d52e08d2b15f19f6dd5241a5f16ee0d85bb1e41c4afeb834ae4da36e98ffba
+        - generic [ref=f8e71]:
+          - link [ref=f8e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.linkedin.com%2Fposts%2Fv0dev_we%2Dare%2Dintroducing%2Dv0%2D15%2Dmd%2Dand%2Dv0%2D15%2Dlg%2Dactivity%2D7331743900899954688%2DnEpT&rut=e4d52e08d2b15f19f6dd5241a5f16ee0d85bb1e41c4afeb834ae4da36e98ffba
+          - link "www.linkedin.com/posts/v0dev_we-are-introducing-v0-15-md-and-v0-15-lg-activity-7331743900899954688-nEpT" [ref=f8e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.linkedin.com%2Fposts%2Fv0dev_we%2Dare%2Dintroducing%2Dv0%2D15%2Dmd%2Dand%2Dv0%2D15%2Dlg%2Dactivity%2D7331743900899954688%2DnEpT&rut=e4d52e08d2b15f19f6dd5241a5f16ee0d85bb1e41c4afeb834ae4da36e98ffba
+        - link "We are introducing v0-1.5-md and v0-1.5-lg, our newest models for UI generation and web development. Available today on v0.dev. Coming to the API next week. | 15 comments on LinkedIn" [ref=f8e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.linkedin.com%2Fposts%2Fv0dev_we%2Dare%2Dintroducing%2Dv0%2D15%2Dmd%2Dand%2Dv0%2D15%2Dlg%2Dactivity%2D7331743900899954688%2DnEpT&rut=e4d52e08d2b15f19f6dd5241a5f16ee0d85bb1e41c4afeb834ae4da36e98ffba
+      - generic [ref=f8e77]:
+        - heading "Vercel V0 1.5 MD pricing & specs — Vercel | CloudPrice" [level=2] [ref=f8e78]:
+          - link "Vercel V0 1.5 MD pricing & specs — Vercel | CloudPrice" [ref=f8e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fcloudprice.net%2Fmodels%2Fvercel%2Dv0%2D1%2D5%2Dmd&rut=f989ad98c83eb317dc94ed05a980f24f35bceaf2995f27f13ce1f605fa24e894
+        - generic [ref=f8e81]:
+          - link [ref=f8e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fcloudprice.net%2Fmodels%2Fvercel%2Dv0%2D1%2D5%2Dmd&rut=f989ad98c83eb317dc94ed05a980f24f35bceaf2995f27f13ce1f605fa24e894
+          - link "cloudprice.net/models/vercel-v0-1-5-md" [ref=f8e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fcloudprice.net%2Fmodels%2Fvercel%2Dv0%2D1%2D5%2Dmd&rut=f989ad98c83eb317dc94ed05a980f24f35bceaf2995f27f13ce1f605fa24e894
+        - link "Vercel V0 1.5 MD is Vercel 's language model with a 128K context window and up to 33K output tokens, starting at $3.00 / 1M input and $15.00 / 1M output. Vercel's medium-tier V0 1.5 model for UI and front-end code generation with a balance of speed and capability." [ref=f8e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fcloudprice.net%2Fmodels%2Fvercel%2Dv0%2D1%2D5%2Dmd&rut=f989ad98c83eb317dc94ed05a980f24f35bceaf2995f27f13ce1f605fa24e894
+      - generic [ref=f8e87]:
+        - heading "Introducing the v0 composite model family - host-hunters.com" [level=2] [ref=f8e88]:
+          - link "Introducing the v0 composite model family - host-hunters.com" [ref=f8e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhost%2Dhunters.com%2Fthreads%2Fintroducing%2Dthe%2Dv0%2Dcomposite%2Dmodel%2Dfamily.3221%2F&rut=0b15746eee0a22eb2d23a92d9e16135cfa16574c1f2bbce017af9f89ab7f5edd
+        - generic [ref=f8e91]:
+          - link [ref=f8e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhost%2Dhunters.com%2Fthreads%2Fintroducing%2Dthe%2Dv0%2Dcomposite%2Dmodel%2Dfamily.3221%2F&rut=0b15746eee0a22eb2d23a92d9e16135cfa16574c1f2bbce017af9f89ab7f5edd
+          - link "host-hunters.com/threads/introducing-the-v0-composite-model-family.3221/" [ref=f8e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhost%2Dhunters.com%2Fthreads%2Fintroducing%2Dthe%2Dv0%2Dcomposite%2Dmodel%2Dfamily.3221%2F&rut=0b15746eee0a22eb2d23a92d9e16135cfa16574c1f2bbce017af9f89ab7f5edd
+        - link "We recently launched our AI models v0-1.5-md and v0-1.5-lg in v0.dev and v0-1.0-md via API. Today, we're sharing a deep dive into the composite model architecture behind those models. They combine specialized knowledge from retrieval-augmented generation (RAG), reasoning from state-of-the-art..." [ref=f8e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhost%2Dhunters.com%2Fthreads%2Fintroducing%2Dthe%2Dv0%2Dcomposite%2Dmodel%2Dfamily.3221%2F&rut=0b15746eee0a22eb2d23a92d9e16135cfa16574c1f2bbce017af9f89ab7f5edd
+      - generic [ref=f8e97]:
+        - heading "Vercel v0 Integration | Sypha AI Docs | Sypha AI" [level=2] [ref=f8e98]:
+          - link "Vercel v0 Integration | Sypha AI Docs | Sypha AI" [ref=f8e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.sypha.ai%2Fdocs%2Fproviders%2Fv0&rut=ca48a4b4ba7e5ea0299a394475383cc0666b26991a0cf38bb65ac721e1ce7dff
+        - generic [ref=f8e101]:
+          - link [ref=f8e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.sypha.ai%2Fdocs%2Fproviders%2Fv0&rut=ca48a4b4ba7e5ea0299a394475383cc0666b26991a0cf38bb65ac721e1ce7dff
+          - link "www.sypha.ai/docs/providers/v0" [ref=f8e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.sypha.ai%2Fdocs%2Fproviders%2Fv0&rut=ca48a4b4ba7e5ea0299a394475383cc0666b26991a0cf38bb65ac721e1ce7dff
+        - 'link "v0-1.0-md: A foundational multimodal model optimized for simultaneous text and image reasoning. v0-1.5-lg & v0-1.5.md: Composite models designed for higher-logic complex architectures. Configuring Sypha Activate Settings: Click the gear icon in the Sypha sidebar. Define Provider Strategy: Select OpenAI Compatible from the registry. Calibrate ..." [ref=f8e105] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.sypha.ai%2Fdocs%2Fproviders%2Fv0&rut=ca48a4b4ba7e5ea0299a394475383cc0666b26991a0cf38bb65ac721e1ce7dff
+      - button "Next" [ref=f8e108] [cursor=pointer]
+      - link "Feedback" [ref=f8e110] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f8e111]

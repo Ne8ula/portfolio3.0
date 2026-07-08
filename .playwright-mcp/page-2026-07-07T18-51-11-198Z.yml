@@ -1,0 +1,202 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e2]:
+    - generic [ref=f13e3]:
+      - link "DuckDuckGo" [ref=f13e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f13e5]:
+        - generic [ref=f13e6]:
+          - textbox [ref=f13e7]: Tripo MCP server API GLB export pricing Hunyuan3D API TRELLIS comparison 2026
+          - button "Submit" [ref=f13e8] [cursor=pointer]
+        - combobox [ref=f13e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f13e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f13e15]:
+      - generic [ref=f13e17]:
+        - heading "Best 3D Model Generation APIs in 2026 - Complete Comparison" [level=2] [ref=f13e18]:
+          - link "Best 3D Model Generation APIs in 2026 - Complete Comparison" [ref=f13e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.3daistudio.com%2Fblog%2Fbest%2D3d%2Dmodel%2Dgeneration%2Dapis%2D2026&rut=5138b40bc8e4c0eba51eec0926e26588e2b0e001c50b17858ac23f9af3cfb8d9
+        - generic [ref=f13e21]:
+          - link [ref=f13e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.3daistudio.com%2Fblog%2Fbest%2D3d%2Dmodel%2Dgeneration%2Dapis%2D2026&rut=5138b40bc8e4c0eba51eec0926e26588e2b0e001c50b17858ac23f9af3cfb8d9
+          - link "www.3daistudio.com/blog/best-3d-model-generation-apis-2026" [ref=f13e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.3daistudio.com%2Fblog%2Fbest%2D3d%2Dmodel%2Dgeneration%2Dapis%2D2026&rut=5138b40bc8e4c0eba51eec0926e26588e2b0e001c50b17858ac23f9af3cfb8d9
+          - text: 2026-03-03T00:00:00.0000000
+        - link "Compare the best 3D model generation APIs in 2026. Meshy, Tripo, Rodin, TRELLIS.2, Hunyuan 3D, and more. Pricing, speed, quality, and features side by side." [ref=f13e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.3daistudio.com%2Fblog%2Fbest%2D3d%2Dmodel%2Dgeneration%2Dapis%2D2026&rut=5138b40bc8e4c0eba51eec0926e26588e2b0e001c50b17858ac23f9af3cfb8d9
+      - generic [ref=f13e27]:
+        - 'heading "Best AI 3D Model Generators in 2026: TRELLIS vs Meshy vs Tripo vs Hitem3D" [level=2] [ref=f13e28]':
+          - 'link "Best AI 3D Model Generators in 2026: TRELLIS vs Meshy vs Tripo vs Hitem3D" [ref=f13e29] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerator&rut=86ddbb228eff2f71e2defdc2eccc5ccc0506e4ae9ebfc2c6fc03ba457f0dc4c4
+        - generic [ref=f13e31]:
+          - link [ref=f13e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerator&rut=86ddbb228eff2f71e2defdc2eccc5ccc0506e4ae9ebfc2c6fc03ba457f0dc4c4
+          - link "trellis2.app/blog/best-ai-3d-model-generator" [ref=f13e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerator&rut=86ddbb228eff2f71e2defdc2eccc5ccc0506e4ae9ebfc2c6fc03ba457f0dc4c4
+          - text: 2026-04-16T00:00:00.0000000
+        - link "Compare the top AI 3D model generators in 2026. Expert review of TRELLIS 2, Meshy AI, Tripo AI, Hitem3D, Rodin AI, and Hunyuan3D with quality benchmarks and pricing." [ref=f13e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerator&rut=86ddbb228eff2f71e2defdc2eccc5ccc0506e4ae9ebfc2c6fc03ba457f0dc4c4
+      - generic [ref=f13e37]:
+        - heading "AI 3D Model Generation Models Leaderboard 2026 | Pixazo API" [level=2] [ref=f13e38]:
+          - link "AI 3D Model Generation Models Leaderboard 2026 | Pixazo API" [ref=f13e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pixazo.ai%2Fmodels%2Fleaderboard%2Fai%2D3d%2Dmodel%2Dgeneration&rut=c550c2f025b7e9dbce60ffc20920f1ef20e7e950a32320f567986a92bcb61f2b
+        - generic [ref=f13e41]:
+          - link [ref=f13e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pixazo.ai%2Fmodels%2Fleaderboard%2Fai%2D3d%2Dmodel%2Dgeneration&rut=c550c2f025b7e9dbce60ffc20920f1ef20e7e950a32320f567986a92bcb61f2b
+          - link "www.pixazo.ai/models/leaderboard/ai-3d-model-generation" [ref=f13e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pixazo.ai%2Fmodels%2Fleaderboard%2Fai%2D3d%2Dmodel%2Dgeneration&rut=c550c2f025b7e9dbce60ffc20920f1ef20e7e950a32320f567986a92bcb61f2b
+        - link "Which AI 3D model generator leads in 2026? Hunyuan3D-2.5 from Tencent leads 3D model generation with a score of 1325. Microsoft's TRELLIS and Meshy 5 follow. Unlike other AI media categories, 3D is heavily open-source — 10 of 14 models can be self-hosted." [ref=f13e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.pixazo.ai%2Fmodels%2Fleaderboard%2Fai%2D3d%2Dmodel%2Dgeneration&rut=c550c2f025b7e9dbce60ffc20920f1ef20e7e950a32320f567986a92bcb61f2b
+      - generic [ref=f13e47]:
+        - heading "Hunyuan3D by Tencent vs Tripo AI Comparison (2026) | AI Tools" [level=2] [ref=f13e48]:
+          - link "Hunyuan3D by Tencent vs Tripo AI Comparison (2026) | AI Tools" [ref=f13e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fai.toolsinfo.com%2Fcompare%2Fhunyuan3d%2Dby%2Dtencent%2Dvs%2Dtripo%2Dai&rut=a139cfb4fd0b57b67d51e2e89b23a588f46f24fab15710646806c0f672418446
+        - generic [ref=f13e51]:
+          - link [ref=f13e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fai.toolsinfo.com%2Fcompare%2Fhunyuan3d%2Dby%2Dtencent%2Dvs%2Dtripo%2Dai&rut=a139cfb4fd0b57b67d51e2e89b23a588f46f24fab15710646806c0f672418446
+          - link "ai.toolsinfo.com/compare/hunyuan3d-by-tencent-vs-tripo-ai" [ref=f13e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fai.toolsinfo.com%2Fcompare%2Fhunyuan3d%2Dby%2Dtencent%2Dvs%2Dtripo%2Dai&rut=a139cfb4fd0b57b67d51e2e89b23a588f46f24fab15710646806c0f672418446
+        - link "Compare Hunyuan3D by Tencent and Tripo AI side-by-side. Features, pricing, integrations, security & user ratings. Find the best fit for your needs." [ref=f13e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fai.toolsinfo.com%2Fcompare%2Fhunyuan3d%2Dby%2Dtencent%2Dvs%2Dtripo%2Dai&rut=a139cfb4fd0b57b67d51e2e89b23a588f46f24fab15710646806c0f672418446
+      - generic [ref=f13e57]:
+        - heading "Comparing Generative 3D Models - help.scenario.com" [level=2] [ref=f13e58]:
+          - link "Comparing Generative 3D Models - help.scenario.com" [ref=f13e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhelp.scenario.com%2Farticles%2F1263568892%2Dcomparing%2Dgenerative%2D3d%2Dmodels&rut=c49918834a08fcdfbf2f7f4facccf83e7ea02fb2ececa4c21f67e810c057c172
+        - generic [ref=f13e61]:
+          - link [ref=f13e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhelp.scenario.com%2Farticles%2F1263568892%2Dcomparing%2Dgenerative%2D3d%2Dmodels&rut=c49918834a08fcdfbf2f7f4facccf83e7ea02fb2ececa4c21f67e810c057c172
+          - link "help.scenario.com/articles/1263568892-comparing-generative-3d-models" [ref=f13e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhelp.scenario.com%2Farticles%2F1263568892%2Dcomparing%2Dgenerative%2D3d%2Dmodels&rut=c49918834a08fcdfbf2f7f4facccf83e7ea02fb2ececa4c21f67e810c057c172
+          - text: 2026-04-09T00:00:00.0000000
+        - 'link "Whether you are aiming for the high-fidelity, production-ready outputs of Hunyuan 3D 3.0 Pro and Rodin Gen-2, or the stylized, geometry-focused strengths of Trellis, the key to success lies in matching the model to your specific project requirements. For high-end realism: Prioritize the newest generations like Hunyuan 3.0 and Rodin Gen-2." [ref=f13e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fhelp.scenario.com%2Farticles%2F1263568892%2Dcomparing%2Dgenerative%2D3d%2Dmodels&rut=c49918834a08fcdfbf2f7f4facccf83e7ea02fb2ececa4c21f67e810c057c172
+      - generic [ref=f13e67]:
+        - 'heading "Best AI 3D Model Generators in 2026: Tripo AI vs Meshy, Rodin ... - Medium" [level=2] [ref=f13e68]':
+          - 'link "Best AI 3D Model Generators in 2026: Tripo AI vs Meshy, Rodin ... - Medium" [ref=f13e69] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2Fideas%2Dwith%2Dwings%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators%2Din%2D2026%2Dtripo%2Dai%2Dvs%2Dmeshy%2Drodin%2Dkaedim%2Dand%2Dmore%2D7eea7b05eb11&rut=bb0d5db943ca192c3583566bae16b656006bea7d43d96db04e219b2e42ea6ed4
+        - generic [ref=f13e71]:
+          - link [ref=f13e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2Fideas%2Dwith%2Dwings%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators%2Din%2D2026%2Dtripo%2Dai%2Dvs%2Dmeshy%2Drodin%2Dkaedim%2Dand%2Dmore%2D7eea7b05eb11&rut=bb0d5db943ca192c3583566bae16b656006bea7d43d96db04e219b2e42ea6ed4
+          - link "medium.com/ideas-with-wings/best-ai-3d-model-generators-in-2026-tripo-ai-vs-meshy-rodin-kaedim-and-more-7eea7b05eb11" [ref=f13e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2Fideas%2Dwith%2Dwings%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators%2Din%2D2026%2Dtripo%2Dai%2Dvs%2Dmeshy%2Drodin%2Dkaedim%2Dand%2Dmore%2D7eea7b05eb11&rut=bb0d5db943ca192c3583566bae16b656006bea7d43d96db04e219b2e42ea6ed4
+          - text: 2026-06-18T00:00:00.0000000
+        - link "I tested the best AI 3D model generators in 2026, including Tripo AI, Meshy, Rodin, Kaedim, Hunyuan3D, and more. Here's what each tool does best." [ref=f13e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmedium.com%2Fideas%2Dwith%2Dwings%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators%2Din%2D2026%2Dtripo%2Dai%2Dvs%2Dmeshy%2Drodin%2Dkaedim%2Dand%2Dmore%2D7eea7b05eb11&rut=bb0d5db943ca192c3583566bae16b656006bea7d43d96db04e219b2e42ea6ed4
+      - generic [ref=f13e77]:
+        - 'heading "Best AI for 3D Modeling & CAD July 2026: Meshy, Tripo, Rodin, Zoo" [level=2] [ref=f13e78]':
+          - 'link "Best AI for 3D Modeling & CAD July 2026: Meshy, Tripo, Rodin, Zoo" [ref=f13e79] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.buildmvpfast.com%2Farticles%2Fbest%2Dllms%2D2026%2Dguide%2F3d%2Dmodeling%2Dai&rut=75c2951faf1589e799029928237c921ee6518f0d95b8e99a3e028ed2b4a36077
+        - generic [ref=f13e81]:
+          - link [ref=f13e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.buildmvpfast.com%2Farticles%2Fbest%2Dllms%2D2026%2Dguide%2F3d%2Dmodeling%2Dai&rut=75c2951faf1589e799029928237c921ee6518f0d95b8e99a3e028ed2b4a36077
+          - link "www.buildmvpfast.com/articles/best-llms-2026-guide/3d-modeling-ai" [ref=f13e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.buildmvpfast.com%2Farticles%2Fbest%2Dllms%2D2026%2Dguide%2F3d%2Dmodeling%2Dai&rut=75c2951faf1589e799029928237c921ee6518f0d95b8e99a3e028ed2b4a36077
+          - text: 2026-07-02T00:00:00.0000000
+        - link "Compare the best AI for 3D modeling and CAD in 2026. Meshy, Tripo, Rodin, Hunyuan3D, Zoo, and Leo ranked for game assets, web 3D, and engineering workflows." [ref=f13e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.buildmvpfast.com%2Farticles%2Fbest%2Dllms%2D2026%2Dguide%2F3d%2Dmodeling%2Dai&rut=75c2951faf1589e799029928237c921ee6518f0d95b8e99a3e028ed2b4a36077
+      - generic [ref=f13e87]:
+        - 'heading "Best AI 3D Model Generators 2026: Meshy, Tripo, Rodin & More" [level=2] [ref=f13e88]':
+          - 'link "Best AI 3D Model Generators 2026: Meshy, Tripo, Rodin & More" [ref=f13e89] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmeshiai.com%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators&rut=c2747676d63236cf3db50b6d6006d6e14c0219327dfa6633d08e2f8f73a1ca88
+        - generic [ref=f13e91]:
+          - link [ref=f13e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmeshiai.com%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators&rut=c2747676d63236cf3db50b6d6006d6e14c0219327dfa6633d08e2f8f73a1ca88
+          - link "meshiai.com/best-ai-3d-model-generators" [ref=f13e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmeshiai.com%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators&rut=c2747676d63236cf3db50b6d6006d6e14c0219327dfa6633d08e2f8f73a1ca88
+        - link "Compare the best AI 3D model generators in 2026, including Meshy, Tripo, Rodin, Hunyuan3D, Trellis 2, 3D AI Studio, Sloyd, and Kaedim." [ref=f13e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmeshiai.com%2Fbest%2Dai%2D3d%2Dmodel%2Dgenerators&rut=c2747676d63236cf3db50b6d6006d6e14c0219327dfa6633d08e2f8f73a1ca88
+      - generic [ref=f13e97]:
+        - heading "Best Image to 3D Models on HuggingFace (2026) - trellis2.app" [level=2] [ref=f13e98]:
+          - link "Best Image to 3D Models on HuggingFace (2026) - trellis2.app" [ref=f13e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dimage%2Dto%2D3d%2Dmodels%2Dhuggingface&rut=fd6d67a48a460244b620296ed35dce41a940a82bf85e0682d7fb6be1b2ba66ab
+        - generic [ref=f13e101]:
+          - link [ref=f13e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dimage%2Dto%2D3d%2Dmodels%2Dhuggingface&rut=fd6d67a48a460244b620296ed35dce41a940a82bf85e0682d7fb6be1b2ba66ab
+          - link "trellis2.app/blog/best-image-to-3d-models-huggingface" [ref=f13e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dimage%2Dto%2D3d%2Dmodels%2Dhuggingface&rut=fd6d67a48a460244b620296ed35dce41a940a82bf85e0682d7fb6be1b2ba66ab
+          - text: 2026-04-11T00:00:00.0000000
+        - link "Compare the top image-to-3D models on HuggingFace in 2026. Detailed benchmarks, hardware requirements, and licensing for TRELLIS.2, Hunyuan3D, TripoSR, SF3D, Hi3DGen, and more." [ref=f13e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ftrellis2.app%2Fblog%2Fbest%2Dimage%2Dto%2D3d%2Dmodels%2Dhuggingface&rut=fd6d67a48a460244b620296ed35dce41a940a82bf85e0682d7fb6be1b2ba66ab
+      - generic [ref=f13e107]:
+        - 'heading "Top AI 3D Model Generator: Tripo 3D vs. Hunyuan 3D" [level=2] [ref=f13e108]':
+          - 'link "Top AI 3D Model Generator: Tripo 3D vs. Hunyuan 3D" [ref=f13e109] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Ftripo%2Dvs%2Dhunyuan&rut=ea018e83ca97dd05a24bc3ae097699257d8e4fe1a495ee7743df548855258476
+        - generic [ref=f13e111]:
+          - link [ref=f13e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Ftripo%2Dvs%2Dhunyuan&rut=ea018e83ca97dd05a24bc3ae097699257d8e4fe1a495ee7743df548855258476
+          - link "www.tripo3d.ai/blog/tripo-vs-hunyuan" [ref=f13e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Ftripo%2Dvs%2Dhunyuan&rut=ea018e83ca97dd05a24bc3ae097699257d8e4fe1a495ee7743df548855258476
+          - text: 2025-01-22T00:00:00.0000000
+        - link "Compare Tripo 3D and Hunyuan 3D, two leading AI 3D model generators. Discover their features, text-to-3D and image-to-3D capabilities, usability, and more to find your perfect match!" [ref=f13e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.tripo3d.ai%2Fblog%2Ftripo%2Dvs%2Dhunyuan&rut=ea018e83ca97dd05a24bc3ae097699257d8e4fe1a495ee7743df548855258476
+      - button "Next" [ref=f13e118] [cursor=pointer]
+      - link "Feedback" [ref=f13e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f13e121]

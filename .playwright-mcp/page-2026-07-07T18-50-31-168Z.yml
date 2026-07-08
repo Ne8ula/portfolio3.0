@@ -1,0 +1,196 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - generic [ref=f10e3]:
+      - link "DuckDuckGo" [ref=f10e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]:
+          - textbox [ref=f10e7]: recraft official MCP server github recraft-ai
+          - button "Submit" [ref=f10e8] [cursor=pointer]
+        - combobox [ref=f10e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f10e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f10e15]:
+      - generic [ref=f10e17]:
+        - heading "recraft-ai/mcp-recraft-server - GitHub" [level=2] [ref=f10e18]:
+          - link "recraft-ai/mcp-recraft-server - GitHub" [ref=f10e19] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=d45fdd567c0cd31a403f1d81c376b89a17fbc730c3217bbb8a273a0a7c19cf5a
+        - generic [ref=f10e21]:
+          - link [ref=f10e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=d45fdd567c0cd31a403f1d81c376b89a17fbc730c3217bbb8a273a0a7c19cf5a
+          - link "github.com/recraft-ai/mcp-recraft-server" [ref=f10e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=d45fdd567c0cd31a403f1d81c376b89a17fbc730c3217bbb8a273a0a7c19cf5a
+        - 'link "Recraft MCP Server This is an MCP (Model Context Protocol) server integrating MCP clients with Recraft ''s raster- and vector-image operations: raster and vector image generation raster and vector image editing creating custom styles and generating images in them vectorization of raster images background removal and replacement upscaling of ..." [ref=f10e25] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=d45fdd567c0cd31a403f1d81c376b89a17fbc730c3217bbb8a273a0a7c19cf5a
+      - generic [ref=f10e27]:
+        - heading "Recraft · GitHub" [level=2] [ref=f10e28]:
+          - link "Recraft · GitHub" [ref=f10e29] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai&rut=ebbedcce7891b2d02ec1b62c8af4b977135d6627d976856a5c6775f7762c211f
+        - generic [ref=f10e31]:
+          - link [ref=f10e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai&rut=ebbedcce7891b2d02ec1b62c8af4b977135d6627d976856a5c6775f7762c211f
+          - link "github.com/recraft-ai" [ref=f10e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai&rut=ebbedcce7891b2d02ec1b62c8af4b977135d6627d976856a5c6775f7762c211f
+          - text: 2025-08-06T00:00:00.0000000
+        - link "Type Language Sort mcp-recraft-server Public MCP (modelcontextprotocol) server implementation for Recraft API TypeScript 61 MIT 11 1 3 Updated on Aug 6, 2025" [ref=f10e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Frecraft%2Dai&rut=ebbedcce7891b2d02ec1b62c8af4b977135d6627d976856a5c6775f7762c211f
+      - generic [ref=f10e37]:
+        - heading "Getting started - recraft.ai" [level=2] [ref=f10e38]:
+          - link "Getting started - recraft.ai" [ref=f10e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fgetting%2Dstarted&rut=718037a828a32d55cd96e8fd63dd82070293e84913304c7afe06ec36390ae48e
+        - generic [ref=f10e41]:
+          - link [ref=f10e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fgetting%2Dstarted&rut=718037a828a32d55cd96e8fd63dd82070293e84913304c7afe06ec36390ae48e
+          - link "www.recraft.ai/docs/mcp-reference/getting-started" [ref=f10e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fgetting%2Dstarted&rut=718037a828a32d55cd96e8fd63dd82070293e84913304c7afe06ec36390ae48e
+        - 'link "Supported operations Both Recraft''s MCP servers expose the following operations: Raster and vector image generation Raster and vector image transforms Creating and using custom styles Vectorization of raster images Background removal and replacement Upscaling of raster images For the source code of the Local MCP Server, visit Recraft MCP GitHub." [ref=f10e45] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fgetting%2Dstarted&rut=718037a828a32d55cd96e8fd63dd82070293e84913304c7afe06ec36390ae48e
+      - generic [ref=f10e47]:
+        - heading "Remote MCP server - recraft.ai" [level=2] [ref=f10e48]:
+          - link "Remote MCP server - recraft.ai" [ref=f10e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fremote%2Dserver&rut=962ed331fd536d84ba6966fbcece4c6848911ffd05eef0489e9879167ea1ddc7
+        - generic [ref=f10e51]:
+          - link [ref=f10e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fremote%2Dserver&rut=962ed331fd536d84ba6966fbcece4c6848911ffd05eef0489e9879167ea1ddc7
+          - link "www.recraft.ai/docs/mcp-reference/remote-server" [ref=f10e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fremote%2Dserver&rut=962ed331fd536d84ba6966fbcece4c6848911ffd05eef0489e9879167ea1ddc7
+        - link "Recraft provides a hosted remote MCP server at https://mcp.recraft.ai/mcp. It supports the Streamable HTTP transport and uses OAuth 2.0 for authentication. The remote server exposes all functionality available through the Recraft API, including image generation, editing, vectorization, upscaling, background removal and replacement, and custom style creation." [ref=f10e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.recraft.ai%2Fdocs%2Fmcp%2Dreference%2Fremote%2Dserver&rut=962ed331fd536d84ba6966fbcece4c6848911ffd05eef0489e9879167ea1ddc7
+      - generic [ref=f10e57]:
+        - heading "@recraft-ai/mcp-recraft-server - npm" [level=2] [ref=f10e58]:
+          - link "@recraft-ai/mcp-recraft-server - npm" [ref=f10e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40recraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=9f8a60b625e01bd9e36b71090d7ac90b0f08fe1025a8e252d661000f9a55f780
+        - generic [ref=f10e61]:
+          - link [ref=f10e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40recraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=9f8a60b625e01bd9e36b71090d7ac90b0f08fe1025a8e252d661000f9a55f780
+          - link "www.npmjs.com/package/@recraft-ai/mcp-recraft-server" [ref=f10e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40recraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=9f8a60b625e01bd9e36b71090d7ac90b0f08fe1025a8e252d661000f9a55f780
+        - 'link "This is an MCP (Model Context Protocol) server integrating MCP clients with Recraft AI ''s raster- and vector-image operations: raster and vector image generation raster and vector image editing creating custom styles and generating images in them vectorization of raster images background removal and replacement upscaling of raster images By connecting this MCP server to your MCP client you ..." [ref=f10e65] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.npmjs.com%2Fpackage%2F%40recraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=9f8a60b625e01bd9e36b71090d7ac90b0f08fe1025a8e252d661000f9a55f780
+      - generic [ref=f10e67]:
+        - heading "Recraft AI MCP Server — Install & Setup — MCP.Directory" [level=2] [ref=f10e68]:
+          - link "Recraft AI MCP Server — Install & Setup — MCP.Directory" [ref=f10e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Frecraft%2Dai&rut=4ded7da5fb3af5de2d15c7cee8f5cb31414f03da08d3e937350dfaf91ce89926
+        - generic [ref=f10e71]:
+          - link [ref=f10e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Frecraft%2Dai&rut=4ded7da5fb3af5de2d15c7cee8f5cb31414f03da08d3e937350dfaf91ce89926
+          - link "mcp.directory/servers/recraft-ai" [ref=f10e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Frecraft%2Dai&rut=4ded7da5fb3af5de2d15c7cee8f5cb31414f03da08d3e937350dfaf91ce89926
+        - link "Connects to Recraft's API to generate, edit, and manipulate both raster and vector images with fine-grained artistic control." [ref=f10e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcp.directory%2Fservers%2Frecraft%2Dai&rut=4ded7da5fb3af5de2d15c7cee8f5cb31414f03da08d3e937350dfaf91ce89926
+      - generic [ref=f10e77]:
+        - heading "Recraft AI MCP Server | Awesome MCP Servers" [level=2] [ref=f10e78]:
+          - link "Recraft AI MCP Server | Awesome MCP Servers" [ref=f10e79] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=5d78b2b06730246204539f96e914f1376c17adb092e9867c9486f4669fb8a8f8
+        - generic [ref=f10e81]:
+          - link [ref=f10e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=5d78b2b06730246204539f96e914f1376c17adb092e9867c9486f4669fb8a8f8
+          - link "mcpservers.org/servers/recraft-ai/mcp-recraft-server" [ref=f10e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=5d78b2b06730246204539f96e914f1376c17adb092e9867c9486f4669fb8a8f8
+        - link "Recraft AI MCP Server Generate and edit raster/vector images, vectorize, remove/replace backgrounds, and upscale using the Recraft AI API." [ref=f10e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fmcpservers.org%2Fservers%2Frecraft%2Dai%2Fmcp%2Drecraft%2Dserver&rut=5d78b2b06730246204539f96e914f1376c17adb092e9867c9486f4669fb8a8f8
+      - generic [ref=f10e87]:
+        - heading "Recraft MCP Server - recraft-ai/mcp-recraft-server - playbooks.com" [level=2] [ref=f10e88]:
+          - link "Recraft MCP Server - recraft-ai/mcp-recraft-server - playbooks.com" [ref=f10e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Frecraft%2Dai&rut=f9f3d0b55a8a8755ed22920f7a4d314864d318038967f757734e536c7b53fa56
+        - generic [ref=f10e91]:
+          - link [ref=f10e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Frecraft%2Dai&rut=f9f3d0b55a8a8755ed22920f7a4d314864d318038967f757734e536c7b53fa56
+          - link "playbooks.com/mcp/recraft-ai" [ref=f10e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Frecraft%2Dai&rut=f9f3d0b55a8a8755ed22920f7a4d314864d318038967f757734e536c7b53fa56
+        - link "How to use. You interact with the server through an MCP client to request image generation and manipulation. Start by ensuring your client is configured to access the Recraft MCP" [ref=f10e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fplaybooks.com%2Fmcp%2Frecraft%2Dai&rut=f9f3d0b55a8a8755ed22920f7a4d314864d318038967f757734e536c7b53fa56
+      - generic [ref=f10e97]:
+        - heading "Recraft MCP Server - AI Image & Vector Generation" [level=2] [ref=f10e98]:
+          - link "Recraft MCP Server - AI Image & Vector Generation" [ref=f10e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagentpedia.codes%2Fmcp%2Frecraft&rut=5dfdff56b1b200c11c1fe85cd05fdaaf790e853c991836c1c66946b0c650afd6
+        - generic [ref=f10e101]:
+          - link [ref=f10e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagentpedia.codes%2Fmcp%2Frecraft&rut=5dfdff56b1b200c11c1fe85cd05fdaaf790e853c991836c1c66946b0c650afd6
+          - link "agentpedia.codes/mcp/recraft" [ref=f10e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagentpedia.codes%2Fmcp%2Frecraft&rut=5dfdff56b1b200c11c1fe85cd05fdaaf790e853c991836c1c66946b0c650afd6
+        - link "The Recraft MCP Server provides developers with programmatic access to Recraft AI's powerful image generation and editing capabilities. This server acts as a direct interface to an advanced platform designed to create both raster (PNG, JPG) and scalable vector (SVG) images from text prompts or existing content." [ref=f10e105] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fagentpedia.codes%2Fmcp%2Frecraft&rut=5dfdff56b1b200c11c1fe85cd05fdaaf790e853c991836c1c66946b0c650afd6
+      - generic [ref=f10e107]:
+        - heading "Recraft AI MCP Server | MCP Servers · LobeHub" [level=2] [ref=f10e108]:
+          - link "Recraft AI MCP Server | MCP Servers · LobeHub" [ref=f10e109] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flobehub.com%2Fmcp%2Frecraft%2Dai%2Dmcp%2Drecraft%2Dserver&rut=17df22893a8e5f3e39236639be98d0c43bb9e738b984e875ee28b0cd0a753275
+        - generic [ref=f10e111]:
+          - link [ref=f10e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flobehub.com%2Fmcp%2Frecraft%2Dai%2Dmcp%2Drecraft%2Dserver&rut=17df22893a8e5f3e39236639be98d0c43bb9e738b984e875ee28b0cd0a753275
+          - link "lobehub.com/mcp/recraft-ai-mcp-recraft-server" [ref=f10e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flobehub.com%2Fmcp%2Frecraft%2Dai%2Dmcp%2Drecraft%2Dserver&rut=17df22893a8e5f3e39236639be98d0c43bb9e738b984e875ee28b0cd0a753275
+        - link "MCP Server implementation for recraft.ai API enabling raster and vector image generation, editing, vectorization, background removal/replacement, and upscaling. Requires a Recraft AI API key (RECRAFT_API_KEY) and optionally an image storage directory (IMAGE_STORAGE_DIRECTORY) configured via environment variables." [ref=f10e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flobehub.com%2Fmcp%2Frecraft%2Dai%2Dmcp%2Drecraft%2Dserver&rut=17df22893a8e5f3e39236639be98d0c43bb9e738b984e875ee28b0cd0a753275
+      - button "Next" [ref=f10e118] [cursor=pointer]
+      - link "Feedback" [ref=f10e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f10e121]

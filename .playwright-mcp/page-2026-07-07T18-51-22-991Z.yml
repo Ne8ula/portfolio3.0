@@ -1,0 +1,552 @@
+- generic [ref=f14e2]:
+  - region "Notifications alt+T"
+  - generic [ref=f14e3]:
+    - banner [ref=f14e5]:
+      - generic [ref=f14e7]:
+        - link "3DAI Studio 3DAI Studio" [ref=f14e8] [cursor=pointer]:
+          - /url: /
+          - img "3DAI Studio"
+          - generic [ref=f14e9]: 3DAI Studio
+        - navigation [ref=f14e10]:
+          - link "Text to 3D" [ref=f14e11] [cursor=pointer]:
+            - /url: /TextTo3D
+            - img [ref=f14e12]
+            - generic [ref=f14e17]: Text to 3D
+          - link "Image to 3D" [ref=f14e18] [cursor=pointer]:
+            - /url: /ImageTo3D
+            - img [ref=f14e19]
+            - generic [ref=f14e23]: Image to 3D
+          - link "Texture AI" [ref=f14e24] [cursor=pointer]:
+            - /url: /TextureGenerator
+            - img [ref=f14e25]
+            - generic [ref=f14e30]: Texture AI
+          - link "Image Generation" [ref=f14e31] [cursor=pointer]:
+            - /url: /ImageGeneration
+            - img [ref=f14e32]
+            - generic [ref=f14e36]: Image Generation
+          - link "Tutorials" [ref=f14e37] [cursor=pointer]:
+            - /url: /Tools/Tutorials
+            - img [ref=f14e38]
+            - generic [ref=f14e41]: Tutorials
+          - link "API Docs" [ref=f14e42] [cursor=pointer]:
+            - /url: /Platform/API/Documentation
+            - img [ref=f14e43]
+            - generic [ref=f14e46]: API Docs
+    - main [ref=f14e47]:
+      - generic [ref=f14e48]:
+        - article [ref=f14e49]:
+          - link "Back to all posts" [ref=f14e51] [cursor=pointer]:
+            - /url: /blog
+            - img [ref=f14e52]
+            - generic [ref=f14e54]: Back to all posts
+          - generic [ref=f14e55]:
+            - generic [ref=f14e57]:
+              - heading "Best 3D Model Generation APIs in 2026 - Complete Comparison" [level=1] [ref=f14e58]
+              - generic [ref=f14e59]:
+                - generic [ref=f14e60]:
+                  - img [ref=f14e61]
+                  - generic [ref=f14e63]: March 4, 2026
+                - generic [ref=f14e65]:
+                  - img [ref=f14e66]
+                  - generic [ref=f14e69]: 19 min read
+                - generic [ref=f14e71]: Jan Hammer
+            - generic [ref=f14e75]:
+              - paragraph [ref=f14e76]:
+                - img "Best 3D Model Generation APIs in 2026"
+              - paragraph [ref=f14e77]: The 3D generation API market has exploded. In 2025, the market was valued at $2.47 billion. By 2029, it's projected to hit $7.21 billion. Every month brings new models, new providers, and new pricing structures.
+              - paragraph [ref=f14e78]: If you're building an application that needs 3D model generation - whether it's a game asset pipeline, an e-commerce product visualizer, a 3D printing service, or an AR/VR experience - choosing the right API matters. The wrong choice means wasted engineering time, unpredictable costs, and models that don't meet your quality bar.
+              - paragraph [ref=f14e79]: This guide compares every major 3D generation API available in early 2026, with real pricing, actual generation times, and honest assessments of each provider's strengths and weaknesses.
+              - heading "The Quick Overview" [level=2] [ref=f14e80]
+              - table [ref=f14e82]:
+                - rowgroup [ref=f14e83]:
+                  - row "Provider Input Types Speed Cost Per Model PBR Formats" [ref=f14e84]:
+                    - columnheader "Provider" [ref=f14e85]
+                    - columnheader "Input Types" [ref=f14e86]
+                    - columnheader "Speed" [ref=f14e87]
+                    - columnheader "Cost Per Model" [ref=f14e88]
+                    - columnheader "PBR" [ref=f14e89]
+                    - columnheader "Formats" [ref=f14e90]
+                - rowgroup [ref=f14e91]:
+                  - row "3D AI Studio Text, Image, Multi-view 20s - 6min $0.05 - $0.50 Yes GLB, OBJ, FBX, STL, PLY" [ref=f14e92]:
+                    - cell "3D AI Studio" [ref=f14e93]:
+                      - strong [ref=f14e94]: 3D AI Studio
+                    - cell "Text, Image, Multi-view" [ref=f14e95]
+                    - cell "20s - 6min" [ref=f14e96]
+                    - cell "$0.05 - $0.50" [ref=f14e97]
+                    - cell "Yes" [ref=f14e98]
+                    - cell "GLB, OBJ, FBX, STL, PLY" [ref=f14e99]
+                  - row "Meshy Text, Image 30 - 90s $0.10 - $0.30 Yes GLB, STL, 3MF" [ref=f14e100]:
+                    - cell "Meshy" [ref=f14e101]:
+                      - strong [ref=f14e102]: Meshy
+                    - cell "Text, Image" [ref=f14e103]
+                    - cell "30 - 90s" [ref=f14e104]
+                    - cell "$0.10 - $0.30" [ref=f14e105]
+                    - cell "Yes" [ref=f14e106]
+                    - cell "GLB, STL, 3MF" [ref=f14e107]
+                  - row "Tripo AI Text, Image, Multi-image 25 - 100s $0.10 - $0.30 Yes GLB" [ref=f14e108]:
+                    - cell "Tripo AI" [ref=f14e109]:
+                      - strong [ref=f14e110]: Tripo AI
+                    - cell "Text, Image, Multi-image" [ref=f14e111]
+                    - cell "25 - 100s" [ref=f14e112]
+                    - cell "$0.10 - $0.30" [ref=f14e113]
+                    - cell "Yes" [ref=f14e114]
+                    - cell "GLB" [ref=f14e115]
+                  - row "Rodin (Hyper3D) Image, Text (texture) 2 - 3min $0.50+ Yes GLB, OBJ, FBX, USDZ, STL" [ref=f14e116]:
+                    - cell "Rodin (Hyper3D)" [ref=f14e117]:
+                      - strong [ref=f14e118]: Rodin (Hyper3D)
+                    - cell "Image, Text (texture)" [ref=f14e119]
+                    - cell "2 - 3min" [ref=f14e120]
+                    - cell "$0.50+" [ref=f14e121]
+                    - cell "Yes" [ref=f14e122]
+                    - cell "GLB, OBJ, FBX, USDZ, STL" [ref=f14e123]
+                  - row "CSM Image, Multi-view, Text Varies $0.20 Yes (Enterprise) GLB, OBJ, USDZ" [ref=f14e124]:
+                    - cell "CSM" [ref=f14e125]:
+                      - strong [ref=f14e126]: CSM
+                    - cell "Image, Multi-view, Text" [ref=f14e127]
+                    - cell "Varies" [ref=f14e128]
+                    - cell "$0.20" [ref=f14e129]
+                    - cell "Yes (Enterprise)" [ref=f14e130]
+                    - cell "GLB, OBJ, USDZ" [ref=f14e131]
+                  - row "Stability AI (SF3D) Image only ~0.5s $0.07 - $0.10 No GLB" [ref=f14e132]:
+                    - cell "Stability AI (SF3D)" [ref=f14e133]:
+                      - strong [ref=f14e134]: Stability AI (SF3D)
+                    - cell "Image only" [ref=f14e135]
+                    - cell "~0.5s" [ref=f14e136]
+                    - cell "$0.07 - $0.10" [ref=f14e137]
+                    - cell "No" [ref=f14e138]
+                    - cell "GLB" [ref=f14e139]
+                  - row "Luma AI Video only ~30min $1.00 No NeRF, mesh" [ref=f14e140]:
+                    - cell "Luma AI" [ref=f14e141]:
+                      - strong [ref=f14e142]: Luma AI
+                    - cell "Video only" [ref=f14e143]
+                    - cell "~30min" [ref=f14e144]
+                    - cell "$1.00" [ref=f14e145]
+                    - cell "No" [ref=f14e146]
+                    - cell "NeRF, mesh" [ref=f14e147]
+              - heading "Detailed Breakdown" [level=2] [ref=f14e148]
+              - heading "3D AI Studio" [level=3] [ref=f14e149]
+              - paragraph [ref=f14e150]:
+                - link "3D AI Studio's API" [ref=f14e151] [cursor=pointer]:
+                  - /url: https://www.3daistudio.com/Platform
+                - text: is unique in the market because it bundles multiple generation models, image generation, texturing, mesh tools, and pre-built workflows into a single REST API with one authentication system and one credit wallet.
+              - paragraph [ref=f14e152]:
+                - strong [ref=f14e153]: "3D Generation models available:"
+              - list [ref=f14e154]:
+                - listitem [ref=f14e155]:
+                  - strong [ref=f14e156]:
+                    - link "Hunyuan 3D" [ref=f14e157] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/Hunyuan3D
+                  - text: (Tencent) - Pro edition (60-100 credits, 3-6 min) and Rapid edition (35-55 credits, 2-3 min). Supports text-to-3D, image-to-3D, and multi-view input. Model versions 3.0 and 3.1 with four generation modes (Normal, LowPoly, Geometry, Sketch). Configurable polygon count up to 1.5M. The latest
+                  - link "Hunyuan 3D 3.5" [ref=f14e158] [cursor=pointer]:
+                    - /url: https://www.3daistudio.com/Platform/API/Hunyuan3D35
+                  - text: brings under 60s generation and up to 8K PBR textures.
+                - listitem [ref=f14e159]:
+                  - strong [ref=f14e160]:
+                    - link "TRELLIS.2" [ref=f14e161] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/Trellis2
+                  - text: (Microsoft) - Image-to-3D with PBR materials from a single photo. 15-55 credits depending on resolution and textures. Generation in 20 seconds to 4 minutes. Based on the TRELLIS.2-4B model.
+              - paragraph [ref=f14e162]:
+                - strong [ref=f14e163]: "Beyond 3D generation:"
+              - paragraph [ref=f14e164]: "This is where 3D AI Studio separates itself. No other single API offers:"
+              - list [ref=f14e165]:
+                - listitem [ref=f14e166]:
+                  - strong [ref=f14e167]:
+                    - link "Image generation" [ref=f14e168] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/ImageGeneration
+                  - text: with 4 models (Gemini 3 Pro, 3.1 Flash, 2.5 Flash, Seedream V5 Lite) - from 5 to 80 credits per image
+                - listitem [ref=f14e169]:
+                  - strong [ref=f14e170]:
+                    - link "AI texturing" [ref=f14e171] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/Texturing
+                  - text: "- apply PBR textures to any 3D model from text or image reference (80 credits)"
+                - listitem [ref=f14e172]:
+                  - strong [ref=f14e173]:
+                    - link "Mesh tools" [ref=f14e174] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/MeshTools
+                  - text: "- convert formats, repair geometry, hollow for printing, optimize for web, render previews, bake textures (5-90 credits)"
+                - listitem [ref=f14e175]:
+                  - strong [ref=f14e176]:
+                    - link "3D printing pipeline" [ref=f14e177] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API/3DPrinting
+                  - text: "- generate, repair, hollow, scale, and export print-ready STL in one workflow"
+                - listitem [ref=f14e178]:
+                  - strong [ref=f14e179]: Miniature figurine flow
+                  - text: "- photo to 3D-printable figurine in one API call (200-300 credits)"
+              - paragraph [ref=f14e180]:
+                - strong [ref=f14e181]: "Pricing:"
+                - text: Pay-as-you-go credits. No subscription required. Credits last 365 days. Failed generations are not charged.
+              - paragraph [ref=f14e182]:
+                - strong [ref=f14e183]: "Best for:"
+                - text: Teams that need a complete 3D pipeline - generation, post-processing, and delivery - through one API. Especially strong for 3D printing workflows and applications that need multiple AI models.
+              - heading "Meshy" [level=3] [ref=f14e184]
+              - paragraph [ref=f14e185]: Meshy is the most established pure-play 3D generation API. They've iterated rapidly and now offer their Meshy-6 model with good documentation and enterprise features.
+              - paragraph [ref=f14e186]:
+                - strong [ref=f14e187]: "Capabilities:"
+              - list [ref=f14e188]:
+                - listitem [ref=f14e189]: Text-to-3D and image-to-3D
+                - listitem [ref=f14e190]: AI retexturing (change textures on existing models)
+                - listitem [ref=f14e191]: PBR materials
+                - listitem [ref=f14e192]: Configurable polygon count up to 300K
+                - listitem [ref=f14e193]: Unity and Unreal Engine plugins
+              - paragraph [ref=f14e194]:
+                - strong [ref=f14e195]: "Pricing:"
+                - text: Credit-based subscriptions. Free (200 credits/month), Pro ($10/month, 1,000 credits), Studio ($30/month, 4,000 credits), Enterprise (custom). Text-to-3D costs 10 credits, image-to-3D costs 20-30 credits.
+              - paragraph [ref=f14e196]:
+                - strong [ref=f14e197]: "Strengths:"
+                - text: Best documentation in the market. SOC2 + ISO 27001 certified (important for enterprise). Game engine plugins for Unity and Unreal. Test-mode API keys for development without spending credits.
+              - paragraph [ref=f14e198]:
+                - strong [ref=f14e199]: "Weaknesses:"
+                - text: Single generation model - you're locked into Meshy's model quality. No multi-image input. No built-in post-processing tools (repair, conversion, optimization). No image generation.
+              - paragraph [ref=f14e200]:
+                - strong [ref=f14e201]: "Best for:"
+                - text: Game studios that want a simple, well-documented API with strong security certifications and engine integrations.
+              - heading "Tripo AI" [level=3] [ref=f14e202]
+              - paragraph [ref=f14e203]: Tripo has pushed hard on generation speed and creative styling options. Their v3.0 model produces sculpture-level precision, and they offer unique style transforms.
+              - paragraph [ref=f14e204]:
+                - strong [ref=f14e205]: "Capabilities:"
+              - list [ref=f14e206]:
+                - listitem [ref=f14e207]: Text-to-3D, single image, and multi-image input
+                - listitem [ref=f14e208]: "Style transforms: LEGO, voxel, Voronoi, Minecraft, cartoon, clay"
+                - listitem [ref=f14e209]: Auto-animation and rigging
+                - listitem [ref=f14e210]: Quad-based topology (ideal for games)
+                - listitem [ref=f14e211]: Up to 2M polygons in Ultra mode
+              - paragraph [ref=f14e212]:
+                - strong [ref=f14e213]: "Pricing:"
+                - text: API credits at $0.01/credit, 2,000 free credits on signup. Web subscriptions from $11.94/month.
+              - paragraph [ref=f14e214]:
+                - strong [ref=f14e215]: "Strengths:"
+                - text: Creative styling options are unique in the market. Multi-image input for higher fidelity. Auto-animation saves significant post-processing time. v3.0 delivers up to 2M polygons.
+              - paragraph [ref=f14e216]:
+                - strong [ref=f14e217]: "Weaknesses:"
+                - text: v3.0 is slower (~100 seconds vs v2.5's 25-30 seconds). API documentation is less polished than Meshy. No built-in mesh tools or image generation.
+              - paragraph [ref=f14e218]:
+                - strong [ref=f14e219]: "Best for:"
+                - text: Creative teams and game developers who need stylized assets and auto-rigging. Strong for anyone building with visual variety (LEGO-style, voxel, etc.).
+              - heading "Rodin (Hyper3D / Deemos)" [level=3] [ref=f14e220]
+              - paragraph [ref=f14e221]: Rodin is the premium option. Their Gen-2 model has 10 billion parameters and produces the highest quality output in the market, but the pricing reflects that.
+              - paragraph [ref=f14e222]:
+                - strong [ref=f14e223]: "Capabilities:"
+              - list [ref=f14e224]:
+                - listitem [ref=f14e225]: Image-to-3D (primary), text prompts for texture guidance
+                - listitem [ref=f14e226]: Gen-2 (10B parameters) and Gen-1.5 variants
+                - listitem [ref=f14e227]: Bang! feature for model segmentation into subparts
+                - listitem [ref=f14e228]: 4K textures with HighPack option
+                - listitem [ref=f14e229]: Configurable quad/triangle topology, 2K-500K polygons
+              - paragraph [ref=f14e230]:
+                - strong [ref=f14e231]: "Pricing:"
+                - text: Business subscription required ($120/month minimum) for API access. 0.5 credits per generation, +1 credit for HighPack (4K textures, high-poly).
+              - paragraph [ref=f14e232]:
+                - strong [ref=f14e233]: "Strengths:"
+                - text: Highest quality output. 10B parameter model. Native 3D texture generation with no dead angles. Bang! segmentation is unique. Multiple output formats including USDZ.
+              - paragraph [ref=f14e234]:
+                - strong [ref=f14e235]: "Weaknesses:"
+                - text: Expensive ($120/month minimum just for API access). Enterprise-only. Slower generation (2-3 minutes). No text-to-3D in the traditional sense.
+              - paragraph [ref=f14e236]:
+                - strong [ref=f14e237]: "Best for:"
+                - text: Enterprise teams with budget who need the absolute highest quality 3D assets. Film, high-end product visualization, architecture.
+              - heading "CSM (Common Sense Machines)" [level=3] [ref=f14e238]
+              - paragraph [ref=f14e239]: CSM was acquired by Google in January 2026, which creates both opportunity and uncertainty for API users.
+              - paragraph [ref=f14e240]:
+                - strong [ref=f14e241]: "Capabilities:"
+              - list [ref=f14e242]:
+                - listitem [ref=f14e243]: Image-to-3D, multiview-to-3D, text-to-3D
+                - listitem [ref=f14e244]: Image-to-Kit (unique - generates kits of 3D parts from one image)
+                - listitem [ref=f14e245]: Enterprise AI retopology
+              - paragraph [ref=f14e246]:
+                - strong [ref=f14e247]: "Pricing:"
+                - text: Credit-based. Free (1 credit on signup), Maker (100 credits/month), Creative Pro (400 credits/month). Additional credits at $0.20/credit.
+              - paragraph [ref=f14e248]:
+                - strong [ref=f14e249]: "Strengths:"
+                - text: Image-to-Kit is a unique capability. Google acquisition signals strong future investment. Supports multiple geometry options.
+              - paragraph [ref=f14e250]:
+                - strong [ref=f14e251]: "Weaknesses:"
+                - text: Post-acquisition uncertainty about the standalone API's future. Small credit allocations on free/maker tiers. CC BY 4.0 licensing unless on Creative Pro. Limited documentation.
+              - paragraph [ref=f14e252]:
+                - strong [ref=f14e253]: "Best for:"
+                - text: Wait and see. The Google acquisition makes this an uncertain choice for production applications until the roadmap is clearer.
+              - heading "Stability AI (Stable Fast 3D)" [level=3] [ref=f14e254]
+              - paragraph [ref=f14e255]: Stability AI offers the fastest 3D generation in the market with SF3D, but it's a tradeoff.
+              - paragraph [ref=f14e256]:
+                - strong [ref=f14e257]: "Capabilities:"
+              - list [ref=f14e258]:
+                - listitem [ref=f14e259]: Image-to-3D only (no text input)
+                - listitem [ref=f14e260]: SF3D generates in ~0.5 seconds
+                - listitem [ref=f14e261]: Also offers SV3D, Stable Zero123, and TripoSR (collaboration with Tripo)
+              - paragraph [ref=f14e262]:
+                - strong [ref=f14e263]: "Pricing:"
+                - text: 10 credits per generation via Stability API. Also available on fal.ai at $0.07/generation via TripoSR.
+              - paragraph [ref=f14e264]:
+                - strong [ref=f14e265]: "Strengths:"
+                - text: Blazing fast. Sub-second generation is unmatched. Multiple model options through the API.
+              - paragraph [ref=f14e266]:
+                - strong [ref=f14e267]: "Weaknesses:"
+                - text: GLB output only. No PBR materials (albedo only). No text-to-3D. No topology control. No post-processing tools. Stability AI's overall financial instability is a concern.
+              - paragraph [ref=f14e268]:
+                - strong [ref=f14e269]: "Best for:"
+                - text: Applications where speed matters more than quality - rapid prototyping, real-time previews, interactive experiences where users expect instant feedback.
+              - heading "Luma AI" [level=3] [ref=f14e270]
+              - paragraph [ref=f14e271]: Luma takes a fundamentally different approach - NeRF-based capture from video rather than generative AI.
+              - paragraph [ref=f14e272]:
+                - strong [ref=f14e273]: "Capabilities:"
+              - list [ref=f14e274]:
+                - listitem [ref=f14e275]: Video walkthrough input (not text or single image)
+                - listitem [ref=f14e276]: NeRF-based photorealistic reconstruction
+                - listitem [ref=f14e277]: Embeddable interactive 3D viewers
+              - paragraph [ref=f14e278]:
+                - strong [ref=f14e279]: "Pricing:"
+                - text: $1 per scene/object.
+              - paragraph [ref=f14e280]:
+                - strong [ref=f14e281]: "Strengths:"
+                - text: Photorealistic for real-world object/scene digitization. Good for capturing existing products or environments.
+              - paragraph [ref=f14e282]:
+                - strong [ref=f14e283]: "Weaknesses:"
+                - text: Not generative - you need video of a real object. 30 minutes per model. Coarse mesh output. Focus has shifted to Dream Machine (video generation).
+              - paragraph [ref=f14e284]:
+                - strong [ref=f14e285]: "Best for:"
+                - text: Digitizing real-world products and environments. Not a competitor for generative 3D.
+              - heading "The Pricing Math" [level=2] [ref=f14e286]
+              - paragraph [ref=f14e287]: "Here's what it actually costs to generate a single 3D model across providers:"
+              - table [ref=f14e289]:
+                - rowgroup [ref=f14e290]:
+                  - row "Provider Cheapest Option Mid-Range Notes" [ref=f14e291]:
+                    - columnheader "Provider" [ref=f14e292]
+                    - columnheader "Cheapest Option" [ref=f14e293]
+                    - columnheader "Mid-Range" [ref=f14e294]
+                    - columnheader "Notes" [ref=f14e295]
+                - rowgroup [ref=f14e296]:
+                  - row "Stability AI (SF3D) ~$0.07 $0.10 Fastest but lowest quality, no PBR" [ref=f14e297]:
+                    - cell "Stability AI (SF3D)" [ref=f14e298]
+                    - cell "~$0.07" [ref=f14e299]
+                    - cell "$0.10" [ref=f14e300]
+                    - cell "Fastest but lowest quality, no PBR" [ref=f14e301]
+                  - row "3D AI Studio (TRELLIS.2) ~$0.08 $0.15 PBR included, fast" [ref=f14e302]:
+                    - cell "3D AI Studio (TRELLIS.2)" [ref=f14e303]
+                    - cell "~$0.08" [ref=f14e304]
+                    - cell "$0.15" [ref=f14e305]
+                    - cell "PBR included, fast" [ref=f14e306]
+                  - row "Tripo AI ~$0.10 $0.25 Good quality, style options" [ref=f14e307]:
+                    - cell "Tripo AI" [ref=f14e308]
+                    - cell "~$0.10" [ref=f14e309]
+                    - cell "$0.25" [ref=f14e310]
+                    - cell "Good quality, style options" [ref=f14e311]
+                  - row "Meshy ~$0.10 $0.25 Best docs, SOC2 certified" [ref=f14e312]:
+                    - cell "Meshy" [ref=f14e313]
+                    - cell "~$0.10" [ref=f14e314]
+                    - cell "$0.25" [ref=f14e315]
+                    - cell "Best docs, SOC2 certified" [ref=f14e316]
+                  - row "3D AI Studio (Hunyuan) ~$0.18 $0.50 Highest configurability" [ref=f14e317]:
+                    - cell "3D AI Studio (Hunyuan)" [ref=f14e318]
+                    - cell "~$0.18" [ref=f14e319]
+                    - cell "$0.50" [ref=f14e320]
+                    - cell "Highest configurability" [ref=f14e321]
+                  - row "CSM $0.20 $0.20 Post-Google, uncertain" [ref=f14e322]:
+                    - cell "CSM" [ref=f14e323]
+                    - cell "$0.20" [ref=f14e324]
+                    - cell "$0.20" [ref=f14e325]
+                    - cell "Post-Google, uncertain" [ref=f14e326]
+                  - row "Rodin ~$0.50 $1.50+ Premium quality" [ref=f14e327]:
+                    - cell "Rodin" [ref=f14e328]
+                    - cell "~$0.50" [ref=f14e329]
+                    - cell "$1.50+" [ref=f14e330]
+                    - cell "Premium quality" [ref=f14e331]
+                  - row "Luma AI $1.00 $1.00 Video input only" [ref=f14e332]:
+                    - cell "Luma AI" [ref=f14e333]
+                    - cell "$1.00" [ref=f14e334]
+                    - cell "$1.00" [ref=f14e335]
+                    - cell "Video input only" [ref=f14e336]
+              - heading "When to Use What" [level=2] [ref=f14e337]
+              - paragraph [ref=f14e338]:
+                - strong [ref=f14e339]: "\"I need the complete pipeline\""
+                - text: "- 3D AI Studio. Generate, texture, repair, optimize, convert, render - all through one API. No other provider offers this."
+              - paragraph [ref=f14e340]:
+                - strong [ref=f14e341]: "\"I need the best documentation and security certifications\""
+                - text: "- Meshy. SOC2 + ISO 27001, test-mode keys, comprehensive docs."
+              - paragraph [ref=f14e342]:
+                - strong [ref=f14e343]: "\"I need stylized assets with auto-rigging\""
+                - text: "- Tripo AI. LEGO, voxel, cartoon styles with auto-animation."
+              - paragraph [ref=f14e344]:
+                - strong [ref=f14e345]: "\"I need the absolute highest quality, cost is not a concern\""
+                - text: "- Rodin. 10B parameter model, 4K textures, enterprise-grade."
+              - paragraph [ref=f14e346]:
+                - strong [ref=f14e347]: "\"I need sub-second generation\""
+                - text: "- Stability AI SF3D. 0.5 seconds, but albedo only."
+              - paragraph [ref=f14e348]:
+                - strong [ref=f14e349]: "\"I need to generate AND process 3D models for printing\""
+                - text: "-"
+                - link "3D AI Studio's 3D Printing API" [ref=f14e350] [cursor=pointer]:
+                  - /url: https://www.3daistudio.com/Platform/API/3DPrinting
+                - text: . Full pipeline from text/image to print-ready STL.
+              - heading "Getting Started" [level=2] [ref=f14e351]
+              - paragraph [ref=f14e352]: "If you're evaluating APIs, the fastest way to test is:"
+              - list [ref=f14e353]:
+                - listitem [ref=f14e354]:
+                  - strong [ref=f14e355]:
+                    - link "Get an API key from 3D AI Studio" [ref=f14e356] [cursor=pointer]:
+                      - /url: https://www.3daistudio.com/Platform/API
+                  - text: "- no subscription required, pay-as-you-go"
+                - listitem [ref=f14e357]:
+                  - text: Generate a model with
+                  - link "Hunyuan 3D Rapid" [ref=f14e358] [cursor=pointer]:
+                    - /url: https://www.3daistudio.com/Platform/API/Hunyuan3D
+                  - text: (35 credits, 2-3 minutes) or
+                  - link "TRELLIS.2" [ref=f14e359] [cursor=pointer]:
+                    - /url: https://www.3daistudio.com/Platform/API/Trellis2
+                  - text: (15-55 credits, 20 seconds to 4 minutes)
+                - listitem [ref=f14e360]:
+                  - text: Try the post-processing tools -
+                  - link "repair" [ref=f14e361] [cursor=pointer]:
+                    - /url: https://www.3daistudio.com/Platform/API/MeshTools
+                  - text: ", convert, optimize"
+              - paragraph [ref=f14e362]:
+                - text: The
+                - link "complete API documentation" [ref=f14e363] [cursor=pointer]:
+                  - /url: https://www.3daistudio.com/Platform/API/Documentation
+                - text: covers every endpoint with code examples in cURL, Python, and JavaScript.
+          - generic [ref=f14e367]:
+            - generic [ref=f14e368]:
+              - img "3DAI Studio"
+            - heading "Generate 3D models with AI" [level=2] [ref=f14e369]
+            - paragraph [ref=f14e370]: Easily generate custom 3d models in seconds. Try it now and see your creativity come to life effortlessly!
+            - generic [ref=f14e371]:
+              - generic [ref=f14e373]: Try now
+              - generic [ref=f14e375]:
+                - link "Image to 3D Image to 3D model generator Upload a photo, sketch, or concept image and get a 3D model." [ref=f14e376] [cursor=pointer]:
+                  - /url: /ImageTo3D
+                  - generic [ref=f14e377]: Image to 3D
+                  - generic [ref=f14e378]: Image to 3D model generator
+                  - generic [ref=f14e379]: Upload a photo, sketch, or concept image and get a 3D model.
+                - link "Text to 3D Text to 3D model generator Describe what you want in plain English and generate a 3D model." [ref=f14e380] [cursor=pointer]:
+                  - /url: /TextTo3D
+                  - generic [ref=f14e381]: Text to 3D
+                  - generic [ref=f14e382]: Text to 3D model generator
+                  - generic [ref=f14e383]: Describe what you want in plain English and generate a 3D model.
+                - link "Image Studio AI image generator Make a clean reference image first, then send it to image to 3D." [ref=f14e384] [cursor=pointer]:
+                  - /url: /ImageGeneration
+                  - generic [ref=f14e385]: Image Studio
+                  - generic [ref=f14e386]: AI image generator
+                  - generic [ref=f14e387]: Make a clean reference image first, then send it to image to 3D.
+              - link "Join the Discord" [ref=f14e389] [cursor=pointer]:
+                - /url: https://discord.gg/uA3u6J7EDC
+                - text: Join the Discord
+                - img [ref=f14e390]
+            - generic [ref=f14e393]:
+              - generic [ref=f14e396]: Text to 3D
+              - generic [ref=f14e399]: Image to 3D
+              - generic [ref=f14e402]: Image Studio
+              - generic [ref=f14e405]: Texture Generation
+              - generic [ref=f14e408]: Quad-Remesh
+            - generic [ref=f14e410]:
+              - generic [ref=f14e411]:
+                - img [ref=f14e412]
+                - img [ref=f14e414]
+                - img [ref=f14e416]
+                - img [ref=f14e418]
+                - img [ref=f14e420]
+              - generic [ref=f14e422]: "4.5"
+              - generic [ref=f14e423]: "-"
+              - generic [ref=f14e424]: Rated Excellent
+              - generic [ref=f14e425]: "-"
+              - generic [ref=f14e426]: 1 Million+ users
+        - complementary [ref=f14e427]:
+          - generic [ref=f14e429]:
+            - heading "Quick Start" [level=4] [ref=f14e430]
+            - list [ref=f14e431]:
+              - listitem [ref=f14e432]:
+                - link "Text to 3D" [ref=f14e433] [cursor=pointer]:
+                  - /url: /TextTo3D
+              - listitem [ref=f14e434]:
+                - link "Image to 3D" [ref=f14e435] [cursor=pointer]:
+                  - /url: /ImageTo3D
+              - listitem [ref=f14e436]:
+                - link "Texture Generation" [ref=f14e437] [cursor=pointer]:
+                  - /url: /TextureGenerator
+              - listitem [ref=f14e438]:
+                - link "Image Generation" [ref=f14e439] [cursor=pointer]:
+                  - /url: /ImageGeneration
+              - listitem [ref=f14e440]:
+                - link "Tutorials" [ref=f14e441] [cursor=pointer]:
+                  - /url: /Tools/Tutorials
+      - generic [ref=f14e442]:
+        - generic [ref=f14e443]:
+          - heading "Continue reading" [level=2] [ref=f14e444]
+          - link "View all" [ref=f14e445] [cursor=pointer]:
+            - /url: /blog
+            - text: View all
+            - img [ref=f14e446]
+        - generic [ref=f14e448]:
+          - 'link "AI Resin Miniatures from a Photo: The Complete 2026 Guide Turn any image into a resin-printable miniature with AI. Complete guide covering the best engine for ultra-fine detail (1536³), polygon settings, STL export, slicer settings for 28-75mm minis, and splitting larger figures with joints. 3 min Read" [ref=f14e449] [cursor=pointer]':
+            - /url: /blog/ai-resin-miniatures-from-image-guide
+            - generic [ref=f14e450]:
+              - 'heading "AI Resin Miniatures from a Photo: The Complete 2026 Guide" [level=3] [ref=f14e451]'
+              - paragraph [ref=f14e452]: Turn any image into a resin-printable miniature with AI. Complete guide covering the best engine for ultra-fine detail (1536³), polygon settings, STL export, slicer settings for 28-75mm minis, and splitting larger figures with joints.
+              - generic [ref=f14e453]:
+                - generic [ref=f14e454]:
+                  - img [ref=f14e455]
+                  - text: 3 min
+                - generic [ref=f14e458]:
+                  - text: Read
+                  - img [ref=f14e459]
+          - link "Cómo crear una figurita impresa en 3D de ti mismo (Guía fácil) Aprende a crear e imprimir en 3D una figurita personalizada de ti usando herramientas de IA. Guía paso a paso para hacer modelos 3D personalizados a partir de tus fotos. 3 min Read" [ref=f14e461] [cursor=pointer]:
+            - /url: /blog/como-crear-una-figurita-impresa-en-3d-de-ti-mismo-guia-facil
+            - generic [ref=f14e462]:
+              - heading "Cómo crear una figurita impresa en 3D de ti mismo (Guía fácil)" [level=3] [ref=f14e463]
+              - paragraph [ref=f14e464]: Aprende a crear e imprimir en 3D una figurita personalizada de ti usando herramientas de IA. Guía paso a paso para hacer modelos 3D personalizados a partir de tus fotos.
+              - generic [ref=f14e465]:
+                - generic [ref=f14e466]:
+                  - img [ref=f14e467]
+                  - text: 3 min
+                - generic [ref=f14e470]:
+                  - text: Read
+                  - img [ref=f14e471]
+          - link "Best Ideogram 4.0 Prompts for Stunning AI Images (2026) The best Ideogram 4.0 prompts for typography, posters, photorealism, and 3D reference images, plus how structured JSON prompting works and how to turn your images into 3D models with 3D AI Studio. 3 min Read" [ref=f14e473] [cursor=pointer]:
+            - /url: /blog/best-ideogram-4-prompts-for-ai-image-generation
+            - generic [ref=f14e474]:
+              - heading "Best Ideogram 4.0 Prompts for Stunning AI Images (2026)" [level=3] [ref=f14e475]
+              - paragraph [ref=f14e476]: The best Ideogram 4.0 prompts for typography, posters, photorealism, and 3D reference images, plus how structured JSON prompting works and how to turn your images into 3D models with 3D AI Studio.
+              - generic [ref=f14e477]:
+                - generic [ref=f14e478]:
+                  - img [ref=f14e479]
+                  - text: 3 min
+                - generic [ref=f14e482]:
+                  - text: Read
+                  - img [ref=f14e483]
+    - button "Back to top":
+      - img
+    - contentinfo [ref=f14e485]:
+      - generic [ref=f14e486]:
+        - generic [ref=f14e487]:
+          - generic [ref=f14e488]:
+            - link "3DAI Studio 3DAI Studio" [ref=f14e489] [cursor=pointer]:
+              - /url: /
+              - img "3DAI Studio"
+              - generic [ref=f14e490]: 3DAI Studio
+            - paragraph [ref=f14e491]: Empowering creativity with AI-powered 3D content generation tools and resources.
+          - generic [ref=f14e492]:
+            - paragraph [ref=f14e493]: Our Tools
+            - generic [ref=f14e494]:
+              - link "Text to 3D Generation" [ref=f14e495] [cursor=pointer]:
+                - /url: /TextTo3D
+              - link "Image to 3D Creation" [ref=f14e496] [cursor=pointer]:
+                - /url: /ImageTo3D
+              - link "Texture Generation" [ref=f14e497] [cursor=pointer]:
+                - /url: /TextureGenerator
+          - generic [ref=f14e498]:
+            - paragraph [ref=f14e499]: Resources
+            - generic [ref=f14e500]:
+              - link "API Documentation" [ref=f14e501] [cursor=pointer]:
+                - /url: /Platform/API/Documentation
+              - link "Developer Platform" [ref=f14e502] [cursor=pointer]:
+                - /url: /Platform
+              - link "Tutorials" [ref=f14e503] [cursor=pointer]:
+                - /url: /Tools/Tutorials
+              - link "State of AI 3D 2026" [ref=f14e504] [cursor=pointer]:
+                - /url: /state-of-ai-3d-generation-2026
+              - link "Blog" [ref=f14e505] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=f14e506]:
+          - generic [ref=f14e507]: © 2026 3DAI Studio
+          - generic [ref=f14e508]:
+            - link "Privacy Policy" [ref=f14e509] [cursor=pointer]:
+              - /url: https://www.3daistudio.com/Datenschutz
+            - link "Terms of Service" [ref=f14e510] [cursor=pointer]:
+              - /url: https://www.3daistudio.com/AGB

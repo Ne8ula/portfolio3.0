@@ -1,0 +1,488 @@
+- generic [active] [ref=f22e1]:
+  - generic [ref=f22e2]:
+    - main [ref=f22e5]
+    - generic [ref=f22e9]:
+      - generic [ref=f22e10]:
+        - generic [ref=f22e11]:
+          - generic [ref=f22e12]:
+            - generic [ref=f22e13]:
+              - img [ref=f22e15]
+              - link "Homepage" [ref=f22e19] [cursor=pointer]:
+                - /url: https://claude.com
+                - generic [ref=f22e20]: Homepage
+            - generic [ref=f22e22]:
+              - form "Footer Prompt" [ref=f22e25]:
+                - generic [ref=f22e26]:
+                  - textbox "How can I help you today?" [ref=f22e27]
+                  - generic [ref=f22e28]:
+                    - img [ref=f22e31]
+                    - button "Next" [ref=f22e34] [cursor=pointer]:
+                      - generic [ref=f22e35]: Next
+              - generic [ref=f22e36]:
+                - generic [ref=f22e37]:
+                  - img [ref=f22e40]
+                  - generic [ref=f22e42]: Write
+                  - button "Button Text" [ref=f22e44] [cursor=pointer]:
+                    - generic [ref=f22e45]: Button Text
+                - generic [ref=f22e46]:
+                  - img [ref=f22e49]
+                  - generic [ref=f22e51]: Learn
+                  - button "Button Text" [ref=f22e53] [cursor=pointer]:
+                    - generic [ref=f22e54]: Button Text
+                - generic [ref=f22e55]:
+                  - img [ref=f22e58]
+                  - generic [ref=f22e60]: Code
+                  - button "Button Text" [ref=f22e62] [cursor=pointer]:
+                    - generic [ref=f22e63]: Button Text
+          - generic [ref=f22e64]:
+            - generic [ref=f22e65]:
+              - img [ref=f22e66]
+              - link "Anthropic" [ref=f22e79] [cursor=pointer]:
+                - /url: https://www.anthropic.com/
+                - generic [ref=f22e80]: Anthropic
+            - generic [ref=f22e81]: © 2026 Anthropic PBC
+        - generic [ref=f22e83]:
+          - generic [ref=f22e84]:
+            - generic [ref=f22e85]:
+              - generic [ref=f22e86]: Products
+              - list [ref=f22e87]:
+                - listitem [ref=f22e88]:
+                  - generic [ref=f22e89]: Claude
+                  - link "Claude" [ref=f22e91] [cursor=pointer]:
+                    - /url: /product/overview
+                    - generic [ref=f22e92]: Claude
+                - listitem [ref=f22e93]:
+                  - generic [ref=f22e94]: Claude Code
+                  - link "Claude Code" [ref=f22e96] [cursor=pointer]:
+                    - /url: /product/claude-code
+                    - generic [ref=f22e97]: Claude Code
+                - listitem [ref=f22e98]:
+                  - generic [ref=f22e99]: Claude Code for Enterprise
+                  - link "Claude Code for Enterprise" [ref=f22e101] [cursor=pointer]:
+                    - /url: /product/claude-code/enterprise
+                    - generic [ref=f22e102]: Claude Code for Enterprise
+                - listitem [ref=f22e103]:
+                  - generic [ref=f22e104]: Claude Cowork
+                  - link "Claude Cowork" [ref=f22e106] [cursor=pointer]:
+                    - /url: /product/cowork
+                    - generic [ref=f22e107]: Claude Cowork
+                - listitem [ref=f22e108]:
+                  - generic [ref=f22e109]: "@Claude"
+                  - link "@Claude" [ref=f22e111] [cursor=pointer]:
+                    - /url: /product/tag
+                    - generic [ref=f22e112]: "@Claude"
+                - listitem [ref=f22e113]:
+                  - generic [ref=f22e114]: Claude Design
+                  - link "Claude Design" [ref=f22e116] [cursor=pointer]:
+                    - /url: /product/design
+                    - generic [ref=f22e117]: Claude Design
+                - listitem [ref=f22e118]:
+                  - generic [ref=f22e119]: Claude Science
+                  - link "Claude Science" [ref=f22e121] [cursor=pointer]:
+                    - /url: /product/claude-science
+                    - generic [ref=f22e122]: Claude Science
+                - listitem [ref=f22e123]:
+                  - generic [ref=f22e124]: Claude Security
+                  - link "Claude Security" [ref=f22e126] [cursor=pointer]:
+                    - /url: /product/claude-security
+                    - generic [ref=f22e127]: Claude Security
+                - listitem [ref=f22e128]:
+                  - generic [ref=f22e129]: Download app
+                  - link "Download app" [ref=f22e131] [cursor=pointer]:
+                    - /url: /download
+                    - generic [ref=f22e132]: Download app
+                - listitem [ref=f22e133]:
+                  - generic [ref=f22e134]: Pricing
+                  - link "Pricing" [ref=f22e136] [cursor=pointer]:
+                    - /url: /pricing
+                    - generic [ref=f22e137]: Pricing
+                - listitem [ref=f22e138]:
+                  - generic [ref=f22e139]: Log in
+                  - link "Log in" [ref=f22e141] [cursor=pointer]:
+                    - /url: https://claude.ai/login
+                    - generic [ref=f22e142]: Log in
+            - generic [ref=f22e143]:
+              - generic [ref=f22e144]: Features
+              - list [ref=f22e145]:
+                - listitem [ref=f22e146]:
+                  - generic [ref=f22e147]: Claude for Chrome
+                  - link "Claude for Chrome" [ref=f22e149] [cursor=pointer]:
+                    - /url: /claude-for-chrome
+                    - generic [ref=f22e150]: Claude for Chrome
+                - listitem [ref=f22e151]:
+                  - generic [ref=f22e152]: Claude for Microsoft 365
+                  - link "Claude for Microsoft 365" [ref=f22e154] [cursor=pointer]:
+                    - /url: /claude-for-microsoft-365
+                    - generic [ref=f22e155]: Claude for Microsoft 365
+                - listitem [ref=f22e156]:
+                  - generic [ref=f22e157]: Skills
+                  - link "Skills" [ref=f22e159] [cursor=pointer]:
+                    - /url: /skills
+                    - generic [ref=f22e160]: Skills
+            - generic [ref=f22e161]:
+              - generic [ref=f22e162]: Models
+              - list [ref=f22e163]:
+                - listitem [ref=f22e164]:
+                  - generic [ref=f22e165]: Mythos
+                  - link "Mythos" [ref=f22e167] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/claude/mythos
+                    - generic [ref=f22e168]: Mythos
+                - listitem [ref=f22e169]:
+                  - generic [ref=f22e170]: Fable
+                  - link "Fable" [ref=f22e172] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/claude/fable
+                    - generic [ref=f22e173]: Fable
+                - listitem [ref=f22e174]:
+                  - generic [ref=f22e175]: Opus
+                  - link "Opus" [ref=f22e177] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/claude/opus
+                    - generic [ref=f22e178]: Opus
+                - listitem [ref=f22e179]:
+                  - generic [ref=f22e180]: Sonnet
+                  - link "Sonnet" [ref=f22e182] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/claude/sonnet
+                    - generic [ref=f22e183]: Sonnet
+                - listitem [ref=f22e184]:
+                  - generic [ref=f22e185]: Haiku
+                  - link "Haiku" [ref=f22e187] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/claude/haiku
+                    - generic [ref=f22e188]: Haiku
+          - generic [ref=f22e189]:
+            - generic [ref=f22e190]:
+              - generic [ref=f22e191]: Solutions
+              - list [ref=f22e192]:
+                - listitem [ref=f22e193]:
+                  - generic [ref=f22e194]: AI agents
+                  - link "AI agents" [ref=f22e196] [cursor=pointer]:
+                    - /url: /solutions/agents
+                    - generic [ref=f22e197]: AI agents
+                - listitem [ref=f22e198]:
+                  - generic [ref=f22e199]: Code modernization
+                  - link "Code modernization" [ref=f22e201] [cursor=pointer]:
+                    - /url: /solutions/code-modernization
+                    - generic [ref=f22e202]: Code modernization
+                - listitem [ref=f22e203]:
+                  - generic [ref=f22e204]: Coding
+                  - link "Coding" [ref=f22e206] [cursor=pointer]:
+                    - /url: /solutions/coding
+                    - generic [ref=f22e207]: Coding
+                - listitem [ref=f22e208]:
+                  - generic [ref=f22e209]: Customer support
+                  - link "Customer support" [ref=f22e211] [cursor=pointer]:
+                    - /url: /solutions/customer-support
+                    - generic [ref=f22e212]: Customer support
+                - listitem [ref=f22e213]:
+                  - generic [ref=f22e214]: Education
+                  - link "Education" [ref=f22e216] [cursor=pointer]:
+                    - /url: /solutions/education
+                    - generic [ref=f22e217]: Education
+                - listitem [ref=f22e218]:
+                  - generic [ref=f22e219]: Enterprise
+                  - link "Enterprise" [ref=f22e221] [cursor=pointer]:
+                    - /url: /solutions/enterprise
+                    - generic [ref=f22e222]: Enterprise
+                - listitem [ref=f22e223]:
+                  - generic [ref=f22e224]: Financial services
+                  - link "Financial services" [ref=f22e226] [cursor=pointer]:
+                    - /url: /solutions/financial-services
+                    - generic [ref=f22e227]: Financial services
+                - listitem [ref=f22e228]:
+                  - generic [ref=f22e229]: Government
+                  - link "Government" [ref=f22e231] [cursor=pointer]:
+                    - /url: /solutions/government
+                    - generic [ref=f22e232]: Government
+                - listitem [ref=f22e233]:
+                  - generic [ref=f22e234]: Healthcare
+                  - link "Healthcare" [ref=f22e236] [cursor=pointer]:
+                    - /url: /solutions/healthcare
+                    - generic [ref=f22e237]: Healthcare
+                - listitem [ref=f22e238]:
+                  - generic [ref=f22e239]: Legal
+                  - link "Legal" [ref=f22e241] [cursor=pointer]:
+                    - /url: /solutions/legal
+                    - generic [ref=f22e242]: Legal
+                - listitem [ref=f22e243]:
+                  - generic [ref=f22e244]: Life sciences
+                  - link "Life sciences" [ref=f22e246] [cursor=pointer]:
+                    - /url: /solutions/life-sciences
+                    - generic [ref=f22e247]: Life sciences
+                - listitem [ref=f22e248]:
+                  - generic [ref=f22e249]: Nonprofits
+                  - link "Nonprofits" [ref=f22e251] [cursor=pointer]:
+                    - /url: /solutions/nonprofits
+                    - generic [ref=f22e252]: Nonprofits
+                - listitem [ref=f22e253]:
+                  - generic [ref=f22e254]: Security
+                  - link "Security" [ref=f22e256] [cursor=pointer]:
+                    - /url: /solutions/security
+                    - generic [ref=f22e257]: Security
+                - listitem [ref=f22e258]:
+                  - generic [ref=f22e259]: Small business
+                  - link "Small business" [ref=f22e261] [cursor=pointer]:
+                    - /url: /solutions/small-business
+                    - generic [ref=f22e262]: Small business
+            - generic [ref=f22e263]:
+              - generic [ref=f22e264]: Claude Platform
+              - list [ref=f22e265]:
+                - listitem [ref=f22e266]:
+                  - generic [ref=f22e267]: Overview
+                  - link "Overview" [ref=f22e269] [cursor=pointer]:
+                    - /url: /platform/api
+                    - generic [ref=f22e270]: Overview
+                - listitem [ref=f22e271]:
+                  - generic [ref=f22e272]: Developer docs
+                  - link "Developer docs" [ref=f22e274] [cursor=pointer]:
+                    - /url: https://platform.claude.com/docs
+                    - generic [ref=f22e275]: Developer docs
+                - listitem [ref=f22e276]:
+                  - generic [ref=f22e277]: Pricing
+                  - link "Pricing" [ref=f22e279] [cursor=pointer]:
+                    - /url: https://claude.com/pricing#api
+                    - generic [ref=f22e280]: Pricing
+                - listitem [ref=f22e281]:
+                  - generic [ref=f22e282]: Ecosystem
+                  - link "Ecosystem" [ref=f22e284] [cursor=pointer]:
+                    - /url: /ecosystem
+                    - generic [ref=f22e285]: Ecosystem
+                - listitem [ref=f22e286]:
+                  - generic [ref=f22e287]: Marketplace
+                  - link "Marketplace" [ref=f22e289] [cursor=pointer]:
+                    - /url: /platform/marketplace
+                    - generic [ref=f22e290]: Marketplace
+                - listitem [ref=f22e291]:
+                  - generic [ref=f22e292]: Claude on AWS
+                  - link "Claude on AWS" [ref=f22e294] [cursor=pointer]:
+                    - /url: /partners/claude-on-aws
+                    - generic [ref=f22e295]: Claude on AWS
+                - listitem [ref=f22e296]:
+                  - generic [ref=f22e297]: Google Cloud
+                  - link "Google Cloud" [ref=f22e299] [cursor=pointer]:
+                    - /url: /partners/google-cloud
+                    - generic [ref=f22e300]: Google Cloud
+                - listitem [ref=f22e301]:
+                  - generic [ref=f22e302]: Microsoft Foundry
+                  - link "Microsoft Foundry" [ref=f22e304] [cursor=pointer]:
+                    - /url: /partners/microsoft-foundry
+                    - generic [ref=f22e305]: Microsoft Foundry
+                - listitem [ref=f22e306]:
+                  - generic [ref=f22e307]: Regional compliance
+                  - link "Regional compliance" [ref=f22e309] [cursor=pointer]:
+                    - /url: /regional-compliance
+                    - generic [ref=f22e310]: Regional compliance
+                - listitem [ref=f22e311]:
+                  - generic [ref=f22e312]: Console login
+                  - link "Console login" [ref=f22e314] [cursor=pointer]:
+                    - /url: https://platform.claude.com/
+                    - generic [ref=f22e315]: Console login
+          - generic [ref=f22e316]:
+            - generic [ref=f22e317]:
+              - generic [ref=f22e318]: Resources
+              - list [ref=f22e319]:
+                - listitem [ref=f22e320]:
+                  - generic [ref=f22e321]: Blog
+                  - link "Blog" [ref=f22e323] [cursor=pointer]:
+                    - /url: /blog
+                    - generic [ref=f22e324]: Blog
+                - listitem [ref=f22e325]:
+                  - generic [ref=f22e326]: Claude partner network
+                  - link "Claude partner network" [ref=f22e328] [cursor=pointer]:
+                    - /url: /partners
+                    - generic [ref=f22e329]: Claude partner network
+                - listitem [ref=f22e330]:
+                  - generic [ref=f22e331]: Community
+                  - link "Community" [ref=f22e333] [cursor=pointer]:
+                    - /url: /community
+                    - generic [ref=f22e334]: Community
+                - listitem [ref=f22e335]:
+                  - generic [ref=f22e336]: Connectors
+                  - link "Connectors" [ref=f22e338] [cursor=pointer]:
+                    - /url: /connectors
+                    - generic [ref=f22e339]: Connectors
+                - listitem [ref=f22e340]:
+                  - generic [ref=f22e341]: Courses
+                  - link "Courses" [ref=f22e343] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/learn
+                    - generic [ref=f22e344]: Courses
+                - listitem [ref=f22e345]:
+                  - generic [ref=f22e346]: Customer stories
+                  - link "Customer stories" [ref=f22e348] [cursor=pointer]:
+                    - /url: /customers
+                    - generic [ref=f22e349]: Customer stories
+                - listitem [ref=f22e350]:
+                  - generic [ref=f22e351]: Engineering at Anthropic
+                  - link "Engineering at Anthropic" [ref=f22e353] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/engineering
+                    - generic [ref=f22e354]: Engineering at Anthropic
+                - listitem [ref=f22e355]:
+                  - generic [ref=f22e356]: Events
+                  - link "Events" [ref=f22e358] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/events
+                    - generic [ref=f22e359]: Events
+                - listitem [ref=f22e360]:
+                  - generic [ref=f22e361]: Plugins
+                  - link "Plugins" [ref=f22e363] [cursor=pointer]:
+                    - /url: /plugins
+                    - generic [ref=f22e364]: Plugins
+                - listitem [ref=f22e365]:
+                  - generic [ref=f22e366]: Powered by Claude
+                  - link "Powered by Claude" [ref=f22e368] [cursor=pointer]:
+                    - /url: /partners/powered-by-claude
+                    - generic [ref=f22e369]: Powered by Claude
+                - listitem [ref=f22e370]:
+                  - generic [ref=f22e371]: Service partners
+                  - link "Service partners" [ref=f22e373] [cursor=pointer]:
+                    - /url: /partners/services
+                    - generic [ref=f22e374]: Service partners
+                - listitem [ref=f22e375]:
+                  - generic [ref=f22e376]: Tutorials
+                  - link "Tutorials" [ref=f22e378] [cursor=pointer]:
+                    - /url: /resources/tutorials
+                    - generic [ref=f22e379]: Tutorials
+                - listitem [ref=f22e380]:
+                  - generic [ref=f22e381]: Use cases
+                  - link "Use cases" [ref=f22e383] [cursor=pointer]:
+                    - /url: /resources/use-cases
+                    - generic [ref=f22e384]: Use cases
+            - generic [ref=f22e385]:
+              - generic [ref=f22e386]: Company
+              - list [ref=f22e387]:
+                - listitem [ref=f22e388]:
+                  - generic [ref=f22e389]: Anthropic
+                  - link "Anthropic" [ref=f22e391] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/
+                    - generic [ref=f22e392]: Anthropic
+                - listitem [ref=f22e393]:
+                  - generic [ref=f22e394]: Careers
+                  - link "Careers" [ref=f22e396] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/careers
+                    - generic [ref=f22e397]: Careers
+                - listitem [ref=f22e398]:
+                  - generic [ref=f22e399]: Policy
+                  - link "Policy" [ref=f22e401] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/policy
+                    - generic [ref=f22e402]: Policy
+                - listitem [ref=f22e403]:
+                  - generic [ref=f22e404]: Economic Futures
+                  - link "Economic Futures" [ref=f22e406] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/economic-futures
+                    - generic [ref=f22e407]: Economic Futures
+                - listitem [ref=f22e408]:
+                  - generic [ref=f22e409]: Research
+                  - link "Research" [ref=f22e411] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/research
+                    - generic [ref=f22e412]: Research
+                - listitem [ref=f22e413]:
+                  - generic [ref=f22e414]: News
+                  - link "News" [ref=f22e416] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/news
+                    - generic [ref=f22e417]: News
+                - listitem [ref=f22e418]:
+                  - generic [ref=f22e419]: Policy on the AI Exponential
+                  - link "Policy on the AI Exponential" [ref=f22e421] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/policy-on-the-ai-exponential
+                    - generic [ref=f22e422]: Policy on the AI Exponential
+                - listitem [ref=f22e423]:
+                  - generic [ref=f22e424]: Responsible Scaling Policy
+                  - link "Responsible Scaling Policy" [ref=f22e426] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/news/announcing-our-updated-responsible-scaling-policy
+                    - generic [ref=f22e427]: Responsible Scaling Policy
+                - listitem [ref=f22e428]:
+                  - generic [ref=f22e429]: Security and compliance
+                  - link "Security and compliance" [ref=f22e431] [cursor=pointer]:
+                    - /url: https://trust.anthropic.com/
+                    - generic [ref=f22e432]: Security and compliance
+                - listitem [ref=f22e433]:
+                  - generic [ref=f22e434]: Transparency
+                  - link "Transparency" [ref=f22e436] [cursor=pointer]:
+                    - /url: https://anthropic.com/transparency
+                    - generic [ref=f22e437]: Transparency
+          - generic [ref=f22e438]:
+            - generic [ref=f22e439]:
+              - generic [ref=f22e440]: Programs
+              - list [ref=f22e441]:
+                - listitem [ref=f22e442]:
+                  - generic [ref=f22e443]: Startups
+                  - link "Startups" [ref=f22e445] [cursor=pointer]:
+                    - /url: https://claude.com/programs/startups
+                    - generic [ref=f22e446]: Startups
+                - listitem [ref=f22e447]:
+                  - generic [ref=f22e448]: Research Labs
+                  - link "Research Labs" [ref=f22e450] [cursor=pointer]:
+                    - /url: https://claude.com/programs/claude-team-plan-for-research-labs
+                    - generic [ref=f22e451]: Research Labs
+            - generic [ref=f22e452]:
+              - generic [ref=f22e453]: Help and security
+              - list [ref=f22e454]:
+                - listitem [ref=f22e455]:
+                  - generic [ref=f22e456]: Availability
+                  - link "Availability" [ref=f22e458] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/supported-countries
+                    - generic [ref=f22e459]: Availability
+                - listitem [ref=f22e460]:
+                  - generic [ref=f22e461]: Status
+                  - link "Status" [ref=f22e463] [cursor=pointer]:
+                    - /url: https://status.anthropic.com/
+                    - generic [ref=f22e464]: Status
+                - listitem [ref=f22e465]:
+                  - generic [ref=f22e466]: Support center
+                  - link "Support center" [ref=f22e468] [cursor=pointer]:
+                    - /url: https://support.claude.com/en/
+                    - generic [ref=f22e469]: Support center
+            - generic [ref=f22e470]:
+              - generic [ref=f22e471]: Terms and policies
+              - list [ref=f22e472]:
+                - listitem [ref=f22e473]:
+                  - button [ref=f22e474] [cursor=pointer]:
+                    - generic [ref=f22e475]: Privacy choices
+                - listitem [ref=f22e476]:
+                  - generic [ref=f22e477]: Privacy policy
+                  - link "Privacy policy" [ref=f22e479] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/legal/privacy
+                    - generic [ref=f22e480]: Privacy policy
+                - listitem [ref=f22e481]:
+                  - generic [ref=f22e482]: Responsible disclosure policy
+                  - link "Responsible disclosure policy" [ref=f22e484] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/responsible-disclosure-policy
+                    - generic [ref=f22e485]: Responsible disclosure policy
+                - listitem [ref=f22e486]:
+                  - generic [ref=f22e487]: "Terms of service: Commercial"
+                  - 'link "Terms of service: Commercial" [ref=f22e489] [cursor=pointer]':
+                    - /url: https://www.anthropic.com/legal/commercial-terms
+                    - generic [ref=f22e490]: "Terms of service: Commercial"
+                - listitem [ref=f22e491]:
+                  - generic [ref=f22e492]: "Terms of service: Consumer"
+                  - 'link "Terms of service: Consumer" [ref=f22e494] [cursor=pointer]':
+                    - /url: https://www.anthropic.com/legal/consumer-terms
+                    - generic [ref=f22e495]: "Terms of service: Consumer"
+                - listitem [ref=f22e496]:
+                  - generic [ref=f22e497]: Usage policy
+                  - link "Usage policy" [ref=f22e499] [cursor=pointer]:
+                    - /url: https://www.anthropic.com/legal/aup
+                    - generic [ref=f22e500]: Usage policy
+      - generic [ref=f22e501]:
+        - generic [ref=f22e502]:
+          - generic [ref=f22e503]:
+            - link "x.com" [ref=f22e505] [cursor=pointer]:
+              - /url: https://x.com/claudeai
+              - generic [ref=f22e506]: x.com
+            - img [ref=f22e507]
+          - generic [ref=f22e510]:
+            - link "LinkedIn" [ref=f22e512] [cursor=pointer]:
+              - /url: https://www.linkedin.com/showcase/claude/
+              - generic [ref=f22e513]: LinkedIn
+            - img [ref=f22e514]
+          - generic [ref=f22e516]:
+            - link "YouTube" [ref=f22e518] [cursor=pointer]:
+              - /url: https://www.youtube.com/@anthropic-ai
+              - generic [ref=f22e519]: YouTube
+            - img [ref=f22e520]
+          - generic [ref=f22e523]:
+            - link "Instagram" [ref=f22e525] [cursor=pointer]:
+              - /url: https://www.instagram.com/claudeai
+              - generic [ref=f22e526]: Instagram
+            - img [ref=f22e527]
+        - button "English (US)" [ref=f22e533] [cursor=pointer]:
+          - img [ref=f22e536]
+          - generic [ref=f22e538]: English (US)
+          - img [ref=f22e539]
+  - tooltip

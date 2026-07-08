@@ -1,0 +1,12 @@
+[    1431ms] Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at rL (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:38470)
+    at r_ (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:39503)
+    at https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:122810
+    at iS (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:127681)
+    at ib (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:119471)
+    at https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:119255
+    at iv (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:119263)
+    at io (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:114638)
+    at iY (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:137768)
+    at MessagePort.L (https://www.3daistudio.com/_next/static/chunks/0ta4-yadm5w59.js:2:1647)
+[    1447ms] [LOG] You've disabled debug mode. @ https://www.3daistudio.com/_next/static/chunks/0p8z0_6ghot~..js:1

@@ -1,0 +1,198 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e2]:
+    - generic [ref=f12e3]:
+      - link "DuckDuckGo" [ref=f12e4] [cursor=pointer]:
+        - /url: /html/
+      - generic [ref=f12e5]:
+        - generic [ref=f12e6]:
+          - textbox [ref=f12e7]: blender-mcp ahujasid hyper3d rodin integration claude github
+          - button "Submit" [ref=f12e8] [cursor=pointer]
+        - combobox [ref=f12e10] [cursor=pointer]:
+          - option "All Regions" [selected]
+          - option "Argentina"
+          - option "Australia"
+          - option "Austria"
+          - option "Belgium (fr)"
+          - option "Belgium (nl)"
+          - option "Brazil"
+          - option "Bulgaria"
+          - option "Canada (en)"
+          - option "Canada (fr)"
+          - option "Catalonia"
+          - option "Chile"
+          - option "China"
+          - option "Colombia"
+          - option "Croatia"
+          - option "Czech Republic"
+          - option "Denmark"
+          - option "Estonia"
+          - option "Finland"
+          - option "France"
+          - option "Germany"
+          - option "Greece"
+          - option "Hong Kong"
+          - option "Hungary"
+          - option "Iceland"
+          - option "India (en)"
+          - option "Indonesia (en)"
+          - option "Ireland"
+          - option "Israel (en)"
+          - option "Italy"
+          - option "Japan"
+          - option "Korea"
+          - option "Latvia"
+          - option "Lithuania"
+          - option "Malaysia (en)"
+          - option "Mexico"
+          - option "Netherlands"
+          - option "New Zealand"
+          - option "Norway"
+          - option "Pakistan (en)"
+          - option "Peru"
+          - option "Philippines (en)"
+          - option "Poland"
+          - option "Portugal"
+          - option "Romania"
+          - option "Russia"
+          - option "Saudi Arabia"
+          - option "Singapore"
+          - option "Slovakia"
+          - option "Slovenia"
+          - option "South Africa"
+          - option "Spain (ca)"
+          - option "Spain (es)"
+          - option "Sweden"
+          - option "Switzerland (de)"
+          - option "Switzerland (fr)"
+          - option "Taiwan"
+          - option "Thailand (en)"
+          - option "Turkey"
+          - option "US (English)"
+          - option "US (Spanish)"
+          - option "Ukraine"
+          - option "United Kingdom"
+          - option "Vietnam (en)"
+        - combobox [ref=f12e12] [cursor=pointer]:
+          - option "Any Time" [selected]
+          - option "Past Day"
+          - option "Past Week"
+          - option "Past Month"
+          - option "Past Year"
+    - generic [ref=f12e15]:
+      - generic [ref=f12e17]:
+        - 'heading "GitHub - ahujasid/blender-mcp: Open-source MCP to use Blender with any ..." [level=2] [ref=f12e18]':
+          - 'link "GitHub - ahujasid/blender-mcp: Open-source MCP to use Blender with any ..." [ref=f12e19] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fahujasid%2Fblender%2Dmcp&rut=5e3f779b152b4c0d0b194cd86bb98c1e88c0bce22eba15c285edc6561a6da868
+        - generic [ref=f12e21]:
+          - link [ref=f12e23] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fahujasid%2Fblender%2Dmcp&rut=5e3f779b152b4c0d0b194cd86bb98c1e88c0bce22eba15c285edc6561a6da868
+          - link "github.com/ahujasid/blender-mcp" [ref=f12e24] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fahujasid%2Fblender%2Dmcp&rut=5e3f779b152b4c0d0b194cd86bb98c1e88c0bce22eba15c285edc6561a6da868
+        - link "Open-source MCP to use Blender with any LLM. Contribute to ahujasid/blender-mcp development by creating an account on GitHub." [ref=f12e25] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fahujasid%2Fblender%2Dmcp&rut=5e3f779b152b4c0d0b194cd86bb98c1e88c0bce22eba15c285edc6561a6da868
+      - generic [ref=f12e27]:
+        - heading "GitHub - mcp-research/ahujasid__blender-mcp · GitHub" [level=2] [ref=f12e28]:
+          - link "GitHub - mcp-research/ahujasid__blender-mcp · GitHub" [ref=f12e29] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fmcp%2Dresearch%2Fahujasid__blender%2Dmcp&rut=5703db50742094c8056a89c8e8ab9a4b5ee51518b997c4b52437dfbd9d927325
+        - generic [ref=f12e31]:
+          - link [ref=f12e33] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fmcp%2Dresearch%2Fahujasid__blender%2Dmcp&rut=5703db50742094c8056a89c8e8ab9a4b5ee51518b997c4b52437dfbd9d927325
+          - link "github.com/mcp-research/ahujasid__blender-mcp" [ref=f12e34] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fmcp%2Dresearch%2Fahujasid__blender%2Dmcp&rut=5703db50742094c8056a89c8e8ab9a4b5ee51518b997c4b52437dfbd9d927325
+        - link "Added support to prompt 3D models using Hyper3D Rodin For newcomers, you can go straight to Installation. For existing users, see the points below Download the latest addon.py file and replace the older one, then add it to Blender Delete the MCP server from Claude and add it back again, and you should be good to go!" [ref=f12e35] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fgithub.com%2Fmcp%2Dresearch%2Fahujasid__blender%2Dmcp&rut=5703db50742094c8056a89c8e8ab9a4b5ee51518b997c4b52437dfbd9d927325
+      - generic [ref=f12e37]:
+        - heading "GitHub - ahujasid/blender-mcp · GitHub" [level=2] [ref=f12e38]:
+          - link "GitHub - ahujasid/blender-mcp · GitHub" [ref=f12e39] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ft.co%2FcQUjOJRhh9&rut=c9d476c3370a502031ecac7bae917c5da9d3159791d2c558624aecec88ab2288
+        - generic [ref=f12e41]:
+          - link [ref=f12e43] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ft.co%2FcQUjOJRhh9&rut=c9d476c3370a502031ecac7bae917c5da9d3159791d2c558624aecec88ab2288
+          - link "t.co/cQUjOJRhh9" [ref=f12e44] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ft.co%2FcQUjOJRhh9&rut=c9d476c3370a502031ecac7bae917c5da9d3159791d2c558624aecec88ab2288
+        - link "BlenderMCP connects Blender to Claude AI through the Model Context Protocol (MCP), allowing Claude to directly interact with and control Blender. This integration enables prompt assisted 3D modeling, scene creation, and manipulation." [ref=f12e45] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Ft.co%2FcQUjOJRhh9&rut=c9d476c3370a502031ecac7bae917c5da9d3159791d2c558624aecec88ab2288
+      - generic [ref=f12e47]:
+        - heading "Blender MCP | AI-Powered 3D Modeling Agent for Blender" [level=2] [ref=f12e48]:
+          - link "Blender MCP | AI-Powered 3D Modeling Agent for Blender" [ref=f12e49] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblendermcp.org%2F&rut=2af538d59505ad2708ebaac1c99e85ab06b0f90ca9785c6b1fe2b786703c40c3
+        - generic [ref=f12e51]:
+          - link [ref=f12e53] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblendermcp.org%2F&rut=2af538d59505ad2708ebaac1c99e85ab06b0f90ca9785c6b1fe2b786703c40c3
+          - link "blendermcp.org" [ref=f12e54] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblendermcp.org%2F&rut=2af538d59505ad2708ebaac1c99e85ab06b0f90ca9785c6b1fe2b786703c40c3
+        - link "Blender MCP —AI-Powered 3D Modeling with Blender Connect AI to Blender 3D through the Model Context Protocol. Create, modify, and render 3D models with natural language — using Claude, ChatGPT, Gemini, Cursor, or local models via Ollama. Get Started View on GitHub →" [ref=f12e55] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblendermcp.org%2F&rut=2af538d59505ad2708ebaac1c99e85ab06b0f90ca9785c6b1fe2b786703c40c3
+      - generic [ref=f12e57]:
+        - heading "ahujasid/blender-mcp | DeepWiki" [level=2] [ref=f12e58]:
+          - link "ahujasid/blender-mcp | DeepWiki" [ref=f12e59] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp&rut=347ff49da8beb98ccc9d67e89e77c4b2210079fc5b579623c678ec5eaf624c34
+        - generic [ref=f12e61]:
+          - link [ref=f12e63] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp&rut=347ff49da8beb98ccc9d67e89e77c4b2210079fc5b579623c678ec5eaf624c34
+          - link "deepwiki.com/ahujasid/blender-mcp" [ref=f12e64] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp&rut=347ff49da8beb98ccc9d67e89e77c4b2210079fc5b579623c678ec5eaf624c34
+          - text: 2026-01-10T00:00:00.0000000
+        - link "The system implements a three-tier architecture where an MCP server acts as a protocol translator between Claude's tool-calling interface and a Blender addon that executes commands via Blender's Python API (bpy)." [ref=f12e65] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp&rut=347ff49da8beb98ccc9d67e89e77c4b2210079fc5b579623c678ec5eaf624c34
+      - generic [ref=f12e67]:
+        - heading "Blender MCP - ClaudeLog" [level=2] [ref=f12e68]:
+          - link "Blender MCP - ClaudeLog" [ref=f12e69] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaudelog.com%2Fclaude%2Dcode%2Dmcps%2Fblender%2Dmcp%2F&rut=672e1cce1bbda36af37e2bbae0049c5bde87ac212fa39daadae31848cbca31a2
+        - generic [ref=f12e71]:
+          - link [ref=f12e73] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaudelog.com%2Fclaude%2Dcode%2Dmcps%2Fblender%2Dmcp%2F&rut=672e1cce1bbda36af37e2bbae0049c5bde87ac212fa39daadae31848cbca31a2
+          - link "claudelog.com/claude-code-mcps/blender-mcp/" [ref=f12e74] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaudelog.com%2Fclaude%2Dcode%2Dmcps%2Fblender%2Dmcp%2F&rut=672e1cce1bbda36af37e2bbae0049c5bde87ac212fa39daadae31848cbca31a2
+          - text: 2026-01-23T00:00:00.0000000
+        - link "Nimbalyst gives Claude Code the full picture - not just isolated files - so it builds what you actually designed. Download Nimbalyst Blender MCP is developed by ahujasid and sponsored by Warp. For technical support, contributions, and community discussions, please refer to the official GitHub repository and Discord community." [ref=f12e75] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fclaudelog.com%2Fclaude%2Dcode%2Dmcps%2Fblender%2Dmcp%2F&rut=672e1cce1bbda36af37e2bbae0049c5bde87ac212fa39daadae31848cbca31a2
+      - generic [ref=f12e77]:
+        - 'heading "Blender-MCP : Your AI Co-Pilot for 3D Creation." [level=2] [ref=f12e78]':
+          - 'link "Blender-MCP : Your AI Co-Pilot for 3D Creation." [ref=f12e79] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblender%2Dmcp.org%2F&rut=2632bf5535ed21ac7e91006e286071cb8c7bba9df41e676fae72aa32e48078ff
+        - generic [ref=f12e81]:
+          - link [ref=f12e83] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblender%2Dmcp.org%2F&rut=2632bf5535ed21ac7e91006e286071cb8c7bba9df41e676fae72aa32e48078ff
+          - link "blender-mcp.org" [ref=f12e84] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblender%2Dmcp.org%2F&rut=2632bf5535ed21ac7e91006e286071cb8c7bba9df41e676fae72aa32e48078ff
+        - link "Blender MCP Transform your 3D workflow with intelligent automation, seamless integration, and powerful model control protocols designed for modern creators." [ref=f12e85] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fblender%2Dmcp.org%2F&rut=2632bf5535ed21ac7e91006e286071cb8c7bba9df41e676fae72aa32e48078ff
+      - generic [ref=f12e87]:
+        - heading "MCP Server | ahujasid/blender-mcp | DeepWiki" [level=2] [ref=f12e88]:
+          - link "MCP Server | ahujasid/blender-mcp | DeepWiki" [ref=f12e89] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp%2F4%2Dhyper3d%2Drodin%2Dintegration&rut=a997b7f2a7890482ad7d937f66294bf7da5c877ba2542612bcbd97591c5e400e
+        - generic [ref=f12e91]:
+          - link [ref=f12e93] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp%2F4%2Dhyper3d%2Drodin%2Dintegration&rut=a997b7f2a7890482ad7d937f66294bf7da5c877ba2542612bcbd97591c5e400e
+          - link "deepwiki.com/ahujasid/blender-mcp/4-hyper3d-rodin-integration" [ref=f12e94] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp%2F4%2Dhyper3d%2Drodin%2Dintegration&rut=a997b7f2a7890482ad7d937f66294bf7da5c877ba2542612bcbd97591c5e400e
+        - link "The MCP Server component serves as the primary bridge between AI clients (Claude Desktop, Cursor IDE) and the Blender addon, implementing the Model Context Protocol (MCP) to expose Blender functionality as standardized tools and resources." [ref=f12e95] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fdeepwiki.com%2Fahujasid%2Fblender%2Dmcp%2F4%2Dhyper3d%2Drodin%2Dintegration&rut=a997b7f2a7890482ad7d937f66294bf7da5c877ba2542612bcbd97591c5e400e
+      - generic [ref=f12e97]:
+        - heading "blender-mcp · MCP" [level=2] [ref=f12e98]:
+          - link "blender-mcp · MCP" [ref=f12e99] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.modelscope.cn%2Fmcp%2Fservers%2F%40ahujasid%2Fblender%2Dmcp&rut=217b20bdfc41a095d421b08ace1aa0a82f139b2be0f975120c79abdc452f6149
+        - generic [ref=f12e101]:
+          - link [ref=f12e103] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.modelscope.cn%2Fmcp%2Fservers%2F%40ahujasid%2Fblender%2Dmcp&rut=217b20bdfc41a095d421b08ace1aa0a82f139b2be0f975120c79abdc452f6149
+          - link "www.modelscope.cn/mcp/servers/@ahujasid/blender-mcp" [ref=f12e104] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.modelscope.cn%2Fmcp%2Fservers%2F%40ahujasid%2Fblender%2Dmcp&rut=217b20bdfc41a095d421b08ace1aa0a82f139b2be0f975120c79abdc452f6149
+        - 'link "BlenderMCP - Blender Model Context Protocol Integration BlenderMCP connects Blender to Claude AI through the Model Context Protocol (MCP), allowing Claude to directly interact with and control Blender. This integration enables prompt assisted 3D modeling, scene creation, and manipulation. Full tutorial Join the Community Give feedback, get inspired, and build on top of the MCP: Discord ..." [ref=f12e105] [cursor=pointer]':
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Fwww.modelscope.cn%2Fmcp%2Fservers%2F%40ahujasid%2Fblender%2Dmcp&rut=217b20bdfc41a095d421b08ace1aa0a82f139b2be0f975120c79abdc452f6149
+      - generic [ref=f12e107]:
+        - 'heading "Claude Blender MCP Connector: AI 3D Modeling Guide | Lushbinary" [level=2] [ref=f12e108]':
+          - 'link "Claude Blender MCP Connector: AI 3D Modeling Guide | Lushbinary" [ref=f12e109] [cursor=pointer]':
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flushbinary.com%2Fblog%2Fclaude%2Dblender%2Dmcp%2Dconnector%2D3d%2Dmodeling%2Dguide%2F&rut=cad72a9bfb61fb690f725829837a786349a94391e75dde2678c830280e20fbdd
+        - generic [ref=f12e111]:
+          - link [ref=f12e113] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flushbinary.com%2Fblog%2Fclaude%2Dblender%2Dmcp%2Dconnector%2D3d%2Dmodeling%2Dguide%2F&rut=cad72a9bfb61fb690f725829837a786349a94391e75dde2678c830280e20fbdd
+          - link "lushbinary.com/blog/claude-blender-mcp-connector-3d-modeling-guide/" [ref=f12e114] [cursor=pointer]:
+            - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flushbinary.com%2Fblog%2Fclaude%2Dblender%2Dmcp%2Dconnector%2D3d%2Dmodeling%2Dguide%2F&rut=cad72a9bfb61fb690f725829837a786349a94391e75dde2678c830280e20fbdd
+          - text: 2026-04-29T00:00:00.0000000
+        - link "Complete guide to Anthropic's official Claude Blender connector (April 2026). Setup, capabilities, Hyper3D/Hunyuan3D integration, and production pipeline workflows. Updated April 2026." [ref=f12e115] [cursor=pointer]:
+          - /url: //duckduckgo.com/l/?uddg=https%3A%2F%2Flushbinary.com%2Fblog%2Fclaude%2Dblender%2Dmcp%2Dconnector%2D3d%2Dmodeling%2Dguide%2F&rut=cad72a9bfb61fb690f725829837a786349a94391e75dde2678c830280e20fbdd
+      - button "Next" [ref=f12e118] [cursor=pointer]
+      - link "Feedback" [ref=f12e120] [cursor=pointer]:
+        - /url: //duckduckgo.com/feedback.html
+  - img [ref=f12e121]

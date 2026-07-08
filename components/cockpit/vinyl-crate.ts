@@ -1,18 +1,23 @@
 // @ts-nocheck
-// VinylCrate — a 3D wooden record bin that sits on the cockpit desk.
+// VinylCrate — a frosted-acrylic record bin that sits on the cockpit desk.
 // Records are stacked front-to-back (covers facing the viewer) and packed
 // tightly like a real crate-digging bin; the crate is sized exactly to the
 // number of PROJECTS. Interactions:
 //   • cockpit view: hovering the crate shows a cursor + HUD brackets
 //     (via the 'cockpit-crate-hover' event); clicking it asks GlobeCanvas
 //     to focus the camera on the crate (view mode 'crate').
-//   • crate view: hovering a record lifts+tips the sleeve toward the
-//     camera while the black disc slides up out of the sleeve mouth.
-//     Hover data (title/date/category + screen position) is exposed via
+//   • crate view: hovering a record only HIGHLIGHTS it (jade normal
+//     pins + pointer cursor) — no motion, so skimming the bin is calm.
+//     CLICKING pulls it out: the sleeve lifts+tips toward the camera
+//     while the black disc slides up out of the sleeve mouth. Selected
+//     data (title/date/category + screen position) is exposed via
 //     window.__getCockpitVinylHover() for the HUD info card.
-//     Clicking empty space returns to the cockpit view.
+//     Clicking the record again (or empty space) puts it back; clicking
+//     empty space with nothing pulled returns to the cockpit view.
 import * as THREE from "three"
+import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper.js"
 import { CURSOR_POINTER } from "./cursors"
+import { PALETTE, makeFrost } from "./materials"
 
 // Placeholder project records — restructure-ready: title / category / date
 // drive the hover card and the cover art. Palette: [bg, accent, text].
@@ -164,6 +169,21 @@ function makeDiscTexture(i){
   return tex;
 }
 
+// Soft radial jade halo — the hover highlight behind a sleeve.
+function makeHaloTexture(){
+  const S = 256;
+  const c = document.createElement('canvas');
+  c.width = S; c.height = S;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(S/2, S/2, S*0.18, S/2, S/2, S/2);
+  g.addColorStop(0,    'rgba(122,154,126,0.9)');
+  g.addColorStop(0.55, 'rgba(122,154,126,0.28)');
+  g.addColorStop(1,    'rgba(122,154,126,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, S, S);
+  return new THREE.CanvasTexture(c);
+}
+
 export function buildVinylCrate(scene, tableGroup, camera, renderer){
   const group = new THREE.Group();
   tableGroup.add(group);
@@ -190,13 +210,15 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   const BACK_H  = 0.74;
   const FRONT_H = 0.42;
 
-  // Hover motion targets
-  const LIFT      = 0.22;  // sleeve rise
-  const PUSH      = 0.10;  // sleeve toward viewer
-  const TILT      = 0.30;  // sleeve tips toward viewer (rad, from vertical)
+  // Pull-out motion targets. Mostly RISE, little tilt: under the steep
+  // top-down crate camera, a record tipping toward the lens picks up ugly
+  // wide-angle foreshortening (worst for the front rows) — rising reads clean.
+  const LIFT      = 0.34;  // sleeve rise
+  const PUSH      = 0.04;  // sleeve toward viewer
+  const TILT      = 0.14;  // sleeve tips toward viewer (rad, from vertical)
   const DISC_RISE = 0.52;  // disc slides out of the sleeve mouth
 
-  const baseX = -3.4, baseY = 0.18, baseZ = 0.6;
+  const baseX = -3.2, baseY = 0.18, baseZ = 1.15;
   const baseRX = 0, baseRY = 0.35, baseRZ = 0;
   group.position.set(baseX, baseY, baseZ);
   group.rotation.set(baseRX, baseRY, baseRZ);
@@ -212,10 +234,13 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   };
   window.__cockpitVinyl = group;
 
-  const woodMat = new THREE.MeshLambertMaterial({ color: 0xB69A74 });
-  const woodDarkMat = new THREE.MeshLambertMaterial({ color: 0x7A5F42 });
-  const edgeMat = new THREE.LineBasicMaterial({ color: 0x55412A, transparent:true, opacity:0.85 });
-  const floorMat = new THREE.MeshLambertMaterial({ color: 0x8A6D4C });
+  // Frosted acrylic bin — same "artifact under glass" family as the PC head.
+  // Records read as blurred silhouettes through the walls; covers peek over
+  // the low front. Floor is a dark tray (echoes the PC key tray).
+  const wallMat   = makeFrost({ transmission: 0.8, roughness: 0.45, thickness: 0.06 });
+  const handleMat = new THREE.MeshLambertMaterial({ color: PALETTE.inkSoft });
+  const edgeMat   = new THREE.LineBasicMaterial({ color: PALETTE.line, transparent:true, opacity:0.5, depthWrite:false });
+  const floorMat  = new THREE.MeshLambertMaterial({ color: PALETTE.inkSoft });
 
   const crateMeshes = [];  // walls + floor — raycast targets for "clicked the crate"
   const addEdges = (mesh) => {
@@ -236,13 +261,13 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   [-1, 1].forEach(s => {
     const wall = new THREE.Mesh(
       new THREE.BoxGeometry(WALL_T, SIDE_H, CRATE_D + WALL_T*2),
-      woodMat
+      wallMat
     );
-    wall.position.set(s * (CRATE_W/2 + WALL_T/2), SIDE_H/2 + WALL_T, 0);
+    wall.position.set(s * (CRATE_W/2 + WALL_T/2), SIDE_H/2 + WALL_T + 0.003, 0);   // clear the floor plane (coplanar = z-fight)
     group.add(wall); addEdges(wall); crateMeshes.push(wall);
     const hole = new THREE.Mesh(
       new THREE.TorusGeometry(0.10, 0.03, 6, 16),
-      woodDarkMat
+      handleMat
     );
     hole.position.set(s * (CRATE_W/2 + WALL_T/2 + 0.001), SIDE_H*0.68 + WALL_T, 0);
     hole.rotation.y = Math.PI/2;
@@ -252,17 +277,17 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   // Back wall — tall (records lean against it)
   const backWall = new THREE.Mesh(
     new THREE.BoxGeometry(CRATE_W, BACK_H, WALL_T),
-    woodMat
+    wallMat
   );
-  backWall.position.set(0, BACK_H/2 + WALL_T, -CRATE_D/2 - WALL_T/2);
+  backWall.position.set(0, BACK_H/2 + WALL_T + 0.003, -CRATE_D/2 - WALL_T/2);
   group.add(backWall); addEdges(backWall); crateMeshes.push(backWall);
 
   // Front wall — low, so covers peek over it. Carries the bin label.
   const frontWall = new THREE.Mesh(
     new THREE.BoxGeometry(CRATE_W, FRONT_H, WALL_T),
-    woodMat
+    wallMat
   );
-  frontWall.position.set(0, FRONT_H/2 + WALL_T, CRATE_D/2 + WALL_T/2);
+  frontWall.position.set(0, FRONT_H/2 + WALL_T + 0.003, CRATE_D/2 + WALL_T/2);
   group.add(frontWall); addEdges(frontWall); crateMeshes.push(frontWall);
 
   const labelC = document.createElement('canvas');
@@ -270,7 +295,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   const lctx = labelC.getContext('2d');
   lctx.fillStyle = '#F0EBE1';
   lctx.fillRect(0, 0, 512, 96);
-  lctx.strokeStyle = '#55412A';
+  lctx.strokeStyle = '#26231F';
   lctx.lineWidth = 3;
   lctx.strokeRect(6, 6, 500, 84);
   lctx.fillStyle = '#1E1C1A';
@@ -286,11 +311,17 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   labelPlane.position.set(0, FRONT_H*0.55 + WALL_T, CRATE_D/2 + WALL_T + 0.002);
   group.add(labelPlane);
 
+  // Focus-dim registry: when a record is pulled out, everything else in
+  // the bin drops back (color-darkened — NOT opacity, which would go ghostly).
+  const dimmables = [wallMat, floorMat, handleMat, labelPlane.material].map(m => ({ m, base: m.color.clone() }));
+  let dimT = 0;
+
   // ── Records ───────────────────────────────────────────────────
   const recordsGroup = new THREE.Group();
   recordsGroup.position.set(0, WALL_T, 0);
   group.add(recordsGroup);
 
+  const haloTex = makeHaloTexture();
   const vinyls = [];
   const frontZ = CRATE_D/2 - PAD_FRONT - SLEEVE_T/2;
 
@@ -324,25 +355,56 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     );
     vinyl.add(sleeveEdge);
 
+    // Hover halo — jade glow plane just behind the sleeve (child of the
+    // vinyl group, so it tracks tilt/lift for free). Additive, no depth.
+    const halo = new THREE.Mesh(
+      new THREE.PlaneGeometry(SLEEVE_W*1.8, SLEEVE_H*1.8),
+      new THREE.MeshBasicMaterial({ map: haloTex, color: 0x7A9A7E, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })
+    );
+    halo.position.z = -(SLEEVE_T/2 + 0.012);
+    vinyl.add(halo);
+
     // Disc — hidden inside the sleeve at rest, slides up +Y on hover.
     const disc = new THREE.Mesh(
       new THREE.CylinderGeometry(SLEEVE_H*0.46, SLEEVE_H*0.46, 0.02, 40),
-      new THREE.MeshLambertMaterial({ map: makeDiscTexture(i) })
+      // Clearcoat = pressed-vinyl gloss; the matte cardboard sleeves stay Lambert.
+      new THREE.MeshPhysicalMaterial({ map: makeDiscTexture(i), roughness: 0.55, clearcoat: 1, clearcoatRoughness: 0.18 })
     );
     disc.rotation.x = Math.PI/2;   // face the viewer (+Z)
     disc.position.set(0, 0, 0);
     vinyl.add(disc);
 
     recordsGroup.add(vinyl);
-    vinyls.push({ group: vinyl, sleeve, disc, data: vinyl.userData });
+    const mats = [...new Set(sleeveMats)].map(m => ({ m, base: m.color.clone() }));
+    vinyls.push({ group: vinyl, sleeve, disc, halo, mats, data: vinyl.userData });
   }
+
+  // ── Hover diagnostics — webgl_helpers-style jade normal pins ──
+  // A VertexNormalsHelper sprays short jade ticks along the hovered
+  // sleeve's vertex normals (the three.js webgl_helpers look). Helpers
+  // self-position in world space, so they live at scene root — NOT in
+  // the (scaled/rotated) crate group — and are created lazily per record.
+  const pinHelpers = new Map();
+  const getPins = (i) => {
+    let h = pinHelpers.get(i);
+    if (!h){
+      h = new VertexNormalsHelper(vinyls[i].sleeve, 0.08, PALETTE.jadeLt);
+      h.material.transparent = true;
+      h.material.opacity = 0;
+      h.material.depthWrite = false;
+      h.visible = false;
+      scene.add(h);
+      pinHelpers.set(i, h);
+    }
+    return h;
+  };
 
   // ── Picking ───────────────────────────────────────────────────
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
-  let hoveredIdx = -1;
+  let hoveredIdx = -1;      // highlight only (pins + cursor) — never moves records
+  let selectedIdx = -1;     // click-selected record — the one pulled out
   let hoverCrate = false;   // cockpit-view hover (for HUD brackets)
-  let pulsedIdx = -1, pulsedUntil = 0;
 
   const sleevePickables = vinyls.map(v => v.sleeve);
   const viewMode = () => window.__cockpitViewMode || 'cockpit';
@@ -406,11 +468,14 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     } else if (mode === 'crate'){
       const idx = pickVinyl(e);
       if (idx >= 0){
-        pulsedIdx = idx;
-        pulsedUntil = performance.now() + 900;
+        // Click pulls the record out; clicking it again slides it back.
+        selectedIdx = (selectedIdx === idx) ? -1 : idx;
         e.stopPropagation();
-      } else if (!pickCrate(e) && window.__setCockpitViewMode){
-        window.__setCockpitViewMode('cockpit');
+      } else if (!pickCrate(e)){
+        // Empty space: first click puts a pulled record back; with
+        // nothing pulled, it returns to the cockpit.
+        if (selectedIdx >= 0) selectedIdx = -1;
+        else if (window.__setCockpitViewMode) window.__setCockpitViewMode('cockpit');
       }
     }
   };
@@ -455,21 +520,24 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     return { x:minX, y:minY, w:maxX-minX, h:maxY-minY };
   };
 
-  // Hovered record → { x, y, title, category, date } (crate-view info card)
+  // Pulled-out (click-selected) record → { x, y, title, category, date }
+  // for the crate-view info card. Same bridge name as before — the HUD
+  // doesn't care whether selection is hover- or click-driven.
   window.__getCockpitVinylHover = function(){
-    if (viewMode() !== 'crate' || hoveredIdx < 0) return null;
+    if (viewMode() !== 'crate' || selectedIdx < 0) return null;
     const rect = renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-    const v = vinyls[hoveredIdx];
+    const v = vinyls[selectedIdx];
     v.group.updateWorldMatrix(true, false);
     // Anchor just above the sleeve mouth (not the full disc height) so the
     // card stays on-screen; VinylInfoCard clamps the rest.
     const p = v.group.localToWorld(new THREE.Vector3(0, SLEEVE_H*0.62 + DISC_RISE*0.4, 0));
     const pr = p.project(camera);
     if (pr.z > 1) return null;
-    const proj = PROJECTS[hoveredIdx];
+    const proj = PROJECTS[selectedIdx];
     return {
-      index: hoveredIdx,
+      index: selectedIdx,
+      count: N,
       x: ( pr.x*0.5+0.5)*rect.width,
       y: (-pr.y*0.5+0.5)*rect.height,
       title: proj.title.replace('\n', ' '),
@@ -478,11 +546,22 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     };
   };
 
+  // Arrow-browse bridge for the HUD: step the pulled record through the
+  // stack. -1 = the record beneath (toward the viewer), +1 = the record
+  // above (deeper into the bin). Clamped at both ends.
+  window.__cockpitVinylSelect = function(delta){
+    if (viewMode() !== 'crate' || selectedIdx < 0) return;
+    const n = selectedIdx + delta;
+    if (n >= 0 && n < N) selectedIdx = n;
+  };
+
   // ── Per-frame animation ───────────────────────────────────────
   group.tick = function(dt){
-    if (viewMode() !== 'crate' && hoveredIdx !== -1) hoveredIdx = -1;
-    const pulseActive = performance.now() < pulsedUntil;
-    const active = hoveredIdx >= 0 ? hoveredIdx : (pulseActive ? pulsedIdx : -1);
+    if (viewMode() !== 'crate'){
+      hoveredIdx = -1;
+      selectedIdx = -1;   // leaving the view slides any pulled record back
+    }
+    const active = selectedIdx;   // only a CLICKED record moves — hover never does
 
     // Crate-digging cascade: the hovered record AND every record in
     // front of it tip forward by the SAME angle. Equal rotations keep
@@ -504,15 +583,39 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
       v.disc.position.y = d.disc * DISC_RISE;
       if (d.disc > 0.02) v.disc.rotateY(dt * 1.4 * d.disc);   // lazy spin while exposed
     });
+
+    // Jade normal pins = the hover highlight (records stay put until clicked).
+    if (hoveredIdx >= 0) getPins(hoveredIdx);
+    pinHelpers.forEach((h, i) => {
+      const target = i === hoveredIdx ? 0.85 : 0;
+      h.material.opacity += (target - h.material.opacity) * Math.min(1, dt * 10);
+      h.visible = h.material.opacity > 0.02;
+      if (h.visible) h.update();   // track the sleeve while it tilts/lifts
+    });
+
+    // Focus dim + hover halos. The pulled record stays lit; the rest of
+    // the bin drops back. Halos glow on hover, faintly on the selection.
+    dimT += (((selectedIdx >= 0) ? 1 : 0) - dimT) * Math.min(1, dt * 6);
+    const dimScale = 1 - 0.6 * dimT;
+    dimmables.forEach(({ m, base }) => m.color.copy(base).multiplyScalar(dimScale));
+    vinyls.forEach(v => {
+      const lit = v.data.i === selectedIdx;
+      v.mats.forEach(({ m, base }) => m.color.copy(base).multiplyScalar(lit ? 1 : dimScale));
+      const haloTarget = v.data.i === hoveredIdx ? 0.95 : (lit ? 0.4 : 0);
+      v.halo.material.opacity += (haloTarget - v.halo.material.opacity) * Math.min(1, dt * 10);
+    });
   };
 
   // Expose a disposer so GlobeCanvas can detach listeners on unmount.
   group.disposeCrate = function(){
+    pinHelpers.forEach(h => { scene.remove(h); h.dispose?.(); });
+    pinHelpers.clear();
     renderer.domElement.removeEventListener('pointermove', onPointerMove);
     renderer.domElement.removeEventListener('pointerleave', onPointerLeave);
     renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
     window.__getCockpitCrateRect = null;
     window.__getCockpitVinylHover = null;
+    window.__cockpitVinylSelect = null;
   };
 
   return group;
