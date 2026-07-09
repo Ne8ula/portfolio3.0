@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.94 74.38">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: 7.34em;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-2, .cls-3 {
+        font-size: 8px;
+      }
+
+      .cls-4 {
+        letter-spacing: 1.7em;
+      }
+
+      .cls-5 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-5, .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-7 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-3, .cls-8 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-6 {
+        font-size: 32.09px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-9 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-5" transform="translate(129.71 57.13)"><tspan x="0" y="0">ALTERNATING FREQUENCY</tspan><tspan x="72.61" y="14">IDENTIFIED</tspan></text>
+      <path class="cls-7" d="M100.23,27.45l.17,2.1c.81,10.28,8.98,18.45,19.26,19.26l2.1.17-2.1.17c-10.28.81-18.45,8.98-19.26,19.26l-.17,2.1-.17-2.1c-.81-10.28-8.98-18.45-19.26-19.26l-2.1-.17,2.1-.17c10.28-.81,18.45-8.98,19.26-19.26l.17-2.1Z"/>
+      <path class="cls-7" d="M57.37,27.45l.17,2.1c.81,10.28,8.98,18.45,19.26,19.26l2.1.17-2.1.17c-10.28.81-18.45,8.98-19.26,19.26l-.17,2.1-.17-2.1c-.81-10.28-8.98-18.45-19.26-19.26l-2.1-.17,2.1-.17c10.28-.81,18.45-8.98,19.26-19.26l.17-2.1Z"/>
+      <text class="cls-2" transform="translate(35.84 7.88)"><tspan class="cls-8" x="0" y="0">ARCHIVE</tspan><tspan class="cls-4" x="30.81" y="0"> </tspan><tspan class="cls-10" x="49.2" y="0">––</tspan><tspan class="cls-4" x="57.92" y="0"> </tspan><tspan class="cls-8" x="76.31" y="0">DECODING</tspan><tspan class="cls-4" x="111.51" y="0"> </tspan><tspan class="cls-8" x="129.9" y="0">//</tspan><tspan class="cls-4" x="138.7" y="0"> </tspan><tspan class="cls-8" x="157.09" y="0">ACCESS</tspan><tspan class="cls-4" x="183.5" y="0"> </tspan><tspan class="cls-8" x="201.89" y="0">GRANTED</tspan><tspan class="cls-8" x="0" y="11.39">LOG_034.TXT</tspan><tspan class="cls-1" x="48.41" y="11.39"> </tspan><tspan class="cls-9" x="111.95" y="11.39">ALLOCATED</tspan><tspan class="cls-1" x="151.55" y="11.39"> </tspan><tspan class="cls-9" x="215.09" y="11.39">DATA</tspan></text>
+      <g>
+        <path d="M192.19,28.2c3.3,0,5.98,2.68,5.98,5.98s-2.68,5.98-5.98,5.98h-55.02c-3.3,0-5.98-2.68-5.98-5.98s2.68-5.98,5.98-5.98h55.02M192.19,27.45h-55.02c-3.72,0-6.73,3.01-6.73,6.73s3.01,6.73,6.73,6.73h55.02c3.72,0,6.73-3.01,6.73-6.73s-3.01-6.73-6.73-6.73h0Z"/>
+        <text class="cls-3" transform="translate(138.08 37.12)"><tspan x="0" y="0">EXPORT//2026</tspan></text>
+      </g>
+      <circle cx="262.21" cy="34.17" r="6.73"/>
+      <text class="cls-6" transform="translate(27.45 72.21) rotate(-90)"><tspan x="0" y="0">CTRL</tspan></text>
+      <g id="_93.Download" data-name=" 93.Download">
+        <path d="M246.9,40.9c-3.72,0-6.73-3.01-6.73-6.73s3.01-6.73,6.73-6.73,6.73,3.01,6.73,6.73c0,3.71-3.01,6.72-6.73,6.73ZM246.9,28.57c-3.1,0-5.61,2.51-5.61,5.61s2.51,5.61,5.61,5.61,5.61-2.51,5.61-5.61c0-3.09-2.51-5.6-5.61-5.61Z"/>
+        <rect x="244.1" y="36.98" width="5.61" height="1.12"/>
+        <polygon points="246.9 36.09 244.26 33.45 245.05 32.66 246.9 34.5 248.75 32.66 249.54 33.45 246.9 36.09"/>
+        <rect x="246.34" y="30.25" width="1.12" height="5.05"/>
+      </g>
+    </g>
+  </g>
+</svg>

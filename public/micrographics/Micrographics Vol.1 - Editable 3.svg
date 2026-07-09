@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.4 229.66">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-1, .cls-2 {
+        font-size: 8px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-5 {
+        letter-spacing: -.04em;
+      }
+
+      .cls-6 {
+        letter-spacing: 0em;
+      }
+
+      .cls-7 {
+        font-family: NotoSansJP-Light, 'Noto Sans JP';
+        font-size: 14px;
+        font-variation-settings: 'wght' 300;
+        font-weight: 300;
+        glyph-orientation-vertical: 0deg;
+        text-orientation: upright;
+        writing-mode: tb;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-2" transform="translate(.38 213.49)"><tspan x="0" y="0">ACCESS: GRANTED</tspan><tspan x="0" y="7">LATENCY: 10ms </tspan><tspan x="0" y="14">SIGNAL: STRONG</tspan></text>
+      <g>
+        <g>
+          <rect x=".32" y="96.35" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="91.4" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="86.46" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="81.51" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="76.57" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="71.62" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="66.67" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="61.73" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x=".32" y="56.78" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+        </g>
+        <g>
+          <rect x="11.99" y="96.35" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="91.4" width="13.49" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="86.46" width="18.95" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="81.51" width="24.41" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="76.57" width="29.87" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="71.62" width="24.41" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="66.67" width="18.95" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="61.73" width="13.49" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="11.99" y="56.78" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+        </g>
+        <g>
+          <rect x="79.03" y="56.78" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="61.73" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="66.67" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="71.62" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="76.57" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="81.51" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="86.46" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="91.4" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="79.03" y="96.35" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+        </g>
+        <g>
+          <rect x="67.36" y="56.78" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="61.9" y="61.73" width="13.49" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="56.44" y="66.67" width="18.95" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="50.97" y="71.62" width="24.41" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="45.51" y="76.57" width="29.87" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="50.97" y="81.51" width="24.41" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="56.44" y="86.46" width="18.95" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="61.9" y="91.4" width="13.49" height="3.8" rx="1.9" ry="1.9"/>
+          <rect x="67.36" y="96.35" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+        </g>
+      </g>
+      <text class="cls-7" transform="translate(43.67 14.52)"><tspan class="cls-5" x="0" y="0">聞</tspan><tspan class="cls-6" x="0" y="13.48">き</tspan><tspan class="cls-4" x="0" y="27.44">糺</tspan><tspan class="cls-3" x="0" y="40.96">す</tspan></text>
+      <text class="cls-1" transform="translate(0 8.94)"><tspan x="0" y="0">SNAPSHOT</tspan><tspan x="0" y="7">_03</tspan><tspan x="0" y="14">VERIFY</tspan><tspan x="0" y="21">PASSED</tspan></text>
+      <text class="cls-1" transform="translate(51.8 8.94)"><tspan x="0" y="0">TEMP.LOG</tspan><tspan x="8.8" y="7">BACKUP</tspan><tspan x="17.6" y="14">_883</tspan><tspan x="17.6" y="21">DONE</tspan></text>
+      <rect x="79.03" y="32.86" width="8.02" height="3.8" rx="1.9" ry="1.9"/>
+      <path d="M6.44,33.61c.63,0,1.15.52,1.15,1.15s-.52,1.15-1.15,1.15H2.22c-.63,0-1.15-.52-1.15-1.15s.52-1.15,1.15-1.15h4.22M6.44,32.86H2.22c-1.05,0-1.9.85-1.9,1.9s.85,1.9,1.9,1.9h4.22c1.05,0,1.9-.85,1.9-1.9s-.85-1.9-1.9-1.9h0Z"/>
+      <path d="M11.47,33.61c.63,0,1.15.52,1.15,1.15s-.52,1.15-1.15,1.15-1.15-.52-1.15-1.15.52-1.15,1.15-1.15M11.47,32.86c-1.05,0-1.9.85-1.9,1.9s.85,1.9,1.9,1.9,1.9-.85,1.9-1.9-.85-1.9-1.9-1.9h0Z"/>
+      <path d="M85.16,220.37c.63,0,1.15.52,1.15,1.15s-.52,1.15-1.15,1.15-1.15-.52-1.15-1.15.52-1.15,1.15-1.15M85.16,219.62c-1.05,0-1.9.85-1.9,1.9s.85,1.9,1.9,1.9,1.9-.85,1.9-1.9-.85-1.9-1.9-1.9h0Z"/>
+      <path d="M47.02,92.02c-1.57,0-2.85-1.28-2.85-2.85v-12.61h-.97v12.61c0,1.57-1.28,2.85-2.84,2.85h-4.57v.97h4.57c1.57,0,2.84,1.28,2.84,2.85v4.57h.97v-4.57c0-1.57,1.28-2.85,2.85-2.85h4.57v-.97h-4.57Z"/>
+      <path d="M45.14,3.23c-.54,0-.97-.44-.97-.97V0h-.96v2.26c0,.54-.44.97-.97.97h-2.26v.96h2.26c.54,0,.97.44.97.97v2.26h.96v-2.26c0-.54.44-.97.97-.97h2.26v-.96h-2.26Z"/>
+      <path d="M85.16,225.25c.63,0,1.15.52,1.15,1.15s-.52,1.15-1.15,1.15h-4.22c-.63,0-1.15-.52-1.15-1.15,0-.31.12-.6.34-.81.22-.22.51-.34.81-.34h4.22M85.16,224.5h-4.22c-1.05,0-1.9.85-1.9,1.9,0,1.05.85,1.9,1.9,1.9h4.22c1.05,0,1.9-.85,1.9-1.9s-.85-1.9-1.9-1.9h0Z"/>
+      <path d="M85.16,208.24c.63,0,1.15.52,1.15,1.15s-.52,1.15-1.15,1.15h-4.22c-.63,0-1.15-.52-1.15-1.15,0-.31.12-.6.34-.81.22-.22.51-.34.81-.34h4.22M85.16,207.49h-4.22c-1.05,0-1.9.85-1.9,1.9,0,1.05.85,1.9,1.9,1.9h4.22c1.05,0,1.9-.85,1.9-1.9s-.85-1.9-1.9-1.9h0Z"/>
+      <path d="M56.31,154.45v-1h30.74c-.13-11.6-4.81-22.1-12.34-29.81l-21.73,21.73-.71-.71,21.73-21.73c-7.71-7.53-18.21-12.21-29.81-12.35v30.74h-1v-30.74c-11.6.13-22.1,4.81-29.81,12.35l21.73,21.73-.71.71-21.73-21.73c-7.53,7.71-12.21,18.21-12.35,29.81h30.74v1H.33c.13,11.6,4.81,22.1,12.35,29.81l21.73-21.73.71.71-21.73,21.73c7.71,7.53,18.21,12.21,29.8,12.34v-30.74h1v30.74c11.6-.13,22.1-4.81,29.81-12.35l-21.73-21.73.71-.71,21.73,21.73c7.53-7.71,12.21-18.21,12.34-29.8h-30.74Z"/>
+    </g>
+  </g>
+</svg>

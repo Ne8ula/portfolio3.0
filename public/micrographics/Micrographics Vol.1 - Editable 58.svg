@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 158.18 155.24">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 24px;
+      }
+
+      .cls-1, .cls-2 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-1, .cls-3 {
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 10px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-5, .cls-6, .cls-7 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-5, .cls-7 {
+        stroke-width: .75px;
+      }
+
+      .cls-8 {
+        letter-spacing: -.06em;
+      }
+
+      .cls-9 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-7 {
+        stroke-linecap: square;
+      }
+
+      .cls-3 {
+        font-family: NotoSansJP-SemiBold, 'Noto Sans JP';
+        font-size: 40.09px;
+        glyph-orientation-vertical: 0deg;
+        text-orientation: upright;
+        writing-mode: tb;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <circle class="cls-5" cx="71.27" cy="40.83" r="12.14"/>
+      <line class="cls-5" x1="71.27" y1="28.69" x2="71.27" y2="52.97"/>
+      <line class="cls-5" x1="59.13" y1="40.83" x2="83.41" y2="40.83"/>
+      <line class="cls-5" x1=".38" y1="28.69" x2="24.66" y2="52.97"/>
+      <line class="cls-5" x1=".38" y1="52.97" x2="24.66" y2="28.69"/>
+      <line class="cls-6" x1="7.48" y1="80.7" x2="13.19" y2="86.42"/>
+      <line class="cls-6" x1="7.48" y1="86.42" x2="13.19" y2="80.7"/>
+      <circle class="cls-5" cx="99.1" cy="40.83" r="12.14"/>
+      <line class="cls-5" x1="86.96" y1="40.83" x2="111.24" y2="40.83"/>
+      <text class="cls-1" transform="translate(.37 20.53)"><tspan x="0" y="0">2026</tspan></text>
+      <text class="cls-2" transform="translate(.37 112.83)"><tspan x="0" y="0">OUTPUT: DIGITAL</tspan><tspan x="0" y="14.4">[INDEX] 0000372</tspan><tspan x="0" y="28.8">CHANNEL: 04</tspan></text>
+      <text class="cls-4" transform="translate(60 87.06)"><tspan x="0" y="0">V.4.0.21</tspan></text>
+      <line class="cls-7" x1=".38" y1="63.73" x2="111.25" y2="63.73"/>
+      <line class="cls-7" x1=".38" y1="152.09" x2="111.25" y2="152.09"/>
+      <rect class="cls-5" x=".37" y="74.48" width="110.87" height="18.15" rx="9.07" ry="9.07"/>
+      <rect x="105.32" y="3.39" width="5.92" height="5.92"/>
+      <rect class="cls-5" x=".38" y="28.69" width="24.28" height="24.28"/>
+      <text class="cls-3" transform="translate(138.14 1.81)"><tspan class="cls-11" x="0" y="0">デ</tspan><tspan class="cls-8" x="0" y="38.17">ジ</tspan><tspan class="cls-10" x="0" y="75.97">タ</tspan><tspan class="cls-9" x="0" y="114.18">ル</tspan></text>
+    </g>
+  </g>
+</svg>

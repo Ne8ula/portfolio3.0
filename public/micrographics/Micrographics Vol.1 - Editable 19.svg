@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 294.72 228.06">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 8px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-1, .cls-3 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Thin, 'Roboto Mono';
+        font-variation-settings: 'wght' 100;
+        font-weight: 200;
+      }
+
+      .cls-5 {
+        letter-spacing: 2.8em;
+      }
+
+      .cls-6 {
+        letter-spacing: 2.8em;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-8 {
+        letter-spacing: 2.36em;
+      }
+
+      .cls-9 {
+        letter-spacing: 2.36em;
+      }
+
+      .cls-2 {
+        font-family: NotoSansJP-Bold, 'Noto Sans JP';
+        font-size: 16px;
+      }
+
+      .cls-10 {
+        font-size: 35.5px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-12 {
+        letter-spacing: -.11em;
+      }
+
+      .cls-13 {
+        letter-spacing: -.09em;
+      }
+
+      .cls-14 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-15 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-16 {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: square;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-10" transform="translate(0 112.74)"><tspan class="cls-4" x="0" y="0">[ </tspan><tspan class="cls-3" x="39.06" y="0">DATACLUSTER </tspan><tspan class="cls-4" x="273.41" y="0">]</tspan></text>
+      <text class="cls-7" transform="translate(7.83 139.91)"><tspan x="0" y="0" xml:space="preserve">REMOTE INTERFACE         —          ONLINE</tspan><tspan x="0" y="14">SIGNAL: STRONG</tspan><tspan x="0" y="28" xml:space="preserve">BOOT.REC                            OUTPUT</tspan></text>
+      <text class="cls-2" transform="translate(242.34 193.93)"><tspan class="cls-11" x="0" y="0">デ</tspan><tspan class="cls-13" x="14.48" y="0">ー</tspan><tspan class="cls-12" x="28.98" y="0">タ</tspan></text>
+      <text class="cls-1" transform="translate(8.35 216.9)"><tspan class="cls-15" x="0" y="0">88</tspan><tspan class="cls-6" x="8.8" y="0"> </tspan><tspan class="cls-15" x="35.97" y="0">/</tspan><tspan class="cls-5" x="40.37" y="0"> </tspan><tspan class="cls-15" x="67.54" y="0">—</tspan><tspan class="cls-6" x="71.94" y="0"> </tspan><tspan class="cls-15" x="99.1" y="0">003</tspan><tspan class="cls-6" x="112.3" y="0"> </tspan><tspan class="cls-15" x="139.47" y="0">/</tspan><tspan class="cls-5" x="143.87" y="0"> </tspan><tspan class="cls-15" x="171.04" y="0">•</tspan><tspan class="cls-6" x="175.44" y="0"> </tspan><tspan class="cls-15" x="202.6" y="0">71</tspan><tspan class="cls-5" x="211.41" y="0"> </tspan><tspan class="cls-15" x="238.57" y="0">—</tspan><tspan class="cls-6" x="242.97" y="0"> </tspan><tspan class="cls-15" x="270.14" y="0">12</tspan><tspan class="cls-15" x="0" y="9">20</tspan><tspan class="cls-9" x="8.8" y="9"> </tspan><tspan class="cls-15" x="32.46" y="9">/</tspan><tspan class="cls-9" x="36.86" y="9"> </tspan><tspan class="cls-15" x="60.52" y="9">—</tspan><tspan class="cls-9" x="64.92" y="9"> </tspan><tspan class="cls-15" x="88.58" y="9">11</tspan><tspan class="cls-9" x="97.38" y="9"> </tspan><tspan class="cls-15" x="121.04" y="9">/</tspan><tspan class="cls-8" x="125.44" y="9"> </tspan><tspan class="cls-14" x="149.1" y="9">—</tspan><tspan class="cls-8" x="153.5" y="9"> </tspan><tspan class="cls-15" x="177.16" y="9">•</tspan><tspan class="cls-9" x="181.56" y="9"> </tspan><tspan class="cls-15" x="205.22" y="9">55</tspan><tspan class="cls-9" x="214.02" y="9"> </tspan><tspan class="cls-15" x="237.68" y="9">/</tspan><tspan class="cls-9" x="242.08" y="9"> </tspan><tspan class="cls-15" x="265.74" y="9">2.8</tspan></text>
+      <g>
+        <g>
+          <path d="M145.07,47.72h0c-1.08-4.04-4.45-7.07-8.59-7.72l-18.14-2.84,18.14-2.84c4.14-.65,7.5-3.67,8.59-7.72h0c1.51-5.65-1.84-11.45-7.48-12.96h0c-4.04-1.08-8.35.32-10.98,3.58l-11.53,14.29,6.61-17.13c1.51-3.91.57-8.33-2.39-11.3h0c-4.13-4.13-10.83-4.13-14.97,0h0c-2.96,2.96-3.9,7.39-2.39,11.3l6.61,17.13-11.53-14.29c-2.63-3.26-6.93-4.66-10.98-3.58h0c-5.65,1.51-9,7.32-7.48,12.96h0c1.08,4.04,4.45,7.07,8.59,7.72l18.14,2.84-18.14,2.84c-4.14.65-7.5,3.67-8.59,7.72h0c-1.51,5.65,1.84,11.45,7.48,12.96h0c4.04,1.08,8.35-.32,10.98-3.58l11.53-14.29-6.61,17.13c-1.51,3.91-.57,8.33,2.39,11.3h0c4.13,4.13,10.83,4.13,14.97,0h0c2.96-2.96,3.9-7.39,2.39-11.3l-6.61-17.13,11.53,14.29c2.63,3.26,6.93,4.66,10.98,3.58h0c5.65-1.51,9-7.32,7.48-12.96Z"/>
+          <path d="M216.14,47.72h0c-1.08-4.04-4.45-7.07-8.59-7.72l-18.14-2.84,18.14-2.84c4.14-.65,7.5-3.67,8.59-7.72h0c1.51-5.65-1.84-11.45-7.48-12.96h0c-4.04-1.08-8.35.32-10.98,3.58l-11.53,14.29,6.61-17.13c1.51-3.91.57-8.33-2.39-11.3h0c-4.13-4.13-10.83-4.13-14.97,0h0c-2.96,2.96-3.9,7.39-2.39,11.3l6.61,17.13-11.53-14.29c-2.63-3.26-6.93-4.66-10.98-3.58h0c-5.65,1.51-9,7.32-7.48,12.96h0c1.08,4.04,4.45,7.07,8.59,7.72l18.14,2.84-18.14,2.84c-4.14.65-7.5,3.67-8.59,7.72h0c-1.51,5.65,1.84,11.45,7.48,12.96h0c4.04,1.08,8.35-.32,10.98-3.58l11.53-14.29-6.61,17.13c-1.51,3.91-.57,8.33,2.39,11.3h0c4.13,4.13,10.83,4.13,14.97,0h0c2.96-2.96,3.9-7.39,2.39-11.3l-6.61-17.13,11.53,14.29c2.63,3.26,6.93,4.66,10.98,3.58h0c5.65-1.51,9-7.32,7.48-12.96Z"/>
+        </g>
+        <path d="M147.36,6.33c37.71,0,68.39,13.84,68.39,30.84s-30.68,30.84-68.39,30.84-68.39-13.84-68.39-30.84S109.65,6.33,147.36,6.33M147.36,5.58c-38.19,0-69.14,14.14-69.14,31.59s30.96,31.59,69.14,31.59,69.14-14.14,69.14-31.59-30.96-31.59-69.14-31.59h0Z"/>
+      </g>
+      <path d="M254.78,6.33c17.01,0,30.84,13.84,30.84,30.84s-13.84,30.84-30.84,30.84-30.84-13.84-30.84-30.84,13.84-30.84,30.84-30.84M254.78,5.58c-17.45,0-31.59,14.14-31.59,31.59s14.14,31.59,31.59,31.59,31.59-14.14,31.59-31.59-14.14-31.59-31.59-31.59h0Z"/>
+      <path d="M39.94,6.33c17.01,0,30.84,13.84,30.84,30.84s-13.84,30.84-30.84,30.84-30.84-13.84-30.84-30.84S22.94,6.33,39.94,6.33M39.94,5.58c-17.45,0-31.59,14.14-31.59,31.59s14.14,31.59,31.59,31.59,31.59-14.14,31.59-31.59S57.39,5.58,39.94,5.58h0Z"/>
+      <g>
+        <line class="cls-16" x1="254.78" y1="28.08" x2="254.78" y2="46.26"/>
+        <line class="cls-16" x1="245.69" y1="37.17" x2="263.87" y2="37.17"/>
+      </g>
+      <g>
+        <line class="cls-16" x1="39.94" y1="28.08" x2="39.94" y2="46.26"/>
+        <line class="cls-16" x1="30.85" y1="37.17" x2="49.03" y2="37.17"/>
+      </g>
+      <path d="M230.71,181.81c3.24,0,5.88,2.64,5.88,5.88s-2.64,5.88-5.88,5.88H14.98c-3.24,0-5.88-2.64-5.88-5.88s2.64-5.88,5.88-5.88h215.73M230.71,181.06H14.98c-3.66,0-6.63,2.97-6.63,6.63s2.97,6.63,6.63,6.63h215.73c3.66,0,6.63-2.97,6.63-6.63s-2.97-6.63-6.63-6.63h0Z"/>
+      <circle cx="14.98" cy="187.69" r="3.91"/>
+      <circle cx="24.23" cy="187.69" r="3.91"/>
+    </g>
+  </g>
+</svg>

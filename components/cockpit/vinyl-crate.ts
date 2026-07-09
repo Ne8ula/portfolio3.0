@@ -1,23 +1,30 @@
 // @ts-nocheck
-// VinylCrate — a frosted-acrylic record bin that sits on the cockpit desk.
-// Records are stacked front-to-back (covers facing the viewer) and packed
-// tightly like a real crate-digging bin; the crate is sized exactly to the
-// number of PROJECTS. Interactions:
+// VinylCrate — "VINYL CRATE 007": a frosted-acrylic archive crate rebuilt
+// from the multi-angle product-render references (front/back/side/top).
+// Shell language: milky frosted walls with rounded edges, a stepped side
+// profile (tall at the back, low over the front opening, thin tall corner
+// posts at the very front), a warm off-white molded base band on four dark
+// feet, and a slightly-proud clear label plate across the lower front.
+// Micrographic decals (007/ARCHIVE, DEVICE, ACCESS: PENDING, ALTERNATE…)
+// are rasterized at runtime from the SVG sheets in /public/micrographics
+// and tinted muted sage / graphite — printed silkscreen, not geometry.
+//
+// Records stack front-to-back inside (covers facing the viewer), packed
+// like a real crate-digging bin. Interactions:
 //   • cockpit view: hovering the crate shows a cursor + HUD brackets
 //     (via the 'cockpit-crate-hover' event); clicking it asks GlobeCanvas
 //     to focus the camera on the crate (view mode 'crate').
 //   • crate view: hovering a record only HIGHLIGHTS it (jade normal
-//     pins + pointer cursor) — no motion, so skimming the bin is calm.
-//     CLICKING pulls it out: the sleeve lifts+tips toward the camera
-//     while the black disc slides up out of the sleeve mouth. Selected
-//     data (title/date/category + screen position) is exposed via
+//     pins + pointer cursor) — no motion. CLICKING pulls it out: the
+//     sleeve lifts+tips toward the camera while the black disc slides up
+//     out of the sleeve mouth. Selected data is exposed via
 //     window.__getCockpitVinylHover() for the HUD info card.
-//     Clicking the record again (or empty space) puts it back; clicking
-//     empty space with nothing pulled returns to the cockpit view.
 import * as THREE from "three"
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper.js"
 import { CURSOR_POINTER } from "./cursors"
 import { PALETTE, makeFrost } from "./materials"
+import { makeDecal } from "./decals"
 
 // Placeholder project records — restructure-ready: title / category / date
 // drive the hover card and the cover art. Palette: [bg, accent, text].
@@ -38,6 +45,19 @@ const PROJECTS = [
   { title: 'GREEN\nROOM',        category: 'prototype',  date: '2023.06', bg:'#7FA683', accent:'#1E1C1A', text:'#1E1C1A' },
   { title: 'UNTITLED\nSIDES',    category: 'experiment', date: '2023.03', bg:'#E8E4DC', accent:'#1E1C1A', text:'#1E1C1A' },
 ];
+
+// ── Reference material palette (brief: warm off-white base, milky
+// frost, muted sage accents only — never bright neon green) ─────────
+const CRATE_COLORS = {
+  base:     0xD2CCBF,   // warm off-white molded base band
+  floor:    0xC9C2B5,   // interior tray plate
+  frost:    0xE3DFD8,   // milky gray acrylic tint
+  sage:     0x4B6E4F,   // solid accent bars/tabs — PALETTE.jade; the unlit
+                        // basic material skips tone mapping, so lighter hexes
+                        // wash out on screen (decal TEXT stays #6F8D75)
+  graphite: 0x6E6E68,   // small labels where green is too loud
+  feet:     0x24221F,
+};
 
 function makeCoverTexture(i){
   const { bg, accent, text, title, category, date } = PROJECTS[i];
@@ -190,8 +210,10 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
 
   // ── Record + crate dimensions ─────────────────────────────────
   // Records stack along Z (front-to-back, covers facing +Z / the
-  // viewer). The crate interior is derived from the record count so
-  // the bin always fits its contents exactly.
+  // viewer). The crate interior depth is derived from the record count;
+  // wall heights follow the reference renders: tall back + sides, a
+  // stepped-down section over the front opening, thin full-height
+  // corner posts at the very front, all on an off-white base band.
   const N = PROJECTS.length;
   const SLEEVE_W = 0.95;   // cover width  (X)
   const SLEEVE_H = 0.98;   // cover height (Y)
@@ -201,14 +223,17 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
 
   const PAD_FRONT = 0.10;
   const PAD_BACK  = 0.18;  // extra room for the lean
-  // Interior derived from the record count; with real-LP sleeve
-  // proportions this lands close to square (a normal milk-crate bin).
   const CRATE_D = (N - 1) * SPACING + SLEEVE_T + PAD_FRONT + PAD_BACK; // interior depth (Z)
   const CRATE_W = SLEEVE_W + 0.16;                                     // interior width (X)
-  const WALL_T  = 0.09;
-  const SIDE_H  = 0.60;
-  const BACK_H  = 0.74;
-  const FRONT_H = 0.42;
+  const WALL_T  = 0.075;   // thick molded acrylic
+
+  const BASE_H    = 0.13;  // off-white base band height
+  const BASE_Y0   = 0.03;  // band floats on the feet
+  const WALL_Y0   = BASE_Y0 + BASE_H - 0.01;  // walls sink 10mm into the band (no gap, no coplanar seam)
+  const TALL_H    = 1.02;  // back + rear-side wall top (from crate bottom)
+  const FRONT_TOP = 0.60;  // front wall + stepped side section top
+  const NOTCH_D   = 0.34;  // depth of the stepped-down side section, from the front face
+  const FLOOR_TOP = BASE_Y0 + BASE_H + 0.008; // interior tray plate top
 
   // Pull-out motion targets. Mostly RISE, little tilt: under the steep
   // top-down crate camera, a record tipping toward the lens picks up ugly
@@ -234,91 +259,145 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   };
   window.__cockpitVinyl = group;
 
-  // Frosted acrylic bin — same "artifact under glass" family as the PC head.
-  // Records read as blurred silhouettes through the walls; covers peek over
-  // the low front. Floor is a dark tray (echoes the PC key tray).
-  const wallMat   = makeFrost({ transmission: 0.8, roughness: 0.45, thickness: 0.06 });
-  const handleMat = new THREE.MeshLambertMaterial({ color: PALETTE.inkSoft });
-  const edgeMat   = new THREE.LineBasicMaterial({ color: PALETTE.line, transparent:true, opacity:0.5, depthWrite:false });
-  const floorMat  = new THREE.MeshLambertMaterial({ color: PALETTE.inkSoft });
+  // ── Materials (reference: milky frost / off-white satin / sage) ──
+  const wallMat = makeFrost({ color: CRATE_COLORS.frost, transmission: 0.82, roughness: 0.5, thickness: 0.08 });
+  wallMat.clearcoat = 0.5;             // brighter highlights along rounded rims
+  wallMat.clearcoatRoughness = 0.3;
+  const plateMat = makeFrost({ color: 0xEDEAE3, transmission: 0.9, roughness: 0.32, thickness: 0.03 });
+  plateMat.clearcoat = 0.7;
+  plateMat.clearcoatRoughness = 0.2;
+  const baseMat  = new THREE.MeshPhysicalMaterial({ color: CRATE_COLORS.base, roughness: 0.55, clearcoat: 0.15, clearcoatRoughness: 0.5 });
+  const floorMat = new THREE.MeshPhysicalMaterial({ color: CRATE_COLORS.floor, roughness: 0.8 });
+  const feetMat  = new THREE.MeshLambertMaterial({ color: CRATE_COLORS.feet });
+  // LIT material — an unlit basic here reads as a glowing light-bar over
+  // the dim scene; standard shades with the room and matches the decal ink.
+  const sageMat  = new THREE.MeshStandardMaterial({ color: CRATE_COLORS.sage, roughness: 0.6 });
 
-  const crateMeshes = [];  // walls + floor — raycast targets for "clicked the crate"
-  const addEdges = (mesh) => {
-    const seg = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), edgeMat);
-    seg.position.copy(mesh.position);
-    seg.rotation.copy(mesh.rotation);
-    group.add(seg);
+  const crateMeshes = [];  // shell meshes — raycast targets for "clicked the crate"
+  const shell = (geo, mat, x, y, z) => {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, y, z);
+    group.add(m);
+    crateMeshes.push(m);
+    return m;
   };
 
-  const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(CRATE_W + WALL_T*2, WALL_T, CRATE_D + WALL_T*2),
-    floorMat
-  );
-  floor.position.y = WALL_T/2;
-  group.add(floor); addEdges(floor); crateMeshes.push(floor);
+  const OUT_W = CRATE_W + WALL_T*2;   // exterior footprint
+  const OUT_D = CRATE_D + WALL_T*2;
 
-  // Side walls (run along Z) with handle holes
+  // Feet — four dark rounded pads; the band floats on them (soft shadow gap).
+  [-1, 1].forEach(sx => [-1, 1].forEach(sz => {
+    const foot = new THREE.Mesh(new RoundedBoxGeometry(0.11, 0.04, 0.11, 2, 0.015), feetMat);
+    foot.position.set(sx*(OUT_W/2 - 0.14), 0.02, sz*(OUT_D/2 - 0.14));
+    group.add(foot);
+  }));
+
+  // Off-white molded base band.
+  shell(new RoundedBoxGeometry(OUT_W, BASE_H, OUT_D, 3, 0.035), baseMat,
+        0, BASE_Y0 + BASE_H/2, 0);
+
+  // Interior tray plate — the warm floor you see in the top view.
+  shell(new RoundedBoxGeometry(CRATE_W - 0.02, 0.035, CRATE_D - 0.02, 2, 0.015), floorMat,
+        0, FLOOR_TOP - 0.0175, 0);
+
+  // Walls sit slightly inset from the band edge (reference shows the band
+  // proud of the acrylic). Frost is transmissive, not alpha-blended, so
+  // walls may overlap the band and enclose the records safely.
+  const wallW = OUT_W - 0.012;
+  const wallR = 0.028;                 // rounded acrylic edges
+
+  // Back wall — full height.
+  shell(new RoundedBoxGeometry(wallW, TALL_H - WALL_Y0, WALL_T, 2, wallR), wallMat,
+        0, (WALL_Y0 + TALL_H)/2, -(CRATE_D/2 + WALL_T/2));
+
+  // Small molded tab on the back rim center (top-view reference).
+  shell(new RoundedBoxGeometry(0.16, 0.05, WALL_T + 0.006, 2, 0.012), wallMat,
+        0, TALL_H + 0.018, -(CRATE_D/2 + WALL_T/2));
+
+  // Front wall — low, records peek over it.
+  shell(new RoundedBoxGeometry(wallW, FRONT_TOP - WALL_Y0, WALL_T, 2, wallR), wallMat,
+        0, (WALL_Y0 + FRONT_TOP)/2, CRATE_D/2 + WALL_T/2);
+
+  // Side walls — tall rear segment, stepped-down front segment (the
+  // side-view step from the reference).
+  const zBack   = -(CRATE_D/2 + WALL_T);
+  const zFront  =   CRATE_D/2 + WALL_T;
+  const zNotch  =   CRATE_D/2 - NOTCH_D;
+  const rearLen  = zNotch - zBack;
+  const frontLen = zFront - zNotch;
   [-1, 1].forEach(s => {
-    const wall = new THREE.Mesh(
-      new THREE.BoxGeometry(WALL_T, SIDE_H, CRATE_D + WALL_T*2),
-      wallMat
-    );
-    wall.position.set(s * (CRATE_W/2 + WALL_T/2), SIDE_H/2 + WALL_T + 0.003, 0);   // clear the floor plane (coplanar = z-fight)
-    group.add(wall); addEdges(wall); crateMeshes.push(wall);
-    const hole = new THREE.Mesh(
-      new THREE.TorusGeometry(0.10, 0.03, 6, 16),
-      handleMat
-    );
-    hole.position.set(s * (CRATE_W/2 + WALL_T/2 + 0.001), SIDE_H*0.68 + WALL_T, 0);
-    hole.rotation.y = Math.PI/2;
-    group.add(hole);
+    const x = s * (CRATE_W/2 + WALL_T/2);
+    shell(new RoundedBoxGeometry(WALL_T, TALL_H - WALL_Y0, rearLen, 2, wallR), wallMat,
+          x, (WALL_Y0 + TALL_H)/2, (zBack + zNotch)/2);
+    shell(new RoundedBoxGeometry(WALL_T, FRONT_TOP - WALL_Y0, frontLen, 2, wallR), wallMat,
+          x, (WALL_Y0 + FRONT_TOP)/2, (zNotch + zFront)/2);
   });
 
-  // Back wall — tall (records lean against it)
-  const backWall = new THREE.Mesh(
-    new THREE.BoxGeometry(CRATE_W, BACK_H, WALL_T),
-    wallMat
-  );
-  backWall.position.set(0, BACK_H/2 + WALL_T + 0.003, -CRATE_D/2 - WALL_T/2);
-  group.add(backWall); addEdges(backWall); crateMeshes.push(backWall);
+  // Slightly-proud clear label plate across the lower front — carries the
+  // 007/ARCHIVE and DEVICE silkscreen blocks in the reference.
+  const PLATE_H = 0.33;
+  const plateZ = CRATE_D/2 + WALL_T + 0.013;
+  const plate = shell(new RoundedBoxGeometry(CRATE_W * 0.96, PLATE_H, 0.022, 2, 0.012), plateMat,
+        0, WALL_Y0 + 0.035 + PLATE_H/2, plateZ);
 
-  // Front wall — low, so covers peek over it. Carries the bin label.
-  const frontWall = new THREE.Mesh(
-    new THREE.BoxGeometry(CRATE_W, FRONT_H, WALL_T),
-    wallMat
-  );
-  frontWall.position.set(0, FRONT_H/2 + WALL_T + 0.003, CRATE_D/2 + WALL_T/2);
-  group.add(frontWall); addEdges(frontWall); crateMeshes.push(frontWall);
+  // ── Micrographic decals (silkscreen planes, floated off the frost) ──
+  const decals = [];
+  const addDecal = (file, opts, x, y, z, ry = 0) => {
+    const d = makeDecal(file, opts);
+    d.position.set(x, y, z);
+    d.rotation.y = ry;
+    group.add(d);
+    decals.push(d);
+    return d;
+  };
+  const plateFaceZ = plateZ + 0.013;
+  const plateMidY = plate.position.y - 0.03;
+  // Front: 007 / ARCHIVE — DECODING // ACCESS GRANTED block, lower-left.
+  addDecal('Micrographics Vol.1 - Editable 57.svg', { width: 0.36, tint: '#6F8D75', opacity: 0.9 },
+           -CRATE_W*0.24, plateMidY, plateFaceZ);
+  // Front: DEVICE / REMOTE INTERFACE — ONLINE block, lower-right.
+  addDecal('Micrographics Vol.1 - Editable 53.svg', { width: 0.42, tint: '#6F8D75', opacity: 0.9 },
+           CRATE_W*0.24, plateMidY, plateFaceZ);
+  // Back: ACCESS: PENDING status block.
+  addDecal('Micrographics Vol.1 - Editable 60.svg', { width: 0.56, tint: '#6E6E68', opacity: 0.85 },
+           0, 0.52, -(CRATE_D/2 + WALL_T + 0.004), Math.PI);
+  // Left side: ALTERNATE / STATUS block on the tall section.
+  addDecal('Micrographics Vol.1 - Editable 65.svg', { width: 0.5, tint: '#6E6E68', opacity: 0.85 },
+           -(CRATE_W/2 + WALL_T + 0.004), 0.56, -0.1, -Math.PI/2);
+  // Right side: 007 / ONLINE diagnostics — asymmetric from the left.
+  addDecal('Micrographics Vol.1 - Editable 44.svg', { width: 0.46, tint: '#6E6E68', opacity: 0.85 },
+           CRATE_W/2 + WALL_T + 0.004, 0.56, -0.05, Math.PI/2);
 
-  const labelC = document.createElement('canvas');
-  labelC.width = 512; labelC.height = 96;
-  const lctx = labelC.getContext('2d');
-  lctx.fillStyle = '#F0EBE1';
-  lctx.fillRect(0, 0, 512, 96);
-  lctx.strokeStyle = '#26231F';
-  lctx.lineWidth = 3;
-  lctx.strokeRect(6, 6, 500, 84);
-  lctx.fillStyle = '#1E1C1A';
-  lctx.font = '600 30px "JetBrains Mono", monospace';
-  lctx.textAlign = 'center';
-  lctx.textBaseline = 'middle';
-  lctx.fillText(`ARCHIVE · ${N} PROJECTS`, 256, 48);
-  const labelTex = new THREE.CanvasTexture(labelC);
-  const labelPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.95, 0.18),
-    new THREE.MeshBasicMaterial({ map: labelTex })
-  );
-  labelPlane.position.set(0, FRONT_H*0.55 + WALL_T, CRATE_D/2 + WALL_T + 0.002);
-  group.add(labelPlane);
+  // Sage accents — the only chromatic marks on the shell.
+  const sageBits = [
+    // vertical registration bar, front plate center
+    { g: new THREE.PlaneGeometry(0.016, 0.17), p: [0, plateMidY + 0.01, plateFaceZ], ry: 0 },
+    // tiny tab on the base band, front-right corner
+    { g: new THREE.PlaneGeometry(0.035, 0.035), p: [OUT_W/2 - 0.09, BASE_Y0 + BASE_H*0.5, OUT_D/2 + 0.002], ry: 0 },
+    // tab on the base band, left side near the back
+    { g: new THREE.PlaneGeometry(0.026, 0.05), p: [-(OUT_W/2 + 0.002), BASE_Y0 + BASE_H*0.5, -OUT_D/2 + 0.16], ry: -Math.PI/2 },
+    // vertical dash low on the left wall, near the front
+    { g: new THREE.PlaneGeometry(0.012, 0.1), p: [-(CRATE_W/2 + WALL_T + 0.004), 0.34, zNotch + 0.1], ry: -Math.PI/2 },
+    // two dashes flanking the rear status block
+    { g: new THREE.PlaneGeometry(0.012, 0.09), p: [-0.42, 0.5, -(CRATE_D/2 + WALL_T + 0.004)], ry: Math.PI },
+    { g: new THREE.PlaneGeometry(0.012, 0.09), p: [ 0.42, 0.5, -(CRATE_D/2 + WALL_T + 0.004)], ry: Math.PI },
+  ];
+  sageBits.forEach(({ g, p, ry }) => {
+    const m = new THREE.Mesh(g, sageMat);
+    m.position.set(...p);
+    m.rotation.y = ry;
+    group.add(m);
+  });
 
   // Focus-dim registry: when a record is pulled out, everything else in
   // the bin drops back (color-darkened — NOT opacity, which would go ghostly).
-  const dimmables = [wallMat, floorMat, handleMat, labelPlane.material].map(m => ({ m, base: m.color.clone() }));
+  const dimmables = [wallMat, plateMat, baseMat, floorMat, sageMat, ...decals.map(d => d.material)]
+    .map(m => ({ m, base: m.color.clone() }));
   let dimT = 0;
 
   // ── Records ───────────────────────────────────────────────────
   const recordsGroup = new THREE.Group();
-  recordsGroup.position.set(0, WALL_T, 0);
+  recordsGroup.position.set(0, FLOOR_TOP + 0.002, 0);
   group.add(recordsGroup);
 
   const haloTex = makeHaloTexture();

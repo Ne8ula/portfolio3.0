@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128.12 232.2">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Light, 'Roboto Mono';
+        font-variation-settings: 'wght' 300;
+        font-weight: 300;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-2, .cls-3 {
+        font-size: 8px;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 36px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.12em;
+      }
+
+      .cls-5, .cls-3 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+
+      .cls-6 {
+        font-size: 21px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-7 {
+        letter-spacing: .95em;
+      }
+
+      .cls-8 {
+        letter-spacing: .95em;
+      }
+
+      .cls-9 {
+        letter-spacing: .7em;
+      }
+
+      .cls-3, .cls-10 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-11, .cls-12, .cls-13 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-11, .cls-13 {
+        stroke-width: .75px;
+      }
+
+      .cls-14 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-13 {
+        stroke-linecap: square;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <circle cx="124.33" cy="220.29" r="2.16"/>
+      <path d="M118.33,219.13c.64,0,1.16.52,1.16,1.16s-.52,1.16-1.16,1.16-1.16-.52-1.16-1.16.52-1.16,1.16-1.16M118.33,218.13c-1.19,0-2.16.97-2.16,2.16s.97,2.16,2.16,2.16,2.16-.97,2.16-2.16-.97-2.16-2.16-2.16h0Z"/>
+      <circle cx="3.79" cy="220.29" r="2.16"/>
+      <circle cx="9.85" cy="220.29" r="2.16"/>
+      <circle cx="3.79" cy="199.03" r="2.16"/>
+      <path d="M9.85,197.87c.64,0,1.16.52,1.16,1.16s-.52,1.16-1.16,1.16-1.16-.52-1.16-1.16.52-1.16,1.16-1.16M9.85,196.87c-1.19,0-2.16.97-2.16,2.16s.97,2.16,2.16,2.16,2.16-.97,2.16-2.16-.97-2.16-2.16-2.16h0Z"/>
+      <circle cx="15.91" cy="199.03" r="2.16"/>
+      <circle cx="124.33" cy="199.03" r="2.16"/>
+      <circle cx="124.33" cy="178.02" r="2.16"/>
+      <circle class="cls-11" cx="64.06" cy="164.49" r="16.15"/>
+      <path class="cls-11" d="M34.4,46.66c0,8.92-7.23,16.15-16.15,16.15S2.1,55.58,2.1,46.66"/>
+      <g>
+        <path d="M18.25,51.3c-2.56,0-4.64-2.08-4.64-4.64s2.08-4.64,4.64-4.64,4.64,2.08,4.64,4.64-2.08,4.64-4.64,4.64Z"/>
+        <path d="M18.25,42.39c2.35,0,4.27,1.91,4.27,4.27s-1.91,4.27-4.27,4.27-4.27-1.91-4.27-4.27,1.91-4.27,4.27-4.27M18.25,41.64c-2.77,0-5.02,2.25-5.02,5.02s2.25,5.02,5.02,5.02,5.02-2.25,5.02-5.02-2.25-5.02-5.02-5.02h0Z"/>
+      </g>
+      <line class="cls-11" x1="18.25" y1="46.66" x2="18.25" y2="69.56"/>
+      <path class="cls-11" d="M80.21,46.66c0,8.92-7.23,16.15-16.15,16.15s-16.15-7.23-16.15-16.15"/>
+      <g>
+        <path d="M64.06,51.3c-2.56,0-4.64-2.08-4.64-4.64s2.08-4.64,4.64-4.64,4.64,2.08,4.64,4.64-2.08,4.64-4.64,4.64Z"/>
+        <path d="M64.06,42.39c2.35,0,4.27,1.91,4.27,4.27s-1.91,4.27-4.27,4.27-4.27-1.91-4.27-4.27,1.91-4.27,4.27-4.27M64.06,41.64c-2.77,0-5.02,2.25-5.02,5.02s2.25,5.02,5.02,5.02,5.02-2.25,5.02-5.02-2.25-5.02-5.02-5.02h0Z"/>
+      </g>
+      <line class="cls-11" x1="64.06" y1="46.66" x2="64.06" y2="69.56"/>
+      <path class="cls-11" d="M126.02,46.66c0,8.92-7.23,16.15-16.15,16.15s-16.15-7.23-16.15-16.15"/>
+      <path class="cls-11" d="M105.43,78.75c0-2.45,1.99-4.44,4.44-4.44s4.44,1.99,4.44,4.44"/>
+      <path class="cls-11" d="M84.65,131.88c0,2.45-1.99,4.44-4.44,4.44s-4.44-1.99-4.44-4.44"/>
+      <path class="cls-11" d="M52.35,131.88c0,2.45-1.99,4.44-4.44,4.44s-4.44-1.99-4.44-4.44"/>
+      <path class="cls-11" d="M13.81,78.75c0-2.45,1.99-4.44,4.44-4.44s4.44,1.99,4.44,4.44"/>
+      <g>
+        <path d="M109.87,51.3c-2.56,0-4.64-2.08-4.64-4.64s2.08-4.64,4.64-4.64,4.64,2.08,4.64,4.64-2.08,4.64-4.64,4.64Z"/>
+        <path d="M109.87,42.39c2.35,0,4.27,1.91,4.27,4.27s-1.91,4.27-4.27,4.27-4.27-1.91-4.27-4.27,1.91-4.27,4.27-4.27M109.87,41.64c-2.77,0-5.02,2.25-5.02,5.02s2.25,5.02,5.02,5.02,5.02-2.25,5.02-5.02-2.25-5.02-5.02-5.02h0Z"/>
+      </g>
+      <line class="cls-11" x1="109.87" y1="46.66" x2="109.87" y2="69.56"/>
+      <line class="cls-11" x1="64.06" y1="85.77" x2="64.06" y2="148.34"/>
+      <polyline class="cls-11" points="18.25 78.75 18.25 95.83 47.91 95.83 47.91 131.88"/>
+      <polyline class="cls-11" points="109.87 78.75 109.87 95.83 80.21 95.83 80.21 131.88"/>
+      <polyline class="cls-11" points="47.91 164.49 3.79 164.49 3.79 199.03"/>
+      <polyline class="cls-11" points="80.21 164.49 124.33 164.49 124.33 178.02"/>
+      <text class="cls-2" transform="translate(1.26 6.84)"><tspan class="cls-14" x="0" y="0">MEMORY</tspan><tspan class="cls-7" x="26.4" y="0"> </tspan><tspan class="cls-14" x="38.8" y="0">CORE</tspan><tspan class="cls-7" x="56.4" y="0"> </tspan><tspan class="cls-14" x="68.8" y="0">–</tspan><tspan class="cls-8" x="73.2" y="0"> </tspan><tspan class="cls-10" x="85.6" y="0">OPTIMIZED</tspan><tspan class="cls-14" x="0" y="7">USAGE:</tspan><tspan class="cls-9" x="26.4" y="7"> </tspan><tspan class="cls-10" x="36.8" y="7">42%</tspan><tspan class="cls-9" x="50" y="7"> </tspan><tspan class="cls-14" x="60.4" y="7">–</tspan><tspan class="cls-9" x="64.8" y="7"> </tspan><tspan class="cls-10" x="75.2" y="7">TEMP:</tspan><tspan class="cls-9" x="97.2" y="7"> </tspan><tspan class="cls-10" x="107.6" y="7">31°C</tspan></text>
+      <text class="cls-6" transform="translate(0 34.86)"><tspan class="cls-1" x="0" y="0">DATA</tspan><tspan class="cls-5" x="46.21" y="0">CLUSTER</tspan></text>
+      <text class="cls-3" transform="translate(48.46 80.79)"><tspan x="0" y="0">[START]</tspan></text>
+      <g>
+        <line class="cls-13" x1="57.63" y1="158.06" x2="70.49" y2="170.91"/>
+        <line class="cls-13" x1="57.63" y1="170.91" x2="70.49" y2="158.06"/>
+      </g>
+      <text class="cls-4" transform="translate(27.33 222.45)"><tspan x="0" y="0">0574</tspan></text>
+      <line class="cls-12" x1="124.33" y1="199.03" x2="124.33" y2="220.29"/>
+    </g>
+  </g>
+</svg>

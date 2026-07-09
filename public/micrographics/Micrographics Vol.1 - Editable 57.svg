@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 162.64 94.69">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-1, .cls-2 {
+        font-size: 8px;
+      }
+
+      .cls-3 {
+        stroke-width: 1.5px;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-5 {
+        letter-spacing: 1.9em;
+      }
+
+      .cls-6 {
+        letter-spacing: 1.9em;
+      }
+
+      .cls-7 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-7, .cls-8 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-4 {
+        stroke-width: .75px;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-2, .cls-9 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-8 {
+        font-size: 48.13px;
+        letter-spacing: -.12em;
+      }
+
+      .cls-10 {
+        letter-spacing: -.15em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-12 {
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-1" transform="translate(3.47 81.14)"><tspan class="cls-9" x="0" y="0">ARCHIVE</tspan><tspan class="cls-10" x="30.81" y="0"> </tspan><tspan class="cls-12" x="34.41" y="0">––</tspan><tspan class="cls-10" x="43.13" y="0"> </tspan><tspan class="cls-9" x="46.74" y="0">DECODING</tspan><tspan class="cls-10" x="81.95" y="0"> </tspan><tspan class="cls-9" x="85.55" y="0">//</tspan><tspan class="cls-10" x="94.35" y="0"> </tspan><tspan class="cls-9" x="97.96" y="0">ACCESS</tspan><tspan class="cls-10" x="124.36" y="0"> </tspan><tspan class="cls-9" x="127.97" y="0">GRANTED</tspan><tspan class="cls-9" x="0" y="11.39">LOG_739894.TXT</tspan><tspan class="cls-5" x="61.61" y="11.39"> </tspan><tspan class="cls-9" x="81.59" y="11.39">ALLOCATED</tspan><tspan class="cls-6" x="121.19" y="11.39"> </tspan><tspan class="cls-11" x="141.17" y="11.39">DATA</tspan></text>
+      <path d="M155.92,2.76c3.3,0,5.98,2.68,5.98,5.98s-2.68,5.98-5.98,5.98h-53.51c-3.3,0-5.98-2.68-5.98-5.98s2.68-5.98,5.98-5.98h53.51M155.92,2.01h-53.51c-3.72,0-6.73,3.01-6.73,6.73s3.01,6.73,6.73,6.73h53.51c3.72,0,6.73-3.01,6.73-6.73s-3.01-6.73-6.73-6.73h0Z"/>
+      <text class="cls-2" transform="translate(106.96 11.68)"><tspan x="0" y="0">ORIGIN.E43</tspan></text>
+      <text class="cls-8" transform="translate(0 65.94)"><tspan x="0" y="0">007</tspan></text>
+      <line class="cls-4" x1="3.47" y1="22.7" x2="162.64" y2="22.7"/>
+      <line class="cls-4" x1="88.4" x2="88.4" y2="65.98"/>
+      <text class="cls-7" transform="translate(95.68 40.54)"><tspan x="0" y="0">02835673</tspan><tspan x="0" y="14">RESET</tspan></text>
+      <rect x="156.72" y="60.05" width="5.92" height="5.92"/>
+      <rect x="70.4" y="5.78" width="5.92" height="5.92"/>
+      <g>
+        <line class="cls-3" x1="10.2" y1="2.01" x2="10.2" y2="15.47"/>
+        <line class="cls-3" x1="3.47" y1="8.74" x2="17.6" y2="8.74"/>
+        <line class="cls-3" x1="5.44" y1="3.98" x2="14.95" y2="13.5"/>
+        <line class="cls-3" x1="5.44" y1="13.5" x2="14.95" y2="3.98"/>
+      </g>
+      <path d="M23.7,3.51c2.88,0,5.23,2.35,5.23,5.23s-2.35,5.23-5.23,5.23-5.23-2.35-5.23-5.23,2.35-5.23,5.23-5.23M23.7,2.01c-3.72,0-6.73,3.01-6.73,6.73s3.01,6.73,6.73,6.73,6.73-3.01,6.73-6.73-3.01-6.73-6.73-6.73h0Z"/>
+    </g>
+  </g>
+</svg>

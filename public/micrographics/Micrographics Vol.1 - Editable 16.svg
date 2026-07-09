@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 322.33 170.87">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Light, 'Roboto Mono';
+        font-variation-settings: 'wght' 300;
+        font-weight: 300;
+      }
+
+      .cls-2 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        font-size: 35.5px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3, .cls-4 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-5 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <circle class="cls-5" cx="74.63" cy="99.95" r="7.24"/>
+        <circle class="cls-5" cx="7.61" cy="99.95" r="7.24"/>
+        <circle class="cls-5" cx="17.02" cy="157.57" r="7.24"/>
+        <circle class="cls-5" cx="74.63" cy="143.32" r="7.24"/>
+        <circle class="cls-5" cx="135.78" cy="161.1" r="7.24"/>
+        <circle class="cls-5" cx="130.85" cy="43.73" r="7.24"/>
+        <circle class="cls-5" cx="74.63" cy="7.61" r="7.24"/>
+        <circle class="cls-5" cx="36.28" cy="61.59" r="7.24"/>
+        <line class="cls-5" x1="74.63" y1="87.33" x2="74.63" y2="20.23"/>
+        <line class="cls-5" x1="65.71" y1="91.03" x2="44.81" y2="70.13"/>
+        <line class="cls-5" x1="62.01" y1="99.95" x2="20.23" y2="99.95"/>
+        <line class="cls-5" x1="65.71" y1="108.87" x2="25.94" y2="148.64"/>
+        <line class="cls-5" x1="74.63" y1="112.57" x2="74.63" y2="130.52"/>
+        <line class="cls-5" x1="83.56" y1="108.87" x2="126.86" y2="152.17"/>
+        <line class="cls-5" x1="87.25" y1="99.95" x2="117.19" y2="99.95"/>
+        <line class="cls-5" x1="83.56" y1="91.03" x2="121.61" y2="52.97"/>
+      </g>
+      <text class="cls-3" transform="translate(120.12 112.85)"><tspan x="0" y="0">EPOCH</tspan></text>
+      <text class="cls-2" transform="translate(155.8 129.51)"><tspan class="cls-1"><tspan x="0" y="0">02.44 / 118.09 / 352.01</tspan></tspan><tspan class="cls-4"><tspan x="0" y="12">0038 : 9092 : 1174 : 0013</tspan></tspan></text>
+      <text class="cls-6" transform="translate(215.59 154.7)"><tspan x="0" y="0">DATA_042.XML</tspan><tspan x="0" y="7">TRANSFORM</tspan><tspan x="0" y="14">SUCCESS</tspan></text>
+      <text class="cls-6" transform="translate(155.8 154.7)"><tspan x="0" y="0">FIRMWARE_02</tspan><tspan x="0" y="7">VERIFY</tspan><tspan x="0" y="14">PASSED–CHECK</tspan></text>
+      <text class="cls-6" transform="translate(272.75 72.72)"><tspan x="0" y="0">IO_MAP.V2</tspan></text>
+      <path d="M307.39,87.33h-72.09c-7.05,0-12.76,5.71-12.76,12.76h0c0,7.05,5.71,12.76,12.76,12.76h72.09c7.05,0,12.76-5.71,12.76-12.76h0c0-7.05-5.71-12.76-12.76-12.76ZM307.39,110.19c-5.4,0-9.82-4.27-10.08-9.61h-60.8l5.94,5.94c.2.2.2.51,0,.71-.1.1-.23.15-.35.15s-.26-.05-.35-.15l-5.94-5.94v8.4c0,.28-.22.5-.5.5s-.5-.22-.5-.5v-8.4l-5.94,5.94c-.1.1-.23.15-.35.15s-.26-.05-.35-.15c-.2-.2-.2-.51,0-.71l5.94-5.94h-8.4c-.28,0-.5-.22-.5-.5s.22-.5.5-.5h8.4l-5.94-5.94c-.2-.2-.2-.51,0-.71s.51-.2.71,0l5.94,5.94v-8.4c0-.28.22-.5.5-.5s.5.22.5.5v8.4l5.94-5.94c.2-.2.51-.2.71,0s.2.51,0,.71l-5.94,5.94h60.8c.26-5.34,4.68-9.61,10.08-9.61s10.11,4.53,10.11,10.11-4.53,10.11-10.11,10.11Z"/>
+      <circle class="cls-5" cx="307.39" cy="100.09" r="2.42"/>
+      <rect x="316.77" y="67.4" width="3.38" height="3.38"/>
+      <rect x="222.54" y="67.4" width="3.38" height="3.38"/>
+      <rect x="213.81" y="67.4" width="3.38" height="3.38"/>
+      <rect x="316.77" y="165.33" width="3.38" height="3.38"/>
+      <rect x="269.65" y="165.33" width="3.38" height="3.38"/>
+      <rect x="316.77" y="159.17" width="3.38" height="3.38"/>
+      <rect x="122.7" y="67.4" width="3.38" height="3.38"/>
+      <rect x="122.7" y="120.51" width="3.38" height="3.38"/>
+      <rect x="147.72" y="120.51" width="3.38" height="3.38"/>
+      <rect x="147.72" y="165.33" width="3.38" height="3.38"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.33 226.88">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+
+      .cls-1, .cls-2 {
+        font-size: 8px;
+      }
+
+      .cls-3, .cls-4 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-5 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path d="M149.74,86.43h-12.28c-1.68,0-2.52-2.03-1.33-3.22l4.57-4.57c.15-.15.15-.38,0-.53s-.38-.15-.53,0l-4.57,4.57c-1.19,1.19-3.22.35-3.22-1.33v-12.28c0-.21-.17-.38-.38-.38s-.38.17-.38.38v12.28c0,1.68-2.03,2.52-3.22,1.33l-4.57-4.57c-.15-.15-.38-.15-.53,0s-.15.38,0,.53l4.57,4.57c1.19,1.19.35,3.22-1.33,3.22h-12.28c-.21,0-.38.17-.38.38s.17.38.38.38h12.28c1.68,0,2.52,2.03,1.33,3.22l-4.57,4.57c-.15.15-.15.38,0,.53.07.07.17.11.27.11s.19-.04.27-.11l4.57-4.57c1.19-1.19,3.22-.35,3.22,1.33v55.31c0,.21.17.38.38.38s.38-.17.38-.38v-55.31c0-1.68,2.03-2.52,3.22-1.33l4.57,4.57c.07.07.17.11.27.11s.19-.04.27-.11c.15-.15.15-.38,0-.53l-4.57-4.57c-1.19-1.19-.35-3.22,1.33-3.22h12.28c.21,0,.38-.17.38-.38s-.17-.38-.38-.38Z"/>
+      <path d="M137.73,147.94h12.28c1.68,0,2.52,2.03,1.33,3.22l-4.57,4.57c-.15.15-.15.38,0,.53s.38.15.53,0l4.57-4.57c1.19-1.19,3.22-.35,3.22,1.33v12.28c0,.21.17.38.38.38s.38-.17.38-.38v-12.28c0-1.68,2.03-2.52,3.22-1.33l4.57,4.57c.15.15.38.15.53,0s.15-.38,0-.53l-4.57-4.57c-1.19-1.19-.35-3.22,1.33-3.22h12.28c.21,0,.38-.17.38-.38s-.17-.38-.38-.38h-12.28c-1.68,0-2.52-2.03-1.33-3.22l4.57-4.57c.15-.15.15-.38,0-.53-.07-.07-.17-.11-.27-.11s-.19.04-.27.11l-4.57,4.57c-1.19,1.19-3.22.35-3.22-1.33v-55.31c0-.21-.17-.38-.38-.38s-.38.17-.38.38v55.31c0,1.68-2.03,2.52-3.22,1.33l-4.57-4.57c-.07-.07-.17-.11-.27-.11s-.19.04-.27.11c-.15.15-.15.38,0,.53l4.57,4.57c1.19,1.19.35,3.22-1.33,3.22h-12.28c-.21,0-.38.17-.38.38s.17.38.38.38Z"/>
+      <circle class="cls-4" cx="49.15" cy="50.99" r="48.77"/>
+      <circle class="cls-4" cx="49.15" cy="176.01" r="48.77"/>
+      <rect class="cls-4" x=".38" y="2" width="97.43" height="174.01"/>
+      <line class="cls-4" x1="49.15" y1="2.21" x2="49.15" y2="176.01"/>
+      <line class="cls-4" x1="189.55" y1="4.4" x2="189.55" y2="222.39"/>
+      <line class="cls-4" x1=".38" y1="50.99" x2="97.92" y2="50.99"/>
+      <text class="cls-5" transform="translate(105.83 10.27)"><tspan x="0" y="0">SECONDARY </tspan><tspan x="0" y="12">INTERFACE</tspan><tspan x="0" y="24">OFFLINE</tspan><tspan x="0" y="36">CODE: </tspan><tspan x="0" y="48">0x7B0A</tspan></text>
+      <text class="cls-1" transform="translate(105.83 203.72)"><tspan x="0" y="0">SECONDARY </tspan><tspan x="0" y="7">INTERFACE</tspan><tspan x="0" y="14">OFFLINE</tspan><tspan x="0" y="21">CODE: 0x7B0A</tspan></text>
+      <circle class="cls-3" cx="189.55" cy="222.39" r="2.4"/>
+      <circle class="cls-3" cx="109.12" cy="176.01" r="2.4"/>
+      <circle class="cls-3" cx="189.55" cy="4.4" r="2.4"/>
+      <text class="cls-2" transform="translate(31.34 187.15)"><tspan x="0" y="0">[MODULE]</tspan></text>
+      <line class="cls-4" x1="109.12" y1="176.01" x2="189.55" y2="176.01"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 328.92 87">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: 5.96em;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+      }
+
+      .cls-2, .cls-3 {
+        font-size: 12px;
+      }
+
+      .cls-2, .cls-4 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-5 {
+        letter-spacing: 4.03em;
+      }
+
+      .cls-6 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 21px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-7" transform="translate(97.66 17.96)"><tspan x="0" y="0">INSTALLED</tspan></text>
+      <text class="cls-7" transform="translate(280.99 17.96)"><tspan x="0" y="0">100%</tspan></text>
+      <line class="cls-6" x1="97.66" y1="32.06" x2="328.92" y2="32.06"/>
+      <text class="cls-3" transform="translate(97.66 55.75)"><tspan class="cls-4" x="0" y="0">PRE-PATCH</tspan><tspan class="cls-5" x="59.41" y="0"> </tspan><tspan class="cls-4" x="115" y="0">•</tspan><tspan class="cls-5" x="121.6" y="0"> </tspan><tspan class="cls-4" x="177.18" y="0">COMPLETE</tspan><tspan class="cls-4" x="0" y="14">MODE</tspan><tspan class="cls-1" x="26.4" y="14"> </tspan><tspan class="cls-4" x="105.09" y="14">•</tspan><tspan class="cls-1" x="111.69" y="14"> </tspan><tspan class="cls-4" x="190.38" y="14">004739</tspan><tspan class="cls-4" x="0" y="28">CONFIRMING</tspan><tspan class="cls-5" x="66.01" y="28"> </tspan><tspan class="cls-4" x="121.6" y="28">•</tspan><tspan class="cls-5" x="128.2" y="28"> </tspan><tspan class="cls-4" x="183.78" y="28">RECEIPT</tspan></text>
+      <g>
+        <circle class="cls-6" cx="41.41" cy="43.17" r="41.04"/>
+        <ellipse class="cls-6" cx="41.41" cy="43.17" rx="20.52" ry="41.04"/>
+        <path class="cls-6" d="M41.41,43.17c0,22.67,0,41.04,0,41.04,0,0,0-18.37,0-41.04s0-41.04,0-41.04c0,0,0,18.37,0,41.04Z"/>
+      </g>
+      <g>
+        <circle class="cls-6" cx="41.41" cy="43.17" r="41.04"/>
+        <ellipse class="cls-6" cx="41.41" cy="43.17" rx="41.04" ry="20.52"/>
+        <path class="cls-6" d="M41.41,43.17c22.67,0,41.04,0,41.04,0,0,0-18.37,0-41.04,0s-41.04,0-41.04,0c0,0,18.37,0,41.04,0Z"/>
+      </g>
+      <text class="cls-2" transform="translate(235.23 15.09)"><tspan x="0" y="0">[+]</tspan></text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357.13 80.26">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <path d="M37.91,1.95C16.97,1.95,0,18.92,0,39.86s16.97,37.91,37.91,37.91,37.91-16.97,37.91-37.91S58.85,1.95,37.91,1.95ZM41.46,23.75l15.46,6.4-1.33,3.21-15.46-6.4,1.33-3.21ZM8.5,38.13h46.15v3.47H8.5v-3.47ZM40.13,52.77l15.46-6.41,1.33,3.21-15.46,6.41-1.33-3.21ZM50.25,67.9l-2.46-2.46,11.83-11.83,2.46,2.46-11.83,11.83ZM59.62,26.12l-11.84-11.83,2.46-2.46,11.84,11.83-2.46,2.46Z"/>
+        <rect x="74.09" y="61.04" width="3.47" height="16.74"/>
+        <rect x="74.09" y="1.95" width="3.47" height="16.74"/>
+        <rect x="78.76" y="10.83" width="16.74" height="3.47" transform="translate(42.17 88.25) rotate(-67.49)"/>
+        <rect x="88.35" y="17.24" width="16.74" height="3.47" transform="translate(14.92 73.95) rotate(-45)"/>
+        <rect x="94.75" y="26.82" width="16.74" height="3.47" transform="translate(-3.08 41.64) rotate(-22.5)"/>
+        <rect x="97" y="38.13" width="16.74" height="3.47"/>
+        <rect x="101.39" y="42.8" width="3.47" height="16.74" transform="translate(16.39 126.86) rotate(-67.5)"/>
+        <rect x="94.98" y="52.39" width="3.47" height="16.74" transform="translate(-14.63 86.19) rotate(-45)"/>
+        <rect x="85.4" y="58.79" width="3.47" height="16.74" transform="translate(-19.07 38.46) rotate(-22.5)"/>
+      </g>
+      <g>
+        <circle class="cls-3" cx="343.26" cy="6.86" r="4.91"/>
+        <ellipse class="cls-3" cx="350.62" cy="6.86" rx="2.45" ry="4.91"/>
+        <ellipse class="cls-3" cx="354.3" cy="6.86" rx="1.23" ry="4.91"/>
+        <ellipse class="cls-3" cx="356.14" cy="6.86" rx=".61" ry="4.91"/>
+      </g>
+      <text class="cls-2" transform="translate(125.29 10.27)"><tspan x="0" y="0">SYSTEM LAYER — OPERATIONAL</tspan><tspan x="0" y="14">LOAD: 47% | TEMP: 25°C</tspan><tspan x="0" y="28">VERIFIED — ID: 9C-33 — CHECKSUM: OK</tspan></text>
+      <circle class="cls-3" cx="331.96" cy="6.86" r="4.91"/>
+      <text class="cls-1" transform="translate(125.3 64.09)"><tspan x="0" y="0">SUBSYSTEM-01</tspan><tspan x="0" y="7">LOCKED</tspan><tspan x="0" y="14">CODE: 0xA882</tspan></text>
+      <text class="cls-1" transform="translate(187.66 64.09)"><tspan x="0" y="0">INPUT ARRAY</tspan><tspan x="0" y="7">VALIDATED</tspan><tspan x="0" y="14">CODE: 0xCA44</tspan></text>
+      <text class="cls-1" transform="translate(272.68 64.09)"><tspan x="0" y="0">CONNECT</tspan><tspan x="0" y="7">TARGET: LINE ROUTER</tspan><tspan x="0" y="14">STATE: ESTABLISHED</tspan></text>
+      <line class="cls-3" x1="125.3" y1="52.71" x2="179.11" y2="52.71"/>
+      <line class="cls-3" x1="187.66" y1="52.71" x2="241.47" y2="52.71"/>
+      <line class="cls-3" x1="272.68" y1="52.71" x2="356.76" y2="52.71"/>
+    </g>
+  </g>
+</svg>

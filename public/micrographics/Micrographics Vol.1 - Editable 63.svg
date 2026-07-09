@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 171.71 91.39">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 12px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        stroke-width: 1.5px;
+      }
+
+      .cls-2, .cls-3 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-5 {
+        font-size: 18px;
+        letter-spacing: -.05em;
+      }
+
+      .cls-5, .cls-6 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-3 {
+        stroke-width: .75px;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <line class="cls-2" x1="12.71" y1="67.11" x2="12.71" y2="90.45"/>
+        <line class="cls-2" x1="1.04" y1="78.78" x2="24.38" y2="78.78"/>
+        <line class="cls-2" x1="4.46" y1="70.52" x2="20.97" y2="87.03"/>
+        <line class="cls-2" x1="4.46" y1="87.03" x2="20.97" y2="70.52"/>
+      </g>
+      <circle class="cls-3" cx="145.1" cy="27.12" r="25.22"/>
+      <line class="cls-3" x1="127.27" y1="9.29" x2="162.94" y2="44.96"/>
+      <line class="cls-3" x1="127.27" y1="44.96" x2="162.94" y2="9.29"/>
+      <text class="cls-1" transform="translate(0 10.27)"><tspan class="cls-4"><tspan x="0" y="0">OUTPUT: DIGITAL</tspan></tspan><tspan class="cls-6"><tspan x="0" y="14">[INDEX] 00030741</tspan></tspan></text>
+      <g>
+        <polygon points="80.34 90.45 87.54 90.45 89.17 90.45 89.17 88.82 89.17 81.61 87.54 81.61 87.54 87.67 81.73 81.85 80.57 83 86.39 88.82 80.34 88.82 80.34 90.45"/>
+        <polygon points="89.17 75.94 89.17 68.73 89.17 67.11 87.54 67.11 80.34 67.11 80.34 68.73 86.39 68.73 80.57 74.55 81.73 75.7 87.54 69.88 87.54 75.94 89.17 75.94"/>
+        <polygon points="38.95 67.11 31.74 67.11 30.12 67.11 30.12 68.73 30.12 75.94 31.74 75.94 31.74 69.88 37.56 75.7 38.71 74.55 32.9 68.73 38.95 68.73 38.95 67.11"/>
+        <polygon points="30.12 81.61 30.12 88.82 30.12 90.45 31.74 90.45 38.95 90.45 38.95 88.82 32.9 88.82 38.71 83 37.56 81.85 31.74 87.67 31.74 81.61 30.12 81.61"/>
+        <text class="cls-7" transform="translate(46.28 81.61)"><tspan x="0" y="0">STABLE</tspan></text>
+      </g>
+      <g id="_59.Wifi" data-name=" 59.Wifi">
+        <path d="M131.46,68.72h-1.22c0-1.68-1.36-3.05-3.05-3.05s-3.05,1.36-3.05,3.05h-1.22c0-2.36,1.91-4.27,4.27-4.27s4.27,1.91,4.27,4.27Z"/>
+        <path d="M129.02,68.72h-1.22c0-.34-.27-.61-.61-.61s-.61.27-.61.61h-1.22c0-1.01.82-1.83,1.83-1.83s1.83.82,1.83,1.83Z"/>
+        <rect x="126.59" y="69.93" width="1.22" height="1.22"/>
+        <path d="M127.19,75.42c-4.04,0-7.31-3.27-7.31-7.31s3.27-7.31,7.31-7.31,7.31,3.27,7.31,7.31c0,4.04-3.28,7.31-7.31,7.31ZM127.19,62.01c-3.37,0-6.09,2.73-6.09,6.09s2.73,6.09,6.09,6.09,6.09-2.73,6.09-6.09c0-3.36-2.73-6.09-6.09-6.09Z"/>
+      </g>
+      <g id="_69.Folder" data-name=" 69.Folder">
+        <path d="M145.1,75.42c-4.04,0-7.31-3.27-7.31-7.31s3.27-7.31,7.31-7.31,7.31,3.27,7.31,7.31c0,4.04-3.28,7.31-7.31,7.31ZM145.1,62.01c-3.37,0-6.09,2.73-6.09,6.09s2.73,6.09,6.09,6.09,6.09-2.73,6.09-6.09c0-3.36-2.73-6.09-6.09-6.09Z"/>
+        <path d="M148.76,71.76h-7.31v-7.31h3.3l.97.97v.25h3.05v6.09ZM142.67,70.54h4.88v-3.66h-3.05v-.97l-.25-.25h-1.58v4.88Z"/>
+      </g>
+      <g id="_88.Exchange" data-name=" 88.Exchange">
+        <path d="M163.01,75.42c-4.04,0-7.31-3.27-7.31-7.31s3.27-7.31,7.31-7.31,7.31,3.27,7.31,7.31c0,4.04-3.28,7.31-7.31,7.31ZM163.01,62.01c-3.37,0-6.09,2.73-6.09,6.09s2.73,6.09,6.09,6.09,6.09-2.73,6.09-6.09c0-3.36-2.73-6.09-6.09-6.09Z"/>
+        <polygon points="165.27 68.54 164.41 67.68 165.81 66.28 164.41 64.88 165.27 64.02 167.53 66.28 165.27 68.54"/>
+        <rect x="159.36" y="65.67" width="7.31" height="1.22"/>
+        <polygon points="160.75 72.19 158.5 69.93 160.75 67.68 161.62 68.54 160.22 69.93 161.62 71.33 160.75 72.19"/>
+        <rect x="159.36" y="69.32" width="7.31" height="1.22"/>
+      </g>
+      <text class="cls-7" transform="translate(118.5 89.23)"><tspan x="0" y="0">[000374-018]</tspan></text>
+      <text class="cls-5" transform="translate(0 52.35)"><tspan x="0" y="0">VARIANT 033</tspan></text>
+    </g>
+  </g>
+</svg>

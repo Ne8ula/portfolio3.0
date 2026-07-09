@@ -988,6 +988,14 @@ function ScreenDialog({ interactive, active }){
   const [input, setInput] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const listRef = React.useRef(null);
+  // Idle screen follows the cockpit theme: ivory reference panel in light,
+  // quiet dark CRT in dark. The woken dialog stays cream (screen is "lit").
+  const [theme, setTheme] = React.useState(() => (typeof window !== 'undefined' && window.__cockpitTheme) || 'dark');
+  React.useEffect(() => {
+    const onTheme = (e) => setTheme(e.detail && e.detail.theme === 'light' ? 'light' : 'dark');
+    window.addEventListener('cockpit-theme', onTheme);
+    return () => window.removeEventListener('cockpit-theme', onTheme);
+  }, []);
 
   // Project screen rect every animation frame
   React.useEffect(() => {
@@ -1075,17 +1083,23 @@ function ScreenDialog({ interactive, active }){
         // jade + ink type instead of the old dark-green CRT.
         background: active
           ? 'radial-gradient(ellipse at 50% 40%, #F4F0E6 0%, #DFD9CB 85%)'
-          : 'radial-gradient(ellipse at 50% 50%, #EDE8DC 0%, #D6D0C2 85%)',
+          : theme === 'light'
+            ? 'radial-gradient(ellipse at 50% 50%, #EDE8DC 0%, #D6D0C2 85%)'
+            : 'radial-gradient(ellipse at 50% 50%, #1B1815 0%, #0E0C0A 85%)',
         boxShadow: active
           ? 'inset 0 0 26px rgba(30,28,26,0.18), inset 0 0 8px rgba(75,110,79,0.18), 0 0 22px rgba(232,228,220,0.2)'
-          : 'inset 0 0 22px rgba(30,28,26,0.22)',
+          : theme === 'light'
+            ? 'inset 0 0 22px rgba(30,28,26,0.22)'
+            : 'inset 0 0 26px rgba(0,0,0,0.5), inset 0 0 10px rgba(122,154,126,0.08)',
         color:'#55514B',
         fontFamily:'"JetBrains Mono", monospace',
       }}>
       {/* scanlines — barely-there paper grain lines */}
       <div style={{
         position:'absolute', inset:0,
-        backgroundImage:'repeating-linear-gradient(0deg, rgba(30,28,26,0.05) 0px, rgba(30,28,26,0.05) 1px, transparent 1px, transparent 3px)',
+        backgroundImage: (active || theme === 'light')
+          ? 'repeating-linear-gradient(0deg, rgba(30,28,26,0.05) 0px, rgba(30,28,26,0.05) 1px, transparent 1px, transparent 3px)'
+          : 'repeating-linear-gradient(0deg, rgba(240,235,225,0.035) 0px, rgba(240,235,225,0.035) 1px, transparent 1px, transparent 3px)',
         pointerEvents:'none'
       }}/>
       {/* content */}
@@ -1093,12 +1107,16 @@ function ScreenDialog({ interactive, active }){
         <div style={{
           position:'absolute', inset:pad,
           display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center',
-          fontSize: baseFont, lineHeight: 1.4, color:'#55514B', textAlign:'center'
+          fontSize: baseFont, lineHeight: 1.4,
+          color: theme === 'light' ? '#55514B' : 'rgba(232,228,220,0.55)',
+          textAlign:'center'
         }}>
-          {/* the "hello." homage — ink script on the cream panel */}
-          <div style={{fontFamily:'"Cormorant Garamond", Georgia, serif', fontStyle:'italic', fontWeight:500, fontSize: baseFont*3.4, color:'#1E1C1A', lineHeight:1}}>hello.</div>
-          <div style={{fontSize: baseFont*0.8, marginTop: pad*0.5, letterSpacing:'.3em', color:'#4B6E4F', fontWeight:700}}>AX/OS · CLICK TO WAKE</div>
-          <div style={{fontSize: baseFont*0.75, marginTop: pad*0.4, opacity:.5, animation:'softBlink 1.4s infinite'}}>_</div>
+          {/* the "hello." homage — reference screen layout */}
+          <div style={{fontFamily:'"Cormorant Garamond", Georgia, serif', fontStyle:'italic', fontWeight:500, fontSize: baseFont*3.4, color: theme === 'light' ? '#1E1C1A' : 'rgba(232,228,220,0.92)', lineHeight:1}}>hello.</div>
+          <div style={{fontSize: baseFont*0.85, marginTop: pad*0.55, letterSpacing:'.38em', color: theme === 'light' ? '#6F8D75' : '#7A9A7E', fontWeight:700}}>A.X / STUDIO</div>
+          <div style={{fontSize: baseFont*0.75, marginTop: pad*0.4, opacity:.55}}>—</div>
+          <div style={{fontSize: baseFont*0.7, marginTop: pad*0.55, letterSpacing:'.3em', opacity:.7}}>AX/OS · CLICK TO WAKE</div>
+          <div style={{fontSize: baseFont*0.75, marginTop: pad*0.35, opacity:.5, animation:'softBlink 1.4s infinite'}}>_</div>
         </div>
       ) : (
       <div style={{

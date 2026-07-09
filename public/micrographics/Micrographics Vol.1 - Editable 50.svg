@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.05 41.92">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-linejoin: round;
+      }
+
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke: #000;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        font-family: NotoSansJP-Medium, 'Noto Sans JP';
+        font-size: 9px;
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 10px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        stroke-linecap: square;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <text class="cls-4" transform="translate(99.49 32.65)"><tspan x="0" y="0">ACTIVE — ID: 7F-C2 — POWER: 92%</tspan></text>
+      <text class="cls-3" transform="translate(40.53 32.65)"><tspan x="0" y="0" xml:space="preserve">充            電</tspan></text>
+      <path class="cls-1" d="M.38,28.34V9.52l5.15-5.15h18.83L.38,28.34Z"/>
+      <path class="cls-1" d="M28.66,8.68v18.83c-2.01,2.01-3.14,3.14-5.15,5.15H4.69L28.66,8.68Z"/>
+      <g>
+        <line class="cls-2" x1="281.71" y1="9.62" x2="40.53" y2="9.62"/>
+        <circle cx="281.64" cy="9.62" r="1.41"/>
+      </g>
+      <line class="cls-2" x1="115.79" y1="4.37" x2="40.53" y2="4.37"/>
+      <line class="cls-2" x1="78.16" y1="14.87" x2="40.53" y2="14.87"/>
+      <line class="cls-2" x1="276.04" y1="18.86" x2="276.04" y2="14.87"/>
+      <line class="cls-2" x1="276.04" y1="4.37" x2="276.04" y2=".38"/>
+    </g>
+  </g>
+</svg>

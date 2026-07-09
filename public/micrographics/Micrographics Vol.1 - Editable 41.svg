@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225.24 45.27">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        stroke-width: .75px;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        fill: none;
+        stroke: #000;
+      }
+
+      .cls-4 {
+        stroke-linejoin: round;
+      }
+
+      .cls-5 {
+        font-family: RobotoMono-SemiBold, 'Roboto Mono';
+        font-size: 10px;
+        font-variation-settings: 'wght' 600;
+        font-weight: 600;
+        letter-spacing: -.12em;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <path d="M30.74,13.81c4.37,0,7.92,3.55,7.92,7.92s-3.55,7.92-7.92,7.92-7.92-3.55-7.92-7.92,3.55-7.92,7.92-7.92M30.74,12.81c-4.92,0-8.92,3.99-8.92,8.92s3.99,8.92,8.92,8.92,8.92-3.99,8.92-8.92-3.99-8.92-8.92-8.92h0Z"/>
+        <path d="M14.87,13.81l4.57,7.92-4.57,7.92H5.73l-4.57-7.92,4.57-7.92h9.14M15.44,12.81H5.15L0,21.73l5.15,8.92h10.3l5.15-8.92-5.15-8.92h0Z"/>
+        <text class="cls-5" transform="translate(27.74 25.16)"><tspan x="0" y="0">Z</tspan></text>
+        <text class="cls-5" transform="translate(7.32 25.18)"><tspan x="0" y="0">A</tspan></text>
+      </g>
+      <g>
+        <circle cx="138.33" cy="19.66" r="2.07"/>
+        <circle cx="142.73" cy="19.66" r="2.07"/>
+        <circle cx="147.13" cy="19.66" r="2.07"/>
+        <circle cx="151.53" cy="19.66" r="2.07"/>
+        <circle cx="155.93" cy="19.66" r="2.07"/>
+        <circle cx="160.34" cy="19.66" r="2.07"/>
+        <circle cx="164.74" cy="19.66" r="2.07"/>
+        <circle cx="138.33" cy="24.06" r="2.07"/>
+        <circle cx="142.73" cy="24.06" r="2.07"/>
+        <circle cx="147.13" cy="24.06" r="2.07"/>
+        <circle cx="151.53" cy="24.06" r="2.07"/>
+        <circle cx="155.93" cy="24.06" r="2.07"/>
+        <circle cx="160.34" cy="24.06" r="2.07"/>
+        <circle cx="164.74" cy="24.06" r="2.07"/>
+      </g>
+      <text class="cls-1" transform="translate(45.34 26.13)"><tspan x="0" y="0">SYSTEM REBOOT</tspan></text>
+      <text class="cls-6" transform="translate(1.31 6.84)"><tspan x="0" y="0">[01]</tspan></text>
+      <text class="cls-6" transform="translate(21.74 6.84)"><tspan x="0" y="0">[02]</tspan></text>
+      <text class="cls-6" transform="translate(44.82 6.84)"><tspan x="0" y="0">[CRITICAL ERROR — ID: 0D-91]</tspan></text>
+      <text class="cls-6" transform="translate(1.33 43.1)"><tspan x="0" y="0">[PROCESSING]</tspan></text>
+      <path d="M162.02,36.04c2.22,0,4.03,1.81,4.03,4.03s-1.81,4.03-4.03,4.03h-64.95c-2.22,0-4.03-1.81-4.03-4.03s1.81-4.03,4.03-4.03h64.95M162.02,35.29h-64.95c-2.64,0-4.78,2.14-4.78,4.78s2.14,4.78,4.78,4.78h64.95c2.64,0,4.78-2.14,4.78-4.78s-2.14-4.78-4.78-4.78h0Z"/>
+      <g>
+        <line class="cls-2" x1="86.21" y1="40.07" x2="58.98" y2="40.07"/>
+        <path d="M86.12,38.38c.93,0,1.69.76,1.69,1.69s-.76,1.69-1.69,1.69-1.69-.76-1.69-1.69.76-1.69,1.69-1.69Z"/>
+        <circle cx="59.06" cy="40.07" r="1.69"/>
+      </g>
+      <polygon class="cls-3" points="212.12 .9 187.02 .9 174.47 22.63 187.02 44.37 212.12 44.37 224.67 22.63 212.12 .9"/>
+      <line class="cls-4" x1="187.02" y1=".9" x2="212.12" y2="44.37"/>
+      <line class="cls-4" x1="212.12" y1=".9" x2="187.02" y2="44.37"/>
+      <line class="cls-4" x1="174.47" y1="22.63" x2="224.67" y2="22.63"/>
+      <circle class="cls-3" cx="199.57" cy="22.63" r="12.35"/>
+    </g>
+  </g>
+</svg>

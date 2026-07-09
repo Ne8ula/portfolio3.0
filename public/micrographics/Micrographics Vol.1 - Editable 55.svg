@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 242.08 94.04">
+  <defs>
+    <style>
+      .cls-1 {
+        font-family: RobotoMono-Bold, 'Roboto Mono';
+        font-size: 8px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+        letter-spacing: -.05em;
+      }
+
+      .cls-2 {
+        stroke-dasharray: 4.17 6.25;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: .75px;
+      }
+
+      .cls-3 {
+        stroke-dasharray: 4.04 6.05;
+      }
+
+      .cls-6 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-size: 12px;
+        font-variation-settings: 'wght' 400;
+        letter-spacing: -.05em;
+      }
+
+      .cls-4 {
+        stroke-dasharray: 3.97 5.96;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <circle class="cls-3" cx="45.35" cy="46.87" r="44.97" transform="translate(-10.68 80.23) rotate(-76.72)"/>
+        <circle class="cls-4" cx="45.35" cy="46.87" r="31.61" transform="translate(-10.68 80.23) rotate(-76.72)"/>
+        <circle class="cls-2" cx="45.35" cy="46.87" r="18.24" transform="translate(-10.68 80.23) rotate(-76.72)"/>
+      </g>
+      <circle cx="74.7" cy="12.84" r="3.22"/>
+      <circle cx="53.26" cy="77.44" r="3.22"/>
+      <circle cx="34.94" cy="31.85" r="3.22"/>
+      <text class="cls-6" transform="translate(105.85 10.27)"><tspan x="0" y="0">RUN</tspan><tspan x="0" y="14">TARGET: MONITOR NODE</tspan><tspan x="0" y="28">STATE: ACTIVE</tspan></text>
+      <text class="cls-1" transform="translate(144.87 80.48)"><tspan x="0" y="0">NETWORK LAYER — ACTIVE</tspan><tspan x="-39.61" y="11.39">THROUGHPUT: NOMINAL | LOAD: 34%</tspan></text>
+      <g>
+        <path d="M44.97,39.11c-1.86.09-3.7.84-5.12,2.26s-2.17,3.26-2.26,5.12h7.38v-7.38Z"/>
+        <path d="M45.72,54.62c1.86-.09,3.7-.84,5.12-2.26s2.17-3.26,2.26-5.12h-7.38v7.38Z"/>
+        <path d="M53.1,46.49c-.09-1.86-.84-3.7-2.26-5.12s-3.26-2.17-5.12-2.26v7.38h7.38Z"/>
+        <path d="M37.59,47.24c.09,1.86.84,3.7,2.26,5.12s3.26,2.17,5.12,2.26v-7.38h-7.38Z"/>
+        <path d="M44.97,54.62v3.5h.75v-3.5c-.25.01-.5.01-.75,0Z"/>
+        <path d="M53.1,47.24h3.5v-.75h-3.5c.01.25.01.5,0,.75Z"/>
+        <path d="M45.72,39.11v-3.5h-.75v3.5c.25-.01.5-.01.75,0Z"/>
+        <path d="M37.59,46.49h-3.5v.75h3.5c-.01-.25-.01-.5,0-.75Z"/>
+      </g>
+      <path d="M237.87,2.64c1.91,0,3.47,1.55,3.47,3.47s-1.55,3.47-3.47,3.47h-23.67c-1.91,0-3.47-1.55-3.47-3.47s1.55-3.47,3.47-3.47h23.67M237.87,1.89h-23.67c-2.33,0-4.22,1.89-4.22,4.22s1.89,4.22,4.22,4.22h23.67c2.33,0,4.22-1.89,4.22-4.22s-1.89-4.22-4.22-4.22h0Z"/>
+      <path d="M237.87,30.6c1.91,0,3.47,1.55,3.47,3.47s-1.55,3.47-3.47,3.47h-23.67c-1.91,0-3.47-1.55-3.47-3.47s1.55-3.47,3.47-3.47h23.67M237.87,29.85h-23.67c-2.33,0-4.22,1.89-4.22,4.22s1.89,4.22,4.22,4.22h23.67c2.33,0,4.22-1.89,4.22-4.22s-1.89-4.22-4.22-4.22h0Z"/>
+      <path d="M204.31,2.64c1.91,0,3.47,1.55,3.47,3.47s-1.55,3.47-3.47,3.47h-7.62c-1.91,0-3.47-1.55-3.47-3.47s1.55-3.47,3.47-3.47h7.62M204.31,1.89h-7.62c-2.33,0-4.22,1.89-4.22,4.22s1.89,4.22,4.22,4.22h7.62c2.33,0,4.22-1.89,4.22-4.22s-1.89-4.22-4.22-4.22h0Z"/>
+      <path d="M186.8,2.64c1.91,0,3.47,1.55,3.47,3.47s-1.55,3.47-3.47,3.47-3.47-1.55-3.47-3.47,1.55-3.47,3.47-3.47M186.8,1.89c-2.33,0-4.22,1.89-4.22,4.22s1.89,4.22,4.22,4.22,4.22-1.89,4.22-4.22-1.89-4.22-4.22-4.22h0Z"/>
+      <g>
+        <line class="cls-5" x1="240.56" y1="56.38" x2="107.38" y2="56.38"/>
+        <circle cx="240.48" cy="56.38" r="1.61"/>
+        <circle cx="107.46" cy="56.38" r="1.61"/>
+      </g>
+    </g>
+  </g>
+</svg>

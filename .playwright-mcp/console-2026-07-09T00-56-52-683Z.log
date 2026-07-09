@@ -1,0 +1,105 @@
+[     106ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     176ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     217ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[     357ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     357ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     357ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 1.3.1, ts: 1783558613040} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   22823ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   23125ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   23696ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   23781ms] [LOG] [Fast Refresh] done in 188ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   29118ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   29118ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[   29219ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   29219ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  131657ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  131660ms] [LOG] [Fast Refresh] done in 117ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  132446ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  132462ms] [LOG] [Fast Refresh] done in 77ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  141798ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  141809ms] [LOG] [Fast Refresh] done in 66ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  144247ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  144266ms] [LOG] [Fast Refresh] done in 53ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  149748ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  149754ms] [LOG] [Fast Refresh] done in 111ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  157484ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  157504ms] [LOG] [Fast Refresh] done in 54ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  172030ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  172055ms] [LOG] [Fast Refresh] done in 140ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  177201ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  177273ms] [LOG] [Fast Refresh] done in 160ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  199909ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  199931ms] [LOG] [Fast Refresh] done in 94ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  349283ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  349283ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  349389ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  349389ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  382276ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  382289ms] [LOG] [Fast Refresh] done in 65ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  394006ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  394019ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  408687ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  408700ms] [LOG] [Fast Refresh] done in 90ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  456747ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  456759ms] [LOG] [Fast Refresh] done in 63ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  468962ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  468973ms] [LOG] [Fast Refresh] done in 62ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  478304ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  478324ms] [LOG] [Fast Refresh] done in 58ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  485432ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  485445ms] [LOG] [Fast Refresh] done in 76ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  530397ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  530409ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  548585ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  548597ms] [LOG] [Fast Refresh] done in 65ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  563732ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  563746ms] [LOG] [Fast Refresh] done in 79ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  564564ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  564571ms] [LOG] [Fast Refresh] done in 108ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  569363ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  569378ms] [LOG] [Fast Refresh] done in 123ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  575109ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  575129ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  579237ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  579249ms] [LOG] [Fast Refresh] done in 67ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  581052ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  581063ms] [LOG] [Fast Refresh] done in 70ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  582284ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  582295ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  596020ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  596047ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  596232ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  596233ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  596233ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 1.3.1, ts: 1783559208915} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  604782ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  605201ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  611150ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  611150ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  611247ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  611247ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  639264ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  639264ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  639367ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  639367ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  678334ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  678334ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  678435ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  678435ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.74868339528548&longitude=-73.94357470387973&count=1&language=en&format=json:0
+[  825745ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  825765ms] [LOG] [Fast Refresh] done in 63ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  829847ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  829923ms] [LOG] [Fast Refresh] done in 168ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  901238ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  901240ms] [LOG] [Fast Refresh] done in 113ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  926777ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  926785ms] [LOG] [Fast Refresh] done in 111ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1530305ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1530327ms] [LOG] [Fast Refresh] done in 127ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1533392ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1533399ms] [LOG] [Fast Refresh] done in 111ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1544029ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1544041ms] [LOG] [Fast Refresh] done in 67ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1545717ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1545729ms] [LOG] [Fast Refresh] done in 63ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1547448ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1547460ms] [LOG] [Fast Refresh] done in 49ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287

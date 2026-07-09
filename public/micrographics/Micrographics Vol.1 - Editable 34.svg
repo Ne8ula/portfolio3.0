@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230.58 115.31">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: 1.57em;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5 {
+        font-family: RobotoMono-Regular, 'Roboto Mono';
+        font-variation-settings: 'wght' 400;
+      }
+
+      .cls-3, .cls-6, .cls-4 {
+        font-size: 12px;
+      }
+
+      .cls-3, .cls-7, .cls-5, .cls-8 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-7 {
+        font-family: RobotoMono-Medium, 'Roboto Mono';
+        font-variation-settings: 'wght' 500;
+        font-weight: 500;
+      }
+
+      .cls-9 {
+        letter-spacing: -.05em;
+      }
+
+      .cls-10 {
+        letter-spacing: .01em;
+      }
+
+      .cls-11 {
+        letter-spacing: .01em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <g>
+        <text class="cls-3" transform="translate(0 45.09)"><tspan x="0" y="0">3</tspan><tspan x="0" y="12.8">2</tspan><tspan x="0" y="25.6">1</tspan></text>
+        <text class="cls-3" transform="translate(223.38 45.09)"><tspan x="0" y="0">3</tspan><tspan x="0" y="12.8">2</tspan><tspan x="0" y="25.6">1</tspan></text>
+      </g>
+      <text class="cls-6" transform="translate(68.78 10.27)"><tspan class="cls-5"><tspan x="0" y="0">813 // GATEWAY</tspan></tspan><tspan class="cls-2"><tspan class="cls-8" x="-68.69" y="12.8">SYSTEM</tspan><tspan class="cls-10" x="-29.08" y="12.8"> </tspan><tspan class="cls-8" x="-21.71" y="12.8">OK</tspan><tspan class="cls-10" x="-8.51" y="12.8"> </tspan><tspan class="cls-8" x="-1.15" y="12.8">—</tspan><tspan class="cls-10" x="5.45" y="12.8"> </tspan><tspan class="cls-8" x="12.82" y="12.8">ID:</tspan><tspan class="cls-11" x="32.62" y="12.8"> </tspan><tspan class="cls-9" x="39.99" y="12.8">1A-04</tspan><tspan class="cls-10" x="73" y="12.8"> </tspan><tspan class="cls-8" x="80.36" y="12.8">—</tspan><tspan class="cls-10" x="86.96" y="12.8"> </tspan><tspan class="cls-9" x="94.33" y="12.8">TEMP:</tspan><tspan class="cls-10" x="127.33" y="12.8"> </tspan><tspan class="cls-8" x="134.7" y="12.8">23°C</tspan></tspan><tspan class="cls-7"><tspan x="0" y="25.6">VOLTAGE: 12.0V</tspan></tspan></text>
+      <text class="cls-4" transform="translate(48.98 86.46)"><tspan class="cls-8"><tspan x="0" y="0">TARGET: SUBSYSTEM-03</tspan></tspan><tspan class="cls-8" x="-48.88" y="12.8">02.44</tspan><tspan class="cls-1" x="-15.88" y="12.8"> </tspan><tspan class="cls-8" x="10.21" y="12.8">/</tspan><tspan class="cls-1" x="16.82" y="12.8"> </tspan><tspan class="cls-8" x="42.91" y="12.8">118.09</tspan><tspan class="cls-1" x="82.51" y="12.8"> </tspan><tspan class="cls-8" x="108.61" y="12.8">/</tspan><tspan class="cls-1" x="115.21" y="12.8"> </tspan><tspan class="cls-8" x="141.3" y="12.8">352.01</tspan><tspan class="cls-8"><tspan x="39.61" y="25.6">UNIT–E9G</tspan></tspan></text>
+      <g>
+        <g id="_2.Menu" data-name=" 2.Menu">
+          <path d="M115.27,65.1c-4.65,0-8.42-3.77-8.42-8.42s3.77-8.42,8.42-8.42,8.42,3.77,8.42,8.42c0,4.65-3.77,8.42-8.42,8.42ZM115.27,49.66c-3.88,0-7.02,3.14-7.02,7.02s3.14,7.02,7.02,7.02,7.02-3.14,7.02-7.02c0-3.87-3.14-7.01-7.02-7.02Z"/>
+          <rect x="112.46" y="53.17" width="5.61" height="1.4"/>
+          <rect x="112.46" y="55.97" width="5.61" height="1.4"/>
+          <rect x="112.46" y="58.78" width="5.61" height="1.4"/>
+        </g>
+        <g id="_54.Code" data-name=" 54.Code">
+          <path d="M95.4,65.1c-4.65,0-8.42-3.77-8.42-8.42s3.77-8.42,8.42-8.42,8.42,3.77,8.42,8.42c0,4.65-3.77,8.42-8.42,8.42ZM95.4,49.66c-3.88,0-7.02,3.14-7.02,7.02s3.14,7.02,7.02,7.02,7.02-3.14,7.02-7.02c0-3.87-3.14-7.01-7.02-7.02Z"/>
+          <polygon points="93.5 59.98 90.2 56.68 93.5 53.37 94.49 54.37 92.18 56.68 94.49 58.99 93.5 59.98"/>
+          <polygon points="97.3 59.98 96.31 58.99 98.62 56.68 96.31 54.37 97.3 53.37 100.6 56.68 97.3 59.98"/>
+        </g>
+        <g id="_5.Cancel" data-name=" 5.Cancel">
+          <path d="M135.18,65.1c-4.65,0-8.42-3.77-8.42-8.42s3.77-8.42,8.42-8.42,8.42,3.77,8.42,8.42c0,4.65-3.77,8.42-8.42,8.42ZM135.18,49.66c-3.88,0-7.02,3.14-7.02,7.02s3.14,7.02,7.02,7.02,7.02-3.14,7.02-7.02c0-3.87-3.14-7.01-7.02-7.02Z"/>
+          <rect x="134.48" y="52.71" width="1.4" height="7.94" transform="translate(-.48 112.18) rotate(-45)"/>
+          <rect x="131.21" y="55.97" width="7.94" height="1.4" transform="translate(-.48 112.18) rotate(-45)"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
