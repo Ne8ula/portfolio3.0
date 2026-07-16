@@ -10,7 +10,8 @@ export function ThemeToggle({ theme, onToggle }) {
       onClick={onToggle}
       aria-label={dark ? 'switch to light mode' : 'switch to dark mode'}
       style={{
-        position: 'fixed', right: 32, bottom: 120, zIndex: 60,
+        // bottom clears the ControlsLegend column (~160px tall incl. band padding)
+        position: 'fixed', right: 32, bottom: 178, zIndex: 60,
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '9px 14px 9px 12px',
         background: dark ? 'rgba(20,18,24,0.55)' : 'rgba(232,228,220,0.18)',

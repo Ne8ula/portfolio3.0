@@ -12,6 +12,7 @@ import { buildCoffee } from "./coffee"
 import { buildGlassMac } from "./glass-mac"
 import { buildDecorations } from "./decorations"
 import { buildTeaSet } from "./tea-set"
+import { buildIncense } from "./incense"
 import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
 
@@ -887,12 +888,15 @@ function GlobeCanvas({ yawRef, pitchRef }){
     try { decorations = buildDecorations(scene, tableGroup, camera, renderer); } catch (e) { /* decorations optional */ }
     let teaSet = null;
     try { teaSet = buildTeaSet(scene, tableGroup); } catch (e) { /* tea set optional */ }
+    let incense = null;
+    try { incense = buildIncense(scene, tableGroup); } catch (e) { /* incense optional */ }
     window.__cockpitTick = (dt, t) => {
       if (crate && crate.tick) crate.tick(dt, t);
       if (turntable && turntable.tick) turntable.tick(dt, t);
       if (coffeeStation && coffeeStation.tick) coffeeStation.tick(dt, t);
       if (decorations && decorations.tick) decorations.tick(dt, t);
       if (teaSet && teaSet.tick) teaSet.tick(dt, t);
+      if (incense && incense.tick) incense.tick(dt, t);
     };
 
     // Register turntable + coffee meshes with the hover raycaster (the
@@ -1104,6 +1108,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       if (coffeeStation && coffeeStation.dispose) coffeeStation.dispose();
       if (decorations && decorations.dispose) decorations.dispose();
       if (teaSet && teaSet.dispose) teaSet.dispose();
+      if (incense && incense.dispose) incense.dispose();
       window.removeEventListener('cockpit-crate-hover', onCrateHoverGlow);
       edgeGlow.dispose();
       window.__getCockpitAnchors = null;

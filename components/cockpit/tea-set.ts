@@ -12,46 +12,13 @@
 //     fitted lid, JADE torus-knot lid knob, jade loop handle, short spout
 //   • two HOLLOW porcelain cups — open bowls with a visible rim and a
 //     glazed inner cavity over fine-grained matte outer walls
-//   • tripod incense censer OFF the tray (desk-center side, per the
-//     reference): porcelain donut body on three legs, jade satin bowl,
-//     warm-brown incense stick
-// Static and non-interactive by design — the one live element is the incense:
-// a thin ASCII glyph plume (the coffee mug's smoke language, slimmed down)
-// drifts continuously off the stick, and the ember tip breathes. Palette
-// stays inside the system: porcelain + obsidian + jade accents on LIT
-// materials; the ember is a desaturated warm cream (hot-ash white, never
-// red/orange).
+// Static and non-interactive by design. The incense burner that used to
+// live at the tray's side is its own artifact now — see incense.ts.
+// Palette stays inside the system: porcelain + obsidian + jade accents on
+// LIT materials.
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { PALETTE } from "./materials"
-
-// Thin ASCII smoke plume — incense-weight: fewer glyphs and a narrower wind
-// than the coffee mug's steam, so it reads as a single lazy ribbon.
-function makeIncenseTexture(){
-  const W = 110, H = 420;
-  const c = document.createElement('canvas');
-  c.width = W; c.height = H;
-  const ctx = c.getContext('2d');
-  const glyphs = ['~', '·', ';', '`', ':', "'", '^'];
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const N = 60;
-  for (let i = 0; i < N; i++){
-    const t = i / (N - 1);                                    // 0 bottom → 1 top
-    const y = H - 14 - t * (H - 28);
-    const lane = i % 2;                                       // 2 interleaved streamlines
-    const wind = Math.sin(t * Math.PI * 3.1 + lane * 2.4) * (5 + t * 22);
-    const x = W / 2 + wind + (Math.random() - 0.5) * 9;
-    const size = Math.max(9, 21 - t * 10 + (Math.random() * 4 - 2));
-    ctx.font = `600 ${size}px "JetBrains Mono", monospace`;
-    ctx.globalAlpha = Math.max(0.05, (1 - t) * 0.85) * (0.7 + Math.random() * 0.3);
-    ctx.fillStyle = Math.random() < 0.12 ? '#4B6E4F' : '#7A9A7E';
-    ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], x, y);
-  }
-  const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 4;
-  return tex;
-}
 
 // Fine speckle noise — bump/roughness map so the porcelain reads subtly
 // textured instead of flat plastic (same trick as the coffee cream).
@@ -112,10 +79,7 @@ export function buildTeaSet(scene, tableGroup){
   // ── Materials — the glass-mac satin family, zero transmission ──
   const speckle     = makeSpeckleTexture(5);
   const speckleFine = makeSpeckleTexture(9);
-  // censer: fully matte grained porcelain
-  const porcelain = new THREE.MeshStandardMaterial({ color: 0xE9E4D7, roughness: 0.72, metalness: 0.02,
-    roughnessMap: speckle, bumpMap: speckle, bumpScale: 0.01 });
-  // teapot: same cream, stronger frost grain, plus a whisper of glaze sheen
+  // teapot: cream, stronger frost grain, plus a whisper of glaze sheen
   const potPorcelain = new THREE.MeshPhysicalMaterial({ color: 0xE9E4D7, roughness: 0.58, metalness: 0.02,
     roughnessMap: speckle, bumpMap: speckle, bumpScale: 0.016, clearcoat: 0.22, clearcoatRoughness: 0.5 });
   // cups: finer grain outside, glazed inside (separate inner shell below)
@@ -124,14 +88,11 @@ export function buildTeaSet(scene, tableGroup){
   const cupGlaze = new THREE.MeshPhysicalMaterial({ color: 0xF2EEE4, roughness: 0.32, metalness: 0,
     clearcoat: 0.55, clearcoatRoughness: 0.25, side: THREE.DoubleSide });
   const jade      = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.55, metalness: 0.05 });
-  const jadeBowl  = new THREE.MeshPhysicalMaterial({ color: PALETTE.jade, roughness: 0.42, metalness: 0,
-    clearcoat: 0.3, clearcoatRoughness: 0.4 });
   const woodTex   = makeWoodTexture();
   const wenge     = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.62, metalness: 0,
     bumpMap: woodTex, bumpScale: 0.01, envMapIntensity: 0.55 });
   const footMat   = new THREE.MeshStandardMaterial({ color: 0x151312, roughness: 0.9 });
   const inkWell   = new THREE.MeshStandardMaterial({ color: 0x1C211B, roughness: 0.7 });
-  const stickMat  = new THREE.MeshStandardMaterial({ color: 0x6B4F2E, roughness: 0.9 });
   // light-jade wireframe accents — hover-glow color at rest, on every rim
   const edgeMat   = new THREE.LineBasicMaterial({ color: PALETTE.jadeLt, transparent: true, opacity: 0.35, depthWrite: false });
 
@@ -259,67 +220,6 @@ export function buildTeaSet(scene, tableGroup){
     addRing(group, 0.190, TRAY_TOP + 0.002 + 0.176, x, z);
   });
 
-  // ── Incense censer — tripod, OFF the tray toward desk center ───
-  // (+x local, matching the reference's tray-right placement; clears the
-  // gachapon/cards spots, which are on their way out anyway)
-  const censer = new THREE.Group();
-  censer.position.set(1.5, 0, 0.15);
-  group.add(censer);
-  // three splayed porcelain legs
-  for (let i = 0; i < 3; i++){
-    const a = (i / 3) * Math.PI * 2 + 0.5;
-    const leg = mesh(censer, new THREE.CapsuleGeometry(0.048, 0.16, 4, 10), porcelain,
-      Math.cos(a) * 0.145, 0.125, Math.sin(a) * 0.145);
-    leg.rotation.z = Math.cos(a) * 0.14;
-    leg.rotation.x = -Math.sin(a) * 0.14;
-  }
-  // puffy donut body (flattened torus — its top opening seats the bowl)
-  const bun = mesh(censer, new THREE.TorusGeometry(0.150, 0.105, 12, 30), porcelain, 0, 0.295, 0);
-  bun.rotation.x = Math.PI / 2;
-  bun.scale.z = 0.62;                       // squash along the torus axis (world y)
-  // collar rising out of the donut hole
-  mesh(censer, new THREE.CylinderGeometry(0.112, 0.126, 0.055, 24), porcelain, 0, 0.360, 0);
-  // jade satin bowl + dark ash well
-  mesh(censer, new THREE.CylinderGeometry(0.134, 0.104, 0.110, 24), jadeBowl, 0, 0.435, 0);
-  mesh(censer, new THREE.CylinderGeometry(0.096, 0.096, 0.014, 20), inkWell, 0, 0.478, 0);
-  addRing(censer, 0.134, 0.492);
-  // incense stick — thin, near-vertical, planted in the well
-  const stick = mesh(censer, new THREE.CylinderGeometry(0.009, 0.009, 0.95, 8), stickMat, 0.015, 0.93, 0.01);
-  stick.rotation.z = 0.035;
-  // ember tip — desaturated hot-ash cream (unlit dot, deliberately tiny)
-  const emberMat = new THREE.MeshBasicMaterial({ color: 0xE6C9A3, transparent: true, opacity: 0.9 });
-  const ember = mesh(censer, new THREE.SphereGeometry(0.015, 8, 8), emberMat, -0.018, 1.405, 0.01);
-  ember.userData.noGlow = true;
-
-  // ── ASCII incense plume — three phase-offset sprite copies ─────
-  const TIP = new THREE.Vector3();          // stick tip, world (refreshed per frame)
-  const smokeTex = makeIncenseTexture();
-  const smokes = [0, 0.34, 0.68].map(phase => {
-    const s = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: smokeTex, transparent: true, opacity: 0, depthWrite: false, color: 0x7A9A7E,
-    }));
-    s.scale.set(0.34, 1.35, 1);
-    s.userData.phase = phase;
-    s.userData.noGlow = true;
-    scene.add(s);                           // scene-level: sprites must not inherit the set's yaw
-    return s;
-  });
-
-  // ── Per-frame — smoke drift + ember breathing (always on) ──────
-  group.tick = function(dt, t){
-    ember.getWorldPosition(TIP);
-    smokes.forEach(s => {
-      const p = (t * 0.10 + s.userData.phase) % 1;
-      s.position.set(
-        TIP.x + Math.sin((t + s.userData.phase * 8) * 0.9) * 0.05,
-        TIP.y + 0.62 + p * 1.05,
-        TIP.z
-      );
-      s.material.opacity = Math.min(1, p * 5) * (1 - p) * 0.8;
-    });
-    emberMat.opacity = 0.72 + Math.sin(t * 6.3) * 0.12 + Math.sin(t * 17.7) * 0.08;
-  };
-
   // ── Live dial-in bridge + cleanup ──────────────────────────────
   window.__cockpitTeaSet = {
     set({ x, y, z, ry, s } = {}){
@@ -329,13 +229,8 @@ export function buildTeaSet(scene, tableGroup){
       if (typeof ry === 'number') group.rotation.y = ry;
       if (typeof s === 'number') group.scale.setScalar(s);
     },
-    setCenser({ x, z } = {}){
-      if (typeof x === 'number') censer.position.x = x;
-      if (typeof z === 'number') censer.position.z = z;
-    },
   };
   group.dispose = function(){
-    smokes.forEach(s => scene.remove(s));
     window.__cockpitTeaSet = null;
   };
 

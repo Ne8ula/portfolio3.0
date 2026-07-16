@@ -1,0 +1,87 @@
+[      90ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     173ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     214ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[     361ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     361ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[     361ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 1.3.1, ts: 1784226231935} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   29618ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   30051ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[   30845ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500067656686&longitude=-73.94341435093976&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   30845ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500067656686&longitude=-73.94341435093976&count=1&language=en&format=json:0
+[   30944ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500067656686&longitude=-73.94341435093976&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[   30944ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500067656686&longitude=-73.94341435093976&count=1&language=en&format=json:0
+[  164760ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  164761ms] [LOG] [Fast Refresh] done in 110ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  289407ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  289444ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  289606ms] [LOG] %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  289607ms] [LOG] %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {route: /, path: /} @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  289607ms] [LOG] %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {o: http://localhost:3000/, sv: 0.1.3, sdkn: @vercel/analytics/next, sdkv: 1.3.1, ts: 1784226521181} /_vercel/insights/view @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  297018ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  297372ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  302896ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500883847065&longitude=-73.94336708649278&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  302897ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500883847065&longitude=-73.94336708649278&count=1&language=en&format=json:0
+[  303001ms] [ERROR] Access to fetch at 'https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500883847065&longitude=-73.94336708649278&count=1&language=en&format=json' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:3000/:0
+[  303001ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://geocoding-api.open-meteo.com/v1/reverse?latitude=40.748500883847065&longitude=-73.94336708649278&count=1&language=en&format=json:0
+[  620963ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  621023ms] [LOG] [Fast Refresh] done in 46ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  719950ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  719971ms] [LOG] [Fast Refresh] done in 71ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  721715ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  721729ms] [LOG] [Fast Refresh] done in 81ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  724357ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  724374ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  737225ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  737245ms] [LOG] [Fast Refresh] done in 77ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  815800ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[  815814ms] [LOG] [Fast Refresh] done in 44ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1569907ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 1569926ms] [LOG] [Fast Refresh] done in 74ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4152420ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4152444ms] [LOG] [Fast Refresh] done in 74ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4162040ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4162059ms] [LOG] [Fast Refresh] done in 55ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4171052ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4171074ms] [LOG] [Fast Refresh] done in 58ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4174845ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4175183ms] [LOG] [Fast Refresh] done in 450ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4180880ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4181785ms] [LOG] [Fast Refresh] done in 1019ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4184158ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 4185079ms] [LOG] [Fast Refresh] done in 1033ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 5702578ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 5702598ms] [LOG] [Fast Refresh] done in 131ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8300942ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8301042ms] [LOG] [Fast Refresh] done in 190ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8310144ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8310162ms] [LOG] [Fast Refresh] done in 55ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8318916ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8318943ms] [LOG] [Fast Refresh] done in 52ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8367372ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8367393ms] [LOG] [Fast Refresh] done in 53ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8376870ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8376892ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8386304ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8386326ms] [LOG] [Fast Refresh] done in 54ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8396549ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8396569ms] [LOG] [Fast Refresh] done in 84ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8408218ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8408237ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8422105ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8422126ms] [LOG] [Fast Refresh] done in 57ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8432614ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8432635ms] [LOG] [Fast Refresh] done in 57ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8443002ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8443064ms] [LOG] [Fast Refresh] done in 45ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8480661ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8480684ms] [LOG] [Fast Refresh] done in 61ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8490205ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8491592ms] [LOG] [Fast Refresh] done in 1499ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8499406ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8499429ms] [LOG] [Fast Refresh] done in 58ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8508859ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8508879ms] [LOG] [Fast Refresh] done in 109ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8510420ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8510442ms] [LOG] [Fast Refresh] done in 59ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8804713ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287
+[ 8804768ms] [LOG] [Fast Refresh] done in 165ms @ http://localhost:3000/_next/static/chunks/c2d30_next_dist_ed40e8df._.js:2287

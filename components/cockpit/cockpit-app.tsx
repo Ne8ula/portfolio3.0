@@ -47,11 +47,13 @@ export function CockpitApp() {
     catch { return 'dark'; }
   });
 
-  // Apply theme to <html data-theme> + broadcast to the 3D scene, but only
-  // once the cockpit has mounted — boot/warp always render in the dark palette.
+  // Apply theme to <html data-theme> + broadcast to the 3D scene once the
+  // cockpit has mounted — which now happens during the warp, so the room seen
+  // through the opening airlock doors already wears the final theme. Boot
+  // always renders in the dark palette.
   useEffect(() => {
     try { localStorage.setItem('cockpit-theme', theme); } catch {}
-    if (phase === 'cockpit') {
+    if (phase === 'cockpit' || phase === 'warp') {
       document.documentElement.setAttribute('data-theme', theme);
       window.__cockpitTheme = theme;
       window.dispatchEvent(new CustomEvent('cockpit-theme', { detail: { theme } }));
@@ -67,7 +69,7 @@ export function CockpitApp() {
   // repositioned the PC after the first apply — re-asserting for a few
   // seconds guarantees the dialed-in layout wins.
   useEffect(() => {
-    if (phase !== 'cockpit') return;
+    if (phase !== 'cockpit' && phase !== 'warp') return;
     let cancelled = false;
     let frames = 0;
     const t = TWEAK_DEFAULTS;
@@ -108,7 +110,10 @@ export function CockpitApp() {
       {phase === 'warp' && (
         <WarpTransition onComplete={() => { setPhase('cockpit'); setInteractive(true); }} />
       )}
-      {phase === 'cockpit' && (
+      {/* The cockpit mounts UNDER the warp overlay so the real desk shows
+          through the opening airlock doors (the warp canvas punches a
+          transparent hole in the doorway as the panels part). */}
+      {(phase === 'cockpit' || phase === 'warp') && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
           <Cockpit interactive={interactive} />
         </div>

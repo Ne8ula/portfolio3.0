@@ -191,15 +191,8 @@ function Cockpit({ interactive = true }){
               See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
             </div>
           </div>
-          {/* Meta */}
-          <div style={{textAlign:'right'}}>
-            <div className="micro" style={{color:'var(--cream-deep)',marginBottom:4}}>release</div>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:11,color:'var(--cream-deep)',lineHeight:1.6}}>
-              Jan 25, 2059 — 9AM PT<br/>
-              v.2025.04 · sec_encrypted<br/>
-              powered by <span style={{color:'var(--jade)',fontWeight:700}}>333 lab</span>
-            </div>
-          </div>
+          {/* Controls legend — wireframe glyph explanation of the inputs */}
+          <ControlsLegend/>
         </div>
       </div>
 
@@ -221,6 +214,92 @@ function Stat({label, value}){
     <div>
       <div className="micro" style={{color:'var(--cream-deep)',marginBottom:2}}>{label}</div>
       <div style={{fontFamily:'var(--font-serif)',fontSize:26,fontWeight:400,color:'var(--cream-warm)',lineHeight:1,letterSpacing:'-.01em'}}>{value}</div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ControlsLegend — bottom-right column beneath the theme toggle:
+// wireframe glyphs (same language as the SVG cursor + hover
+// brackets) explaining the four inputs. Glyphs animate gently:
+// the look-mouse sways, the click-button + hover-brackets pulse
+// (softPulse), the ESC keycap presses itself every few seconds.
+// ─────────────────────────────────────────────────────────────
+function ControlsLegend(){
+  const INK  = 'var(--cream-deep)';
+  const JADE = 'var(--jade-light)'; // theme-aware: pale jade on dark, deep jade on cream
+
+  // wireframe mouse shell — shared by the look + click glyphs.
+  // seam lines split the two buttons, like the cursor's outline style.
+  const mouseShell = (
+    <>
+      <rect x="9.6" y="1.6" width="12.8" height="19.8" rx="6.4" fill="rgba(30,28,26,0.35)" stroke={INK} strokeWidth="1.2"/>
+      <line x1="16" y1="1.6" x2="16" y2="9.6" stroke={INK} strokeWidth="1"/>
+      <line x1="9.6" y1="9.6" x2="22.4" y2="9.6" stroke={INK} strokeWidth="1"/>
+    </>
+  );
+
+  const glyphs = {
+    look: (
+      <svg width="32" height="23" viewBox="0 0 32 23" aria-hidden>
+        <polyline points="5,7.5 2,11.5 5,15.5" fill="none" stroke={JADE} strokeWidth="1.2"/>
+        <polyline points="27,7.5 30,11.5 27,15.5" fill="none" stroke={JADE} strokeWidth="1.2"/>
+        <g style={{animation:'ctrlSway 2.8s ease-in-out infinite'}}>{mouseShell}</g>
+      </svg>
+    ),
+    hover: (
+      <svg width="32" height="23" viewBox="0 0 32 23" aria-hidden>
+        {/* pulsing jade corner brackets — echoes the real hover highlight */}
+        <g fill="none" stroke={JADE} strokeWidth="1.2" style={{animation:'softPulse 1.6s ease-in-out infinite'}}>
+          <path d="M4 6 V1.5 H8.5"/><path d="M23.5 1.5 H28 V6"/>
+          <path d="M28 17 V21.5 H23.5"/><path d="M8.5 21.5 H4 V17"/>
+        </g>
+        {/* mini wire-arrow cursor (cursors.ts shape, scaled) */}
+        <path d="M12.5 4.5 L12.5 16 L15.7 13 L17.7 17.6 L19.6 16.8 L17.6 12.3 L21.9 12.3 Z"
+          fill="rgba(30,28,26,0.4)" stroke="var(--cream-warm)" strokeWidth="1.1" strokeLinejoin="miter"/>
+      </svg>
+    ),
+    click: (
+      <svg width="32" height="23" viewBox="0 0 32 23" aria-hidden>
+        {mouseShell}
+        {/* left button, filled jade + pulsing */}
+        <path d="M15.3 2.4 C12.2 2.6 10.4 5.2 10.4 8.2 L10.4 8.9 L15.3 8.9 Z"
+          fill={JADE} style={{animation:'softPulse 1.6s ease-in-out infinite'}}/>
+      </svg>
+    ),
+    esc: (
+      <svg width="32" height="23" viewBox="0 0 32 23" aria-hidden>
+        {/* keycap base (depth edge) + self-pressing top cap */}
+        <rect x="7.5" y="4.5" width="20" height="16" fill="none" stroke={INK} strokeWidth="1" opacity=".4"/>
+        <g style={{animation:'ctrlKeyPress 3.6s linear infinite'}}>
+          <rect x="5.5" y="2" width="20" height="16" fill="rgba(30,28,26,0.35)" stroke={INK} strokeWidth="1.2"/>
+          <text x="15.5" y="12.6" textAnchor="middle" fontFamily='"JetBrains Mono", monospace'
+            fontSize="6.2" letterSpacing=".1em" fill="var(--cream-warm)">ESC</text>
+        </g>
+      </svg>
+    ),
+  };
+
+  const ROWS = [
+    { id:'look',  glyph:glyphs.look,  label:'move · look'     },
+    { id:'hover', glyph:glyphs.hover, label:'hover · reveal'  },
+    { id:'click', glyph:glyphs.click, label:'click · enter'   },
+    { id:'esc',   glyph:glyphs.esc,   label:'esc · return'    },
+  ];
+
+  // single column — the theme toggle sits above (its `bottom` clears this stack)
+  return (
+    <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end'}}>
+      <div className="micro" style={{color:'var(--cream-deep)',marginBottom:8}}>controls</div>
+      <div style={{display:'flex', flexDirection:'column', gap:7}}>
+        {ROWS.map(r => (
+          <div key={r.id} style={{display:'flex', justifyContent:'flex-end', alignItems:'center', gap:12}}>
+            <span style={{fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
+              textTransform:'uppercase', color:'var(--cream-deep)', lineHeight:1}}>{r.label}</span>
+            <span style={{width:34, display:'flex', justifyContent:'center'}}>{r.glyph}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
