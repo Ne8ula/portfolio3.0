@@ -1,0 +1,4 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e12]: — entering the room —
+  - button "Open Next.js Dev Tools" [ref=f1e7] [cursor=pointer]
+  - alert [ref=f1e11]

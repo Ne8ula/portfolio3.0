@@ -1,10 +1,10 @@
 // @ts-nocheck
 // Turntable — "A.X / STUDIO" deck rebuilt from the multi-angle product
 // renders: a low warm off-white molded base on small dark feet, a boxy
-// lightly-frosted acrylic dust cover with rounded corners, a green-glass
-// platter under a taupe grooved mat with a pale sage label, a delicate
-// silver tonearm with a black cartridge, a recessed pitch slider with a
-// sage knob, and tiny sage/graphite micrographics (canvas-drawn control
+// low-profile lightly-frosted acrylic dust cover with rounded corners, a
+// green-glass platter under a taupe grooved mat with a deep-jade label, a
+// delicate silver tonearm with a black cartridge, a recessed pitch slider
+// with a sage knob, and tiny sage/graphite micrographics (canvas-drawn control
 // clusters + one sheet from /public/micrographics). Decorative — only the
 // platter spins; no interactions yet.
 import * as THREE from "three"
@@ -38,11 +38,11 @@ export function buildTurntable(scene, tableGroup){
   // Green platter glass reads as tinted glass but stays OPAQUE — a
   // transmissive platter would vanish when seen through the transmissive
   // dust cover (transmissive materials hide from each other's buffers).
-  const greenGlass = new THREE.MeshPhysicalMaterial({ color: 0xA9BFA5, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.12 });
+  const greenGlass = new THREE.MeshPhysicalMaterial({ color: 0x94AE90, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.12 });
   // Jade dash accents — LIT material; an unlit basic reads as a glowing
   // light-bar over the dim scene instead of printed jade ink.
   const sageSolid  = new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.6 });
-  const sageKnob   = new THREE.MeshStandardMaterial({ color: 0x8FA98F, roughness: 0.5 });
+  const sageKnob   = new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.5 });
 
   // ── Base ──────────────────────────────────────────────────────
   const BASE_W = 1.9, BASE_D = 1.45, BASE_H = 0.22;
@@ -94,8 +94,9 @@ export function buildTurntable(scene, tableGroup){
   mat.position.y = 0.045;
   spin.add(mat);
 
+  // deep-jade record label — the platter's chromatic focal point
   const label = new THREE.Mesh(new THREE.CylinderGeometry(0.155, 0.155, 0.01, 40),
-    new THREE.MeshStandardMaterial({ color: 0xB3C4AF, roughness: 0.8 }));
+    new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.8 }));
   label.position.y = 0.062;
   spin.add(label);
 
@@ -151,7 +152,7 @@ export function buildTurntable(scene, tableGroup){
   const powerRing = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.008, 24), recessMat);
   powerRing.position.set(-0.75, topY + 0.002, 0.52);
   group.add(powerRing);
-  const powerBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.01, 24), baseMat);
+  const powerBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.01, 24), sageSolid);
   powerBtn.position.set(-0.75, topY + 0.007, 0.52);
   group.add(powerBtn);
 
@@ -257,7 +258,9 @@ export function buildTurntable(scene, tableGroup){
     ior: 1.25, metalness: 0, envMapIntensity: 0.22,
     clearcoat: 0.15, clearcoatRoughness: 0.15, specularIntensity: 0.35,
   });
-  const COVER_W = BASE_W - 0.06, COVER_D = BASE_D - 0.06, COVER_H = 0.52, CT = 0.015;
+  // COVER_H sits low — just clearing the tonearm collar (~0.39 above deck
+  // origin) instead of the old tall 0.52 box.
+  const COVER_W = BASE_W - 0.06, COVER_D = BASE_D - 0.06, COVER_H = 0.36, CT = 0.015;
   const coverY0 = topY + 0.004;              // floats a hair above the deck — coplanar = flicker
   const wallH = COVER_H - CT + 0.004;        // walls sink slightly into the lid (no coplanar seam)
   const coverPanel = (w, h, d, x, y, z) => {

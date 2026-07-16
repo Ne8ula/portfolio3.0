@@ -14,18 +14,21 @@ import { Cockpit } from "./cockpit-hud"
 const TWEAK_DEFAULTS = {
   cubeX: -4, cubeY: 1.62, cubeZ: 1.3,
   // Desk layout: crate LEFT · turntable CENTER · PC (+ keyboard) RIGHT.
-  // Items are scaled up and pulled toward the front edge so the desk
-  // reads tightly packed from the seated viewpoint.
-  pcX: 4.7, pcY: 0.18, pcZ: 0.4, pcScale: 1.5, pcYaw: -0.5, pcPitch: 0, pcRoll: 0,
+  // HIERARCHY: the vinyl pair (turntable + crate) are the heroes — scaled
+  // up and center-stage; the PC is a strong secondary pulled right and
+  // slightly smaller; coffee stays ambient on the far-left wing; the
+  // hobby decorations (decorations.ts) sit well below all four in scale.
+  pcX: 5.2, pcY: 0.18, pcZ: 0.0, pcScale: 1.35, pcYaw: -0.55, pcPitch: 0, pcRoll: 0,
   kbX: 0, kbY: 0, kbZ: 0,
   // Seated first-person eye: desk raised toward the camera so the viewer
   // reads as sitting at the desk, not hovering above it.
   fpvHeight: -2.4, fpvDistance: -0.6,
-  // Vinyl crate — far left, records facing the viewer, angled slightly
-  // toward the desk center, pulled forward of the turntable (z 0.8).
-  vinylX: -3.2, vinylY: 0.18, vinylZ: 1.15, vinylRX: 0, vinylRY: 0.35, vinylRZ: 0, vinylS: 1.45,
-  // Turntable — center, nudged toward the viewer, facing dead-on.
-  ttX: 0, ttY: 0.18, ttZ: 0.8, ttRY: 0, ttS: 1.4,
+  // Vinyl crate — hero, left of center, records facing the viewer, angled
+  // slightly toward the desk center. Moved out to -3.7 so the larger
+  // scale can't reach the turntable or the coffee mug.
+  vinylX: -3.7, vinylY: 0.18, vinylZ: 1.15, vinylRX: 0, vinylRY: 0.35, vinylRZ: 0, vinylS: 1.7,
+  // Turntable — hero, center stage, nudged toward the viewer, dead-on.
+  ttX: 0.2, ttY: 0.18, ttZ: 0.9, ttRY: 0, ttS: 1.75,
 }
 
 export function CockpitApp() {

@@ -9,9 +9,10 @@
 // rounded frosted collar onto a cylindrical receiving cup. The cup wears a
 // matte cream band over a frosted lower band (the brewed pool shows through
 // it) and carries a small cream V-spout MOLDED into its rim — the spout
-// belongs to the LOWER CUP, not the cone, and it faces the mug (+x). Both
-// D-shaped frosted tube handles sit on the OPPOSITE side (−x), so nothing
-// on the stack swings toward the mug during the pour. Jade accents: a
+// belongs to the LOWER CUP, not the cone, and it faces the mug (+x). The
+// cup's D-shaped frosted tube handle sits on the OPPOSITE side (−x), so
+// nothing on the stack swings toward the mug during the pour (the cone is
+// handle-free). Jade accents: a
 // narrow vertical marker on the cone, a small square near the collar.
 // Frost encloses opaque content (paper / grounds / pool) the same way the
 // crate walls blur the records — transmission, not alpha (see CLAUDE.md).
@@ -162,10 +163,14 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
     return g;
   };
 
-  // ── Placement: FAR left — outside the default cockpit framing.
-  // Compact pairing: dripper just LEFT of the mug, both near the desk front.
-  const REST = new THREE.Vector3(-7.8, 0.18, 1.9);    // dripper stack
-  const MUG  = new THREE.Vector3(-5.9, 0.18, 2.1);    // mug — right of the dripper, toward the crate
+  // ── Placement: left wing, just outside the default cockpit framing.
+  // Compact pairing: dripper just LEFT of the mug, both pulled toward the
+  // viewer so the station sits on the same arc as crate/turntable/PC,
+  // inboard of the table corner (left edge x −11, front edge z 4.5).
+  // Shifted left of the old spot so the hero-scaled crate (s 1.7 at
+  // x −3.7 — front-left corner lands near x −5.1, z 2.7) clears the mug.
+  const REST = new THREE.Vector3(-7.2, 0.18, 2.7);    // dripper stack
+  const MUG  = new THREE.Vector3(-5.6, 0.18, 3.3);    // mug — right of the dripper, toward the crate
 
   // ── Dripper — station → tilt pivot (at the CUP'S SPOUT) → body ─
   // The tilt group's origin sits at the receiving cup's spout tip, so
@@ -233,6 +238,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   const pool = new THREE.Mesh(poolGeo, coffee);
   pool.position.y = 0.028;
   pool.scale.y = POOL_H;
+  pool.userData.noGlow = true;   // animated liquid — excluded from the edge-glow trace
   body.add(pool);
 
   // ── Collar — rounded frosted platform between cup and cone ────
@@ -289,12 +295,6 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
     mark.lookAt(mark.position.x * 2, my - r * 0.647, mark.position.z * 2);   // lie along the flaring wall
   }
   coneG.add(mark);
-  // cone handle — D-loop hugging the slanted wall, −x side
-  addHandle([
-    [-0.190, 0.205], [-0.420, 0.170], [-0.520, 0.225],
-    [-0.545, 0.360], [-0.500, 0.440], [-0.355, 0.462],
-  ], coneG);
-
   // idle brew-drip — a drop falling from the cone's neck into the cup pool
   const idleDrop = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), coffee);
   idleDrop.visible = false;
@@ -328,6 +328,14 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   ].map(([x, y]) => new THREE.Vector2(x, y));
   addGlass(new THREE.LatheGeometry(mugProfile, 48), mug, 0, frostG);
 
+  // opaque JADE foot band around the frosted bottom — the mug's chromatic
+  // anchor (LIT material, per the printed-ink rule). Slightly proud of the
+  // wall (r 0.300 → 0.303+) and lifted 2mm so nothing sits coplanar.
+  const footMat = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6, metalness: 0 });
+  const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.303, 0.309, 0.088, 48), footMat);
+  foot.position.y = 0.046;
+  mug.add(foot);
+
   // handle — rounded-rectangular tube on +x, joints buried in the wall
   const handlePts = [
     [0.255, 0.175], [0.420, 0.160], [0.510, 0.215], [0.535, 0.300],
@@ -353,6 +361,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   const liquid = new THREE.Mesh(liquidGeo, new THREE.MeshLambertMaterial({ color: 0x100906 }));
   liquid.position.y = 0.09;
   liquid.scale.y = 0.0001;
+  liquid.userData.noGlow = true;   // fill-animated — excluded from the edge-glow trace
   mug.add(liquid);
   const crema = new THREE.Mesh(
     new THREE.RingGeometry(0.176, 0.220, 32),
@@ -360,6 +369,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   );
   crema.rotation.x = -Math.PI / 2;
   crema.visible = false;
+  crema.userData.noGlow = true;   // rides the fill line — excluded from the edge-glow trace
   mug.add(crema);
   const LIQUID_MAX = 0.30;   // full pour surface ≈ ⅔ of the mug height
 
@@ -387,11 +397,13 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   streamGeo.translate(0, 0.5, 0);
   const stream = new THREE.Mesh(streamGeo, coffee);
   stream.visible = false;
+  stream.userData.noGlow = true;
   group.add(stream);
   const drops = [0, 1, 2].map(i => {
     const d = new THREE.Mesh(new THREE.SphereGeometry(0.024, 10, 10), coffee);
     d.visible = false;
     d.userData.delay = i * 0.16;
+    d.userData.noGlow = true;
     group.add(d);
     return d;
   });
@@ -590,6 +602,15 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
     renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
     window.__cockpitCoffee = null;
   };
+
+  // World-space point just above the dripper stack — the HUD name tag
+  // anchors here (see __getCockpitAnchors in globe-canvas).
+  group.getAnchorWorld = function(out = new THREE.Vector3()){
+    return station.localToWorld(out.set(0, 1.4, 0));
+  };
+  // Edge-glow targets: only the two artifact groups, never the desk-local
+  // effects (stream/drops/smoke) parked at group level.
+  group.glowTargets = [station, mug];
 
   return group;
 }

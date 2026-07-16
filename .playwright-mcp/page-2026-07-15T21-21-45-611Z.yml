@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e12]:
+    - generic [ref=e70]:
+      - generic:
+        - generic:
+          - generic:
+            - generic: AX-01
+            - generic: chatbot
+      - img:
+        - generic: AX/OS · CLICK TO ENTER
+      - generic:
+        - generic:
+          - generic: hello.
+          - generic: A.X / STUDIO
+          - generic: —
+          - generic: AX/OS · CLICK TO WAKE
+          - generic: _
+      - banner [ref=e73]:
+        - generic [ref=e76]:
+          - link "A xiong studio weather" [ref=e77] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e82]:
+              - generic [ref=e83]: A
+              - generic [ref=e85]: xiong
+              - generic [ref=e86]: studio
+            - generic "weather" [ref=e87]:
+              - generic [ref=e88]: ☀
+              - generic [ref=e89]: 94° · HERE
+          - navigation [ref=e90]:
+            - button "projects" [ref=e92] [cursor=pointer]:
+              - generic [ref=e93]: "01"
+              - text: projects
+              - generic [ref=e94]: ▾
+            - button "designs" [ref=e97] [cursor=pointer]:
+              - generic [ref=e98]: "02"
+              - text: designs
+            - button "about" [ref=e100] [cursor=pointer]:
+              - generic [ref=e101]: "03"
+              - text: about
+            - button "contact" [ref=e103] [cursor=pointer]:
+              - generic [ref=e104]: "04"
+              - text: contact
+            - generic [ref=e106]: 17:21 · EDT
+      - generic [ref=e110]:
+        - generic [ref=e111]: AlexXiong
+        - generic [ref=e112]: portfolio · v.2026.04
+      - generic [ref=e115]: extinguish flame³ · illuminate in ∞
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]: crystal clear
+          - generic [ref=e120]: See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+        - generic [ref=e121]:
+          - generic [ref=e122]: release
+          - generic [ref=e123]: Jan 25, 2059 — 9AM PTv.2025.04 · sec_encryptedpowered by 333 lab
+    - button "switch to light mode" [ref=e124] [cursor=pointer]:
+      - generic [ref=e125]:
+        - generic [ref=e126]: ☀
+        - generic [ref=e127]: ☾
+      - generic [ref=e129]: dark
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]
+  - alert [ref=e11]

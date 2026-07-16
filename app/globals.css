@@ -125,6 +125,9 @@ canvas { display: block; }
 @keyframes termNoise { 0%,100% { opacity: .08; } 50% { opacity: .14; } }
 @keyframes termFlash { 0%,100% { background: var(--cream); } 50% { background: #fff; } }
 @keyframes termFadeIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+/* Object name tags — keeps the -50%/-100% positioning translate while fading in
+   (termFadeIn's transform would override it and make the tag jump on appear). */
+@keyframes tagFadeIn { 0% { opacity: 0; transform: translate(-50%, calc(-100% + 8px)); } 100% { opacity: 1; transform: translate(-50%, -100%); } }
 
 /* ── WARP / TRANCE transition between BootScreen and Cockpit ── */
 @keyframes warpRingExpand { 0% { transform: translate(-50%,-50%) scale(0.05); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(-50%,-50%) scale(28); opacity: 0; } }

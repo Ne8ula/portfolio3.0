@@ -10,6 +10,9 @@ import { buildVinylCrate } from "./vinyl-crate"
 import { buildTurntable } from "./turntable"
 import { buildCoffee } from "./coffee"
 import { buildGlassMac } from "./glass-mac"
+import { buildDecorations } from "./decorations"
+import { buildTeaSet } from "./tea-set"
+import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
 
 // Globe.jsx — cockpit 3D scene.
@@ -45,6 +48,8 @@ function GlobeCanvas({ yawRef, pitchRef }){
         shelfFillOp:0.10,
         shelfWireOp:0.50,
         jadeAccent:0x4B6E4F,
+        glowLine:  0x7FE6A4,             // saturated light jade wireframe
+        glowBlend: THREE.NormalBlending,
       },
       light: {
         bg:        0xECE6D8,
@@ -62,6 +67,8 @@ function GlobeCanvas({ yawRef, pitchRef }){
         shelfFillOp:0.40,
         shelfWireOp:0.60,
         jadeAccent:0x3A5A3E,
+        glowLine:  0x3A5A3E,             // additive washes out on ivory —
+        glowBlend: THREE.NormalBlending, // deep-jade ink outline instead
       }
     };
     let curTheme = (window.__cockpitTheme === 'light') ? 'light' : 'dark';
@@ -79,6 +86,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       shelfFill:[],
       shelfWire:[],
       jadeAccent:[],  // jade-accent line/mesh basic materials
+      glowLine: [],   // edge-glow trace materials (highlights.ts)
     };
     let glassMacHandle = null;   // set once the GlassMac is built
     const applyTheme = () => {
@@ -94,6 +102,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       themeTargets.shelfFill.forEach(m => { m.color.setHex(t.deskFill); m.opacity = t.shelfFillOp; });
       themeTargets.shelfWire.forEach(m => { m.color.setHex(t.deskWire); m.opacity = t.shelfWireOp; });
       themeTargets.jadeAccent.forEach(m => { m.color.setHex(t.jadeAccent); });
+      themeTargets.glowLine.forEach(m => { m.color.setHex(t.glowLine); m.blending = t.glowBlend; m.needsUpdate = true; });
       if (themeTargets.starsMat){
         themeTargets.starsMat.color.setHex(t.starCol);
         themeTargets.starsMat.opacity = t.starOpac;
@@ -788,38 +797,56 @@ function GlobeCanvas({ yawRef, pitchRef }){
     ));
 
     // ══════════════════════════════════════════════════════════════
-    // RAYCASTING — hover + click on PC (xray group)
+    // RAYCASTING — hover over the heroes (PC / turntable / coffee) +
+    // click on PC. The crate owns its own picking (vinyl-crate.ts) and
+    // reports hover via the 'cockpit-crate-hover' event. Hover drives
+    // the per-object edge glow and the HUD name tag (__cockpitHoveredTag).
     // ══════════════════════════════════════════════════════════════
     const raycaster = new THREE.Raycaster();
     const mouseNDC = new THREE.Vector2();
-    let hoverPC = false;
-    // Collect xray meshes for raycasting
+    let hoverId = null;   // 'pc' | 'turntable' | 'coffee' | null
+    // Pickable meshes per hover target. PC is built already; turntable and
+    // coffee register into this map after they're constructed below.
     const pcPickables = [];
     xray.traverse(o => { if (o.isMesh) pcPickables.push(o); });
+    const hoverPickables = { pc: pcPickables, turntable: [], coffee: [] };
 
-    const updatePickFromEvent = (e) => {
+    const pickHoverId = (e) => {
       const r = renderer.domElement.getBoundingClientRect();
       mouseNDC.x = ((e.clientX - r.left) / r.width) * 2 - 1;
       mouseNDC.y = -((e.clientY - r.top) / r.height) * 2 + 1;
       raycaster.setFromCamera(mouseNDC, camera);
-      const hits = raycaster.intersectObjects(pcPickables, false);
-      return hits.length > 0;
+      let best = null, bestDist = Infinity;
+      for (const id in hoverPickables){
+        const hits = raycaster.intersectObjects(hoverPickables[id], false);
+        if (hits.length && hits[0].distance < bestDist){ best = id; bestDist = hits[0].distance; }
+      }
+      return best;
+    };
+
+    const applyHover = (id) => {
+      if (id === hoverId) return;
+      hoverId = id;
+      window.__cockpitHoveredTag = id;
+      const hp = id === 'pc';
+      if (hp !== !!window.__cockpitHoverPC){
+        window.__cockpitHoverPC = hp;
+        window.dispatchEvent(new CustomEvent('cockpit-hover', { detail:{ hovering: hp } }));
+      }
+      Object.keys(hoverPickables).forEach(k => edgeGlow.setBoost(k, id === k ? 1 : 0));
+      // Pointer cursor only for the clickable PC — coffee manages its own
+      // cursor (click loop), the turntable is decorative.
+      renderer.domElement.style.cursor = hp ? CURSOR_POINTER : '';
     };
 
     const onPointerMove = (e) => {
       if (viewMode !== 'cockpit') return;
-      const hit = updatePickFromEvent(e);
-      if (hit !== hoverPC){
-        hoverPC = hit;
-        window.__cockpitHoverPC = hoverPC;
-        window.dispatchEvent(new CustomEvent('cockpit-hover', { detail:{ hovering: hit } }));
-        renderer.domElement.style.cursor = hit ? CURSOR_POINTER : '';
-      }
+      applyHover(pickHoverId(e));
     };
     const onPointerDown = (e) => {
       if (viewMode !== 'cockpit') return;
       if (e.button !== 0) return;
-      if (updatePickFromEvent(e)){
+      if (pickHoverId(e) === 'pc'){
         setViewMode('monitor');
         e.stopPropagation();
         e.preventDefault();
@@ -844,7 +871,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       if (m === 'monitor' || m === 'crate') focusKind = m;
       window.__cockpitViewMode = m;
       window.dispatchEvent(new CustomEvent('cockpit-view-mode', { detail:{ mode: m } }));
-      if (m === 'cockpit'){ hoverPC = false; renderer.domElement.style.cursor = ''; }
+      if (m === 'cockpit'){ applyHover(null); renderer.domElement.style.cursor = ''; }
     };
     window.__setCockpitViewMode = setViewMode;
 
@@ -856,10 +883,72 @@ function GlobeCanvas({ yawRef, pitchRef }){
     try { turntable = buildTurntable(scene, tableGroup); } catch (e) { /* turntable optional */ }
     let coffeeStation = null;
     try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer); } catch (e) { /* coffee optional */ }
+    let decorations = null;
+    try { decorations = buildDecorations(scene, tableGroup, camera, renderer); } catch (e) { /* decorations optional */ }
+    let teaSet = null;
+    try { teaSet = buildTeaSet(scene, tableGroup); } catch (e) { /* tea set optional */ }
     window.__cockpitTick = (dt, t) => {
       if (crate && crate.tick) crate.tick(dt, t);
       if (turntable && turntable.tick) turntable.tick(dt, t);
       if (coffeeStation && coffeeStation.tick) coffeeStation.tick(dt, t);
+      if (decorations && decorations.tick) decorations.tick(dt, t);
+      if (teaSet && teaSet.tick) teaSet.tick(dt, t);
+    };
+
+    // Register turntable + coffee meshes with the hover raycaster (the
+    // coffee set includes its invisible fat pick volumes — generous target).
+    if (turntable) turntable.traverse(o => { if (o.isMesh) hoverPickables.turntable.push(o); });
+    if (coffeeStation && coffeeStation.glowTargets)
+      coffeeStation.glowTargets.forEach(root =>
+        root.traverse(o => { if (o.isMesh) hoverPickables.coffee.push(o); }));
+
+    // ── Edge-glow traces on the four interactive heroes ───────────
+    // Jade schematic outlines (highlights.ts), invisible at rest — each
+    // fades in as a faint outline glow while its object is hovered
+    // (PC/turntable/coffee via applyHover; crate via its hover event).
+    const edgeGlow = makeEdgeGlow();
+    try {
+      themeTargets.glowLine.push(edgeGlow.attach('pc', xray, { color: T().glowLine }));
+      // crate: rounded-box shell + frost walls have soft creases — trace
+      // with a much finer crease angle and let smaller parts in, so the
+      // hover outline actually reads.
+      if (crate)     themeTargets.glowLine.push(edgeGlow.attach('crate', crate, { color: T().glowLine, edgeThresh: 10, minRadius: 0.05 }));
+      if (turntable) themeTargets.glowLine.push(edgeGlow.attach('turntable', turntable, { color: T().glowLine }));
+      if (coffeeStation && coffeeStation.glowTargets)
+        themeTargets.glowLine.push(edgeGlow.attach('coffee', coffeeStation.glowTargets, { color: T().glowLine }));
+    } catch (e) { /* glow is cosmetic */ }
+    const onCrateHoverGlow = (e) => {
+      const h = !!(e.detail && e.detail.hovering);
+      edgeGlow.setBoost('crate', h ? 1 : 0);
+      // Crate hover also drives its HUD name tag. Only clear on unhover if
+      // the crate still owns the tag (the central raycast may have already
+      // handed it to pc/turntable/coffee in this same pointermove).
+      if (h) window.__cockpitHoveredTag = 'crate';
+      else if (window.__cockpitHoveredTag === 'crate') window.__cockpitHoveredTag = null;
+    };
+    window.addEventListener('cockpit-crate-hover', onCrateHoverGlow);
+
+    // ── Name-tag anchors for the HUD (ObjectTags) ─────────────────
+    // World-space points floated above each hero, projected to screen
+    // space. The HUD polls this per rAF and draws the "PC · CHATBOT"-style
+    // labels only in the cockpit view.
+    const anchorV = new THREE.Vector3();
+    window.__getCockpitAnchors = function(){
+      const rect = renderer.domElement.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const out = [];
+      const push = (id, world) => {
+        if (!world) return;
+        const v = world.clone().applyMatrix4(camera.matrixWorldInverse);
+        if (v.z > -0.1) return;                       // behind the camera
+        const p = world.clone().project(camera);
+        out.push({ id, x: (p.x*0.5+0.5)*rect.width, y: (-p.y*0.5+0.5)*rect.height });
+      };
+      push('pc', xray.localToWorld(anchorV.set(0, 3.2, 0)).clone());
+      if (crate)     push('crate', crate.localToWorld(anchorV.set(0, 1.4, 0)).clone());
+      if (turntable) push('turntable', turntable.localToWorld(anchorV.set(0, 0.85, 0)).clone());
+      if (coffeeStation && coffeeStation.getAnchorWorld) push('coffee', coffeeStation.getAnchorWorld(anchorV).clone());
+      return out;
     };
 
     const clock = new THREE.Clock();
@@ -888,6 +977,10 @@ function GlobeCanvas({ yawRef, pitchRef }){
 
       // External tick hooks (e.g. VinylCrate)
       if (window.__cockpitTick) window.__cockpitTick(dt, t);
+
+      // Hero edge-glow: pulse in the cockpit view, fade out while the
+      // camera is focused on the monitor or the crate.
+      edgeGlow.tick(t, 1 - modeT);
 
       // ── Camera ────────────────────────────────────────────────
       // Cockpit pose: cursor drives yaw/pitch with breathing bob.
@@ -1009,6 +1102,12 @@ function GlobeCanvas({ yawRef, pitchRef }){
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       if (crate && crate.disposeCrate) crate.disposeCrate();
       if (coffeeStation && coffeeStation.dispose) coffeeStation.dispose();
+      if (decorations && decorations.dispose) decorations.dispose();
+      if (teaSet && teaSet.dispose) teaSet.dispose();
+      window.removeEventListener('cockpit-crate-hover', onCrateHoverGlow);
+      edgeGlow.dispose();
+      window.__getCockpitAnchors = null;
+      window.__cockpitHoveredTag = null;
       window.__cockpitTick = null;
       window.__cockpitScene = null;
       window.__cockpitCamera = null;

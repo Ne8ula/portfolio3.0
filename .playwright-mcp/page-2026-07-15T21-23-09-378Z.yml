@@ -1,0 +1,44 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e14]:
+    - generic [ref=f1e16]:
+      - generic [ref=f1e17]: ░ SYS STARTING...
+      - generic [ref=f1e18]: .01 > SYS.CORE · ok
+      - generic [ref=f1e19]: .02 > PORTFOLIO.INIT · ok
+      - generic [ref=f1e20]: .03 > RENDER.PIPELINE · ok
+      - generic [ref=f1e21]: .04 > PRODUCT.DESIGN · ok
+      - generic [ref=f1e22]: .05 > USER.RESEARCH · ok
+      - generic [ref=f1e23]: .06 > PRODUCT.MANAGEMENT · ok
+      - generic [ref=f1e24]: .07 > UI // UX · ok
+      - generic [ref=f1e25]: .08 > STANDBY ◆ ACTIVE
+    - generic [ref=f1e26]:
+      - generic [ref=f1e27]: ░ REGISTERS
+      - generic [ref=f1e28]: ax A2E0 bx 80B1
+      - generic [ref=f1e29]: cx 42BB dx F878
+      - generic [ref=f1e30]: pc 0x00FAC104
+      - generic [ref=f1e31]: sp 0x7FFF0BAC
+      - generic [ref=f1e32]: ░ BUS
+      - generic [ref=f1e33]: irq quiet
+      - generic [ref=f1e34]: dma ch2 · 0xB7·14
+      - generic [ref=f1e35]: clk 3.214 GHz
+      - generic [ref=f1e36]: ◆ POWER · stable
+    - generic [ref=f1e37]:
+      - generic [ref=f1e38]:
+        - generic [ref=f1e39]: "{A_XIONG}"
+        - generic [ref=f1e40]: ◆ READY · AWAITING CONFIRMATION
+      - generic [ref=f1e42]:
+        - button "> ENTER THE ROOM ▮" [ref=f1e43] [cursor=pointer]:
+          - generic [ref=f1e48]:
+            - generic [ref=f1e49]: ">"
+            - text: ENTER THE ROOM
+            - generic [ref=f1e50]: ▮
+        - generic [ref=f1e51]: ⏎ press ENTER or click to confirm
+    - generic [ref=f1e52]:
+      - generic [ref=f1e53]:
+        - generic [ref=f1e54]: // AX.RUNTIME · console
+        - generic [ref=f1e55]: uptime 04.96s
+      - generic [ref=f1e56]: ( >>>> READY <<<< )
+      - generic [ref=f1e57]:
+        - generic [ref=f1e58]: state READY
+        - generic [ref=f1e59]: rdy 047%
+  - button "Open Next.js Dev Tools" [ref=f1e7] [cursor=pointer]
+  - alert [ref=f1e11]

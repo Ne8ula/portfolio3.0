@@ -146,6 +146,7 @@ function Cockpit({ interactive = true }){
     <div ref={stageRef} data-screen-label="02 Cockpit FPS" onKeyDown={(e)=>{ if(e.key==='Escape'){ if(viewMode!=='cockpit') exitGlobe(); else releaseLock(); } }} tabIndex={0} style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor: locked ? 'none' : CURSOR_DEFAULT,outline:'none'}}>
       <GlobeCanvas yawRef={yawRef} pitchRef={pitchRef}/>
 
+      {viewMode === 'cockpit' && <ObjectTags/>}
       {viewMode === 'cockpit' && <PCHoverHighlight hovering={hoveringPC}/>}
       {viewMode === 'cockpit' && <CrateHoverHighlight hovering={hoveringCrate}/>}
       {viewMode === 'crate' && <VinylInfoCard/>}
@@ -646,6 +647,74 @@ function CornerTick({ pos }){
       position:'absolute', width:10, height:10, opacity:.5,
       ...map[pos],
     }}/>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ObjectTags — small editorial name tags floated above the four
+// interactive heroes (OBJECT · PURPOSE). A tag appears ONLY while
+// its object is hovered (window.__cockpitHoveredTag, set by the
+// scene's hover raycast — crate via its own picking — alongside
+// the edge glow). Anchors come from window.__getCockpitAnchors();
+// tags render only in cockpit view. PC/crate show their tag AND
+// their hover brackets together.
+// ─────────────────────────────────────────────────────────────
+const TAG_LABELS = {
+  pc:        { name: 'AX-01',        role: 'chatbot' },
+  crate:     { name: 'vinyl crate',  role: 'portfolio' },
+  turntable: { name: 'vinyl player', role: 'portfolio selection' },
+  coffee:    { name: 'coffee',       role: 'intermission' },
+};
+
+function ObjectTags(){
+  const [anchors, setAnchors] = React.useState(null);
+  const [hovered, setHovered] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const a = window.__getCockpitAnchors && window.__getCockpitAnchors();
+      setAnchors(a);
+      setHovered(window.__cockpitHoveredTag || null);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!anchors) return null;
+  return (
+    <div style={{position:'absolute', inset:0, zIndex:13, pointerEvents:'none', overflow:'hidden'}}>
+      {anchors.map(({ id, x, y }) => {
+        const label = TAG_LABELS[id];
+        if (!label) return null;
+        if (id !== hovered) return null;             // tags are hover-only
+        return (
+          <div key={id} style={{
+            position:'absolute', left: x, top: y,
+            transform:'translate(-50%, -100%)',
+            display:'flex', flexDirection:'column', alignItems:'center',
+            animation:'tagFadeIn .35s ease-out',
+          }}>
+            <div style={{
+              display:'flex', alignItems:'center', gap:8,
+              padding:'5px 10px 6px',
+              background:'rgba(30,28,26,0.58)',
+              backdropFilter:'blur(6px)',
+              WebkitBackdropFilter:'blur(6px)',
+              border:'1px solid rgba(232,228,220,0.16)',
+              fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+              letterSpacing:'.22em', textTransform:'uppercase',
+              whiteSpace:'nowrap',
+            }}>
+              <span style={{color:'var(--jade-light)'}}>{label.name}</span>
+              <span aria-hidden style={{width:3, height:3, background:'var(--jade)', display:'inline-block'}}/>
+              <span style={{color:'var(--cream-deep)', fontWeight:500}}>{label.role}</span>
+            </div>
+            {/* connector tick down toward the object */}
+            <span aria-hidden style={{width:1, height:10, background:'rgba(232,228,220,0.35)'}}/>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

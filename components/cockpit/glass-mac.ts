@@ -5,10 +5,11 @@
 //   • MONITOR  — frosted translucent acrylic casing ring (hero glass) with
 //     rounded corners + corner details, cream inner bezel, ivory "hello."
 //     screen, micrographic strips on the left/right bezel rails.
-//   • HINGE    — cream clamp blocks + ribbed roller, frosted end caps,
-//     "AX-01" designation.
+//   • HINGE    — cream clamp blocks + deep-jade ribbed roller, frosted end
+//     caps, "AX-01" designation.
 //   • KEYBOARD — warm off-white wedge on a smoked-frost skirt, full 60%
-//     QWERTY key field (legend atlas), one muted-sage BACKSPACE.
+//     QWERTY key field (legend atlas) over a graphite tray; muted-sage
+//     BACKSPACE + deep-jade ESC.
 //   • MOUSE    — modern retro-futuristic dome: off-white shell with painted
 //     seams, frosted lower skirt, sage mark. Static prop (cockpit stays
 //     dead still).
@@ -138,12 +139,13 @@ export function buildGlassMac(xray){
   const creamMat = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, map: makeGrainTexture(), roughness: 0.55, metalness: 0.05 });
   const bezelMat = new THREE.MeshStandardMaterial({ color: 0xE2DDD0, roughness: 0.6, metalness: 0.04 });
   const bezelHiMat = new THREE.MeshStandardMaterial({ color: 0xEDE8DB, roughness: 0.55, metalness: 0.04 });
-  const coreMat  = new THREE.MeshStandardMaterial({ color: 0xD8D3C6, roughness: 0.65, metalness: 0.04 });
   const shadowMat= new THREE.MeshBasicMaterial({ color: 0x8A857A });
   const keyMat   = new THREE.MeshStandardMaterial({ color: 0xEFEAE0, roughness: 0.5, metalness: 0.03 });
   const keyModMat= new THREE.MeshStandardMaterial({ color: 0xD9D4C8, roughness: 0.55, metalness: 0.03 });
   const sageMat  = new THREE.MeshStandardMaterial({ color: 0x8FAF94, roughness: 0.55, metalness: 0.03 });
   const jade     = new THREE.MeshLambertMaterial({ color: 0x78977D });
+  const jadeDeep = new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.55, metalness: 0.05 });
+  const graphite = new THREE.MeshStandardMaterial({ color: 0x3A3733, roughness: 0.6, metalness: 0.08 });
   const trimMat  = new THREE.MeshStandardMaterial({ color: 0xC6C1B8, roughness: 0.35, metalness: 0.4 });
   const inkSlot  = new THREE.MeshLambertMaterial({ color: 0x3A3733 });
 
@@ -231,13 +233,14 @@ export function buildGlassMac(xray){
   keyboard.setOffset = function({ x = 0, y = 0, z = 0 } = {}){
     keyboard.position.set(kbBaseX + x, kbBaseY + y, kbBaseZ + z);
   };
-  const tray = new THREE.Mesh(new RoundedBoxGeometry(2.9, 0.035, 1.04, 1, 0.015), coreMat);
+  // graphite tray — the key field floats over a dark well instead of cream
+  const tray = new THREE.Mesh(new RoundedBoxGeometry(2.9, 0.035, 1.04, 1, 0.015), graphite);
   tray.position.y = 0.004;
   keyboard.add(tray);
-  edge(tray);
+  edge(tray, edgeMat);
 
   const KEY_ROWS = [
-    [['ESC',1],['1',1],['2',1],['3',1],['4',1],['5',1],['6',1],['7',1],['8',1],['9',1],['0',1],['-',1],['+',1],['BACKSPACE',2,'sage']],
+    [['ESC',1,'jade'],['1',1],['2',1],['3',1],['4',1],['5',1],['6',1],['7',1],['8',1],['9',1],['0',1],['-',1],['+',1],['BACKSPACE',2,'sage']],
     [['TAB',1.5],['Q',1],['W',1],['E',1],['R',1],['T',1],['Y',1],['U',1],['I',1],['O',1],['P',1],['[',1],[']',1],['\\',1.5]],
     [['CAPS',1.75],['A',1],['S',1],['D',1],['F',1],['G',1],['H',1],['J',1],['K',1],['L',1],[';',1],["'",1],['ENTER',2.25,'mod']],
     [['SHIFT',2.25,'mod'],['Z',1],['X',1],['C',1],['V',1],['B',1],['N',1],['M',1],[',',1],['.',1],['/',1],['SHIFT',2.75,'mod']],
@@ -248,15 +251,15 @@ export function buildGlassMac(xray){
   const atlasCanvas = document.createElement('canvas');
   atlasCanvas.width = AT_C * AT_COLS; atlasCanvas.height = AT_C * AT_ROWS;
   const atlasCtx = atlasCanvas.getContext('2d');
-  const legends = [];                              // {i, label, sage}
+  const legends = [];                              // {i, label, kind}
   const drawAtlas = () => {
     atlasCtx.clearRect(0, 0, atlasCanvas.width, atlasCanvas.height);
     atlasCtx.textAlign = 'center';
     atlasCtx.textBaseline = 'middle';
-    legends.forEach(({ i, label, sage }) => {
+    legends.forEach(({ i, label, kind }) => {
       const cx = (i % AT_COLS) * AT_C + AT_C/2;
       const cy = Math.floor(i / AT_COLS) * AT_C + AT_C/2;
-      atlasCtx.fillStyle = sage ? '#3E4A40' : '#8A8478';
+      atlasCtx.fillStyle = kind === 'sage' ? '#3E4A40' : kind === 'jade' ? '#D9E2D6' : '#8A8478';
       atlasCtx.font = label.length > 1
         ? `600 ${label.length > 6 ? 20 : 26}px "JetBrains Mono", monospace`
         : '600 46px "JetBrains Mono", monospace';
@@ -280,13 +283,13 @@ export function buildGlassMac(xray){
       cursor += wu;
       const kw = wu * U - GAP;
       if (!keyGeoCache.has(wu)) keyGeoCache.set(wu, new RoundedBoxGeometry(kw, KEY_H, KEY_D, 2, 0.015));
-      const mat = kind === 'sage' ? sageMat : kind === 'mod' ? keyModMat : keyMat;
+      const mat = kind === 'sage' ? sageMat : kind === 'jade' ? jadeDeep : kind === 'mod' ? keyModMat : keyMat;
       const k = new THREE.Mesh(keyGeoCache.get(wu), mat);
       k.position.set(cx, 0.055, z);
       keyboard.add(k);
       if (label){
         const i = atlasIdx++;
-        legends.push({ i, label, sage: kind === 'sage' });
+        legends.push({ i, label, kind });
         const lp = new THREE.PlaneGeometry(kw * 0.82, KEY_D * 0.62);
         const u0 = (i % AT_COLS) / AT_COLS, v1 = 1 - Math.floor(i / AT_COLS) / AT_ROWS;
         const du = 1/AT_COLS, dv = 1/AT_ROWS;
@@ -313,7 +316,8 @@ export function buildGlassMac(xray){
     xray.add(b);
     edge(b, edgeMat);
   });
-  const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.62, 20), coreMat);
+  // deep-jade roller barrel under the silver ribs — the hinge's accent piece
+  const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.62, 20), jadeDeep);
   roller.rotation.z = Math.PI/2;
   roller.position.set(0, HINGE_Y + 0.02, HINGE_Z);
   xray.add(roller);
@@ -361,12 +365,12 @@ export function buildGlassMac(xray){
   ringGeo.translate(0, 0, -RING_D/2);
   const ring = new THREE.Mesh(ringGeo, glass);
   monitor.add(ring);
-  // frosted back shell with a cream core floating inside (visible wall
-  // thickness + internal mass, per the side render)
+  // frosted back shell with a deep-jade core floating inside — the internal
+  // mass reads as a jade slab under glass (artifact-under-glass accent)
   const backShell = new THREE.Mesh(new RoundedBoxGeometry(MON_W - 0.06, MON_H - 0.06, 0.16, 3, 0.07), glass);
   backShell.position.z = -0.32;
   monitor.add(backShell);
-  const core = new THREE.Mesh(new RoundedBoxGeometry(2.6, 2.0, 0.1, 2, 0.04), coreMat);
+  const core = new THREE.Mesh(new RoundedBoxGeometry(2.6, 2.0, 0.1, 2, 0.04), jadeDeep);
   core.position.z = -0.32;
   monitor.add(core);
 
@@ -437,16 +441,18 @@ export function buildGlassMac(xray){
   bezelStatus.position.set(0.63, 0.885, 0.102);
   monitor.add(bezelStatus);
 
-  // molded corner details on the glass face
+  // molded corner details on the glass face — sage rings echo the accents
   [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => {
-    const t = new THREE.Mesh(new THREE.TorusGeometry(0.032, 0.005, 6, 20), trimMat);
+    const t = new THREE.Mesh(new THREE.TorusGeometry(0.032, 0.005, 6, 20), jade);
     t.position.set(sx * (MON_W/2 - 0.155), sy * (MON_H/2 - 0.155), 0.187);
     monitor.add(t);
   });
 
   // ══ MOUSE — dome shell + frosted skirt, to the right ═════════════
+  // Pulled slightly toward the desk front so the protein shaker (a desk
+  // decoration standing behind it, beside the monitor) reads past it.
   const mouse = new THREE.Group();
-  mouse.position.set(2.12, 0, 0.72);
+  mouse.position.set(2.12, 0, 0.95);
   mouse.rotation.y = -0.12;
   xray.add(mouse);
   // frosted lower skirt (extruded ellipse)
@@ -495,7 +501,7 @@ export function buildGlassMac(xray){
   dome.position.y = 0.03;
   mouse.add(dome);
   // scroll slot at the seam junction
-  const wheel = new THREE.Mesh(new RoundedBoxGeometry(0.022, 0.02, 0.06, 1, 0.008), inkSlot);
+  const wheel = new THREE.Mesh(new RoundedBoxGeometry(0.022, 0.02, 0.06, 1, 0.008), jadeDeep);
   wheel.position.set(0, 0.30, 0.12);
   wheel.rotation.x = 0.35;
   mouse.add(wheel);

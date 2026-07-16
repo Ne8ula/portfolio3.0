@@ -398,6 +398,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   // ── Records ───────────────────────────────────────────────────
   const recordsGroup = new THREE.Group();
   recordsGroup.position.set(0, FLOOR_TOP + 0.002, 0);
+  recordsGroup.userData.noGlow = true;   // edge-glow traces the shell only — 15 outlined sleeves read as noise
   group.add(recordsGroup);
 
   const haloTex = makeHaloTexture();
