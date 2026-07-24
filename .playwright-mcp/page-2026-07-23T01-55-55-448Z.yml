@@ -1,0 +1,55 @@
+- generic [active] [ref=f4e1]:
+  - main [ref=f4e12]:
+    - generic: — entering the room —
+    - generic [ref=f4e70]:
+      - generic:
+        - generic:
+          - generic: hello.
+          - generic: A.X / STUDIO
+          - generic: —
+          - generic: AX/OS · CLICK TO WAKE
+          - generic: _
+      - generic [ref=f4e76]:
+        - generic [ref=f4e77]:
+          - generic [ref=f4e82]:
+            - generic [ref=f4e83]: A
+            - generic [ref=f4e85]: xiong
+            - generic [ref=f4e86]: studio
+          - generic "weather" [ref=f4e87]:
+            - generic [ref=f4e88]: ☁
+            - generic [ref=f4e89]: 75° · HERE
+        - navigation [ref=f4e90]:
+          - button "projects" [ref=f4e92] [cursor=pointer]:
+            - generic [ref=f4e93]: "01"
+            - text: projects
+            - generic [ref=f4e94]: ▾
+          - button "designs" [ref=f4e97] [cursor=pointer]:
+            - generic [ref=f4e98]: "02"
+            - text: designs
+          - button "about" [ref=f4e100] [cursor=pointer]:
+            - generic [ref=f4e101]: "03"
+            - text: about
+          - button "contact" [ref=f4e103] [cursor=pointer]:
+            - generic [ref=f4e104]: "04"
+            - text: contact
+          - generic [ref=f4e106]: 21:55 · EDT
+      - generic [ref=f4e110]:
+        - heading "Alex Xiong" [level=1] [ref=f4e111]: AlexXiong
+        - generic [ref=f4e112]: portfolio · v.2026.04
+      - generic [ref=f4e115]: extinguish flame³ · illuminate in ∞
+      - generic [ref=f4e117]:
+        - generic [ref=f4e118]:
+          - generic [ref=f4e119]: crystal clear
+          - generic [ref=f4e120]: See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+        - generic [ref=f4e121]:
+          - generic [ref=f4e122]: controls
+          - generic [ref=f4e123]:
+            - generic [ref=f4e124]: move · look
+            - generic [ref=f4e132]: hover · reveal
+            - generic [ref=f4e142]: click · enter
+            - generic [ref=f4e148]:
+              - generic [ref=f4e149]: esc · return
+              - img [ref=f4e151]:
+                - generic [ref=f4e153]: ESC
+  - button "Open Next.js Dev Tools" [ref=f4e7] [cursor=pointer]
+  - alert [ref=f4e11]

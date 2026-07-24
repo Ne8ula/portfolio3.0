@@ -1,5 +1,5 @@
-"use client"
 // @ts-nocheck
+"use client"
 // WarpTransition — ~2.5s airlock between BootScreen and Cockpit.
 // A dedicated (disposable) three.js scene: two wireframe doors slide apart while a
 // Death-Stranding-style scan pulse expands from the seam, revealing a contour-grid

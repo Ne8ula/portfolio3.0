@@ -25,26 +25,7 @@ import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHel
 import { CURSOR_POINTER } from "./cursors"
 import { PALETTE, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
-
-// Placeholder project records — restructure-ready: title / category / date
-// drive the hover card and the cover art. Palette: [bg, accent, text].
-const PROJECTS = [
-  { title: 'MIDNIGHT\nSIGNALS',  category: 'design',     date: '2025.11', bg:'#E8E4DC', accent:'#4B6E4F', text:'#1E1C1A' },
-  { title: 'LONG\nSHADOW',       category: 'web',        date: '2025.08', bg:'#3A3644', accent:'#E8E4DC', text:'#E8E4DC' },
-  { title: 'JADE\nHOUR',         category: 'design',     date: '2025.06', bg:'#4B6E4F', accent:'#F0EBE1', text:'#F0EBE1' },
-  { title: 'ANALOGUE\nDREAMS',   category: 'prototype',  date: '2025.04', bg:'#D8D3C7', accent:'#3A3644', text:'#1E1C1A' },
-  { title: 'COLD\nLINE FM',      category: 'web',        date: '2025.02', bg:'#1E1C1A', accent:'#7FA683', text:'#E8E4DC' },
-  { title: 'RED\nHEM',           category: 'design',     date: '2024.12', bg:'#F0EBE1', accent:'#B24240', text:'#1E1C1A' },
-  { title: 'ROOM 21',            category: 'game',       date: '2024.10', bg:'#6E6878', accent:'#E8E4DC', text:'#E8E4DC' },
-  { title: 'FIELD\nNOTES v.II',  category: 'prototype',  date: '2024.08', bg:'#3A5A3E', accent:'#D8D3C7', text:'#F0EBE1' },
-  { title: 'STATIC\nGARDEN',     category: 'game',       date: '2024.06', bg:'#A8A2B0', accent:'#1E1C1A', text:'#1E1C1A' },
-  { title: 'NORTH\n&  SOUTH',    category: 'design',     date: '2024.04', bg:'#E8E4DC', accent:'#6E6878', text:'#1E1C1A' },
-  { title: 'LOW\nTIDE',          category: 'web',        date: '2024.02', bg:'#2B4A30', accent:'#CFC9C0', text:'#E8E4DC' },
-  { title: 'FOLIO',              category: 'design',     date: '2023.11', bg:'#CFC9C0', accent:'#3A5A3E', text:'#1E1C1A' },
-  { title: 'AMBER\nPROTOCOL',    category: 'game',       date: '2023.09', bg:'#1E1C1A', accent:'#D8A24B', text:'#D8A24B' },
-  { title: 'GREEN\nROOM',        category: 'prototype',  date: '2023.06', bg:'#7FA683', accent:'#1E1C1A', text:'#1E1C1A' },
-  { title: 'UNTITLED\nSIDES',    category: 'experiment', date: '2023.03', bg:'#E8E4DC', accent:'#1E1C1A', text:'#1E1C1A' },
-];
+import { PROJECTS, makeDiscTexture } from "./projects"
 
 // ── Reference material palette (brief: warm off-white base, milky
 // frost, muted sage accents only — never bright neon green) ─────────
@@ -160,32 +141,6 @@ function makeTopEdgeTexture(i){
   const tex = new THREE.CanvasTexture(c);
   tex.anisotropy = 8;
   tex.needsUpdate = true;
-  return tex;
-}
-
-function makeDiscTexture(i){
-  const { accent, category } = PROJECTS[i];
-  const S = 256;
-  const c = document.createElement('canvas');
-  c.width = S; c.height = S;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#12100F';
-  ctx.beginPath(); ctx.arc(S/2, S/2, S/2-2, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 1;
-  for (let r = 44; r < S/2 - 6; r += 3){
-    ctx.beginPath(); ctx.arc(S/2, S/2, r, 0, Math.PI*2); ctx.stroke();
-  }
-  ctx.fillStyle = accent;
-  ctx.beginPath(); ctx.arc(S/2, S/2, 44, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle = '#1E1C1A';
-  ctx.beginPath(); ctx.arc(S/2, S/2, 5, 0, Math.PI*2); ctx.fill();
-  ctx.font = '600 10px "JetBrains Mono", monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText(category.toUpperCase(), S/2, S/2 - 24);
-  ctx.fillText(`№ ${String(i+1).padStart(2,'0')}`, S/2, S/2 + 30);
-  const tex = new THREE.CanvasTexture(c);
-  tex.anisotropy = 8;
   return tex;
 }
 
@@ -489,6 +444,60 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   const sleevePickables = vinyls.map(v => v.sleeve);
   const viewMode = () => window.__cockpitViewMode || 'cockpit';
 
+  // ── Deck hand-off ─────────────────────────────────────────────
+  // Clicking a record in the crate no longer just pulls it out — the disc
+  // flies to the turntable (window.__cockpitDeck, owned by turntable.ts)
+  // and the deck projects the holographic PROJECT INFO card. The crate
+  // keeps owning SELECTION (sleeve tip animation + ◄/► stepping); the deck
+  // owns the flight, platter, beam and card. Live world-position getters
+  // are passed so flights track the sleeves while they animate.
+  let deckOut = false;     // a record is out on the turntable
+  let returning = false;   // fly-back in progress after leaving deck view
+  const deck = () => window.__cockpitDeck;
+  const discWorldPos  = (i) => () => vinyls[i].disc.getWorldPosition(new THREE.Vector3());
+  const discWorldQuat = (i) => () => vinyls[i].disc.getWorldQuaternion(new THREE.Quaternion());
+  const discWorldRadius = (i) => () =>
+    SLEEVE_H * 0.46 * (vinyls[i].disc.getWorldScale(new THREE.Vector3()).x || 1);
+
+  const sendToDeck = (idx) => {
+    const d = deck();
+    if (!d) return false;
+    selectedIdx = idx;
+    deckOut = true;
+    d.play({
+      index: idx,
+      from: discWorldPos(idx),
+      fromQuat: discWorldQuat(idx),
+      fromRadius: discWorldRadius(idx),
+      onDepart: () => { vinyls[idx].disc.visible = false; },
+    });
+    return true;
+  };
+
+  const recallFromDeck = (idx, onDone) => {
+    const d = deck();
+    if (!d){ if (idx >= 0) vinyls[idx].disc.visible = true; if (onDone) onDone(); return; }
+    d.eject({
+      to: discWorldPos(idx),
+      toQuat: discWorldQuat(idx),
+      toRadius: discWorldRadius(idx),
+      onArrive: () => { if (idx >= 0) vinyls[idx].disc.visible = true; if (onDone) onDone(); },
+    });
+  };
+
+  // Leaving the deck view (Esc / click-away) flies the record home, then
+  // slides the sleeve back into the bin.
+  const onViewModeChange = (e) => {
+    const m = e.detail && e.detail.mode;
+    if (deckOut && m !== 'deck'){
+      const old = selectedIdx;
+      deckOut = false;
+      returning = true;
+      recallFromDeck(old, () => { returning = false; selectedIdx = -1; });
+    }
+  };
+  window.addEventListener('cockpit-view-mode', onViewModeChange);
+
   function setNDC(e){
     const r = renderer.domElement.getBoundingClientRect();
     ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
@@ -548,8 +557,18 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     } else if (mode === 'crate'){
       const idx = pickVinyl(e);
       if (idx >= 0){
-        // Click pulls the record out; clicking it again slides it back.
-        selectedIdx = (selectedIdx === idx) ? -1 : idx;
+        // Click sends the record to the turntable: the sleeve tips out,
+        // the disc rises and flies to the platter (deck view). Falls back
+        // to the old pull-out toggle if the deck isn't available.
+        if (deck() && !deck().busy){
+          if (sendToDeck(idx) && window.__setCockpitViewMode) window.__setCockpitViewMode('deck');
+        } else if (!deck()){
+          selectedIdx = (selectedIdx === idx) ? -1 : idx;
+        }
+        // stopImmediatePropagation: the deck's own pointerdown listener is
+        // on the same canvas — after the mode flip above it would read this
+        // SAME click as a deck-view click-away and bounce straight back.
+        e.stopImmediatePropagation();
         e.stopPropagation();
       } else if (!pickCrate(e)){
         // Empty space: first click puts a pulled record back; with
@@ -626,20 +645,43 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     };
   };
 
-  // Arrow-browse bridge for the HUD: step the pulled record through the
+  // Arrow-browse bridge for the HUD: step the selected record through the
   // stack. -1 = the record beneath (toward the viewer), +1 = the record
-  // above (deeper into the bin). Clamped at both ends.
+  // above (deeper into the bin). Clamped at both ends. In deck view a step
+  // swaps the playing record: the old disc flies home while the new sleeve
+  // tips out and its disc flies onto the platter.
   window.__cockpitVinylSelect = function(delta){
-    if (viewMode() !== 'crate' || selectedIdx < 0) return;
+    const mode = viewMode();
+    if (selectedIdx < 0) return;
     const n = selectedIdx + delta;
-    if (n >= 0 && n < N) selectedIdx = n;
+    if (n < 0 || n >= N) return;
+    if (mode === 'deck'){
+      const d = deck();
+      if (!d || d.busy || !deckOut) return;
+      const old = selectedIdx;
+      selectedIdx = n;
+      recallFromDeck(old);
+      d.play({
+        index: n,
+        from: discWorldPos(n),
+        fromQuat: discWorldQuat(n),
+        fromRadius: discWorldRadius(n),
+        onDepart: () => { vinyls[n].disc.visible = false; },
+      });
+    } else if (mode === 'crate'){
+      selectedIdx = n;
+    }
   };
 
   // ── Per-frame animation ───────────────────────────────────────
   group.tick = function(dt){
-    if (viewMode() !== 'crate'){
-      hoveredIdx = -1;
-      selectedIdx = -1;   // leaving the view slides any pulled record back
+    const mode = viewMode();
+    if (mode !== 'crate') hoveredIdx = -1;
+    // Leaving the crate slides any pulled record back — EXCEPT while it's
+    // out on the deck (deck view) or mid-flight home (returning), where
+    // the sleeve must stay tipped until the disc lands back in it.
+    if (mode !== 'crate' && mode !== 'deck' && !deckOut && !returning){
+      selectedIdx = -1;
     }
     const active = selectedIdx;   // only a CLICKED record moves — hover never does
 
@@ -693,6 +735,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     renderer.domElement.removeEventListener('pointermove', onPointerMove);
     renderer.domElement.removeEventListener('pointerleave', onPointerLeave);
     renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
+    window.removeEventListener('cockpit-view-mode', onViewModeChange);
     window.__getCockpitCrateRect = null;
     window.__getCockpitVinylHover = null;
     window.__cockpitVinylSelect = null;

@@ -1,0 +1,18 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e12]:
+    - generic [ref=f2e74]:
+      - generic [ref=f2e167]:
+        - generic [ref=f2e168]:
+          - generic [ref=f2e169]: AX/OS · DIALOG
+          - generic [ref=f2e170]: ● ● ●
+        - generic [ref=f2e171]:
+          - generic [ref=f2e172]: "*AX/OS v2.59 ready."
+          - generic [ref=f2e173]: "*Type a prompt to begin."
+        - generic [ref=f2e174]:
+          - generic [ref=f2e175]: ">"
+          - textbox "Ask AX/OS" [ref=f2e176]:
+            - /placeholder: ask ax/os…
+          - button "send" [disabled] [ref=f2e177] [cursor=pointer]
+      - button "esc · return" [ref=f2e179] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f2e7] [cursor=pointer]
+  - alert [ref=f2e11]

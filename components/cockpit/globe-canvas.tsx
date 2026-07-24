@@ -864,12 +864,23 @@ function GlobeCanvas({ yawRef, pitchRef }){
     // ══════════════════════════════════════════════════════════════
     let viewMode = 'cockpit';
     let focusKind = 'monitor';
-    let modeT = 0;  // 0 = cockpit, 1 = focused (monitor or crate)
+    let modeT = 0;  // 0 = cockpit, 1 = focused (monitor, crate or deck)
+    let focusSwitch = null;  // eases between two focused poses (crate → deck)
     let smoothYaw = 0, smoothPitch = 0;  // butter-lerped toward cursor target
+    const FOCUSED = (m) => m === 'monitor' || m === 'crate' || m === 'deck';
     window.__cockpitViewMode = 'cockpit';
     const setViewMode = (m) => {
+      const wasFocused = FOCUSED(viewMode);
       viewMode = m;
-      if (m === 'monitor' || m === 'crate') focusKind = m;
+      if (FOCUSED(m)){
+        // Switching directly between two focused poses (crate → deck):
+        // modeT is already ~1, so without this the camera would snap.
+        // Capture the current pose and blend toward the new target.
+        if (wasFocused && focusKind !== m && modeT > 0.3){
+          focusSwitch = { pos: camera.position.clone(), quat: camera.quaternion.clone(), t: 0 };
+        }
+        focusKind = m;
+      }
       window.__cockpitViewMode = m;
       window.dispatchEvent(new CustomEvent('cockpit-view-mode', { detail:{ mode: m } }));
       if (m === 'cockpit'){ applyHover(null); renderer.domElement.style.cursor = ''; }
@@ -881,7 +892,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
     let crate = null;
     try { crate = buildVinylCrate(scene, tableGroup, camera, renderer); } catch (e) { /* crate optional */ }
     let turntable = null;
-    try { turntable = buildTurntable(scene, tableGroup); } catch (e) { /* turntable optional */ }
+    try { turntable = buildTurntable(scene, tableGroup, camera, renderer); } catch (e) { /* turntable optional */ }
     let coffeeStation = null;
     try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer); } catch (e) { /* coffee optional */ }
     let decorations = null;
@@ -901,7 +912,9 @@ function GlobeCanvas({ yawRef, pitchRef }){
 
     // Register turntable + coffee meshes with the hover raycaster (the
     // coffee set includes its invisible fat pick volumes — generous target).
-    if (turntable) turntable.traverse(o => { if (o.isMesh) hoverPickables.turntable.push(o); });
+    // Skip the deck's hologram meshes (card/beam — userData.noPick): they
+    // sit in front of everything in deck view and must never grab hover.
+    if (turntable) turntable.traverse(o => { if (o.isMesh && !o.userData.noPick) hoverPickables.turntable.push(o); });
     if (coffeeStation && coffeeStation.glowTargets)
       coffeeStation.glowTargets.forEach(root =>
         root.traverse(o => { if (o.isMesh) hoverPickables.coffee.push(o); }));
@@ -962,7 +975,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       const t = clock.elapsedTime;
 
       // Ease modeT toward target (0 = cockpit, 1 = focused pose)
-      const target = (viewMode === 'monitor' || viewMode === 'crate') ? 1 : 0;
+      const target = FOCUSED(viewMode) ? 1 : 0;
       modeT += (target - modeT) * Math.min(1, dt * 2.2);
 
       // Globe stays hidden
@@ -1007,9 +1020,25 @@ function GlobeCanvas({ yawRef, pitchRef }){
       const cockpitYaw = yaw;
       const cockpitPitch = pitch;
 
-      // Focused pose — either the PC monitor or the vinyl crate.
+      // Focused pose — the PC monitor, the vinyl crate, or the deck.
       let monitorPos, monitorQuat;
-      if (focusKind === 'crate' && crate && crate.getFocusTarget){
+      if (focusKind === 'deck' && turntable && turntable.getFocusTarget){
+        // Deck target — front-and-above the turntable, framing the platter
+        // plus the holographic card projected over it.
+        const info = turntable.getFocusTarget();
+        const fovY = camera.fov * Math.PI / 180;
+        const dist = Math.max(2, (info.fitHeight / 0.85) / (2 * Math.tan(fovY / 2)));
+        const dir = info.outward.clone().add(new THREE.Vector3(0, 0.42, 0)).normalize();
+        monitorPos = info.center.clone().add(dir.multiplyScalar(dist));
+        // Tiny cursor parallax — the hologram should feel dimensional
+        monitorPos.x += yaw * 0.12;
+        monitorPos.y += pitch * 0.08;
+        const look = new THREE.PerspectiveCamera();
+        look.position.copy(monitorPos);
+        look.up.set(0, 1, 0);
+        look.lookAt(info.center);
+        monitorQuat = look.quaternion.clone();
+      } else if (focusKind === 'crate' && crate && crate.getFocusTarget){
         // Crate target — hover above-and-in-front of the bin, looking
         // down into it so the covers + top edges read while digging.
         const info = crate.getFocusTarget();
@@ -1075,6 +1104,16 @@ function GlobeCanvas({ yawRef, pitchRef }){
       }
       }
 
+      // Focused-pose switch (crate → deck): blend from the captured pose
+      // toward the new focus target so the camera glides instead of snapping.
+      if (focusSwitch){
+        focusSwitch.t += dt / 0.85;
+        const s = easeInOut(Math.min(1, focusSwitch.t));
+        monitorPos = focusSwitch.pos.clone().lerp(monitorPos, s);
+        monitorQuat = focusSwitch.quat.clone().slerp(monitorQuat, s);
+        if (focusSwitch.t >= 1) focusSwitch = null;
+      }
+
       // Interpolate
       const mt = easeInOut(modeT);
       camera.position.x = cockpitPos.x + (monitorPos.x - cockpitPos.x) * mt;
@@ -1105,6 +1144,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
       if (crate && crate.disposeCrate) crate.disposeCrate();
+      if (turntable && turntable.disposeDeck) turntable.disposeDeck();
       if (coffeeStation && coffeeStation.dispose) coffeeStation.dispose();
       if (decorations && decorations.dispose) decorations.dispose();
       if (teaSet && teaSet.dispose) teaSet.dispose();

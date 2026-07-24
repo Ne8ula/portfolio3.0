@@ -1,0 +1,83 @@
+[      24ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/api/userdata/user.css:0
+[      31ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/user.css:0
+[     307ms] [WARNING] [ComfyUI] The legacy queue/history menu is deprecated. Core functionality in this menu may break at any time. Issues and feature requests related to the legacy menu will not be addressed. To switch to the new menu: Settings → search "Use new menu" → change from "Disabled" to "Top". @ http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:161
+[     308ms] [WARNING] [ComfyUI] The legacy queue/history menu is deprecated. Core functionality in this menu may break at any time. Issues and feature requests related to the legacy menu will not be addressed. To switch to the new menu: Settings → search "Use new menu" → change from "Disabled" to "Top". @ http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:161
+[     377ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/api/userdata?dir=workflows&recurse=true&split=false&full_info=true:0
+[     396ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/favicon.ico:0
+[     425ms] [ERROR] ComfyApp graph accessed before initialization @ http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:177
+[     460ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/api/userdata?dir=workflows&recurse=true&split=false&full_info=true:0
+[     470ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/api/userdata?dir=subgraphs&recurse=true&split=false&full_info=true:0
+[     593ms] [WARNING] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration. @ http://127.0.0.1:8188/assets/core-kRheBl5O.js:2
+[     597ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8188/api/userdata/comfy.templates.json:0
+[   47751ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[   47751ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:1653)
+    at fetchJobsRaw (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438181)
+    at fetchHistoryPage (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438826)
+    at fetchHistory (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438736)
+    at ComfyApi.getHistory (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:8354)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:205691)
+    at Proxy.update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:206509)
+    at async ComfyApi.onStatus (http://127.0.0.1:8188/assets/GraphView-35wEFKvN.js:21:206867) @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:1
+[   47752ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[   47752ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:1653)
+    at fetchJobsRaw (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438181)
+    at fetchQueue (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:439043)
+    at ComfyApi.getQueue (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:8164)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:205661)
+    at Proxy.update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:206509)
+    at async ComfyApi.onStatus (http://127.0.0.1:8188/assets/GraphView-35wEFKvN.js:21:206867) @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:1
+[   48061ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   49805ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[   49805ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:1653)
+    at fetchJobsRaw (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438181)
+    at fetchQueue (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:439043)
+    at ComfyApi.getQueue (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:8164)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:205661)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:206509) @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:1
+[   49805ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[   49805ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:1653)
+    at fetchJobsRaw (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438181)
+    at fetchHistoryPage (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438826)
+    at fetchHistory (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:2:438736)
+    at ComfyApi.getHistory (http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:4:8354)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:205691)
+    at update (http://127.0.0.1:8188/assets/dialogService-B7T2yww0.js:153:206509) @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:1
+[   50424ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   52772ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   55144ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   57506ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   58638ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/queue:0
+[   59858ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   62209ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   64590ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   66961ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   69336ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   71735ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   74072ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   76441ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   78822ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   81202ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   83583ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   85971ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   88352ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   90738ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   93134ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   95529ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[   97902ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  100323ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  102792ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  105423ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  107941ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  110544ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  113296ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  116394ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  119899ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  123239ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  127964ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  132065ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  137804ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3
+[  143427ms] [ERROR] WebSocket connection to 'ws://127.0.0.1:8188/ws?clientId=1148394516ed49429e130d7a6d367dcb' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:8188/assets/api-BqIxvqZ8.js:3

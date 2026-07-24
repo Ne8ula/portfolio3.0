@@ -77,8 +77,41 @@ html, body {
   color: var(--ink);
   font-family: var(--font-mono);
   cursor: default;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 canvas { display: block; }
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+button:active:not(:disabled) {
+  scale: 0.96;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--jade-light) !important;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* ─── Typography helpers (from the prototype) ─────────────────── */
 .display { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.02em; line-height: .95; }

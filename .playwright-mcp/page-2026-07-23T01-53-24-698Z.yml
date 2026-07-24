@@ -1,0 +1,13 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e12]:
+    - generic [ref=f2e74]:
+      - generic:
+        - generic:
+          - generic: hello.
+          - generic: A.X / STUDIO
+          - generic: —
+          - generic: AX/OS · CLICK TO WAKE
+          - generic: _
+      - button "esc · return" [ref=f2e179] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f2e7] [cursor=pointer]
+  - alert [ref=f2e11]

@@ -1,0 +1,106 @@
+- generic [ref=f1e1]:
+  - main [ref=f1e9]:
+    - generic [ref=f1e11]:
+      - text: .. .. ..
+      - generic:
+        - generic [ref=f1e14]:
+          - group [ref=f1e18]:
+            - button "Unsaved Workflow (2) • Close" [pressed] [ref=f1e179] [cursor=pointer]:
+              - generic [ref=f1e181]:
+                - generic [ref=f1e182]: Unsaved Workflow (2)
+                - generic [ref=f1e183]:
+                  - generic [ref=f1e184]: •
+                  - button "Close" [ref=f1e185]:
+                    - generic [ref=f1e186]: 
+          - button "Create a new blank workflow" [ref=f1e27] [cursor=pointer]:
+            - generic [ref=f1e28]: 
+        - generic:
+          - navigation [ref=f1e30]:
+            - generic [ref=f1e31]:
+              - generic [ref=f1e32]:
+                - button "Assets (a)" [ref=f1e38] [cursor=pointer]:
+                  - generic [ref=f1e39]: Assets
+                - button "Node Library (n)" [ref=f1e43] [cursor=pointer]:
+                  - generic [ref=f1e44]: Nodes
+                - button "Model Library (m)" [ref=f1e48] [cursor=pointer]:
+                  - generic [ref=f1e49]: Models
+                - button "Workflows (w)" [ref=f1e53] [cursor=pointer]:
+                  - generic [ref=f1e54]: Workflows
+                - button "Apps" [ref=f1e58] [cursor=pointer]
+                - button "Templates" [ref=f1e63] [cursor=pointer]
+              - generic [ref=f1e68]:
+                - button "Help Center" [ref=f1e69] [cursor=pointer]:
+                  - generic [ref=f1e70]:
+                    - generic [ref=f1e71]: 
+                    - generic [ref=f1e73]: Help
+                - button "Toggle Bottom Panel" [ref=f1e74] [cursor=pointer]:
+                  - generic [ref=f1e75]: Console
+                - button "Keyboard Shortcuts (Ctrl + Shift + k)" [ref=f1e79] [cursor=pointer]:
+                  - generic [ref=f1e80]: Shortcuts
+                - button "Settings (Ctrl + ,)" [ref=f1e84] [cursor=pointer]:
+                  - generic [ref=f1e85]: Settings
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic [ref=f1e89]:
+                        - button "Enter app mode" [ref=f1e90] [cursor=pointer]
+                        - button "Workflow actions" [ref=f1e92] [cursor=pointer]:
+                          - generic [ref=f1e93]: Graph
+                      - text: 
+                  - region [ref=f1e98]:
+                    - generic [ref=f1e100]:
+                      - generic [ref=f1e101]: .. .. ..
+                      - generic [ref=f1e102]:
+                        - generic "Batch Count" [ref=f1e103]:
+                          - generic [ref=f1e104]:
+                            - textbox "Batch Count" [ref=f1e105]: "1"
+                            - generic [ref=f1e106]:
+                              - button "Increment" [ref=f1e107] [cursor=pointer]
+                              - button "Decrement" [disabled]
+                        - button "Run" [ref=f1e108] [cursor=pointer]
+                        - button "Run" [ref=f1e110] [cursor=pointer]
+                      - button "Cancel current run" [disabled]
+                      - button "0 active Expand job queue" [ref=f1e221] [cursor=pointer]:
+                        - generic [ref=f1e112]: 0 active
+                        - generic [ref=f1e113]: Expand job queue
+              - generic:
+                - toolbar "Canvas Toolbar" [ref=f1e114]:
+                  - button "Canvas Mode" [ref=f1e115] [cursor=pointer]
+                  - button "Fit View (.)" [ref=f1e121] [cursor=pointer]
+                  - button "Zoom Controls" [ref=f1e123] [cursor=pointer]:
+                    - generic [ref=f1e124]: 90%
+                  - button "Show Minimap (ALT + SHIFT + M)" [ref=f1e187] [cursor=pointer]
+                  - button "Hide Links" [ref=f1e130] [cursor=pointer]
+                - text: 
+            - separator [ref=f1e140]
+            - generic [ref=f1e143]:
+              - generic [ref=f1e144]:
+                - generic [ref=f1e145]:
+                  - heading "Workflow Overview" [level=3] [ref=f1e146]
+                  - button "Toggle properties panel" [pressed] [ref=f1e148] [cursor=pointer]
+                - navigation [ref=f1e150]:
+                  - tablist [ref=f1e151]:
+                    - tab "Parameters" [selected] [ref=f1e152] [cursor=pointer]
+                    - tab "Nodes" [ref=f1e153] [cursor=pointer]
+                    - tab "Global Settings" [ref=f1e154] [cursor=pointer]
+              - generic [ref=f1e155]:
+                - textbox [ref=f1e159]:
+                  - /placeholder: Search ...
+                - generic [ref=f1e161]:
+                  - button "NO FAVORITED INPUTS" [disabled] [ref=f1e163]
+                  - generic [ref=f1e169]:
+                    - paragraph [ref=f1e170]: Inputs you favorite will show up here
+                    - paragraph [ref=f1e171]: In the Parameters tab, click on any input to add it here
+      - generic:
+        - generic "The text to be encoded." [ref=f1e192]:
+          - textbox "text" [ref=f1e193]: "a translucent holographic user interface panel projected directly above the spinning turntable platter, made of glowing jade green wireframe lines and scanlines, rectangular info card showing a serif project title and small monospace metadata rows, a thin beam of jade light rising from the record center spindle up to the panel, subtle flicker glow, first-person view of a designer desk in a dark charcoal studio room, glowing thin wireframe contour grid lines etched across the desk surface and far wall, matte cream off-white satin-finish objects: a crate of vinyl record sleeves on the left, a minimalist turntable with a pale jade green platter at center holding a spinning black vinyl record, a retro beige computer with a small glowing screen on the right, elegant thin serif headline text in the upper left corner, tiny monospace menu text in the upper right, cinematic product render, soft studio rim lighting, moody, high detail, UI UX concept art for a 3D portfolio website"
+        - generic "The text to be encoded." [ref=f1e207]:
+          - textbox "text" [ref=f1e208]
+    - text: 
+  - alert [ref=f1e211]:
+    - generic [ref=f1e212]:
+      - generic [ref=f1e215]: Reconnecting
+      - button "Close" [active] [ref=f1e218] [cursor=pointer]

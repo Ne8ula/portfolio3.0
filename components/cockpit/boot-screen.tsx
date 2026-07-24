@@ -1,5 +1,5 @@
-"use client"
 // @ts-nocheck
+"use client"
 // BootScreen — cinematic crash → reboot → boot sequence.
 // Ported verbatim from the Cockpit.html prototype (BootScreen.jsx).
 // Phase-driven timeline; calls onDone() when the user confirms.
@@ -616,6 +616,7 @@ function ConfirmButton({ onConfirm, cursor }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, animation: 'termFadeIn 0.6s ease-out' }}>
       <button
+        type="button"
         onClick={click}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}

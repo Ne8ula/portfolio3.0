@@ -7,11 +7,12 @@
 The "Editorial Cockpit" portfolio: boot a retro terminal → warp tunnel → land first-person at a 3D desk of **artifacts under glass**. Size hierarchy: vinyl crate + A.X/STUDIO turntable = HEROES, "AX-01" PC (right) secondary, pour-over + mug (FAR left) ambient, hobby decorations below all. Clean at rest; hover a hero → light-jade wireframe trace + name tag (OBJECT · PURPOSE).
 
 ## Dev
-`npm run dev` / `build` / `start` / `lint`. Next.js 16 App Router (Turbopack), React 19, TS with `ignoreBuildErrors`; 3D/HUD files use `@ts-nocheck`. three.js `^0.184` **imperative** (no React Three Fiber — do not convert). `@pmndrs/vanilla` supplies MeshTransmissionMaterial. `postprocessing` + `three-mesh-bvh` installed, NOT yet wired. Tailwind v4 tokens + inline styles with CSS vars. `public/micrographics/`: 70 SVG sticker sheets (few used — see decals.ts). Unused deps (R3F, drei, zustand…) — prune freely.
+`npm run dev` / `build` / `start` / `lint`. Next.js 16 App Router (Turbopack), React 19, TS with `ignoreBuildErrors`; 3D/HUD files use `@ts-nocheck`. three.js `^0.184` **imperative** (no React Three Fiber — do not convert). `@pmndrs/vanilla` supplies MeshTransmissionMaterial. Runtime deps are intentionally minimal; `postprocessing` + `three-mesh-bvh` remain installed for planned wiring. Tailwind v4 tokens + inline styles with CSS vars. `public/micrographics/`: 70 SVG sticker sheets (few used — see decals.ts).
 
 ## User flow
 1. **Boot** — POST terminal, ends on an `[ENTER THE ROOM]` confirm (Enter/Space/click).
 2. **Warp** — ~2.5s wireframe airlock (own disposable three.js scene in warp-transition.tsx): a DS-style scan pulse reveals a contour-grid terrain, sliding doors part, camera dollies through; glitch flicker rides the wavefront. The REAL cockpit mounts UNDERNEATH during warp (theme + TWEAK apply loop run from warp on) and a NoBlending portal quad punches a transparent hole tracking the door gap, so the desk shows through, then the scan world dissolves (wrapper fade). Debug: `window.__warpTimeScale = N` slows N×.
+   - `prefers-reduced-motion: reduce` skips the warp and suppresses CSS animation/transition motion.
 3. **Cockpit** — cursor free-look (±22° yaw, ±15° pitch); camera + objects dead still (only the platter spins); wireframe SVG cursor, no reticle.
    - **PC**: hover → tag + glow + jade brackets "AX/OS · CLICK TO ENTER"; click → camera dollies to the screen (`monitor` view) + AX/OS ScreenDialog (future chatbot). Esc exits.
    - **Crate**: hover → tag + glow + brackets "ARCHIVE · CLICK TO BROWSE"; click → `crate` view (steep top-down; FIXED camera). Hover only HIGHLIGHTS a record (jade pins + halo); CLICK pulls it out: it and every record in front tip by the same angle (parallel ⇒ cannot clip), disc slides out, bin dims, VinylInfoCard + ◄/► arrows step the stack. Click again/empty space returns it; empty with none pulled exits.
@@ -59,4 +60,4 @@ Palette: cream / ink / mauve + **jade as the only chromatic accent** (never red)
 - Weather reverse-geocode can hit CORS on localhost — falls back to coords-only.
 
 ## Next
-Real project data in `PROJECTS` + record click-through · chatbot behind ScreenDialog · wire `postprocessing` · `prefers-reduced-motion` · mobile fallback.
+Real project data in `PROJECTS` + record click-through · chatbot behind ScreenDialog · wire `postprocessing` · mobile fallback.

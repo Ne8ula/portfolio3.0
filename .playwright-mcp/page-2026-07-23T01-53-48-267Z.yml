@@ -1,0 +1,59 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e12]:
+    - generic [ref=f2e74]:
+      - generic:
+        - generic:
+          - generic: hello.
+          - generic: A.X / STUDIO
+          - generic: —
+          - generic: AX/OS · CLICK TO WAKE
+          - generic: _
+      - generic [ref=f2e183]:
+        - generic [ref=f2e184]:
+          - generic [ref=f2e189]:
+            - generic [ref=f2e190]: A
+            - generic [ref=f2e192]: xiong
+            - generic [ref=f2e193]: studio
+          - generic "weather" [ref=f2e194]:
+            - generic [ref=f2e195]: ☁
+            - generic [ref=f2e196]: 75° · HERE
+        - navigation [ref=f2e197]:
+          - button "projects" [ref=f2e199] [cursor=pointer]:
+            - generic [ref=f2e200]: "01"
+            - text: projects
+            - generic [ref=f2e201]: ▾
+          - button "designs" [ref=f2e204] [cursor=pointer]:
+            - generic [ref=f2e205]: "02"
+            - text: designs
+          - button "about" [ref=f2e207] [cursor=pointer]:
+            - generic [ref=f2e208]: "03"
+            - text: about
+          - button "contact" [ref=f2e210] [cursor=pointer]:
+            - generic [ref=f2e211]: "04"
+            - text: contact
+          - generic [ref=f2e213]: 21:53 · EDT
+      - generic [ref=f2e217]:
+        - heading "Alex Xiong" [level=1] [ref=f2e218]: AlexXiong
+        - generic [ref=f2e219]: portfolio · v.2026.04
+      - generic [ref=f2e222]: extinguish flame³ · illuminate in ∞
+      - generic [ref=f2e224]:
+        - generic [ref=f2e225]:
+          - generic [ref=f2e226]: crystal clear
+          - generic [ref=f2e227]: See time like never before. Made of superglass and built to last for life, the Live Globe by Nāie will never stop working.
+        - generic [ref=f2e228]:
+          - generic [ref=f2e229]: controls
+          - generic [ref=f2e230]:
+            - generic [ref=f2e231]: move · look
+            - generic [ref=f2e239]: hover · reveal
+            - generic [ref=f2e249]: click · enter
+            - generic [ref=f2e255]:
+              - generic [ref=f2e256]: esc · return
+              - img [ref=f2e258]:
+                - generic [ref=f2e260]: ESC
+    - button "switch to dark mode" [ref=f2e269] [cursor=pointer]:
+      - generic [ref=f2e264]:
+        - generic [ref=f2e265]: ☀
+        - generic [ref=f2e266]: ☾
+      - generic [ref=f2e268]: light
+  - button "Open Next.js Dev Tools" [ref=f2e7] [cursor=pointer]
+  - alert [ref=f2e11]

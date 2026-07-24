@@ -1,5 +1,5 @@
-"use client"
 // @ts-nocheck
+"use client"
 // ThemeToggle — bottom-right dark/light switch. Ported from Cockpit.html.
 import React from "react"
 
@@ -7,6 +7,7 @@ export function ThemeToggle({ theme, onToggle }) {
   const dark = theme === 'dark';
   return (
     <button
+      type="button"
       onClick={onToggle}
       aria-label={dark ? 'switch to light mode' : 'switch to dark mode'}
       style={{

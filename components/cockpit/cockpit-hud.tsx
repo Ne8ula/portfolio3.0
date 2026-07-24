@@ -1,5 +1,5 @@
-"use client"
 // @ts-nocheck
+"use client"
 // Cockpit HUD — mounts the 3D scene (GlobeCanvas) and all DOM chrome:
 // site header + live weather, title card, reticle, PC hover brackets,
 // the on-screen dialog, and the bottom editorial strip.
@@ -12,12 +12,6 @@ import { CURSOR_DEFAULT } from "./cursors"
 function Cockpit({ interactive = true }){
   const yawRef = React.useRef(0);
   const pitchRef = React.useRef(0);
-  const [mode, setMode] = React.useState('free');
-  const [hudYaw, setHudYaw] = React.useState(0);
-  const [hudPitch, setHudPitch] = React.useState(0);
-  const [orders, setOrders] = React.useState(1248732);
-  const [opm, setOpm] = React.useState(14200);
-  const [sales, setSales] = React.useState(3460000);
   const [viewMode, setViewMode] = React.useState('cockpit');
   const [hoveringPC, setHoveringPC] = React.useState(false);
   const [hoveringCrate, setHoveringCrate] = React.useState(false);
@@ -49,8 +43,6 @@ function Cockpit({ interactive = true }){
     if (!interactive){
       yawRef.current = 0;
       pitchRef.current = 0;
-      setHudYaw(0);
-      setHudPitch(0);
     }
   }, [interactive]);
 
@@ -60,7 +52,6 @@ function Cockpit({ interactive = true }){
     const el = stageRef.current;
     if (!el) return;
     const onMove = (e) => {
-      if (mode !== 'free') return;
       const r = el.getBoundingClientRect();
       const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
       const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
@@ -75,75 +66,18 @@ function Cockpit({ interactive = true }){
     };
     window.addEventListener('mousemove', onMove);
     return () => window.removeEventListener('mousemove', onMove);
-  }, [mode, interactive, viewMode]);
-
-  // Sync HUD yaw/pitch readouts to the butter-smoothed values in Globe
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const y = window.__cockpitSmoothedYaw;
-      const p = window.__cockpitSmoothedPitch;
-      if (typeof y === 'number') setHudYaw(y);
-      if (typeof p === 'number') setHudPitch(p);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  // LOCKED mode — pointer-lock delta
-  React.useEffect(() => {
-    if (!interactive) return;
-    const el = stageRef.current;
-    if (!el) return;
-    const onLockChange = () => {
-      if (document.pointerLockElement !== el && mode === 'locked') setMode('free');
-    };
-    const onMove = (e) => {
-      if (mode !== 'locked' || document.pointerLockElement !== el) return;
-      yawRef.current   -= e.movementX * 0.0025;
-      pitchRef.current -= e.movementY * 0.0025;
-      const lim = Math.PI/2 - 0.1;
-      if (pitchRef.current > lim) pitchRef.current = lim;
-      if (pitchRef.current < -lim) pitchRef.current = -lim;
-    };
-    document.addEventListener('pointerlockchange', onLockChange);
-    document.addEventListener('mousemove', onMove);
-    return () => {
-      document.removeEventListener('pointerlockchange', onLockChange);
-      document.removeEventListener('mousemove', onMove);
-    };
-  }, [mode, interactive]);
-
-  const tryLock = async () => {
-    const el = stageRef.current;
-    if (!el || !el.requestPointerLock) return;
-    try { await el.requestPointerLock(); setMode('locked'); }
-    catch { setMode('free'); }
-  };
-  const releaseLock = () => {
-    if (document.pointerLockElement) document.exitPointerLock?.();
-    setMode('free');
-  };
+  }, [interactive, viewMode]);
 
   React.useEffect(() => {
-    const iv = setInterval(() => {
-      setOrders(o => o + Math.floor(Math.random()*240+80));
-      setOpm(o => Math.max(9000, Math.min(22000, o + (Math.random()-.5)*400)));
-      setSales(s => s + Math.floor(Math.random()*90000+20000));
-    }, 900);
-    return () => clearInterval(iv);
-  }, []);
-
-  const locked = mode === 'locked';
-  const heading = ((hudYaw * 180/Math.PI) % 360 + 360) % 360;
-  const pitchDeg = hudPitch * 180/Math.PI;
-
-  const fmt = n => n.toLocaleString('en-US');
-  const fmt$ = n => '$' + (n/1000).toFixed(0) + 'K';
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape' && viewMode !== 'cockpit') exitGlobe();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [exitGlobe, viewMode]);
 
   return (
-    <div ref={stageRef} data-screen-label="02 Cockpit FPS" onKeyDown={(e)=>{ if(e.key==='Escape'){ if(viewMode!=='cockpit') exitGlobe(); else releaseLock(); } }} tabIndex={0} style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor: locked ? 'none' : CURSOR_DEFAULT,outline:'none'}}>
+    <div ref={stageRef} data-screen-label="02 Cockpit FPS" style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor:CURSOR_DEFAULT}}>
       <GlobeCanvas yawRef={yawRef} pitchRef={pitchRef}/>
 
       {viewMode === 'cockpit' && <ObjectTags/>}
@@ -151,6 +85,7 @@ function Cockpit({ interactive = true }){
       {viewMode === 'cockpit' && <CrateHoverHighlight hovering={hoveringCrate}/>}
       {viewMode === 'crate' && <VinylInfoCard/>}
       {viewMode === 'crate' && <VinylBrowseArrows/>}
+      {viewMode === 'deck' && <DeckBrowseArrows/>}
       <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
         <div style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
@@ -168,7 +103,7 @@ function Cockpit({ interactive = true }){
 
       {/* Title card — sits below the header, on the left */}
       <div style={{position:'absolute',top:120,left:40,zIndex:20,color:'var(--cream)',maxWidth:560}}>
-        <div style={{fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>Alex<br/>Xiong</div>
+        <h1 style={{margin:0,fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>Alex<br/>Xiong</h1>
         <div style={{marginTop:20,display:'flex',gap:14,alignItems:'center'}}>
           <span style={{width:24,height:1,background:'var(--cream-deep)',display:'inline-block',opacity:.65}}/>
           <span style={{color:'var(--cream-deep)',letterSpacing:'.32em',fontWeight:600,fontFamily:'var(--font-mono)',fontSize:13,textTransform:'uppercase'}}>portfolio · v.2026.04</span>
@@ -197,23 +132,6 @@ function Cockpit({ interactive = true }){
       </div>
 
       </>}
-    </div>
-  );
-}
-
-const toggleStyle = (active) => ({
-  border: active ? '1px solid var(--jade)' : '1px solid var(--mauve)',
-  background: active ? 'var(--jade)' : 'transparent',
-  color: active ? 'var(--cream-warm)' : 'var(--cream-deep)',
-  padding:'5px 10px', cursor:'pointer',
-  fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em', textTransform:'uppercase', fontWeight:500
-});
-
-function Stat({label, value}){
-  return (
-    <div>
-      <div className="micro" style={{color:'var(--cream-deep)',marginBottom:2}}>{label}</div>
-      <div style={{fontFamily:'var(--font-serif)',fontSize:26,fontWeight:400,color:'var(--cream-warm)',lineHeight:1,letterSpacing:'-.01em'}}>{value}</div>
     </div>
   );
 }
@@ -474,9 +392,9 @@ function SiteHeader(){
         gap:24,
       }}>
         {/* LEFT — horizontal logo lockup, expanded with graphic elements */}
-        <a href="#" onClick={(e)=>e.preventDefault()} style={{
+        <div style={{
           display:'flex', alignItems:'center', gap:14,
-          textDecoration:'none', cursor:'pointer',
+          textDecoration:'none',
           color:'var(--cream-warm)',
           position:'relative',
         }}>
@@ -536,7 +454,7 @@ function SiteHeader(){
             );
           })()}
 
-        </a>
+        </div>
 
         {/* RIGHT — primary nav + meta */}
         <nav style={{display:'flex', alignItems:'center', gap:0}}>
@@ -552,7 +470,10 @@ function SiteHeader(){
                 style={{position:'relative', padding:'0 18px'}}
               >
                 <button
+                  type="button"
                   onClick={() => setActive(it.id)}
+                  aria-expanded={isProjects ? openSub : undefined}
+                  aria-haspopup={isProjects ? 'menu' : undefined}
                   style={{
                     background:'transparent', border:'none', padding:'6px 0',
                     cursor:'pointer',
@@ -625,6 +546,7 @@ function SiteHeader(){
                     <div style={{display:'flex', flexDirection:'column'}}>
                       {it.sub.map((s, sIdx) => (
                         <button
+                          type="button"
                           key={s.id}
                           onClick={() => { setActive(it.id); setOpenSub(false); }}
                           style={{
@@ -958,23 +880,36 @@ function VinylInfoCard(){
 }
 
 // ─────────────────────────────────────────────────────────────
-// VinylBrowseArrows — appear while a record is pulled out.
-// ◄ selects the record beneath the current one (toward the
-// viewer); ► selects the record above it (deeper into the bin).
-// Steps via window.__cockpitVinylSelect(±1), clamped by index/count.
+// BrowseArrows — shared ◄/► record stepper. In crate view they
+// appear while a record is pulled out (info from
+// __getCockpitVinylHover); in deck view while a record plays on
+// the turntable (info from __getCockpitDeckInfo — also disabled
+// mid-flight via info.busy). Both step through
+// window.__cockpitVinylSelect(±1), clamped by index/count.
 // ─────────────────────────────────────────────────────────────
 function VinylBrowseArrows(){
+  const getInfo = React.useCallback(
+    () => window.__getCockpitVinylHover && window.__getCockpitVinylHover(), []);
+  return <BrowseArrows getInfo={getInfo} hint="◄ ► to browse · click away to return"/>;
+}
+
+function DeckBrowseArrows(){
+  const getInfo = React.useCallback(
+    () => window.__getCockpitDeckInfo && window.__getCockpitDeckInfo(), []);
+  return <BrowseArrows getInfo={getInfo} hint="◄ ► to browse · esc to return"/>;
+}
+
+function BrowseArrows({ getInfo, hint }){
   const [info, setInfo] = React.useState(null);
   React.useEffect(() => {
     let raf;
     const tick = () => {
-      const h = window.__getCockpitVinylHover && window.__getCockpitVinylHover();
-      setInfo(h || null);
+      setInfo(getInfo() || null);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [getInfo]);
   if (!info) return null;
   const step = (d) => window.__cockpitVinylSelect && window.__cockpitVinylSelect(d);
   const arrow = (side, glyph, delta, disabled) => (
@@ -1014,110 +949,11 @@ function VinylBrowseArrows(){
         padding:'8px 14px',
         animation:'termFadeIn .18s ease-out',
       }}>
-        ◄ ► to browse · click away to return
+        {hint}
       </div>
-      {arrow('left',  '◄', -1, info.index <= 0)}
-      {arrow('right', '►', +1, info.index >= info.count - 1)}
+      {arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
+      {arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
     </>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// GlobeHUD — editorial overlay shown while the user is inside
-// the Live Globe view. Matches the Shopify BFCM aesthetic:
-// mono readouts, cream/jade, a tiny exit affordance.
-// ─────────────────────────────────────────────────────────────
-function GlobeHUD({ onExit }){
-  const [orders, setOrders] = React.useState(1254237);
-  const [sales, setSales] = React.useState(5074000);
-  const [opm, setOpm] = React.useState(14378);
-  const [tick, setTick] = React.useState(0);
-  React.useEffect(() => {
-    const iv = setInterval(() => {
-      setOrders(o => o + Math.floor(Math.random()*300+100));
-      setOpm(o => Math.max(9000, Math.min(22000, o + (Math.random()-.5)*400)));
-      setSales(s => s + Math.floor(Math.random()*120000+30000));
-      setTick(t => t + 1);
-    }, 900);
-    return () => clearInterval(iv);
-  }, []);
-  React.useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onExit(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onExit]);
-  const fmt = n => n.toLocaleString('en-US');
-  const fmt$ = n => '$' + (n/1000).toFixed(0) + 'K';
-  return (
-    <div style={{position:'absolute', inset:0, zIndex:20, color:'var(--cream)', pointerEvents:'none'}}>
-      {/* top-left: title */}
-      <div style={{position:'absolute', top:28, left:40, pointerEvents:'auto'}}>
-        <div className="micro" style={{color:'var(--cream-deep)', marginBottom:6}}>ax/os · live globe 2059</div>
-        <div style={{fontFamily:'var(--font-serif)', fontSize:54, fontWeight:300, lineHeight:.9, letterSpacing:'-.02em', color:'var(--cream-warm)'}}>
-          Live<br/>Globe
-        </div>
-        <div style={{marginTop:10, display:'flex', gap:10, alignItems:'center'}}>
-          <span style={{width:7, height:7, background:'var(--jade)', display:'inline-block', animation:'softPulse 1.6s infinite'}}/>
-          <span className="micro" style={{color:'var(--cream-deep)'}}>streaming · real_time</span>
-        </div>
-      </div>
-
-      {/* top-right: meta + exit */}
-      <div style={{position:'absolute', top:28, right:40, textAlign:'right', pointerEvents:'auto'}}>
-        <div className="micro" style={{color:'var(--cream-deep)', marginBottom:4}}>sector · 104.992</div>
-        <div style={{fontFamily:'var(--font-mono)', fontSize:11, color:'var(--cream-deep)', lineHeight:1.6}}>
-          <div>hemisphere · <span style={{color:'var(--cream-warm)'}}>orbital_n</span></div>
-          <div>uptime · <span style={{color:'var(--cream-warm)'}}>24h 00m</span></div>
-          <div>peers · <span style={{color:'var(--cream-warm)'}}>{(1200+tick).toLocaleString()}</span></div>
-        </div>
-        <button onClick={onExit} style={{
-          marginTop:14, background:'transparent', color:'var(--cream-warm)',
-          border:'1px solid var(--jade)', padding:'6px 12px',
-          fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.22em',
-          textTransform:'uppercase', fontWeight:600, cursor:'pointer'
-        }}>esc · return</button>
-      </div>
-
-      {/* bottom: big editorial stats */}
-      <div style={{position:'absolute', left:0, right:0, bottom:0,
-        padding:'28px 40px 32px', pointerEvents:'auto',
-        background:'linear-gradient(to top, rgba(30,28,26,.7), rgba(30,28,26,0))'}}>
-        <div style={{display:'grid', gridTemplateColumns:'1.2fr 1fr 1fr 1fr', gap:32, alignItems:'end'}}>
-          <div>
-            <div className="micro" style={{color:'var(--cream-deep)', marginBottom:8}}>total_orders</div>
-            <div style={{fontFamily:'var(--font-serif)', fontSize:72, fontWeight:300, lineHeight:.9, color:'var(--cream-warm)', letterSpacing:'-.02em'}}>
-              {fmt(orders)}
-            </div>
-          </div>
-          <BigStat label="orders_per_min" value={fmt(Math.round(opm))}/>
-          <BigStat label="sales_per_min"  value={fmt$(sales)}/>
-          <BigStat label="peak_region"    value="APAC"/>
-        </div>
-      </div>
-
-      {/* mid-left vertical */}
-      <div style={{position:'absolute', top:'50%', left:28, transform:'translateY(-50%)',
-        writingMode:'vertical-rl', fontFamily:'var(--font-mono)', fontSize:9,
-        letterSpacing:'.4em', color:'var(--cream-deep)', textTransform:'uppercase'}}>
-        live · orbital_telemetry · 2059.04.21
-      </div>
-
-      {/* mid-right: crosshair line */}
-      <div style={{position:'absolute', top:'50%', right:28, transform:'translateY(-50%)',
-        fontFamily:'var(--font-mono)', fontSize:9, letterSpacing:'.4em',
-        color:'var(--cream-deep)', textTransform:'uppercase', writingMode:'vertical-rl'}}>
-        powered by 333 lab
-      </div>
-    </div>
-  );
-}
-
-function BigStat({ label, value }){
-  return (
-    <div>
-      <div className="micro" style={{color:'var(--cream-deep)', marginBottom:6}}>{label}</div>
-      <div style={{fontFamily:'var(--font-serif)', fontSize:42, fontWeight:300, lineHeight:1, color:'var(--cream-warm)', letterSpacing:'-.01em'}}>{value}</div>
-    </div>
   );
 }
 
@@ -1315,6 +1151,9 @@ function ScreenDialog({ interactive, active }){
         }}>
           <span style={{color:'#3A5A3E', fontWeight:700}}>&gt;</span>
           <input
+            aria-label="Ask AX/OS"
+            name="axos-prompt"
+            autoComplete="off"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
@@ -1327,6 +1166,7 @@ function ScreenDialog({ interactive, active }){
             }}
           />
           <button
+            type="button"
             onClick={send}
             disabled={sending || !input.trim()}
             style={{

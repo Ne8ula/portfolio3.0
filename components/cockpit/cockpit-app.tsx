@@ -1,5 +1,5 @@
-"use client"
 // @ts-nocheck
+"use client"
 // CockpitApp — the app shell + phase state machine (boot → warp → cockpit).
 // Ported from the Cockpit.html prototype's <App/>. The dev Tweaks panel and
 // edit-mode postMessage protocol are dropped; the dialed-in TWEAK_DEFAULTS are
@@ -34,6 +34,9 @@ const TWEAK_DEFAULTS = {
 export function CockpitApp() {
   const [phase, setPhase] = useState('boot');
   const [interactive, setInteractive] = useState(false);
+  const [reduceMotion] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ));
   // Track the 3D view mode so chrome (theme toggle) can hide while the
   // camera is focused on the PC monitor or the vinyl crate.
   const [viewMode, setViewMode] = useState('cockpit');
@@ -46,6 +49,15 @@ export function CockpitApp() {
     try { return localStorage.getItem('cockpit-theme') || 'dark'; }
     catch { return 'dark'; }
   });
+
+  const enterRoom = () => {
+    if (reduceMotion) {
+      setPhase('cockpit');
+      setInteractive(true);
+      return;
+    }
+    setPhase('warp');
+  };
 
   // Apply theme to <html data-theme> + broadcast to the 3D scene once the
   // cockpit has mounted — which now happens during the warp, so the room seen
@@ -99,14 +111,14 @@ export function CockpitApp() {
   }, [phase]);
 
   return (
-    <div
+    <main
       data-screen-label="01 Cockpit FPS"
       style={{
         position: 'fixed', inset: 0, overflow: 'hidden',
         background: 'radial-gradient(ellipse at 30% 20%, var(--page-grad-1), var(--page-grad-2) 45%, var(--page-grad-3) 100%)',
       }}
     >
-      {phase === 'boot' && <BootScreen onDone={() => setPhase('warp')} />}
+      {phase === 'boot' && <BootScreen onDone={enterRoom} />}
       {phase === 'warp' && (
         <WarpTransition onComplete={() => { setPhase('cockpit'); setInteractive(true); }} />
       )}
@@ -123,6 +135,6 @@ export function CockpitApp() {
       {phase === 'cockpit' && viewMode === 'cockpit' && (
         <ThemeToggle theme={theme} onToggle={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))} />
       )}
-    </div>
+    </main>
   );
 }
