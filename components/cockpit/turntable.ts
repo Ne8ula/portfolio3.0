@@ -8,8 +8,9 @@
 // clusters + one sheet from /public/micrographics).
 //
 // The deck also PLAYS records (Figma Weave "Vinyl Player" flow): clicking a
-// record in the crate flies its disc onto the platter — dust cover lifts and
-// fades, the tonearm swings from its parked post onto the record, a jade
+// record in the crate flies its disc onto the platter — the dust cover swings
+// open on its rear hinges, the tonearm swings from its parked post onto the
+// record, a jade
 // projector beam rises from the platter and a holographic PROJECT INFO card
 // (true in-scene canvas-textured plane) materializes above the deck. The
 // crate orchestrates WHICH record plays via window.__cockpitDeck
@@ -132,11 +133,22 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   // Two poses: PARKED (rest — cartridge off the platter, along the deck's
   // right/front) and PLAY (swung in over the record). armT eases between
   // them when a record lands/leaves; the arm lifts slightly mid-swing.
+  // play: cartridge ON the spinning record, mid-groove right-front
+  // (pivot (0.63,-0.36), cartridge reach 0.86, platter (-0.28,0) —
+  // rotY +0.66 lands it ~r0.3 from the spindle; +z droop LOWERS the
+  // far end since the cartridge sits at negative-x reach).
   const ARM_PARK = { y: -1.35, z:  0.03 };
-  const ARM_PLAY = { y: -0.80, z: -0.06 };
+  const ARM_PLAY = { y:  0.66, z:  0.024 };
   armAssembly.rotation.y = ARM_PARK.y;
   armAssembly.rotation.z = ARM_PARK.z;
   armPivot.add(armAssembly);
+  // live-tune bridge (window.__cockpitTurntable.setArmPose) — bake back here
+  group.setArmPose = ({ parkY, parkZ, playY, playZ } = {}) => {
+    if (typeof parkY === 'number') ARM_PARK.y = parkY;
+    if (typeof parkZ === 'number') ARM_PARK.z = parkZ;
+    if (typeof playY === 'number') ARM_PLAY.y = playY;
+    if (typeof playZ === 'number') ARM_PLAY.z = playZ;
+  };
   const armTube = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.88, 12), silver);
   armTube.rotation.z = Math.PI / 2;
   armTube.position.x = -0.44;
@@ -273,16 +285,21 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     color: 0xFFFFFF, transmission: 1, roughness: 0.06, thickness: 0.015,
     ior: 1.25, metalness: 0, envMapIntensity: 0.22,
     clearcoat: 0.15, clearcoatRoughness: 0.15, specularIntensity: 0.35,
-    transparent: true, opacity: 1,   // fades out as the cover lifts for playback
   });
   // COVER_H sits low — just clearing the tonearm collar (~0.39 above deck
   // origin) instead of the old tall 0.52 box.
   const COVER_W = BASE_W - 0.06, COVER_D = BASE_D - 0.06, COVER_H = 0.36, CT = 0.015;
   const coverY0 = topY + 0.004;              // floats a hair above the deck — coplanar = flicker
   const wallH = COVER_H - CT + 0.004;        // walls sink slightly into the lid (no coplanar seam)
-  // All five panels ride one group so the lift/fade animates as a unit.
+  // All five panels ride one group; that group sits inside a hinge pivot on
+  // the cover's BACK-BOTTOM edge, so playback swings the whole case open
+  // like a real dust cover (rotation about X at the rear hinge line).
+  const coverHinge = new THREE.Group();
+  coverHinge.position.set(0, coverY0, -COVER_D/2);
+  group.add(coverHinge);
   const coverGroup = new THREE.Group();
-  group.add(coverGroup);
+  coverGroup.position.set(0, -coverY0, COVER_D/2);   // cancel the pivot offset at rest
+  coverHinge.add(coverGroup);
   const coverPanel = (w, h, d, x, y, z) => {
     const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 2, 0.006), coverMat);
     m.position.set(x, y, z);
@@ -294,6 +311,15 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   [-1, 1].forEach(s =>                                                          // sides
     coverPanel(CT, wallH, COVER_D - CT*2 - 0.002, s * (COVER_W/2 - CT/2), coverY0 + wallH/2, 0));
   coverPanel(COVER_W, CT, COVER_D, 0, coverY0 + COVER_H - CT/2, 0);            // lid
+  // The two hinge barrels on the plinth — small dark cylinders along the
+  // pivot axis (tiny → skipped by the edge-glow tracer automatically).
+  const hingeMat = new THREE.MeshLambertMaterial({ color: 0x2A2722 });
+  [-1, 1].forEach(s => {
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.09, 10), hingeMat);
+    barrel.rotation.z = Math.PI / 2;   // axis along X = the hinge line
+    barrel.position.set(s * (COVER_W/2 - 0.16), coverY0 + 0.006, -COVER_D/2 - 0.002);
+    group.add(barrel);
+  });
 
   // ══════════════════════════════════════════════════════════════
   // DECK — playback machinery (record flight, cover, arm, beam, card)
@@ -304,17 +330,24 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   const WS = () => group.getWorldScale(new THREE.Vector3()).x || 1;
   const easeInOut = (x) => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
 
-  // Hologram palette — saturated light jade lines over translucent ink in
-  // dark theme (additive beam); deep-jade ink over milk in light theme
-  // (additive clamps white over cream — normal blend there).
+  // Card palette — mirrors the site's HUD placard language (see
+  // VinylInfoCard / globals.css tokens): ink placard + cream type + jade
+  // accents in dark; ivory placard + ink type + deep jade in light. Only
+  // the projector beam keeps the saturated hologram jade (additive over
+  // ink; normal blend over cream, which clamps additive to white).
   const deckTheme = () => (window.__cockpitTheme === 'light')
-    ? { line: '#3A5A3E', soft: 'rgba(58,90,62,0.6)',    faint: 'rgba(58,90,62,0.3)',
-        bg: 'rgba(240,235,225,0.36)', btnFill: 'rgba(58,90,62,0.14)',
+    ? { bg: 'rgba(240,235,225,0.92)', border: 'rgba(30,28,26,0.3)',
+        hair: 'rgba(30,28,26,0.2)',   faint: 'rgba(30,28,26,0.38)',
+        text: '#14110F', textSoft: '#3A3733',
+        jade: '#3A5A3E', jadeLite: '#4B6E4F', btnHover: 'rgba(58,90,62,0.14)',
         beam: 0x3A5A3E, blend: THREE.NormalBlending, beamOpacity: 0.26 }
-    : { line: '#8FE3A8', soft: 'rgba(143,227,168,0.62)', faint: 'rgba(143,227,168,0.3)',
-        bg: 'rgba(10,16,12,0.46)', btnFill: 'rgba(143,227,168,0.16)',
+    : { bg: 'rgba(30,28,26,0.88)',    border: 'rgba(232,228,220,0.25)',
+        hair: 'rgba(232,228,220,0.18)', faint: 'rgba(232,228,220,0.4)',
+        text: '#F0EBE1', textSoft: '#D8D3C7',
+        jade: '#4B6E4F', jadeLite: '#7A9A7E', btnHover: 'rgba(75,110,79,0.28)',
         beam: 0x7FE6A4, blend: THREE.AdditiveBlending, beamOpacity: 0.5 };
   let COL = deckTheme();
+  const SERIF = '"Cormorant Garamond", Georgia, serif';
 
   // ── The record on the platter ─────────────────────────────────
   // Lives at scene root during flight (world-space bezier), then attaches
@@ -330,6 +363,20 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     if (!discTexCache.has(i)) discTexCache.set(i, makeDiscTexture(i));
     return discTexCache.get(i);
   };
+  // Card artwork thumbnails (public/vinyl-covers) — lazily loaded; the
+  // card repaints once the image lands if that project is still playing.
+  const coverImgs = new Map();
+  const coverImg = (i) => {
+    if (!PROJECTS[i].cover) return null;
+    let img = coverImgs.get(i);
+    if (!img){
+      img = new Image();
+      img.onload = () => { if (playing === i) drawCard(i, btnHover); };
+      img.src = PROJECTS[i].cover;
+      coverImgs.set(i, img);
+    }
+    return img;
+  };
 
   // ── Holographic PROJECT INFO card + projector beam ────────────
   const holo = new THREE.Group();
@@ -341,101 +388,138 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   const CARD_W = 0.94, CARD_H = 1.175;
   const BEAM_BOT = topY + 0.09, CARD_BOT = 0.95;
   const CARD_Y = CARD_BOT + CARD_H / 2;
-  const BEAM_H = CARD_BOT - BEAM_BOT;
-  const BTN = { x: 56, y: 696, w: 528, h: 64 };   // canvas-px VIEW MORE hit rect
+  // Beam overshoots INTO the card (+0.12) — the card's depth mask hides the
+  // overlap, so the cone always meets the (bobbing, scaling) bottom edge.
+  const BEAM_H = CARD_BOT + 0.12 - BEAM_BOT;
+  const BTN = { x: 56, y: 690, w: 528, h: 54 };   // canvas-px VIEW MORE hit rect
 
   const cardCanvas = document.createElement('canvas');
   cardCanvas.width = CARD_PX_W; cardCanvas.height = CARD_PX_H;
   const cctx = cardCanvas.getContext('2d');
-  const rr = (ctx, x, y, w, h, r) => {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-  };
+  // Editorial placard, matching the DOM HUD (VinylInfoCard): sharp
+  // corners, ink/ivory fill, hairline borders, serif display title,
+  // letter-spaced mono micro-labels, jade squares as separators.
   function drawCard(index, hover){
     const p = PROJECTS[index];
     const W = CARD_PX_W, H = CARD_PX_H;
     cctx.clearRect(0, 0, W, H);
-    cctx.letterSpacing = '0px';
-    // frame + translucent fill
-    rr(cctx, 12, 12, W - 24, H - 24, 24);
-    cctx.fillStyle = COL.bg; cctx.fill();
-    cctx.strokeStyle = COL.line; cctx.lineWidth = 2.5; cctx.stroke();
-    // corner brackets, floated just outside the frame
-    cctx.lineWidth = 3;
-    cctx.beginPath();
-    cctx.moveTo(4, 34); cctx.lineTo(4, 4); cctx.lineTo(34, 4);
-    cctx.moveTo(W - 34, 4); cctx.lineTo(W - 4, 4); cctx.lineTo(W - 4, 34);
-    cctx.moveTo(W - 4, H - 34); cctx.lineTo(W - 4, H - 4); cctx.lineTo(W - 34, H - 4);
-    cctx.moveTo(34, H - 4); cctx.lineTo(4, H - 4); cctx.lineTo(4, H - 34);
-    cctx.stroke();
-    // header
-    cctx.fillStyle = COL.line;
-    cctx.textAlign = 'left'; cctx.textBaseline = 'alphabetic';
+    cctx.textBaseline = 'alphabetic';
+    // placard + hairline frame (sharp — --radius: 0)
+    cctx.fillStyle = COL.bg;
+    cctx.fillRect(10, 10, W - 20, H - 20);
+    cctx.strokeStyle = COL.border; cctx.lineWidth = 2;
+    cctx.strokeRect(10, 10, W - 20, H - 20);
+    // micro header — label left, index right (site .label voice)
     cctx.letterSpacing = '5px';
-    cctx.font = `600 26px ${MONO}`;
-    cctx.fillText('PROJECT INFO', 56, 78);
-    cctx.textAlign = 'right';
-    cctx.fillStyle = COL.soft;
-    cctx.font = `500 24px ${MONO}`;
-    cctx.fillText(String(index + 1).padStart(2, '0'), W - 56, 78);
-    cctx.fillStyle = COL.soft;
-    cctx.fillRect(56, 98, W - 112, 2);
-    // media placeholder — rounded frame + crosshair
-    rr(cctx, 56, 124, W - 112, 294, 10);
-    cctx.strokeStyle = COL.soft; cctx.lineWidth = 2; cctx.stroke();
-    cctx.strokeStyle = COL.line; cctx.lineWidth = 2;
-    cctx.beginPath();
-    cctx.moveTo(W/2 - 24, 271); cctx.lineTo(W/2 + 24, 271);
-    cctx.moveTo(W/2, 247); cctx.lineTo(W/2, 295);
-    cctx.stroke();
-    // title + description
+    cctx.font = `600 19px ${MONO}`;
     cctx.textAlign = 'left';
-    cctx.fillStyle = COL.line;
-    cctx.letterSpacing = '2px';
-    cctx.font = `700 40px ${MONO}`;
-    cctx.fillText(p.title.replace('\n', ' '), 56, 490);
-    cctx.letterSpacing = '1px';
-    cctx.fillStyle = COL.soft;
-    cctx.font = `400 20px ${MONO}`;
-    cctx.fillText('Short project description goes here.', 56, 530);
-    // ROLE / TOOLS / YEAR rows — dashed placeholders, real year
-    const rows = [['ROLE', null], ['TOOLS', null], ['YEAR', p.date]];
-    rows.forEach(([label, val], i) => {
-      const y = 584 + i * 44;
+    cctx.fillStyle = COL.textSoft;
+    cctx.fillText('PROJECT INFO', 56, 72);
+    cctx.textAlign = 'right';
+    cctx.fillStyle = COL.jadeLite;
+    cctx.fillText(`N° ${String(index + 1).padStart(2, '0')}`, W - 56, 72);
+    cctx.fillStyle = COL.hair;
+    cctx.fillRect(56, 92, W - 112, 1.5);
+    // artwork — real thumbnail (cover-cropped) or the pending placeholder
+    const art = coverImg(index);
+    if (art && art.complete && art.naturalWidth){
+      const aw = W - 112, ah = 262;
+      const s = Math.max(aw / art.naturalWidth, ah / art.naturalHeight);
+      cctx.save();
+      cctx.beginPath();
+      cctx.rect(56, 116, aw, ah);
+      cctx.clip();
+      cctx.drawImage(art,
+        56 + (aw - art.naturalWidth * s) / 2,
+        116 + (ah - art.naturalHeight * s) / 2,
+        art.naturalWidth * s, art.naturalHeight * s);
+      cctx.restore();
+      cctx.strokeStyle = COL.hair; cctx.lineWidth = 1.5;
+      cctx.strokeRect(56, 116, aw, ah);
+    } else {
+      cctx.strokeStyle = COL.hair; cctx.lineWidth = 1.5;
+      cctx.strokeRect(56, 116, W - 112, 262);
+      cctx.strokeStyle = COL.faint; cctx.lineWidth = 1.5;
+      cctx.beginPath();
+      cctx.moveTo(W/2 - 20, 236); cctx.lineTo(W/2 + 20, 236);
+      cctx.moveTo(W/2, 216); cctx.lineTo(W/2, 256);
+      cctx.stroke();
+      cctx.textAlign = 'center';
       cctx.letterSpacing = '4px';
-      cctx.fillStyle = COL.line;
-      cctx.font = `600 20px ${MONO}`;
+      cctx.font = `500 15px ${MONO}`;
+      cctx.fillStyle = COL.faint;
+      cctx.fillText('ARTWORK · PENDING', W/2, 348);
+    }
+    // serif display title (Cormorant, like the site headline)
+    cctx.textAlign = 'left';
+    cctx.letterSpacing = '0px';
+    cctx.font = `400 60px ${SERIF}`;
+    cctx.fillStyle = COL.text;
+    cctx.fillText(p.title.replace('\n', ' '), 54, 446);
+    // micro meta row — jade square · category · date (placard header voice)
+    cctx.fillStyle = COL.jade;
+    cctx.fillRect(56, 470, 7, 7);
+    cctx.letterSpacing = '5px';
+    cctx.font = `600 18px ${MONO}`;
+    cctx.fillStyle = COL.jadeLite;
+    const cat = p.category.toUpperCase();
+    cctx.fillText(cat, 78, 478);
+    cctx.fillStyle = COL.textSoft;
+    cctx.fillText(`· ${p.date}`, 78 + cctx.measureText(cat).width + 14, 478);
+    // tagline — one sentence, wrapped to at most two lines
+    cctx.letterSpacing = '1px';
+    cctx.font = `400 19px ${MONO}`;
+    cctx.fillStyle = COL.textSoft;
+    {
+      const lines = [];
+      let line = '';
+      for (const word of p.tagline.split(' ')){
+        const t = line ? `${line} ${word}` : word;
+        if (cctx.measureText(t).width > W - 112 && line){ lines.push(line); line = word; }
+        else line = t;
+      }
+      lines.push(line);
+      if (lines.length === 1) cctx.fillText(lines[0], 56, 530);
+      else { cctx.fillText(lines[0], 56, 518); cctx.fillText(lines[1], 56, 546); }
+    }
+    // ROLE / TOOLS / YEAR — micro label, dotted leader, right value
+    const rows = [['ROLE', p.role], ['TOOLS', p.tools], ['YEAR', p.date]];
+    rows.forEach(([label, val], i) => {
+      const y = 586 + i * 40;
+      cctx.letterSpacing = '5px';
+      cctx.font = `500 17px ${MONO}`;
       cctx.textAlign = 'left';
+      cctx.fillStyle = COL.textSoft;
       cctx.fillText(label, 56, y);
-      if (val){
-        cctx.letterSpacing = '2px';
-        cctx.fillStyle = COL.soft;
-        cctx.font = `500 20px ${MONO}`;
-        cctx.textAlign = 'right';
-        cctx.fillText(val, W - 56, y);
-      } else {
-        cctx.strokeStyle = COL.faint; cctx.lineWidth = 3;
-        cctx.setLineDash([10, 10]);
+      cctx.textAlign = 'right';
+      cctx.letterSpacing = '1px';
+      cctx.font = `500 17px ${MONO}`;
+      cctx.fillStyle = val ? COL.text : COL.faint;
+      cctx.fillText(val || '—', W - 56, y);
+      const vw = cctx.measureText(val || '—').width;
+      const leadEnd = W - 56 - vw - 18;
+      if (leadEnd > 190){
+        cctx.strokeStyle = COL.hair; cctx.lineWidth = 1;
+        cctx.setLineDash([1.5, 7]);
         cctx.beginPath();
-        cctx.moveTo(300, y - 7); cctx.lineTo(W - 56, y - 7);
+        cctx.moveTo(190, y - 5); cctx.lineTo(leadEnd, y - 5);
         cctx.stroke();
         cctx.setLineDash([]);
       }
     });
-    // VIEW MORE button
-    rr(cctx, BTN.x, BTN.y, BTN.w, BTN.h, 10);
-    if (hover){ cctx.fillStyle = COL.btnFill; cctx.fill(); }
-    cctx.strokeStyle = COL.line; cctx.lineWidth = 2.4; cctx.stroke();
-    cctx.fillStyle = COL.line;
+    // VIEW MORE — sharp chip, hairline border, jade wash on hover
+    if (hover){
+      cctx.fillStyle = COL.btnHover;
+      cctx.fillRect(BTN.x, BTN.y, BTN.w, BTN.h);
+    }
+    cctx.strokeStyle = hover ? COL.jadeLite : COL.border;
+    cctx.lineWidth = 1.5;
+    cctx.strokeRect(BTN.x, BTN.y, BTN.w, BTN.h);
     cctx.textAlign = 'center';
     cctx.letterSpacing = '6px';
-    cctx.font = `600 23px ${MONO}`;
-    cctx.fillText('VIEW MORE', W / 2 + 3, BTN.y + 41);
+    cctx.font = `600 18px ${MONO}`;
+    cctx.fillStyle = COL.text;
+    cctx.fillText('VIEW MORE', W / 2 + 3, BTN.y + 35);
     cctx.letterSpacing = '0px';
     cardTex.needsUpdate = true;
   }
@@ -452,26 +536,52 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   card.renderOrder = 996;
   card.visible = false;
   holo.add(card);
+  // Invisible depth mask riding just behind the card face: it writes depth
+  // BEFORE the beam draws (994.5 < 995), so the depth-tested beam is culled
+  // behind the card silhouette — the cone ties cleanly into the card's
+  // bottom edge instead of washing through its translucent body.
+  const cardMask = new THREE.Mesh(
+    new THREE.PlaneGeometry(CARD_W, CARD_H),
+    new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true })
+  );
+  cardMask.position.z = -0.002;
+  cardMask.renderOrder = 994.5;
+  card.add(cardMask);
 
-  // Projector beam — vertical alpha-gradient cylinder, rises platter → card.
-  const beamCanvas = document.createElement('canvas');
-  beamCanvas.width = 32; beamCanvas.height = 128;
-  {
-    const bctx = beamCanvas.getContext('2d');
-    const g = bctx.createLinearGradient(0, 128, 0, 0);
-    g.addColorStop(0,    'rgba(255,255,255,0)');
-    g.addColorStop(0.08, 'rgba(255,255,255,0.85)');
-    g.addColorStop(0.6,  'rgba(255,255,255,0.5)');
-    g.addColorStop(1,    'rgba(255,255,255,0.1)');
-    bctx.fillStyle = g;
-    bctx.fillRect(0, 0, 32, 128);
-  }
-  const beamTex = new THREE.CanvasTexture(beamCanvas);
-  const beamMat = new THREE.MeshBasicMaterial({
-    map: beamTex, color: COL.beam, transparent: true, opacity: 0,
-    blending: COL.blend, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+  // Projector beam — volumetric-looking cone: a fresnel shader fades the
+  // silhouette to nothing (no hard cone edges), keeps a bright core where
+  // the view ray runs through the "volume", feathers the base, and eases
+  // off toward the card. View-space normals handle the non-uniform
+  // scale.y used for the rise animation. Tip overshoot stays hidden
+  // behind the card's depth mask.
+  const beamMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor:   { value: new THREE.Color(COL.beam) },
+      uOpacity: { value: 0 },
+      uTime:    { value: 0 },
+    },
+    vertexShader: `
+      varying vec3 vN; varying vec3 vV; varying float vH;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vN = normalMatrix * normal;
+        vV = -mv.xyz;
+        vH = position.y + 0.5;          // 0 base … 1 tip (unit cylinder)
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      uniform vec3 uColor; uniform float uOpacity; uniform float uTime;
+      varying vec3 vN; varying vec3 vV; varying float vH;
+      void main(){
+        float core = pow(abs(dot(normalize(vN), normalize(vV))), 1.7);
+        float vert = smoothstep(0.0, 0.08, vH) * mix(1.0, 0.45, smoothstep(0.08, 1.0, vH));
+        float shimmer = 0.94 + 0.06 * sin(vH * 26.0 - uTime * 1.6);
+        gl_FragColor = vec4(uColor, uOpacity * core * vert * shimmer);
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    blending: COL.blend,
   });
-  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.10, 1, 40, 1, true), beamMat);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.09, 1, 48, 24, true), beamMat);
   beam.renderOrder = 995;
   beam.visible = false;
   holo.add(beam);
@@ -584,6 +694,23 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   window.__getCockpitDeckInfo = () => (vm() === 'deck' && playing >= 0)
     ? { index: playing, count: PROJECTS.length, busy: !!(flight || queued || pendingEject) }
     : null;
+  // Screen-space bbox of the holo card — the HUD parks the ◄/► arrows
+  // right beside it instead of at the viewport edges.
+  window.__getCockpitDeckCardRect = () => {
+    if (vm() !== 'deck' || !card.visible || !renderer || !camera) return null;
+    const r = renderer.domElement.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    card.updateWorldMatrix(true, false);
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]){
+      const p = card.localToWorld(new THREE.Vector3(sx * CARD_W / 2, sy * CARD_H / 2, 0)).project(camera);
+      if (p.z > 1) return null;
+      const x = (p.x * 0.5 + 0.5) * r.width, y = (-p.y * 0.5 + 0.5) * r.height;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+    return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+  };
 
   // ── Camera-focus target for GlobeCanvas ('deck' view mode) ────
   group.getFocusTarget = function(){
@@ -646,7 +773,8 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
 
   const onTheme = () => {
     COL = deckTheme();
-    beamMat.color.setHex(COL.beam);   beamMat.blending = COL.blend;   beamMat.needsUpdate = true;
+    beamMat.uniforms.uColor.value.setHex(COL.beam);
+    beamMat.blending = COL.blend; beamMat.needsUpdate = true;
     baseGlowMat.color.setHex(COL.beam); baseGlowMat.blending = COL.blend; baseGlowMat.needsUpdate = true;
     if (playing >= 0) drawCard(playing, btnHover);
   };
@@ -658,17 +786,16 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     elapsed = (typeof t === 'number') ? t : elapsed + dt;
     spin.rotation.y += dt * 1.6;
 
-    // Cover: open (lift + late fade) whenever a record is on deck/inbound.
+    // Cover: swings open on its rear hinges whenever a record is on
+    // deck/inbound — ~103° past vertical, a real dust-cover resting pose.
     const coverTgt = (playing >= 0 || flight || queued) ? 1 : 0;
-    coverT += (coverTgt - coverT) * Math.min(1, dt * 3.0 * K);
-    coverGroup.position.y = easeInOut(coverT) * 0.5;
-    coverMat.opacity = 1 - Math.min(1, Math.max(0, (coverT - 0.25) / 0.6));
-    coverGroup.visible = coverMat.opacity > 0.02;
+    coverT += (coverTgt - coverT) * Math.min(1, dt * 2.6 * K);
+    coverHinge.rotation.x = -1.8 * easeInOut(coverT);
 
     // Record flight — quadratic bezier between LIVE endpoints (the crate
     // sleeve keeps animating while the disc is airborne).
     if (flight){
-      if (!flight.started && flight.dir === 'in' && coverT < 0.5){
+      if (!flight.started && flight.dir === 'in' && coverT < 0.65){
         // hold on the (rising) sleeve until the cover is out of the way
         deckDisc.position.copy(flight.from());
         deckDisc.quaternion.copy(flight.q0fn());
@@ -700,7 +827,9 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     armT += ((landed ? 1 : 0) - armT) * Math.min(1, dt * 2.6 * K);
     const ae = easeInOut(armT);
     armAssembly.rotation.y = ARM_PARK.y + (ARM_PLAY.y - ARM_PARK.y) * ae;
-    armAssembly.rotation.z = ARM_PARK.z + (ARM_PLAY.z - ARM_PARK.z) * ae + 0.09 * Math.sin(Math.PI * ae);
+    // negative z lifts the cartridge end (it reaches along -x), so the
+    // stylus clears the record while sweeping across, then settles on it
+    armAssembly.rotation.z = ARM_PARK.z + (ARM_PLAY.z - ARM_PARK.z) * ae - 0.09 * Math.sin(Math.PI * ae);
 
     // Beam rises once the arm is engaging; card materializes out of it.
     const beamTgt = (landed && armT > 0.55) ? 1 : 0;
@@ -713,11 +842,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     if (beam.visible){
       beam.scale.set(1, Math.max(0.001, be), 1);
       beam.position.y = BEAM_BOT + BEAM_H * be * 0.5;
-      beam.rotation.y += dt * 0.4;
-      beamMat.opacity = COL.beamOpacity * be;
+      beamMat.uniforms.uOpacity.value = COL.beamOpacity * be;
+      beamMat.uniforms.uTime.value = elapsed;
     }
     baseGlow.visible = beam.visible;
-    if (baseGlow.visible) baseGlowMat.opacity = 0.55 * be;
+    if (baseGlow.visible) baseGlowMat.opacity = 0.35 * be;
 
     const ce = easeInOut(cardT);
     card.visible = cardT > 0.02;
@@ -745,6 +874,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     if (deckDisc.parent) deckDisc.parent.remove(deckDisc);
     window.__cockpitDeck = null;
     window.__getCockpitDeckInfo = null;
+    window.__getCockpitDeckCardRect = null;
   };
 
   return group;

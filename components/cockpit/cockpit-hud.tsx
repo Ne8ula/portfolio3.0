@@ -77,7 +77,12 @@ function Cockpit({ interactive = true }){
   }, [exitGlobe, viewMode]);
 
   return (
-    <div ref={stageRef} data-screen-label="02 Cockpit FPS" style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor:CURSOR_DEFAULT}}>
+    <div ref={stageRef} data-screen-label="02 Cockpit FPS"
+      // overflow:hidden still scrolls PROGRAMMATICALLY (focus/scrollIntoView
+      // against the matrix3d ScreenDialog, which juts far past the viewport)
+      // — that silently pans the whole stage. Pin it at 0.
+      onScroll={(e) => { e.currentTarget.scrollLeft = 0; e.currentTarget.scrollTop = 0; }}
+      style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor:CURSOR_DEFAULT}}>
       <GlobeCanvas yawRef={yawRef} pitchRef={pitchRef}/>
 
       {viewMode === 'cockpit' && <ObjectTags/>}
@@ -896,29 +901,42 @@ function VinylBrowseArrows(){
 function DeckBrowseArrows(){
   const getInfo = React.useCallback(
     () => window.__getCockpitDeckInfo && window.__getCockpitDeckInfo(), []);
-  return <BrowseArrows getInfo={getInfo} hint="◄ ► to browse · esc to return"/>;
+  const getRect = React.useCallback(
+    () => window.__getCockpitDeckCardRect && window.__getCockpitDeckCardRect(), []);
+  return <BrowseArrows getInfo={getInfo} getRect={getRect} hint="◄ ► to browse · esc to return"/>;
 }
 
-function BrowseArrows({ getInfo, hint }){
+function BrowseArrows({ getInfo, getRect, hint }){
   const [info, setInfo] = React.useState(null);
+  const [rect, setRect] = React.useState(null);
   React.useEffect(() => {
     let raf;
     const tick = () => {
       setInfo(getInfo() || null);
+      // hold the last rect while the card blinks out mid-swap — the
+      // arrows shouldn't bounce to the viewport edges and back
+      const next = (getRect && getRect()) || null;
+      setRect(prev => next || prev);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [getInfo]);
+  }, [getInfo, getRect]);
   if (!info) return null;
   const step = (d) => window.__cockpitVinylSelect && window.__cockpitVinylSelect(d);
+  // With a tracked rect (deck view: the holo card) the arrows hug its
+  // sides; otherwise they park at the viewport edges (crate view).
+  const anchor = (side) => rect
+    ? { left: side === 'left' ? Math.max(8, rect.x - 60) : Math.min(window.innerWidth - 56, rect.x + rect.w + 14),
+        top: rect.y + rect.h / 2 }
+    : { [side]: 36, top: '50%' };
   const arrow = (side, glyph, delta, disabled) => (
     <button
       onClick={() => !disabled && step(delta)}
       disabled={disabled}
       aria-label={delta < 0 ? 'previous record' : 'next record'}
       style={{
-        position:'absolute', top:'50%', [side]:36,
+        position:'absolute', ...anchor(side),
         transform:'translateY(-50%)',
         zIndex:17, pointerEvents: disabled ? 'none' : 'auto',
         background:'rgba(30,28,26,0.72)',
@@ -951,8 +969,8 @@ function BrowseArrows({ getInfo, hint }){
       }}>
         {hint}
       </div>
-      {arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
-      {arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
+      {(!getRect || rect) && arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
+      {(!getRect || rect) && arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
     </>
   );
 }

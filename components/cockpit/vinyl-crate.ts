@@ -41,7 +41,7 @@ const CRATE_COLORS = {
 };
 
 function makeCoverTexture(i){
-  const { bg, accent, text, title, category, date } = PROJECTS[i];
+  const { bg, accent, text, title, category, date, cover } = PROJECTS[i];
   const SIZE = 512;
   const c = document.createElement('canvas');
   c.width = SIZE; c.height = SIZE;
@@ -114,6 +114,38 @@ function makeCoverTexture(i){
   const tex = new THREE.CanvasTexture(c);
   tex.anisotropy = 8;
   tex.needsUpdate = true;
+
+  // Real thumbnail (public/vinyl-covers): the generated motif above shows
+  // instantly, then the photo repaints over it — full-bleed cover crop
+  // with an ink label strip so the title stays readable on any art.
+  if (cover){
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.max(SIZE / img.width, SIZE / img.height);
+      const w = img.width * s, h = img.height * s;
+      ctx.clearRect(0, 0, SIZE, SIZE);
+      ctx.drawImage(img, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+      ctx.fillStyle = 'rgba(20,17,15,0.8)';
+      ctx.fillRect(0, SIZE - 108, SIZE, 108);
+      ctx.fillStyle = '#F0EBE1';
+      ctx.font = 'bold 34px "Cormorant Garamond", Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(title.replace('\n', ' '), SIZE/2, SIZE - 62);
+      ctx.fillStyle = '#7A9A7E';
+      ctx.font = '600 13px "JetBrains Mono", monospace';
+      ctx.fillText(`${category.toUpperCase()} · ${date}`, SIZE/2, SIZE - 30);
+      ctx.fillStyle = 'rgba(20,17,15,0.8)';
+      ctx.fillRect(24, 24, 64, 30);
+      ctx.fillStyle = '#F0EBE1';
+      ctx.font = '600 13px "JetBrains Mono", monospace';
+      ctx.fillText(`№ ${String(i+1).padStart(2,'0')}`, 56, 44);
+      ctx.strokeStyle = 'rgba(240,235,225,0.5)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(6, 6, SIZE - 12, SIZE - 12);
+      tex.needsUpdate = true;
+    };
+    img.src = cover;
+  }
   return tex;
 }
 
@@ -344,12 +376,6 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     group.add(m);
   });
 
-  // Focus-dim registry: when a record is pulled out, everything else in
-  // the bin drops back (color-darkened — NOT opacity, which would go ghostly).
-  const dimmables = [wallMat, plateMat, baseMat, floorMat, sageMat, ...decals.map(d => d.material)]
-    .map(m => ({ m, base: m.color.clone() }));
-  let dimT = 0;
-
   // ── Records ───────────────────────────────────────────────────
   const recordsGroup = new THREE.Group();
   recordsGroup.position.set(0, FLOOR_TOP + 0.002, 0);
@@ -410,8 +436,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     vinyl.add(disc);
 
     recordsGroup.add(vinyl);
-    const mats = [...new Set(sleeveMats)].map(m => ({ m, base: m.color.clone() }));
-    vinyls.push({ group: vinyl, sleeve, disc, halo, mats, data: vinyl.userData });
+    vinyls.push({ group: vinyl, sleeve, disc, halo, data: vinyl.userData });
   }
 
   // ── Hover diagnostics — webgl_helpers-style jade normal pins ──
@@ -715,14 +740,10 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
       if (h.visible) h.update();   // track the sleeve while it tilts/lifts
     });
 
-    // Focus dim + hover halos. The pulled record stays lit; the rest of
-    // the bin drops back. Halos glow on hover, faintly on the selection.
-    dimT += (((selectedIdx >= 0) ? 1 : 0) - dimT) * Math.min(1, dt * 6);
-    const dimScale = 1 - 0.6 * dimT;
-    dimmables.forEach(({ m, base }) => m.color.copy(base).multiplyScalar(dimScale));
+    // Hover halos — the bin keeps its full color while a record is
+    // pulled/playing (no focus dim); the selection just gets a faint halo.
     vinyls.forEach(v => {
       const lit = v.data.i === selectedIdx;
-      v.mats.forEach(({ m, base }) => m.color.copy(base).multiplyScalar(lit ? 1 : dimScale));
       const haloTarget = v.data.i === hoveredIdx ? 0.95 : (lit ? 0.4 : 0);
       v.halo.material.opacity += (haloTarget - v.halo.material.opacity) * Math.min(1, dt * 10);
     });

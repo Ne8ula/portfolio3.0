@@ -5,24 +5,53 @@
 // build the platter disc + the holographic PROJECT INFO card.
 import * as THREE from "three"
 
-// Placeholder project records — restructure-ready: title / category / date
-// drive the hover card and the cover art. Palette: [bg, accent, text].
+// Real project records (from alexxiong.me). Fields:
+//   title      — sleeve art line-break form; card shows it single-line
+//   category   — genre voice for disc label + card meta row
+//   date       — year (or WIP) for meta/YEAR rows
+//   tagline    — one-sentence description on the card (wrapped to 2 lines)
+//   role/tools — card rows
+//   url        — project page (future click-through; VIEW MORE is a stub)
+//   cover      — /vinyl-covers/ thumbnail for sleeve + card artwork (null
+//                = generated motif cover)
+//   bg/accent/text — palette for disc label, top-edge strip and fallback art
 export const PROJECTS = [
-  { title: 'MIDNIGHT\nSIGNALS',  category: 'design',     date: '2025.11', bg:'#E8E4DC', accent:'#4B6E4F', text:'#1E1C1A' },
-  { title: 'LONG\nSHADOW',       category: 'web',        date: '2025.08', bg:'#3A3644', accent:'#E8E4DC', text:'#E8E4DC' },
-  { title: 'JADE\nHOUR',         category: 'design',     date: '2025.06', bg:'#4B6E4F', accent:'#F0EBE1', text:'#F0EBE1' },
-  { title: 'ANALOGUE\nDREAMS',   category: 'prototype',  date: '2025.04', bg:'#D8D3C7', accent:'#3A3644', text:'#1E1C1A' },
-  { title: 'COLD\nLINE FM',      category: 'web',        date: '2025.02', bg:'#1E1C1A', accent:'#7FA683', text:'#E8E4DC' },
-  { title: 'RED\nHEM',           category: 'design',     date: '2024.12', bg:'#F0EBE1', accent:'#B24240', text:'#1E1C1A' },
-  { title: 'ROOM 21',            category: 'game',       date: '2024.10', bg:'#6E6878', accent:'#E8E4DC', text:'#E8E4DC' },
-  { title: 'FIELD\nNOTES v.II',  category: 'prototype',  date: '2024.08', bg:'#3A5A3E', accent:'#D8D3C7', text:'#F0EBE1' },
-  { title: 'STATIC\nGARDEN',     category: 'game',       date: '2024.06', bg:'#A8A2B0', accent:'#1E1C1A', text:'#1E1C1A' },
-  { title: 'NORTH\n&  SOUTH',    category: 'design',     date: '2024.04', bg:'#E8E4DC', accent:'#6E6878', text:'#1E1C1A' },
-  { title: 'LOW\nTIDE',          category: 'web',        date: '2024.02', bg:'#2B4A30', accent:'#CFC9C0', text:'#E8E4DC' },
-  { title: 'FOLIO',              category: 'design',     date: '2023.11', bg:'#CFC9C0', accent:'#3A5A3E', text:'#1E1C1A' },
-  { title: 'AMBER\nPROTOCOL',    category: 'game',       date: '2023.09', bg:'#1E1C1A', accent:'#D8A24B', text:'#D8A24B' },
-  { title: 'GREEN\nROOM',        category: 'prototype',  date: '2023.06', bg:'#7FA683', accent:'#1E1C1A', text:'#1E1C1A' },
-  { title: 'UNTITLED\nSIDES',    category: 'experiment', date: '2023.03', bg:'#E8E4DC', accent:'#1E1C1A', text:'#1E1C1A' },
+  { title: 'THE SONG\nOF MAKA', category: 'puzzle adventure', date: '2024',
+    tagline: 'A fallen king retakes his bird kingdom from a deadly disease.',
+    role: 'Creative Producer · Design Lead', tools: 'Unity · Figma · Adobe',
+    url: 'https://www.alexxiong.me/games/thesongofmaka',
+    cover: '/vinyl-covers/song-of-maka.png',
+    bg:'#E8E4DC', accent:'#4B6E4F', text:'#1E1C1A' },
+  { title: 'CHU YU\nHONG', category: 'horror point & click', date: '2022',
+    tagline: 'A narrative horror adventure steeped in traditional Chinese folklore.',
+    role: 'Creative Director · Producer', tools: 'Photoshop · Figma · Procreate',
+    url: 'https://www.alexxiong.me/games/chuyuhong',
+    cover: '/vinyl-covers/chu-yu-hong.png',
+    bg:'#1E1C1A', accent:'#7FA683', text:'#E8E4DC' },
+  { title: 'TENCENT\nGAMES', category: 'event · ux design', date: '2022',
+    tagline: 'Live-ops event design across Wild Rift, Lost Ark and Contra Returns.',
+    role: 'Game Operations Intern', tools: 'UE5 Blueprint · WeChat H5',
+    url: 'https://www.alexxiong.me/design/tencentgames',
+    cover: null,
+    bg:'#3A3644', accent:'#E8E4DC', text:'#E8E4DC' },
+  { title: 'NYU\nWELCOME', category: 'branding', date: '2022',
+    tagline: 'Campus-wide graphics campaign for NYU’s 2022 welcome season.',
+    role: 'Digital Strategy Assistant', tools: 'Animate · Photoshop',
+    url: 'https://www.alexxiong.me/design/nyuwelcome',
+    cover: '/vinyl-covers/nyu-welcome.png',
+    bg:'#6E6878', accent:'#E8E4DC', text:'#E8E4DC' },
+  { title: 'SHANGHAI\nNOIR', category: 'voice game', date: 'WIP',
+    tagline: 'A Clue-inspired murder mystery played entirely on Amazon Echo.',
+    role: 'Narrative · Design · Code', tools: 'Alexa ADS · Twine · JS',
+    url: 'https://www.alexxiong.me/wip/shanghainoir',
+    cover: '/vinyl-covers/shanghai-noir.png',
+    bg:'#2B4A30', accent:'#CFC9C0', text:'#E8E4DC' },
+  { title: 'PROCGEN\nDUNGEON', category: 'tech demo', date: '2024',
+    tagline: 'Instant in-engine procedural dungeon generation in Unreal 5.3.',
+    role: 'Systems · Shaders', tools: 'UE 5.3 · Blueprints · Quixel',
+    url: 'https://www.alexxiong.me/wip/procgendungeon',
+    cover: '/vinyl-covers/procgen-dungeon.png',
+    bg:'#D8D3C7', accent:'#3A5A3E', text:'#1E1C1A' },
 ];
 
 // Pressed-vinyl disc face: near-black grooves + accent-colored center label.
