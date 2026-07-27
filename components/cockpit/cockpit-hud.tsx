@@ -848,37 +848,40 @@ function VinylInfoCard(){
     <div style={{
       position:'absolute', left:'50%', bottom: 44,
       transform:'translateX(-50%)',
-      textAlign:'center',
       zIndex:16, pointerEvents:'none',
-      background:'rgba(30,28,26,0.88)',
-      backdropFilter:'blur(8px)',
-      border:'1px solid rgba(232,228,220,0.22)',
-      boxShadow:'0 18px 48px -18px rgba(0,0,0,0.65)',
-      padding:'12px 18px 13px',
-      minWidth:180, maxWidth:300,
-      animation:'termFadeIn .18s ease-out',
     }}>
-      {/* micro header — index · category · date */}
       <div style={{
-        fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
-        letterSpacing:'.26em', textTransform:'uppercase',
-        color:'var(--jade-light)', marginBottom:6,
-        display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+        textAlign:'center',
+        background:'rgba(30,28,26,0.88)',
+        backdropFilter:'blur(8px)',
+        border:'1px solid rgba(232,228,220,0.22)',
+        boxShadow:'0 18px 48px -18px rgba(0,0,0,0.65)',
+        padding:'12px 18px 13px',
+        minWidth:180, maxWidth:300,
+        animation:'termFadeIn .18s ease-out',
       }}>
-        <span style={{color:'var(--cream-deep)'}}>n° {String(info.index+1).padStart(2,'0')}</span>
-        <span style={{width:3, height:3, background:'var(--jade)', display:'inline-block'}}/>
-        <span>{info.category}</span>
-        <span style={{color:'var(--cream-deep)'}}>· {info.date}</span>
-      </div>
-      {/* title */}
-      <div style={{
-        fontFamily:'var(--font-serif)', fontSize:24, fontWeight:400,
-        letterSpacing:'-.01em', lineHeight:1.05,
-        color:'var(--cream-warm)',
-      }}>{info.title}</div>
-      {/* jade rule */}
-      <div style={{marginTop:9}}>
-        <span style={{width:26, height:1, background:'var(--jade)', display:'inline-block'}}/>
+        {/* micro header — index · category · date */}
+        <div style={{
+          fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+          letterSpacing:'.26em', textTransform:'uppercase',
+          color:'var(--jade-light)', marginBottom:6,
+          display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+        }}>
+          <span style={{color:'var(--cream-deep)'}}>n° {String(info.index+1).padStart(2,'0')}</span>
+          <span style={{width:3, height:3, background:'var(--jade)', display:'inline-block'}}/>
+          <span>{info.category}</span>
+          <span style={{color:'var(--cream-deep)'}}>· {info.date}</span>
+        </div>
+        {/* title */}
+        <div style={{
+          fontFamily:'var(--font-serif)', fontSize:24, fontWeight:400,
+          letterSpacing:'-.01em', lineHeight:1.05,
+          color:'var(--cream-warm)',
+        }}>{info.title}</div>
+        {/* jade rule */}
+        <div style={{marginTop:9}}>
+          <span style={{width:26, height:1, background:'var(--jade)', display:'inline-block'}}/>
+        </div>
       </div>
     </div>
   );
@@ -931,26 +934,30 @@ function BrowseArrows({ getInfo, getRect, hint }){
         top: rect.y + rect.h / 2 }
     : { [side]: 36, top: '50%' };
   const arrow = (side, glyph, delta, disabled) => (
-    <button
-      onClick={() => !disabled && step(delta)}
-      disabled={disabled}
-      aria-label={delta < 0 ? 'previous record' : 'next record'}
-      style={{
-        position:'absolute', ...anchor(side),
-        transform:'translateY(-50%)',
-        zIndex:17, pointerEvents: disabled ? 'none' : 'auto',
-        background:'rgba(30,28,26,0.72)',
-        backdropFilter:'blur(6px)',
-        border:'1px solid rgba(232,228,220,0.22)',
-        padding:'13px 15px',
-        cursor:'pointer',
-        opacity: disabled ? 0.25 : 1,
-        color:'var(--cream-warm)',
-        transition:'opacity .2s ease',
-        animation:'termFadeIn .18s ease-out',
-      }}>
-      <span style={{fontSize:16, lineHeight:1, color:'var(--jade-light)'}}>{glyph}</span>
-    </button>
+    <div style={{
+      position:'absolute', ...anchor(side),
+      transform:'translateY(-50%)',
+      zIndex:17, pointerEvents: disabled ? 'none' : 'auto',
+    }}>
+      <div style={{animation:'termFadeIn .18s ease-out'}}>
+        <button
+          onClick={() => !disabled && step(delta)}
+          disabled={disabled}
+          aria-label={delta < 0 ? 'previous record' : 'next record'}
+          style={{
+            background:'rgba(30,28,26,0.72)',
+            backdropFilter:'blur(6px)',
+            border:'1px solid rgba(232,228,220,0.22)',
+            padding:'13px 15px',
+            cursor:'pointer',
+            opacity: disabled ? 0.25 : 1,
+            color:'var(--cream-warm)',
+            transition:'opacity .2s ease',
+          }}>
+          <span style={{fontSize:16, lineHeight:1, color:'var(--jade-light)'}}>{glyph}</span>
+        </button>
+      </div>
+    </div>
   );
   return (
     <>
@@ -958,16 +965,19 @@ function BrowseArrows({ getInfo, getRect, hint }){
       <div style={{
         position:'absolute', top:76, left:'50%', transform:'translateX(-50%)',
         zIndex:17, pointerEvents:'none',
-        fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
-        letterSpacing:'.28em', textTransform:'uppercase',
-        color:'var(--cream-deep)',
-        background:'rgba(30,28,26,0.72)',
-        border:'1px solid rgba(232,228,220,0.18)',
-        backdropFilter:'blur(6px)',
-        padding:'8px 14px',
-        animation:'termFadeIn .18s ease-out',
       }}>
-        {hint}
+        <div style={{
+          fontFamily:'var(--font-mono)', fontSize:9, fontWeight:600,
+          letterSpacing:'.28em', textTransform:'uppercase',
+          color:'var(--cream-deep)',
+          background:'rgba(30,28,26,0.72)',
+          border:'1px solid rgba(232,228,220,0.18)',
+          backdropFilter:'blur(6px)',
+          padding:'8px 14px',
+          animation:'termFadeIn .18s ease-out',
+        }}>
+          {hint}
+        </div>
       </div>
       {(!getRect || rect) && arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
       {(!getRect || rect) && arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
