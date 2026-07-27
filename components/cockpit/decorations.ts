@@ -9,8 +9,7 @@
 // no view mode — just motion, and the PC's hitbox wins wherever they
 // overlap). The pieces map to Alex's actual life:
 //   • frosted alto sax figurine   — jazz (the reason the vinyl deck exists)
-//   • gachapon capsule            — collecting; mauve/jade = the Eva-01 colorway
-//   • handheld console            — Switch-style, mauve/jade pads
+//   • handheld console            — Switch-style, jade grips
 //   • drawing tablet + stylus     — sketching (click → the stylus scribbles)
 //   • potted succulent            — greenery (frosted planter, echeveria rosette)
 //   • protein shaker              — gym (click → shake wiggle + slosh)
@@ -35,8 +34,6 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   const creamLt   = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, roughness: 0.6 });
   const graphite  = new THREE.MeshStandardMaterial({ color: 0x3A3733, roughness: 0.6, metalness: 0.08 });
   const ink       = new THREE.MeshLambertMaterial({ color: 0x26231F });
-  const mauve     = new THREE.MeshStandardMaterial({ color: 0x6E6878, roughness: 0.55 });
-  const mauveDeep = new THREE.MeshStandardMaterial({ color: 0x3A3644, roughness: 0.5 });
   const jade      = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6 });
   const screenDark= new THREE.MeshStandardMaterial({ color: 0x16140F, roughness: 0.3, metalness: 0.1 });
   const frost     = makeFrost({ color: 0xE7E2D9, transmission: 0.75, roughness: 0.32, thickness: 0.06 });
@@ -284,7 +281,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   // #2: cockpit click → it lifts to a writing angle and scribbles a quick
   // figure before lying back (tickDraw).
   {
-    const g = item('tablet', 3.7, 2.45, -0.55);
+    const g = item('tablet', 3.7, 2.70, -0.55);
     tabletG = g;
     // tablet-only materials — charcoal family + the PC's hero glass.
     // env intensity is pulled DOWN on the charcoals: the cream PMREM env
@@ -391,24 +388,9 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     tabletPick = mesh(g, new THREE.BoxGeometry(W + 0.15, 0.42, D + 0.75), pickMat, 0, 0.22, 0.3);
   }
 
-  // ══ GACHAPON CAPSULE — Eva-01 colorway (mauve shell, jade seam) ══
-  {
-    const g = item('gachapon', -2.1, 2.6, 0.8);
-    const R = 0.19;
-    const bottom = mesh(g, new THREE.SphereGeometry(R, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), mauve, 0, R, 0);
-    bottom.material = mauve;
-    mesh(g, new THREE.CircleGeometry(R, 24), mauve, 0, R * 0.02 + 0.002, 0).rotation.x = -Math.PI / 2;
-    const top = mesh(g, new THREE.SphereGeometry(R, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), frostCap, 0, R, 0);
-    const seam = mesh(g, new THREE.TorusGeometry(R + 0.004, 0.008, 8, 32), jade, 0, R, 0);
-    seam.rotation.x = Math.PI / 2;
-    // tiny mech bust inside, visible through the frosted dome
-    mesh(g, new THREE.BoxGeometry(0.07, 0.08, 0.05), mauveDeep, 0, R + 0.05, 0);
-    mesh(g, new THREE.BoxGeometry(0.045, 0.045, 0.04), mauve, 0, R + 0.115, 0);
-    const horn = mesh(g, new THREE.ConeGeometry(0.008, 0.05, 6), jade, 0, R + 0.16, 0.008);
-    horn.rotation.x = -0.25;
-  }
-
-  // ══ POTTED SUCCULENT — front of the turntable, clear of its shell ══
+  // ══ POTTED SUCCULENT — rear gap between turntable and PC ══
+  // Mirror of the sax's slot: same rear corridor (z -0.8), reflected across
+  // the turntable so the two figurines bracket the deck left/right.
   // Product-object echeveria (4-view frosted-planter reference): squat
   // etched-frost cylinder pot over a translucent celadon foot ring (four
   // stubby tabs peeking out at the floor), opaque cream liner + dark
@@ -422,7 +404,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   // opposite side — LIT materials floated ~2mm off the frost. Static: no
   // tag, no glow, no tick. Live-tune via __cockpitDecor.set('plant', …).
   {
-    const g = item('plant', -1.75, 2.8, 0.1);
+    const g = item('plant', 2.5, -0.8, 0.35);
     g.scale.setScalar(1.4);   // presence bump — the rosette detail should read from the cockpit
 
     // ── seeded rand — etch, skin, scatter and leaf jitter identical every mount ──
@@ -593,12 +575,15 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
       new THREE.MeshStandardMaterial({ color: 0xAEC3AA, roughness: 0.6 }), 0, 0.185, 0);
   }
 
-  // ══ HANDHELD CONSOLE — Switch-style, mauve/jade pads, screen-up ══
+  // ══ HANDHELD CONSOLE — Switch-style, jade grips, screen-up ══
+  // Sits in the front gap between crate and turntable, lying flat with its
+  // long axis running left↔right across the desk (only a whisper of yaw, so
+  // it reads horizontal, not angled in).
   {
-    const g = item('handheld', 6.4, 3.5, 0.25);
+    const g = item('handheld', -2.1, 2.6, 0.18);
     mesh(g, new RoundedBoxGeometry(0.66, 0.045, 0.40, 2, 0.015), graphite, 0, 0.024, 0);
     [-1, 1].forEach(s => {
-      const pad = mesh(g, new RoundedBoxGeometry(0.16, 0.05, 0.40, 2, 0.02), s < 0 ? mauve : jade, s * 0.41, 0.026, 0);
+      const pad = mesh(g, new RoundedBoxGeometry(0.16, 0.05, 0.40, 2, 0.02), jade, s * 0.41, 0.026, 0);
       // stick + two buttons per pad
       mesh(g, new THREE.CylinderGeometry(0.028, 0.032, 0.02, 12), ink, s * 0.41, 0.058, -0.08);
       mesh(g, new THREE.SphereGeometry(0.014, 8, 8), ink, s * 0.38, 0.055, 0.1);
@@ -760,8 +745,8 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
 
   // ── Stylus scribble — animated decoration #2 ───────────────────
   // Cockpit-view click on the tablet → the stylus lifts off its resting
-  // diagonal with a little arc, tips up to the writing angle, loops a quick
-  // figure over the plate (drifting right like a written line), then lies
+  // diagonal with a little arc, tips up to the writing angle, hatches left ↔
+  // right across the plate (drifting forward like stacked strokes), then lies
   // back down where it started. ~1.6s, fully procedural.
   const D_LIFT = 0.4, D_DRAW = 0.8, D_BACK = 0.4;
   const ease = (u) => u * u * (3 - 2 * u);
@@ -783,14 +768,16 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
       stylusG.quaternion.slerpQuaternions(stylusRestQuat, stylusDrawQuat, u);
     } else if (drawT < D_LIFT + D_DRAW){
       const s = drawT - D_LIFT;
-      const w = s * 21;
-      // nib loops in the plate plane; amplitudes stay well inside the
-      // active area so the nib never wanders off the charcoal plate
+      const w = s * 17;
+      // nib hatches side to side across the plate — a plain left↔right sweep
+      // with a slow forward drift so the strokes stack instead of retracing.
+      // Amplitude stays well inside the active area so it never wanders off
+      // the charcoal plate.
       stylusG.position.copy(stylusDrawPos);
-      stylusG.position.x += Math.sin(w) * 0.05 + s * 0.14;
-      stylusG.position.z += Math.sin(w * 0.63 + 0.9) * 0.04;
+      stylusG.position.x += Math.sin(w) * 0.26;                // left ↔ right
+      stylusG.position.z += s * 0.05;                          // stroke drift
       stylusG.quaternion.copy(stylusDrawQuat);
-      stylusG.rotateZ(Math.sin(w * 0.5) * 0.05);               // wrist wobble
+      stylusG.rotateZ(Math.sin(w * 2) * 0.035);                // wrist bob at each turn
       backFromPos = stylusG.position.clone();                  // return starts wherever the scribble ends
       backFromQuat = stylusG.quaternion.clone();
     } else if (backFromPos){

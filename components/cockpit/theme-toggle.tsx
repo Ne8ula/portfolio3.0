@@ -2,6 +2,7 @@
 "use client"
 // ThemeToggle — bottom-right dark/light switch. Ported from Cockpit.html.
 import React from "react"
+import { CURSOR_POINTER } from "./cursors"
 
 export function ThemeToggle({ theme, onToggle }) {
   const dark = theme === 'dark';
@@ -20,7 +21,7 @@ export function ThemeToggle({ theme, onToggle }) {
         WebkitBackdropFilter: 'blur(14px) saturate(140%)',
         border: `1px solid ${dark ? 'rgba(236,231,218,0.22)' : 'rgba(232,228,220,0.45)'}`,
         boxShadow: '0 8px 24px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
-        cursor: 'pointer',
+        cursor: CURSOR_POINTER,
         fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
         letterSpacing: '.28em', textTransform: 'uppercase',
         color: 'var(--cream-warm)',

@@ -4,6 +4,7 @@
 // Ported verbatim from the Cockpit.html prototype (BootScreen.jsx).
 // Phase-driven timeline; calls onDone() when the user confirms.
 import React, { useState, useEffect, useRef } from "react"
+import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 
 // Typewriter hook — reveals `text` char-by-char at `speed` ms/char.
 function useTypewriter(text, { start = 0, speed = 35, ready = true } = {}) {
@@ -629,7 +630,7 @@ function ConfirmButton({ onConfirm, cursor }) {
           background: pressed ? 'var(--jade-deep)' : (hover ? 'var(--jade)' : 'transparent'),
           border: '1px solid var(--jade)',
           padding: '14px 36px',
-          cursor: pressed ? 'default' : 'pointer',
+          cursor: pressed ? CURSOR_DEFAULT : CURSOR_POINTER,
           transition: 'background .12s linear, color .12s linear, transform .12s ease-out, box-shadow .15s ease-out',
           transform: pressed ? 'translateY(1px)' : (hover ? 'translateY(-1px)' : 'none'),
           boxShadow: hover && !pressed

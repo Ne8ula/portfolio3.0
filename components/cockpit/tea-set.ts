@@ -1,5 +1,6 @@
 // @ts-nocheck
-// TeaSet — a Chinese tea ritual still-life IN FRONT OF THE CRATE (it
+// TeaSet — a Chinese tea ritual still-life BEHIND THE INCENSE, in the open
+// pocket left of the crate and back of the coffee mug (it
 // replaces the old tiny teaSet decoration at coffee-tier "ambient" scale —
 // bigger than a hobby prop, quieter than the heroes). Built from the
 // 6-angle product reference, in the PC WORKSTATION'S material language:
@@ -71,8 +72,12 @@ function makeWoodTexture(){
 
 export function buildTeaSet(scene, tableGroup){
   const group = new THREE.Group();
-  group.position.set(-3.45, 0.18, 3.35);  // in front of the crate
-  group.rotation.y = 0.35;                // parallel to the crate's yaw
+  group.position.set(-5.7, 0.18, 1.75);   // BEHIND the incense, in the open pocket
+                                          // left of the crate and back of the mug
+  // Quarter-turned off the crate's yaw so the box runs BACK-TO-FRONT into the
+  // scene instead of lying across it: teapot at the far end, spout and cups
+  // stepping toward the viewer (the tall piece never hides the small ones).
+  group.rotation.y = 0.35 - Math.PI / 2;
   group.scale.setScalar(0.85);
   tableGroup.add(group);
 

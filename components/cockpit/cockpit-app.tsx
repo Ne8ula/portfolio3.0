@@ -9,6 +9,7 @@ import { BootScreen } from "./boot-screen"
 import { WarpTransition } from "./warp-transition"
 import { ThemeToggle } from "./theme-toggle"
 import { Cockpit } from "./cockpit-hud"
+import { CURSOR_DEFAULT } from "./cursors"
 
 // Dialed-in transforms from the prototype's TWEAK_DEFAULTS (Cockpit.html).
 const TWEAK_DEFAULTS = {
@@ -115,6 +116,9 @@ export function CockpitApp() {
       data-screen-label="01 Cockpit FPS"
       style={{
         position: 'fixed', inset: 0, overflow: 'hidden',
+        // one cursor language for every phase — boot terminal included, so
+        // the wireframe arrow never hands off to the OS arrow mid-flow
+        cursor: CURSOR_DEFAULT,
         background: 'radial-gradient(ellipse at 30% 20%, var(--page-grad-1), var(--page-grad-2) 45%, var(--page-grad-3) 100%)',
       }}
     >

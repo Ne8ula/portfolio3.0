@@ -6,7 +6,7 @@
 // Ported from the Cockpit.html prototype (CockpitHUD.jsx).
 import React from "react"
 import { GlobeCanvas } from "./globe-canvas"
-import { CURSOR_DEFAULT } from "./cursors"
+import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true }){
@@ -94,7 +94,7 @@ function Cockpit({ interactive = true }){
       <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
         <div style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
-          <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:'pointer'}}>esc · return</button>
+          <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:CURSOR_POINTER}}>esc · return</button>
         </div>
       )}
 
@@ -481,7 +481,7 @@ function SiteHeader(){
                   aria-haspopup={isProjects ? 'menu' : undefined}
                   style={{
                     background:'transparent', border:'none', padding:'6px 0',
-                    cursor:'pointer',
+                    cursor:CURSOR_POINTER,
                     fontFamily:'var(--font-mono)',
                     fontSize: 13, letterSpacing:'.26em', textTransform:'uppercase',
                     fontWeight: isActive ? 700 : 500,
@@ -556,7 +556,7 @@ function SiteHeader(){
                           onClick={() => { setActive(it.id); setOpenSub(false); }}
                           style={{
                             background:'transparent', border:'none',
-                            padding:'10px 0', cursor:'pointer', textAlign:'left',
+                            padding:'10px 0', cursor:CURSOR_POINTER, textAlign:'left',
                             fontFamily:'var(--font-mono)',
                             display:'flex', alignItems:'baseline',
                             justifyContent:'space-between', gap:14,
@@ -949,7 +949,7 @@ function BrowseArrows({ getInfo, getRect, hint }){
             backdropFilter:'blur(6px)',
             border:'1px solid rgba(232,228,220,0.22)',
             padding:'13px 15px',
-            cursor:'pointer',
+            cursor:CURSOR_POINTER,
             opacity: disabled ? 0.25 : 1,
             color:'var(--cream-warm)',
             transition:'opacity .2s ease',
@@ -1201,7 +1201,7 @@ function ScreenDialog({ interactive, active }){
               background:'transparent', color:'#3A5A3E',
               border:'1px solid rgba(75,110,79,0.55)',
               padding:`${pad*0.15}px ${pad*0.4}px`,
-              cursor: sending ? 'default' : 'pointer',
+              cursor: sending ? CURSOR_DEFAULT : CURSOR_POINTER,
               fontFamily:'inherit', fontSize:'inherit', letterSpacing:'.1em',
               textTransform:'uppercase', fontWeight:700,
               opacity: (sending || !input.trim()) ? .4 : 1
