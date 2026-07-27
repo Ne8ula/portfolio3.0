@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --no-install tsc --noEmit --skipLibCheck --jsx preserve --target es2020 --moduleResolution bundler --module esnext components/cockpit/cursors.ts components/cockpit/theme-toggle.tsx components/cockpit/boot-screen.tsx components/cockpit/cockpit-hud.tsx)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(npx --no-install tsc --noEmit --skipLibCheck --jsx preserve --target es2020 --moduleResolution bundler --module esnext components/cockpit/cursors.ts components/cockpit/theme-toggle.tsx components/cockpit/boot-screen.tsx components/cockpit/cockpit-hud.tsx components/cockpit/decorations.ts components/cockpit/tea-set.ts)",
+      "Bash(python3 -)"
+    ]
+  }
+}

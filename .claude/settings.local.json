@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(corepack enable *)",
-      "Bash(corepack pnpm *)"
+      "Bash(corepack pnpm *)",
+      "Bash(npm run *)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --no-sandbox --screenshot=cursors.png --window-size=1200,340 --virtual-time-budget=3000 cursor-preview.html)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --no-sandbox --screenshot=cursors2.png --window-size=900,340 --virtual-time-budget=3000 cursor-preview.html)",
+      "Bash(:)",
+      "Bash(python3 -)",
+      "Bash(node -e ' *)",
+      "Bash(export SP=\"/private/tmp/claude-501/-Users-pandora2-Documents-GitHub-portfolio3-0/7446baeb-355d-47c0-8874-74dc6ba8061f/scratchpad\")",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --no-sandbox --virtual-time-budget=2000 --dump-dom file:///private/tmp/claude-501/-Users-pandora2-Documents-GitHub-portfolio3-0/7446baeb-355d-47c0-8874-74dc6ba8061f/scratchpad/cursor-check.html)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --no-sandbox --virtual-time-budget=3000 --dump-dom file:///private/tmp/claude-501/-Users-pandora2-Documents-GitHub-portfolio3-0/7446baeb-355d-47c0-8874-74dc6ba8061f/scratchpad/cursor-check.html)"
     ]
   }
 }
