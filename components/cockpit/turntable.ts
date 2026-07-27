@@ -850,6 +850,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
 
     const ce = easeInOut(cardT);
     card.visible = cardT > 0.02;
+    // The mask writes depth in the OPAQUE pass, so it culls EVERY later
+    // depth-tested draw behind it — the transmissive dust cover included,
+    // not just the beam it was cut for. While the card is still fading it
+    // is too translucent to hide that hole, so the cover reads as blinking
+    // out in a card-shaped rectangle (worst on a swap, which fades the card
+    // out and back in). Arm the mask only once the card can cover its own
+    // silhouette.
+    cardMask.visible = ce > 0.9;
     if (card.visible){
       card.scale.setScalar(0.9 + 0.1 * ce);
       card.position.y = CARD_Y + 0.06 * (1 - ce) + 0.012 * Math.sin(elapsed * 1.4);
