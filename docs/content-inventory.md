@@ -11,10 +11,10 @@ source against the strict §A.4.2 schemas (`Project`,
 extracted from alexxiong.me on **2026-07-27** (the Phase 0A dossier in
 [phase-0-handoff.md](phase-0-handoff.md)), and marks every gap explicitly.
 
-**Status: AWAITING OWNER REVIEW — Phase 0A steps 2–4 (gap-filling,
-drafting, owner approval).** Step 1 (extraction) is complete; nothing below
-is owner-approved. Items marked ⚠ are owner decisions reproduced from the
-dossier.
+**Status: Phase 0A in progress.** Step 1 (extraction) is complete; the
+first owner decision pass is recorded in the decisions ledger below
+(2026-07-27). Everything not marked DECIDED remains unapproved. Items
+marked ⚠ are owner decisions reproduced from the dossier.
 
 **Rules.**
 
@@ -39,6 +39,47 @@ dossier.
 | OK (mechanical) | Structural derivation with no factual claim (e.g. slug from URL, line-break stripping). |
 | NEEDS OWNER INPUT | No fact exists anywhere. The owner must supply it; the field stays empty until then. |
 | NEEDS OWNER CONFIRMATION | An extracted (or ⚠-flagged) candidate exists but is **not approved**; the owner must confirm or correct the exact wording/figure before it enters the strict schema. |
+| DECIDED | The owner resolved this item — see the decisions ledger below. |
+
+---
+
+## Decisions ledger
+
+**Recorded 2026-07-27 — owner decisions from the Phase 0A walkthrough
+(Phase 0A step 4, first pass).** These override any conflicting row below.
+
+1. **Phone number: OMIT** from the public profile source.
+2. **Résumé: HOLD** — `resumeUrl` stays unset until the owner supplies an
+   updated PDF (the 2025 edition is not to be linked).
+3. **CUSGA figure: CONFIRMED** — "1st of 2000+ competitors" publishes as
+   stated.
+4. **Song of Maka title: corrected** — the canonical name is
+   **"Song of Maka"** (no leading "The"). Tagline pronoun is **"their"**
+   ("retakes their bird kingdom"). Both applied to the provisional catalog.
+5. **Maka span: CONFIRMED 2020–2024.**
+6. **Chu Yu Hong year: CONFIRMED 2022.**
+7. **Tencent internship: corrected to 2023, June–September** (catalog said
+   2022 — fixed in the provisional catalog; duration may publish).
+8. **ProcGen Dungeon: CONFIRMED completed, 2024** (the site's `/wip`
+   placement is stale).
+9. **Chu Yu Hong publisher deal: OMIT entirely** from the public record
+   (NDA).
+10. **Tencent outcomes: qualitative phrasing** — "designed to increase
+    ARPDAU/MAU/DAU/retention", no invented numbers, nothing beyond the
+    three public sub-projects.
+11. **Ownership claims: APPROVED as quoted** — co-direction, scouted/hired
+    the 15-person team, all UI/UX + all level design (Maka); all UI/UX +
+    all animations (Chu Yu Hong); managed 50 QA testers (Tencent).
+12. **Problem statements** (Maka, Chu Yu Hong, Tencent): Claude drafts
+    strictly from dossier facts; owner approves or edits each wording
+    before it enters the schema. Drafts pending owner review.
+
+Still open after this pass: profile summary wording, per-project
+`summary`/`skills` authoring, link targets + typed kinds, Chu Yu Hong
+engine + measurable outcomes (if any), award-certificate verification for
+the non-CUSGA items, updated résumé PDF, and the final whole-record
+approvals (Phase 0A step 5) that produce the
+`content/portfolio-approvals.json` hashes.
 
 ---
 
@@ -58,16 +99,14 @@ data (the header shows the AX glyph and a weather chip only).
 | `capabilities` | — | Project Management · UI/UX Design · Graphic Design · Game Design | NEEDS OWNER CONFIRMATION |
 | `links` | — | LinkedIn `linkedin.com/in/alex-xiong-62b116204/` · Instagram `instagram.com/alex._.xiong/` | NEEDS OWNER CONFIRMATION (which links are recruiter-facing) |
 | `email` (optional) | — | `alexxiong0522@gmail.com` (published on site) | NEEDS OWNER CONFIRMATION |
-| `resumeUrl` (optional) | — | `https://www.alexxiong.me/s/Alex-Xiong-2025-Resume.pdf` ⚠ 2025 edition — confirm it is current before linking | NEEDS OWNER CONFIRMATION |
+| `resumeUrl` (optional) | — | Owner decision: hold — unset until an updated PDF is supplied (ledger #2) | DECIDED |
 
 **Profile decisions (owner-only):**
 
-- ⚠ **Phone number**: the site publishes one, but plan §A.4.2 forbids
-  publishing private contact data. **Default: OMIT** pending an explicit
-  owner decision to include it. It is not reproduced in this document.
-- ⚠ **Résumé edition**: the extracted link is the 2025 edition; owner
-  confirms it is the current résumé (or supplies a newer one) before it
-  enters `resumeUrl`.
+- **Phone number: DECIDED — omitted** (ledger #1). It is not reproduced
+  in this document.
+- **Résumé edition: DECIDED — hold** (ledger #2). `resumeUrl` stays unset
+  until the owner supplies an updated PDF; the 2025 edition is not linked.
 
 ---
 
@@ -81,21 +120,21 @@ sleeve `title`, `category`, `date` (with `WIP` doubling as status),
 `tagline`, `role`, `tools` (single string), `url`, `cover` path (no alt),
 and presentation colors.
 
-### 2.1 The Song of Maka (`/games/thesongofmaka`)
+### 2.1 Song of Maka (`/games/thesongofmaka`)
 
 | Strict field | Current provisional value | Dossier candidate (NOT approved) | Status |
 |---|---|---|---|
 | `id` / `slug` | derived: `thesongofmaka` | same | OK (mechanical) |
-| `title` | `THE SONG\nOF MAKA` (sleeve form; `projectDisplayTitle()` → "THE SONG OF MAKA") | "The Song of Maka" | OK (mechanical — canonical form strips line breaks) |
+| `title` | `SONG\nOF MAKA` (sleeve form; `projectDisplayTitle()` → "SONG OF MAKA") | Owner-corrected: canonical name is "Song of Maka", no leading "The" (ledger #4); catalog updated | DECIDED |
 | `category` | `puzzle adventure` | 2D puzzle-adventure | OK |
-| `date` | `2024` | ⚠ "4-year flagship, 2020–2024" — the span was **partly inferred by extraction**; confirm before use | NEEDS OWNER CONFIRMATION |
+| `date` | `2024` | Span 2020–2024 confirmed by owner (ledger #5) | DECIDED |
 | `status` | — (implied non-WIP) | `completed` (implied by catalog marker + 2024 awards — implication, not a stated fact) | NEEDS OWNER CONFIRMATION |
-| `tagline` | "A fallen king retakes his bird kingdom from a deadly disease." | Site summary says "retaking **their** bird kingdom" — catalog says "**his**". Owner picks the king's pronoun. | NEEDS OWNER CONFIRMATION |
+| `tagline` | "A fallen king retakes their bird kingdom from a deadly disease." | Pronoun "their" chosen by owner; applied to the catalog (ledger #4) | DECIDED |
 | `summary` | — | 2D puzzle-adventure; evolved from Hollow Knight-inspired concepts to puzzle/environment-interaction over combat; ecological boss battles | NEEDS OWNER CONFIRMATION |
 | `role` | `Creative Producer · Design Lead` | Creative Producer, Design Lead (co-directed with Game Director) | OK |
 | `problem` | — | — (dossier gap: explicit problem statement missing) | NEEDS OWNER INPUT |
 | `contributions` | — | co-direction; scouted and hired the team; design briefs, pitch decks, budget estimations for commercialization talks with Bilibili and Ubisoft; all design docs (Notion); UI/UX + all level design; art-pipeline oversight; Scrum/Kanban; monthly Tinylytics playtest reports | NEEDS OWNER CONFIRMATION (ownership claims — see §3, point 5) |
-| `outcomes` | — | Best Game Grand Award, 4th CUSGA 2024 (⚠ "1st of 2000+ competitors" — **confirm figure**); Best Student Game, indiePlay China 2024; Best Narrative nomination, CUSGA 2024; Best Student Game nomination, Tencent Game Awards 2024; Best Visual nomination, 2nd CUSGA 2022; presented at GDC 2023 (NY State booth). ⚠ Dossier: strongest record — **verify certificates** for the awards/GDC appearance. | NEEDS OWNER CONFIRMATION |
+| `outcomes` | — | Best Game Grand Award, 4th CUSGA 2024 ("1st of 2000+ competitors" — confirmed by owner, ledger #3); Best Student Game, indiePlay China 2024; Best Narrative nomination, CUSGA 2024; Best Student Game nomination, Tencent Game Awards 2024; Best Visual nomination, 2nd CUSGA 2022; presented at GDC 2023 (NY State booth). ⚠ Dossier: strongest record — **verify certificates** for the awards/GDC appearance. | NEEDS OWNER CONFIRMATION |
 | `tools` | `Unity · Figma · Adobe` | Unity, Figma, Procreate, Adobe Suite, Notion, Jira, Tinylytics (expanded list) | NEEDS OWNER CONFIRMATION |
 | `skills` | — | — (no normalized skills separate from tools were extracted) | NEEDS OWNER INPUT |
 | `team` | — | 15 (scouted and hired by Alex) — ownership claim | NEEDS OWNER CONFIRMATION |
@@ -110,14 +149,14 @@ and presentation colors.
 | `id` / `slug` | derived: `chuyuhong` | same | OK (mechanical) |
 | `title` | `CHU YU\nHONG` → "CHU YU HONG" | "Chu Yu Hong 楚雨虹" (Chinese characters in canonical title: owner call) | NEEDS OWNER CONFIRMATION |
 | `category` | `horror point & click` | 2D horror point-and-click | OK |
-| `date` | `2022` | ⚠ year **unstated on the site** — catalog says 2022, confirm | NEEDS OWNER CONFIRMATION |
+| `date` | `2022` | Confirmed by owner (ledger #6) | DECIDED |
 | `status` | — (implied non-WIP) | `completed` (built in a 3-week jam; implication, not stated) | NEEDS OWNER CONFIRMATION |
 | `tagline` | "A narrative horror adventure steeped in traditional Chinese folklore." | aligns with site | OK |
 | `summary` | — | Cursed-documentary framing about a mall that was once an orphanage; Chinese folklore; three protagonists; built in a 3-week BOOOM game jam, team of 7, at Silverjay Studio | NEEDS OWNER CONFIRMATION |
 | `role` | `Creative Director · Producer` | Creative Director / Project Lead / Producer | OK |
 | `problem` | — | — (dossier gap: explicit problem statement missing) | NEEDS OWNER INPUT |
 | `contributions` | — | all UI/UX; all animations + promo videos; second-level demo design; 10 environmental art pieces across three chapters; co-created core mechanics; Notion sprint management; publisher negotiation via pitch decks | NEEDS OWNER CONFIRMATION (ownership claims) |
-| `outcomes` | — | ⚠ publisher deal is **under NDA** — publish only what the owner clears (e.g. "negotiated a publishing deal with a Chinese publisher"); first high-complexity Silverjay project; community on Chinese blog. Dossier gap: no measurable outcomes extracted. | NEEDS OWNER CONFIRMATION (NDA phrasing) + NEEDS OWNER INPUT (measurable outcomes, if any exist) |
+| `outcomes` | — | Publisher deal **omitted entirely** per owner decision (ledger #9); first high-complexity Silverjay project; community on Chinese blog. Dossier gap: no measurable outcomes extracted. | NEEDS OWNER CONFIRMATION (NDA phrasing) + NEEDS OWNER INPUT (measurable outcomes, if any exist) |
 | `tools` | `Photoshop · Figma · Procreate` | Photoshop, Illustrator, Figma, Procreate, AE, Premiere. Dossier gap: **engine unstated** | NEEDS OWNER CONFIRMATION (+ engine: NEEDS OWNER INPUT) |
 | `skills` | — | — | NEEDS OWNER INPUT |
 | `team` | — | 7, at Silverjay Studio | NEEDS OWNER CONFIRMATION |
@@ -136,7 +175,7 @@ them enters the schema. Owner clears the exact NDA scope (§3, point 2).
 | `id` / `slug` | derived: `tencentgames` | same | OK (mechanical) |
 | `title` | `TENCENT\nGAMES` → "TENCENT GAMES" | "Tencent Games" | OK (mechanical) |
 | `category` | `event · ux design` | live-ops event design + UX | OK |
-| `date` | `2022` | ⚠ year — catalog says 2022, **confirm**; internship duration is a dossier gap | NEEDS OWNER CONFIRMATION (year) + NEEDS OWNER INPUT (duration) |
+| `date` | `2023` | Owner-corrected: June–September 2023 (ledger #7); catalog updated | DECIDED |
 | `status` | — (implied non-WIP) | `completed` (internship concluded; implication) | NEEDS OWNER CONFIRMATION |
 | `tagline` | "Live-ops event design across Wild Rift, Lost Ark and Contra Returns." | aligns with the three public sub-projects | OK |
 | `summary` | — | Live-ops event design + UX during a Tencent Games internship: Wild Rift WeChat check-in/referral events; Lost Ark WeChat AI assistant (PM/UX, UE5 Blueprint poses + interface, reward mechanics, UI transfer pathways); Contra Returns assistant event (PM/QA lead) | NEEDS OWNER CONFIRMATION (must stay within cleared NDA scope) |

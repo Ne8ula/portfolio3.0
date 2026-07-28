@@ -47,8 +47,8 @@ describe('catalog helpers', () => {
   })
 
   it('collapses sleeve-art line breaks in projectDisplayTitle', () => {
-    expect(at(PROJECTS, 0).title).toBe('THE SONG\nOF MAKA')
-    expect(projectDisplayTitle(at(PROJECTS, 0))).toBe('THE SONG OF MAKA')
+    expect(at(PROJECTS, 0).title).toBe('SONG\nOF MAKA')
+    expect(projectDisplayTitle(at(PROJECTS, 0))).toBe('SONG OF MAKA')
   })
 })
 
@@ -92,7 +92,7 @@ describe('validateCatalogStructure', () => {
 
   it('errors on a duplicate display title', () => {
     const first = at(PROJECTS, 0)
-    const duped = { ...at(PROJECTS, 1), title: 'THE SONG\nOF MAKA' }
+    const duped = { ...at(PROJECTS, 1), title: 'SONG\nOF MAKA' }
     const errors = errorsOf([first, duped])
     expect(errors.some((i) => i.message.includes('title duplicates'))).toBe(true)
   })

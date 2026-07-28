@@ -85,8 +85,10 @@ export type ProvisionalProject = {
 // and, after Phase 0B, an owner-approved record in
 // content/portfolio-approvals.json.
 export const PROJECTS: readonly ProvisionalProject[] = [
-  { title: 'THE SONG\nOF MAKA', category: 'puzzle adventure', date: '2024',
-    tagline: 'A fallen king retakes his bird kingdom from a deadly disease.',
+  // Owner-corrected 2026-07-27: canonical name is "Song of Maka" (no
+  // leading "The"); the king's pronoun is "their" (matches the site).
+  { title: 'SONG\nOF MAKA', category: 'puzzle adventure', date: '2024',
+    tagline: 'A fallen king retakes their bird kingdom from a deadly disease.',
     role: 'Creative Producer · Design Lead', tools: 'Unity · Figma · Adobe',
     url: 'https://www.alexxiong.me/games/thesongofmaka',
     cover: '/vinyl-covers/song-of-maka.png',
@@ -97,7 +99,8 @@ export const PROJECTS: readonly ProvisionalProject[] = [
     url: 'https://www.alexxiong.me/games/chuyuhong',
     cover: '/vinyl-covers/chu-yu-hong.png',
     bg: '#1E1C1A', accent: '#7FA683', text: '#E8E4DC' },
-  { title: 'TENCENT\nGAMES', category: 'event · ux design', date: '2022',
+  // Owner-corrected 2026-07-27: internship was June–September 2023.
+  { title: 'TENCENT\nGAMES', category: 'event · ux design', date: '2023',
     tagline: 'Live-ops event design across Wild Rift, Lost Ark and Contra Returns.',
     role: 'Game Operations Intern', tools: 'UE5 Blueprint · WeChat H5',
     url: 'https://www.alexxiong.me/design/tencentgames',
