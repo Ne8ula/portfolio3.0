@@ -1,6 +1,6 @@
 # DESIGN.md — Editorial Cockpit Design Guide
 
-The reference for building any future web page, view, overlay, or component in this portfolio. The look is **"editorial cockpit"**: a literary print publication (cream paper, garamond display type, letterpress restraint) fused with a retro terminal / instrument-panel HUD (mono microtype, diagnostics, wireframes). Every new surface should read as both a *page from a fine-press book* and a *readout from a machine*.
+The reference for building any future web page, view, overlay, or component in this portfolio. The look is **"editorial cockpit"**: a literary print publication (cream paper, garamond display type, letterpress restraint) fused with a retro terminal / instrument-panel HUD (mono microtype, diagnostics, wireframes). Every new surface should read as both a *page from a fine-press book* and a *readout from a machine* through a minimalist, retro-futurism aesthetic style. 
 
 Source of truth for tokens: [app/globals.css](app/globals.css) (`:root` vars) and [components/cockpit/materials.ts](components/cockpit/materials.ts) (`PALETTE` for 3D). This doc explains how to *use* them.
 
