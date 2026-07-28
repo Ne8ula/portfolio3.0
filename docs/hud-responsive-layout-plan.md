@@ -1656,8 +1656,7 @@ animation.
 
 ### Phase 0 — baseline, contracts, and executable enforcement
 
-**Implementation status: complete** (2026-07-27; commit — see the Phase 0
-entry in the repository history, recorded here in the follow-up commit).
+**Implementation status: complete** (2026-07-27; commit `b3d3315`).
 Delivered: catalog/texture split; strict contract/schema/validation modules
 under `lib/**`; runtime validators + route-coverage scan
 (`scripts/validate-contracts.ts`); scoped strict typecheck
