@@ -3,9 +3,9 @@
 - **Status**: product decisions finalized; revision 6 contradiction and
   enforceability audit applied. Phase −1 is complete **including its
   automated assertion** (delivered with Phase 0 in `e2e/smoke.spec.ts`).
-  **Phase 0 core is complete** (commit recorded in §8 Phase 0). Phase 0A is
-  in owner review (`docs/content-inventory.md`); Phases 0B–8 have not
-  started.
+  **Phases 0, 0A, and 0B are complete** (commits recorded in §8). The
+  canonical catalog/profile carry owner-approved strict records with
+  blocking approval gates. Phases 1–8 have not started.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
   cockpit views (`deck`, `crate`, `monitor`) as the first adopter.
 - **Normal composition range**: `1024×600` CSS pixels through `3440×1536`,
@@ -1822,8 +1822,8 @@ placeholder content and Phase 2 remains blocked.
 
 ### Phase 0A — content dossier and owner approval
 
-**Implementation status: complete** (2026-07-28; commit recorded in the
-follow-up). All five steps ran: extraction (2026-07-27 dossier), gap
+**Implementation status: complete** (2026-07-28; commits `5dc7c70` +
+`12a3735`). All five steps ran: extraction (2026-07-27 dossier), gap
 listing + drafting (docs/content-inventory.md), two owner decision passes
 (20 ledger entries), full-content record approval for the profile and all
 six projects, and hash recording (`content/portfolio-approvals.json`,
@@ -1869,8 +1869,7 @@ represented as such (`status`, qualitative outcomes) rather than invented.
 
 ### Phase 0B — strict catalog enforcement
 
-**Implementation status: complete** (2026-07-28; commit recorded in the
-follow-up). Strict `Project` completeness is blocking (folded into
+**Implementation status: complete** (2026-07-28; commit `4e64287`). Strict `Project` completeness is blocking (folded into
 `validateCatalogStructure` — the strict schema makes completeness a
 structural property), `PROFILE` validation is blocking, and approval
 verification is blocking (`verifyApprovals({ blocking: true })` in
