@@ -1,120 +1,174 @@
-// Phase 0 catalog contract tests: structural validation is blocking (zero
-// errors on the real catalog), strict completeness is pending-only, and
-// helpers derive stable slugs/titles.
+// Catalog tests — Phase 0B form: the canonical catalog carries the strict
+// §A.4.2 schema (owner-approved records), validation is blocking, and the
+// cockpit reads the derived SleeveRecord adapter which must carry no
+// unique facts of its own.
 
 import { describe, expect, it } from 'vitest'
 
 import {
-  PROJECTS,
   catalogSlugs,
-  projectDisplayTitle,
-  projectSlug,
+  PROJECTS,
+  SLEEVES,
+  sleeveRecord,
+  type Project,
 } from '@/lib/projects/catalog'
-import type { ProvisionalProject } from '@/lib/projects/catalog'
-import {
-  validateCatalogCompleteness,
-  validateCatalogStructure,
-} from '@/lib/projects/validation'
-import { stableStringify } from '@/lib/shared/core'
-import type { JsonValue } from '@/lib/shared/core'
+import { validateCatalogStructure } from '@/lib/projects/validation'
+import { stableStringify, type JsonValue, type ValidationIssue } from '@/lib/shared/core'
 
-function at<T>(items: readonly T[], index: number): T {
-  const item = items[index]
-  if (item === undefined) throw new Error(`missing item at index ${index}`)
-  return item
+function at<T>(list: readonly T[], index: number): T {
+  const value = list[index]
+  if (value === undefined) throw new Error(`missing index ${index}`)
+  return value
 }
 
-function errorsOf(projects: readonly ProvisionalProject[]) {
-  return validateCatalogStructure(projects).filter((i) => i.severity === 'error')
+function variant(patch: Record<string, unknown>): Project {
+  return { ...at(PROJECTS, 0), ...patch } as unknown as Project
 }
 
-const EXPECTED_SLUGS = [
-  'thesongofmaka',
-  'chuyuhong',
-  'tencentgames',
-  'nyuwelcome',
-  'shanghainoir',
-  'procgendungeon',
-]
+function hasError(issues: readonly ValidationIssue[], messagePart: string): boolean {
+  return issues.some(
+    (entry) => entry.severity === 'error' && entry.message.includes(messagePart),
+  )
+}
 
-describe('catalog helpers', () => {
-  it('derives the six canonical slugs via catalogSlugs', () => {
-    expect(catalogSlugs(PROJECTS)).toEqual(EXPECTED_SLUGS)
+describe('canonical catalog', () => {
+  it('passes strict blocking validation with zero issues', () => {
+    expect(validateCatalogStructure(PROJECTS)).toEqual([])
   })
 
-  it('derives each slug via projectSlug', () => {
-    expect(PROJECTS.map((project) => projectSlug(project))).toEqual(EXPECTED_SLUGS)
+  it('keeps the six stable public slugs', () => {
+    expect(catalogSlugs(PROJECTS)).toEqual([
+      'thesongofmaka',
+      'chuyuhong',
+      'tencentgames',
+      'nyuwelcome',
+      'shanghainoir',
+      'procgendungeon',
+    ])
   })
 
-  it('collapses sleeve-art line breaks in projectDisplayTitle', () => {
-    expect(at(PROJECTS, 0).title).toBe('SONG\nOF MAKA')
-    expect(projectDisplayTitle(at(PROJECTS, 0))).toBe('SONG OF MAKA')
-  })
-})
-
-describe('validateCatalogStructure', () => {
-  it('reports zero error issues for the real catalog', () => {
-    expect(errorsOf(PROJECTS)).toEqual([])
+  it('carries the owner-corrected canonical facts', () => {
+    expect(at(PROJECTS, 0).title).toBe('Song of Maka') // no leading "The" (ledger #4)
+    expect(at(PROJECTS, 0).tagline).toContain('their bird kingdom')
+    expect(at(PROJECTS, 0).status).toBe('in-progress') // Maka: 2021–Present
+    expect(at(PROJECTS, 2).date).toBe('2023') // Tencent (ledger #7)
+    expect(at(PROJECTS, 4).status).toBe('in-progress') // Shanghai Noir
+    expect(at(PROJECTS, 5).status).toBe('completed') // ProcGen (ledger #8)
   })
 
-  it('errors on an empty tagline', () => {
-    const broken = { ...at(PROJECTS, 0), tagline: '' }
-    const errors = errorsOf([broken])
-    expect(errors.length).toBeGreaterThan(0)
-    expect(errors.some((i) => i.message.includes('"tagline"'))).toBe(true)
+  it('canonical titles carry no artwork line breaks', () => {
+    for (const project of PROJECTS) {
+      expect(project.title).not.toContain('\n')
+    }
   })
 
-  it('errors on an http:// url', () => {
-    const broken = { ...at(PROJECTS, 0), url: 'http://www.alexxiong.me/games/thesongofmaka' }
-    const errors = errorsOf([broken])
-    expect(errors.length).toBeGreaterThan(0)
-    expect(errors.some((i) => i.message.includes('https'))).toBe(true)
+  it('honors the NDA decision: no publisher-deal mention on Chu Yu Hong', () => {
+    const chuYuHong = at(PROJECTS, 1)
+    const serialized = JSON.stringify(chuYuHong).toLowerCase()
+    expect(serialized).not.toContain('publisher')
   })
 
-  it('errors on a duplicate url', () => {
-    const first = at(PROJECTS, 0)
-    const duped = { ...at(PROJECTS, 1), url: first.url }
-    const errors = errorsOf([first, duped])
-    expect(errors.some((i) => i.message.includes('url duplicates'))).toBe(true)
-  })
-
-  it('errors on a bad hex color', () => {
-    const broken = { ...at(PROJECTS, 0), bg: '#GGGGGG' }
-    const errors = errorsOf([broken])
-    expect(errors.some((i) => i.message.includes('bg'))).toBe(true)
-  })
-
-  it('errors on a cover outside /vinyl-covers/', () => {
-    const broken = { ...at(PROJECTS, 0), cover: '/images/song-of-maka.png' }
-    const errors = errorsOf([broken])
-    expect(errors.some((i) => i.message.includes('cover'))).toBe(true)
-  })
-
-  it('errors on a duplicate display title', () => {
-    const first = at(PROJECTS, 0)
-    const duped = { ...at(PROJECTS, 1), title: 'SONG\nOF MAKA' }
-    const errors = errorsOf([first, duped])
-    expect(errors.some((i) => i.message.includes('title duplicates'))).toBe(true)
-  })
-})
-
-describe('validateCatalogCompleteness', () => {
-  it('reports only pending issues for the real catalog — never errors', () => {
-    const issues = validateCatalogCompleteness(PROJECTS)
-    expect(issues.every((i) => i.severity === 'pending')).toBe(true)
-    expect(issues.filter((i) => i.severity === 'error')).toEqual([])
-  })
-
-  it('reports 6 projects x 10 strict fields = 60 pending gaps', () => {
-    const issues = validateCatalogCompleteness(PROJECTS)
-    expect(issues).toHaveLength(60)
-  })
-})
-
-describe('catalog serializability', () => {
-  it('every record survives stableStringify', () => {
+  it('every record is JSON-serializable', () => {
     for (const project of PROJECTS) {
       expect(() => stableStringify(project as unknown as JsonValue)).not.toThrow()
     }
+  })
+})
+
+describe('validateCatalogStructure — blocking on malformed records', () => {
+  it('rejects an empty summary', () => {
+    expect(
+      hasError(validateCatalogStructure([variant({ summary: '' })]), '"summary" is empty'),
+    ).toBe(true)
+  })
+
+  it('rejects a duplicate slug', () => {
+    const issues = validateCatalogStructure([
+      at(PROJECTS, 0),
+      variant({ id: 'other', title: 'Other' }),
+    ])
+    expect(hasError(issues, 'duplicates project[0]')).toBe(true)
+  })
+
+  it('rejects a canonical title containing a line break', () => {
+    expect(
+      hasError(validateCatalogStructure([variant({ title: 'SONG\nOF MAKA' })]), 'line break'),
+    ).toBe(true)
+  })
+
+  it('rejects an unrecognized status', () => {
+    expect(
+      hasError(validateCatalogStructure([variant({ status: 'shipped' })]), 'unrecognized status'),
+    ).toBe(true)
+  })
+
+  it('rejects an empty contributions list and empty entries', () => {
+    expect(
+      hasError(
+        validateCatalogStructure([variant({ contributions: [] })]),
+        '"contributions" is empty',
+      ),
+    ).toBe(true)
+    expect(
+      hasError(validateCatalogStructure([variant({ outcomes: [''] })]), 'outcomes[0] is empty'),
+    ).toBe(true)
+  })
+
+  it('rejects an unrecognized link kind and a non-https href', () => {
+    const badKind = variant({ links: [{ label: 'X', href: 'https://x.example', kind: 'blog' }] })
+    expect(hasError(validateCatalogStructure([badKind]), 'unrecognized link kind')).toBe(true)
+    const badHref = variant({ links: [{ label: 'X', href: 'http://x.example', kind: 'live' }] })
+    expect(
+      hasError(validateCatalogStructure([badHref]), 'must be https:// or site-relative'),
+    ).toBe(true)
+  })
+
+  it('rejects an image cover without meaningful alt text', () => {
+    const cover = { kind: 'image', src: '/vinyl-covers/x.png', alt: '' }
+    expect(hasError(validateCatalogStructure([variant({ cover })]), 'meaningful alt')).toBe(true)
+  })
+
+  it('rejects a generated cover that is not explicitly decorative', () => {
+    const cover = { kind: 'generated', alt: '', decorative: false }
+    expect(
+      hasError(validateCatalogStructure([variant({ cover })]), 'explicitly decorative'),
+    ).toBe(true)
+  })
+
+  it('rejects non-string/number visual tokens', () => {
+    expect(
+      hasError(validateCatalogStructure([variant({ visual: { bg: true } })]), 'visual.bg'),
+    ).toBe(true)
+  })
+})
+
+describe('sleeveRecord adapter (cockpit presentation, no unique facts)', () => {
+  it('derives one sleeve per record', () => {
+    expect(SLEEVES).toHaveLength(PROJECTS.length)
+  })
+
+  it('uses the authored art title and preserves the existing sleeve look', () => {
+    expect(at(SLEEVES, 0).title).toBe('SONG\nOF MAKA')
+    expect(at(SLEEVES, 0).date).toBe('2024') // dateLabel keeps the sleeve year
+    expect(at(SLEEVES, 0).tools).toBe('Unity · Figma · Adobe')
+    expect(at(SLEEVES, 0).bg).toBe('#E8E4DC')
+  })
+
+  it('shows WIP for in-progress records', () => {
+    expect(at(SLEEVES, 4).date).toBe('WIP') // Shanghai Noir
+  })
+
+  it('maps a generated cover to null (motif fallback)', () => {
+    expect(at(SLEEVES, 2).cover).toBeNull() // Tencent
+    expect(at(SLEEVES, 0).cover).toBe('/vinyl-covers/song-of-maka.png')
+  })
+
+  it('falls back to canonical values when visual tokens are absent', () => {
+    const bare = sleeveRecord({ ...at(PROJECTS, 0), visual: undefined })
+    expect(bare.title).toBe('SONG OF MAKA') // uppercased canonical title
+    expect(bare.date).toBe('WIP') // Maka is in-progress → WIP fallback
+    expect(bare.tools).toBe(at(PROJECTS, 0).tools.join(' · '))
+    const completed = sleeveRecord({ ...at(PROJECTS, 5), visual: undefined })
+    expect(completed.date).toBe('2024') // canonical date passthrough (ProcGen)
   })
 })

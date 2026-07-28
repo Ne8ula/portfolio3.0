@@ -20,8 +20,8 @@ import type {
   ApprovalSubjectId,
   ContentApproval,
 } from '@/lib/content/content-approval'
-import type { Project } from '@/lib/projects/catalog'
-import type { PublicProfile } from '@/lib/portfolio/profile'
+import { PROJECTS as CATALOG_PROJECTS, type Project } from '@/lib/projects/catalog'
+import { PROFILE, type PublicProfile } from '@/lib/portfolio/profile'
 
 const PROJECT_FIXTURE: Project = {
   id: 'demo',
@@ -299,14 +299,35 @@ describe('verifyApprovals', () => {
   })
 })
 
-describe('repo manifest', () => {
-  it('content/portfolio-approvals.json parses and validates', () => {
-    const raw = readFileSync(
-      new URL('../../content/portfolio-approvals.json', import.meta.url),
-      'utf8',
-    )
-    const parsed: unknown = JSON.parse(raw)
-    expect(manifestErrors(parsed)).toEqual([])
+describe('repo manifest (Phase 0B: owner approvals recorded and current)', () => {
+  const raw = readFileSync(
+    new URL('../../content/portfolio-approvals.json', import.meta.url),
+    'utf8',
+  )
+  const parsed = JSON.parse(raw) as ApprovalManifest
+  const realSubjects: readonly ApprovalSubjectId[] = [
+    'profile',
+    ...CATALOG_PROJECTS.map((project) => `project:${project.slug}` as const),
+  ]
+
+  it('parses and validates structurally against the real subjects', () => {
+    expect(
+      validateApprovalManifest(parsed, realSubjects).filter((i) => i.severity === 'error'),
+    ).toEqual([])
+  })
+
+  it('covers every subject with a hash matching the CURRENT content', () => {
+    const subjects = [
+      {
+        id: 'profile' as const,
+        currentHash: computeApprovalHash({ kind: 'profile', profile: PROFILE }),
+      },
+      ...CATALOG_PROJECTS.map((project) => ({
+        id: `project:${project.slug}` as const,
+        currentHash: computeApprovalHash({ kind: 'project', project }),
+      })),
+    ]
+    expect(verifyApprovals(parsed, subjects, { blocking: true })).toEqual([])
   })
 })
 

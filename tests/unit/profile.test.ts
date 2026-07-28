@@ -1,6 +1,6 @@
-// Phase 0 profile contract tests: the schema validates a well-formed
-// fixture cleanly, the canonical PROFILE export stays null until owner
-// approval, and each malformed variant is a blocking error.
+// Profile schema tests — Phase 0A complete: the canonical PROFILE export
+// is the owner-approved record and must pass strict validation; broken
+// fixture variants prove each validator rule.
 
 import { describe, expect, it } from 'vitest'
 
@@ -32,9 +32,14 @@ describe('validateProfile — valid fixture', () => {
   })
 })
 
-describe('PROFILE export', () => {
-  it('is null in Phase 0 (content awaits owner approval)', () => {
-    expect(PROFILE).toBeNull()
+describe('PROFILE export (owner-approved in Phase 0A)', () => {
+  it('exists and passes strict validation', () => {
+    expect(PROFILE).not.toBeNull()
+    expect(validateProfile(PROFILE)).toEqual([])
+  })
+
+  it('links the owner-supplied 2026 résumé from public/', () => {
+    expect(PROFILE.resumeUrl).toBe('/AlexXiong_Resume26.pdf')
   })
 })
 

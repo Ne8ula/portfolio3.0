@@ -11,10 +11,14 @@ source against the strict §A.4.2 schemas (`Project`,
 extracted from alexxiong.me on **2026-07-27** (the Phase 0A dossier in
 [phase-0-handoff.md](phase-0-handoff.md)), and marks every gap explicitly.
 
-**Status: Phase 0A in progress.** Step 1 (extraction) is complete; the
-first owner decision pass is recorded in the decisions ledger below
-(2026-07-27). Everything not marked DECIDED remains unapproved. Items
-marked ⚠ are owner decisions reproduced from the dossier.
+**Status: Phase 0A COMPLETE (2026-07-28).** All seven subjects (profile +
+six projects) carry owner-approved strict records in
+[lib/projects/catalog.ts](../lib/projects/catalog.ts) and
+[lib/portfolio/profile.ts](../lib/portfolio/profile.ts), with matching
+approval hashes in `content/portfolio-approvals.json`. Phase 0B gates are
+blocking: any public-field edit fails CI until the owner re-approves the
+exact new content. The field tables below are retained as the historical
+Phase 0A working record; the approved records are the canonical source.
 
 **Rules.**
 
@@ -74,22 +78,60 @@ marked ⚠ are owner decisions reproduced from the dossier.
     strictly from dossier facts; owner approves or edits each wording
     before it enters the schema. Drafts pending owner review.
 
-Still open after this pass: profile summary wording, per-project
-`summary`/`skills` authoring, link targets + typed kinds, Chu Yu Hong
-engine + measurable outcomes (if any), award-certificate verification for
-the non-CUSGA items, updated résumé PDF, and the final whole-record
-approvals (Phase 0A step 5) that produce the
-`content/portfolio-approvals.json` hashes.
+**Second decision pass — recorded 2026-07-28 (Phase 0A steps 4–5,
+completed):**
+
+13. **Résumé: supplied and linked** — the owner provided
+    `AlexXiong_Resume26.pdf`; hosted at `public/AlexXiong_Resume26.pdf`,
+    linked as `resumeUrl: '/AlexXiong_Resume26.pdf'` (supersedes #2).
+14. **Song of Maka: date "2021–Present", status `in-progress`**
+    (supersedes #5's 2020–2024 span). Sleeve presentation label stays
+    "2024".
+15. **Chu Yu Hong: Chinese title 楚雨虹 carried in the record** (noted in
+    the summary); the future detail page renders it as the subtitle.
+    Canonical `title` stays "Chu Yu Hong".
+16. **Shanghai Noir reframed** — research-oriented passion project in
+    audio interaction.
+17. **Shanghai Noir + ProcGen Dungeon framing** (owner-supplied fact):
+    the final undergraduate (BFA) projects that broadened an interest in
+    the implications of interactive technology, leading to information
+    science and HCI study at Cornell Tech.
+18. **Profile summary includes the Cornell Tech sentence.**
+19. **LinkedIn canonical URL**: `linkedin.com/in/alex-xiong0522` (from
+    the 2026 résumé; supersedes the site's `-62b116204`).
+20. **All seven records APPROVED** via full-content previews
+    (2026-07-28); hashes recorded in `content/portfolio-approvals.json`.
+
+**Third decision pass — recorded 2026-07-28 (post-verification wording
+fixes, owner-approved):**
+
+21. **Song of Maka problem statement**: "five-year production — now in
+    post-production —" (owner-supplied; supersedes the stale "four-year"
+    figure that rested on retracted ledger #5).
+22. **Chu Yu Hong outcome**: "Built a community on a Chinese blog" —
+    "ongoing" dropped (persistence was not a stated fact).
+23. **Tencent: all three sub-projects were WeChat-based** (owner-supplied;
+    the old portfolio omitted it for Contra Returns) — "WeChat-based"
+    stands in the problem statement and the summary/contribution now say
+    "WeChat assistant event for Contra Returns".
+24. Hashes re-recorded after this pass — see
+    `content/portfolio-approvals.json` timestamps.
+
+Remaining open items (non-blocking, future passes): Chu Yu Hong engine +
+measurable outcomes (if any exist), award-certificate verification for
+the non-CUSGA items, and additional link targets (Drive builds, Figma
+pipeline, Maka case-study page) if the owner wants them published.
 
 ---
 
 ## 1. Profile
 
-**Current source:** none. `PROFILE` in
-[lib/portfolio/profile.ts](../lib/portfolio/profile.ts) is deliberately
-`null` — Phase 0 ships the schema only, and the canonical profile is
-honestly absent rather than fabricated. The cockpit HUD carries no profile
-data (the header shows the AX glyph and a weather chip only).
+**Current source (since Phase 0A, 2026-07-28):** `PROFILE` in
+[lib/portfolio/profile.ts](../lib/portfolio/profile.ts) is the
+owner-approved record (ledger #20) — name, target role, Cornell Tech
+summary, capabilities, LinkedIn/Instagram/email links, and the 2026 résumé
+(ledger #13, #19). The table below is the historical Phase 0A working
+record.
 
 | Strict `PublicProfile` field | Current value | Dossier-extracted candidate (NOT approved) | Status |
 |---|---|---|---|
@@ -99,14 +141,15 @@ data (the header shows the AX glyph and a weather chip only).
 | `capabilities` | — | Project Management · UI/UX Design · Graphic Design · Game Design | NEEDS OWNER CONFIRMATION |
 | `links` | — | LinkedIn `linkedin.com/in/alex-xiong-62b116204/` · Instagram `instagram.com/alex._.xiong/` | NEEDS OWNER CONFIRMATION (which links are recruiter-facing) |
 | `email` (optional) | — | `alexxiong0522@gmail.com` (published on site) | NEEDS OWNER CONFIRMATION |
-| `resumeUrl` (optional) | — | Owner decision: hold — unset until an updated PDF is supplied (ledger #2) | DECIDED |
+| `resumeUrl` (optional) | `/AlexXiong_Resume26.pdf` | Owner supplied the 2026 PDF (ledger #13, supersedes #2) | DECIDED |
 
 **Profile decisions (owner-only):**
 
 - **Phone number: DECIDED — omitted** (ledger #1). It is not reproduced
   in this document.
-- **Résumé edition: DECIDED — hold** (ledger #2). `resumeUrl` stays unset
-  until the owner supplies an updated PDF; the 2025 edition is not linked.
+- **Résumé edition: DECIDED — supplied** (ledger #13, superseding #2).
+  The 2026 PDF is hosted at `public/AlexXiong_Resume26.pdf` and linked;
+  the 2025 edition was never linked.
 
 ---
 

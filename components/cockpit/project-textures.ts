@@ -7,7 +7,7 @@
 // server graph.
 import "client-only"
 import * as THREE from "three"
-import { PROJECTS } from "@/lib/projects/catalog"
+import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 
 // Pressed-vinyl disc face: near-black grooves + accent-colored center label.
 // Used by the crate's sleeved discs AND the deck's platter record.

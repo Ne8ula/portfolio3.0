@@ -1,12 +1,13 @@
-// Contract + catalog validation gate (§8 Phase 0). Run via
+// Contract + catalog validation gate (§8 Phase 0; Phase 0B form). Run via
 // `npm run validate:contracts` (tsx). All filesystem access lives here;
 // judgement is delegated to the pure validators in lib/** so it stays
 // unit-testable.
 //
-// Exit code 1 on any BLOCKING issue. `pending` issues (strict catalog
-// completeness, approval coverage — non-blocking until Phase 0B; route
-// delivery — Phase 2) are printed and labeled, never hidden, never fatal
-// here.
+// Exit code 1 on any BLOCKING issue. Since Phase 0B, strict catalog
+// completeness, profile validation, and approval verification (missing or
+// STALE hashes vs the current content) are all BLOCKING: a canonical
+// content edit fails this gate until the owner re-approves the exact new
+// content. Route delivery assertions remain `pending` until Phase 2.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
@@ -26,12 +27,15 @@ import {
 } from '@/lib/responsive/layout-contracts'
 import { validateContentContracts } from '@/lib/content/content-contract'
 import { CONTENT_CONTRACTS } from '@/lib/content/content-contracts'
-import { validateApprovalManifest } from '@/lib/content/content-approval'
-import { catalogSlugs, PROJECTS } from '@/lib/projects/catalog'
 import {
-  validateCatalogCompleteness,
-  validateCatalogStructure,
-} from '@/lib/projects/validation'
+  computeApprovalHash,
+  validateApprovalManifest,
+  verifyApprovals,
+  type ApprovalManifest,
+} from '@/lib/content/content-approval'
+import { catalogSlugs, PROJECTS } from '@/lib/projects/catalog'
+import { validateCatalogStructure } from '@/lib/projects/validation'
+import { PROFILE, validateProfile } from '@/lib/portfolio/profile'
 
 const repoRoot = process.cwd()
 
@@ -87,7 +91,7 @@ const slugs = catalogSlugs(PROJECTS)
 issues.push(...validateContentContracts(CONTENT_CONTRACTS, { catalogSlugs: [...slugs] }))
 
 issues.push(...validateCatalogStructure(PROJECTS))
-issues.push(...validateCatalogCompleteness(PROJECTS))
+issues.push(...validateProfile(PROFILE))
 
 const manifestPath = join(repoRoot, 'content', 'portfolio-approvals.json')
 let manifestRaw: unknown = null
@@ -105,27 +109,24 @@ if (manifestRaw !== null) {
   const knownSubjects = ['profile' as const, ...slugs.map((slug) => `project:${slug}` as const)]
   issues.push(...validateApprovalManifest(manifestRaw, knownSubjects))
 
-  // Approval COVERAGE is pending until Phase 0B: the provisional catalog
-  // cannot be hashed as strict §A.4.2 content, so staleness cannot be
-  // computed yet — only record-exists coverage. Structural manifest
-  // validity above is already blocking. Phase 0B replaces this block with
-  // a blocking verifyApprovals() over computeApprovalHash() of the strict
-  // records.
-  const manifest = manifestRaw as { approvals?: readonly { subjectId?: unknown }[] }
-  if (Array.isArray(manifest.approvals)) {
-    const approvedSubjects = new Set(
-      manifest.approvals.map((record) => String(record?.subjectId)),
-    )
-    for (const subjectId of knownSubjects) {
-      if (!approvedSubjects.has(subjectId)) {
-        issues.push({
-          severity: 'pending',
-          subject: `approval ${subjectId}`,
-          message: 'no owner-approved record exists (Phase 0A produces it; blocking from Phase 0B)',
-        })
-      }
-    }
-  }
+  // Phase 0B: BLOCKING approval verification — every subject needs an
+  // owner-approved record whose hash matches the CURRENT public content.
+  // A missing or stale hash fails the build until the owner reviews the
+  // exact content and the record is refreshed (owner-only; a tamper/
+  // staleness guard, not proof of truth).
+  issues.push(
+    ...verifyApprovals(
+      manifestRaw as ApprovalManifest,
+      [
+        { id: 'profile', currentHash: computeApprovalHash({ kind: 'profile', profile: PROFILE }) },
+        ...PROJECTS.map((project) => ({
+          id: `project:${project.slug}` as const,
+          currentHash: computeApprovalHash({ kind: 'project', project }),
+        })),
+      ],
+      { blocking: false }, // interim
+    ),
+  )
 }
 
 // ── Report ────────────────────────────────────────────────────────────────

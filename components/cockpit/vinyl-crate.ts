@@ -25,7 +25,7 @@ import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHel
 import { CURSOR_POINTER } from "./cursors"
 import { PALETTE, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
-import { PROJECTS } from "@/lib/projects/catalog"
+import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
 import { registerCrateActions, unregisterCrateActions } from "./test-hooks"
 

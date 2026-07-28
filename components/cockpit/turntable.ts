@@ -20,7 +20,7 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { makeDecal, makeTextDecal } from "./decals"
-import { PROJECTS } from "@/lib/projects/catalog"
+import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
 import { CURSOR_POINTER } from "./cursors"
 import { reportDeckTransient } from "./test-hooks"

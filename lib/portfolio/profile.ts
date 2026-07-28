@@ -3,12 +3,13 @@
 // Server-safe by contract: no "use client", no browser globals, no rendered
 // JSX, no `@ts-nocheck`.
 //
-// Phase 0 deliberately ships the SCHEMA ONLY. The profile instance is
-// Phase 0A output: the owner supplies and approves the professional
-// summary, capabilities, contact routes, links, and résumé URL before a
-// record enters this module. Do not publish private contact data (the
-// site's phone number stays out unless the owner explicitly opts in) and
-// never infer facts the owner has not supplied.
+// The PROFILE record below is Phase 0A output — owner-approved content
+// (docs/content-inventory.md decisions ledger). Its approval hash lives in
+// content/portfolio-approvals.json: editing any public field fails CI
+// until the owner re-approves the exact new content. Per the ledger, the
+// phone number is omitted (never add it without an explicit owner
+// decision); resumeUrl links the owner-supplied 2026 résumé (ledger #13).
+// Never infer facts the owner has not supplied.
 
 import {
   isNonEmptyString,
@@ -41,16 +42,38 @@ export type PublicProfile = {
   readonly links: readonly ProfileLink[]
   /** Public contact email, when the owner publishes one. */
   readonly email?: string
-  /** Absolute URL of the published résumé, when one is published. */
+  /** URL of the published résumé (absolute https or site-relative path),
+   *  when one is published. */
   readonly resumeUrl?: string
 }
 
-/**
- * The owner-approved profile record. Populated by Phase 0A step 5 after
- * explicit owner approval; until then the canonical profile source is
- * honestly absent rather than fabricated.
- */
-export const PROFILE: PublicProfile | null = null
+/** The owner-approved public profile record (Phase 0A step 5). */
+export const PROFILE: PublicProfile = {
+  name: 'Alex Xiong',
+  targetRole: 'Creative Producer in gaming',
+  summary:
+    'Producer and designer whose journey spans production, project ' +
+    'management, and UX design — ready to dive into any stage of the ' +
+    'development process. Now pursuing an information science and HCI ' +
+    'background at Cornell Tech.',
+  capabilities: ['Project Management', 'UI/UX Design', 'Graphic Design', 'Game Design'],
+  links: [
+    {
+      label: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/alex-xiong0522/',
+      kind: 'linkedin',
+    },
+    {
+      label: 'Instagram',
+      href: 'https://www.instagram.com/alex._.xiong/',
+      kind: 'instagram',
+    },
+    { label: 'Email', href: 'mailto:alexxiong0522@gmail.com', kind: 'email' },
+  ],
+  email: 'alexxiong0522@gmail.com',
+  // Owner-supplied 2026 résumé (hosted in public/), 2026-07-28.
+  resumeUrl: '/AlexXiong_Resume26.pdf',
+}
 
 const PROFILE_LINK_KINDS: readonly ProfileLinkKind[] = [
   'linkedin',
@@ -96,8 +119,12 @@ export function validateProfile(profile: PublicProfile): ValidationIssue[] {
   if (profile.email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
     issues.push(issue(subject, `email "${profile.email}" is not a valid address`))
   }
-  if (profile.resumeUrl !== undefined && !/^https:\/\//.test(profile.resumeUrl)) {
-    issues.push(issue(subject, 'resumeUrl must be an absolute https URL'))
+  if (
+    profile.resumeUrl !== undefined &&
+    !/^https:\/\//.test(profile.resumeUrl) &&
+    !profile.resumeUrl.startsWith('/')
+  ) {
+    issues.push(issue(subject, 'resumeUrl must be absolute https or site-relative'))
   }
 
   return issues

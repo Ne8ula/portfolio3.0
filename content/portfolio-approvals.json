@@ -1,3 +1,46 @@
 {
-  "approvals": []
+  "approvals": [
+    {
+      "subjectId": "profile",
+      "schemaVersion": 1,
+      "approvedContentHash": "ad9f1ed4cc27e904e7431a7d92ee85354d0e75eb04cdc7b082be117c7a405f43",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:thesongofmaka",
+      "schemaVersion": 1,
+      "approvedContentHash": "405b72d45fec3dc0fbc4bc122e90b489448a80b2fa2b04dba2592e55075b60a7",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:chuyuhong",
+      "schemaVersion": 1,
+      "approvedContentHash": "c69df9821b46191e93e8b3aec77143da2e039c0434396a8682cec904b8a83e41",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:tencentgames",
+      "schemaVersion": 1,
+      "approvedContentHash": "b97dfc3805df556bed96227cc4ce337939a6dd4673c9d0db9f64aa2e30cc12e7",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:nyuwelcome",
+      "schemaVersion": 1,
+      "approvedContentHash": "4d3094125a898b943e8961a7236d956b2597ec18950b01c36e677877cafe3660",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:shanghainoir",
+      "schemaVersion": 1,
+      "approvedContentHash": "3723dfc862b307b082c67796c7b8c951c67d3b1c7207cb6b13c5c4c9e694cf72",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    },
+    {
+      "subjectId": "project:procgendungeon",
+      "schemaVersion": 1,
+      "approvedContentHash": "29cf86a122c17301aec5f76460f8c643cf41b4f7497c908a64807235ce2a6940",
+      "approvedAt": "2026-07-28T19:35:49Z"
+    }
+  ]
 }
