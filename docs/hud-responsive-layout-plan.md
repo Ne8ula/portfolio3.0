@@ -1822,6 +1822,18 @@ placeholder content and Phase 2 remains blocked.
 
 ### Phase 0A — content dossier and owner approval
 
+**Implementation status: complete** (2026-07-28; commit recorded in the
+follow-up). All five steps ran: extraction (2026-07-27 dossier), gap
+listing + drafting (docs/content-inventory.md), two owner decision passes
+(20 ledger entries), full-content record approval for the profile and all
+six projects, and hash recording (`content/portfolio-approvals.json`,
+`2026-07-28T18:56:01Z`) via the owner-only
+`scripts/record-approvals.ts`. The catalog was converted to the strict
+schemas with a derived `SLEEVES` presentation adapter so the cockpit's
+look is unchanged except owner-corrected facts (Song of Maka title/
+pronoun/date-status, Tencent 2023). Honest gaps stayed gaps: Shanghai
+Noir records `in-progress` with "no released outcome yet".
+
 An inventory is not authored content. The strict `Project` schema demands
 `summary`, `problem`, `contributions`, `outcomes`, and `skills` for all six
 projects, and that prose largely does not exist (CLAUDE.md has carried a
@@ -1856,6 +1868,16 @@ strict schemas plus matching approval-manifest hashes, with honest gaps
 represented as such (`status`, qualitative outcomes) rather than invented.
 
 ### Phase 0B — strict catalog enforcement
+
+**Implementation status: complete** (2026-07-28; commit recorded in the
+follow-up). Strict `Project` completeness is blocking (folded into
+`validateCatalogStructure` — the strict schema makes completeness a
+structural property), `PROFILE` validation is blocking, and approval
+verification is blocking (`verifyApprovals({ blocking: true })` in
+`scripts/validate-contracts.ts`): a missing or stale hash fails the gate.
+Verified by a live tamper test (unapproved tagline edit → "stale hash —
+owner review required" failure → restore → green) and by unit tests.
+Phase 2's content gates are now unblocked.
 
 - Flip strict `Project` completeness validation from non-blocking to
   **blocking** in CI.

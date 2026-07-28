@@ -124,7 +124,7 @@ if (manifestRaw !== null) {
           currentHash: computeApprovalHash({ kind: 'project', project }),
         })),
       ],
-      { blocking: false }, // interim
+      { blocking: true },
     ),
   )
 }

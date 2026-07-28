@@ -165,14 +165,14 @@ Strict schemas (server-safe, no `three`, no browser globals):
 - `Project` in [lib/projects/catalog.ts](../lib/projects/catalog.ts) —
   identity, `status`, `tagline`, `summary`, `role`, `problem`,
   `contributions`, `outcomes`, `tools`, `skills`, `links`, `cover`, and a
-  presentation-only `visual` block. During Phase 0 the catalog carries the
-  provisional schema; strict completeness validation
-  ([lib/projects/validation.ts](../lib/projects/validation.ts)) reports
-  non-blocking `pending` until Phase 0B. Never fill a gap with invented
-  facts.
+  presentation-only `visual` block. Since Phase 0A/0B the catalog carries
+  **owner-approved strict records** and validation
+  ([lib/projects/validation.ts](../lib/projects/validation.ts)) is
+  **blocking**. The cockpit reads the derived `SLEEVES` adapter
+  (`sleeveRecord()`), which carries no unique facts — art titles, short
+  labels, and palette come from the hashed-excluded `visual` tokens.
 - `PublicProfile` in [lib/portfolio/profile.ts](../lib/portfolio/profile.ts)
-  — schema only until Phase 0A supplies owner-approved content
-  (`PROFILE` is honestly `null` until then).
+  — `PROFILE` is the owner-approved record (validated blocking).
 
 Required delivery surfaces, each declared as a `ContentContract`
 (currently all `planned-phase-2`; Phase 2 flips them to `implemented`):
@@ -240,13 +240,22 @@ validated by
   owner confirmation for the exact content being hashed. `computeApprovalHash()`
   is owner tooling only — never call it to "fix" a failing check.
 - A content change invalidates the prior hash and stays blocked until the
-  owner reviews it. **Blocking from Phase 0B**; until then coverage/hash
-  checks report non-blocking `pending`. Structural manifest validity
-  (unique known subjects, supported `schemaVersion`, RFC 3339 UTC
-  timestamps, 64-hex hash shape) is blocking from Phase 0.
+  owner reviews it. **Blocking since Phase 0B** (active): a missing or
+  stale hash fails `npm run validate:contracts`. Structural manifest
+  validity (unique known subjects, supported `schemaVersion`, RFC 3339
+  UTC timestamps, 64-hex hash shape) is also blocking.
+- Recording flow after an owner review:
+  `npx tsx scripts/record-approvals.ts` rehashes all subjects — run it
+  ONLY on explicit owner approval of the exact current content.
 - The manifest is a tamper/staleness guard, not proof of truth or of human
   review. Approval metadata is never emitted through HTML, JSON-LD, or
   `/portfolio.json`.
+- Known boundary (by §A.4.2 design): the presentation-only `visual` tokens
+  are excluded from the hash yet some (sleeve art title, date/tools
+  labels) are visible in the 3D cockpit. Editing them is a presentation
+  change that no gate hashes — treat visual-token edits with the same care
+  as any sleeve-visible change and keep them derivable from canonical
+  fields wherever possible.
 
 ## 10. Contracts and enforcement
 
@@ -372,10 +381,10 @@ the active build-time boundary.
 |---|---|---|
 | −1 | `termFadeIn` split (stable outer anchor / animated inner element) | Code complete; automated assertion in Phase 0 harness |
 | 0 | The enforcement island: strict `lib/` contracts + validators, catalog/texture split, scoped typecheck, unit tests, Chromium smoke harness, test bridge, this document | **Delivered** |
-| 0A | Owner-approved profile + six-project dossier (owner supplies facts) | Content work; may run parallel to 0–1 |
-| 0B | Strict catalog completeness + approval hashes become **blocking** | Blocks Phase 2 |
+| 0A | Owner-approved profile + six-project dossier (owner supplies facts) | **Delivered** (2026-07-28; all 7 records approved + hashed) |
+| 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
 | 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame` primitives, `AccessibilityProvider`, settings dialog, boot gating on the operable ACCESSIBILITY trigger | Pending |
-| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/recruiter`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts flip to `implemented` | Pending (blocked by 0B + 1) |
+| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/recruiter`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts flip to `implemented` | Pending (blocked by 1) |
 | 3 | One idempotent renderer/viewport sizing function (`syncRendererSize`, DPR cap 2) | Pending |
 | 4 | Projection bridge, hud-layout solver, seedable random streams, deterministic capture, first scorecard baselines | Pending |
 | 5 | 3D fit solver + input normalization wiring | Pending |
