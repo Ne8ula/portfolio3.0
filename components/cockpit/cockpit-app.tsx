@@ -10,6 +10,8 @@ import { WarpTransition } from "./warp-transition"
 import { ThemeToggle } from "./theme-toggle"
 import { Cockpit } from "./cockpit-hud"
 import { CURSOR_DEFAULT } from "./cursors"
+import { installTestHooks, registerPhaseController, unregisterPhaseController } from "./test-hooks"
+import { HOME_CONTENT_CONTRACT } from "@/lib/content/content-contracts"
 
 // Dialed-in transforms from the prototype's TWEAK_DEFAULTS (Cockpit.html).
 const TWEAK_DEFAULTS = {
@@ -59,6 +61,14 @@ export function CockpitApp() {
     }
     setPhase('warp');
   };
+
+  // Deterministic test bridge (§9.6.1) — additive to the __cockpit* bridge,
+  // no-op in production builds (see test-hooks.ts).
+  useEffect(() => {
+    installTestHooks();
+    registerPhaseController(() => { setPhase('cockpit'); setInteractive(true); });
+    return () => unregisterPhaseController();
+  }, []);
 
   // Apply theme to <html data-theme> + broadcast to the 3D scene once the
   // cockpit has mounted — which now happens during the warp, so the room seen
@@ -114,6 +124,8 @@ export function CockpitApp() {
   return (
     <main
       data-screen-label="01 Cockpit FPS"
+      data-layout-region="app-shell"
+      data-content-contract={HOME_CONTENT_CONTRACT.id}
       style={{
         position: 'fixed', inset: 0, overflow: 'hidden',
         // one cursor language for every phase — boot terminal included, so

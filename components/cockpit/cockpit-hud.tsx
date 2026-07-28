@@ -7,6 +7,7 @@
 import React from "react"
 import { GlobeCanvas } from "./globe-canvas"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
+import { COCKPIT_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true }){
@@ -78,6 +79,8 @@ function Cockpit({ interactive = true }){
 
   return (
     <div ref={stageRef} data-screen-label="02 Cockpit FPS"
+      data-layout-region="cockpit-stage"
+      data-layout-contract={COCKPIT_LAYOUT_CONTRACT.id}
       // overflow:hidden still scrolls PROGRAMMATICALLY (focus/scrollIntoView
       // against the matrix3d ScreenDialog, which juts far past the viewport)
       // — that silently pans the whole stage. Pin it at 0.
@@ -93,7 +96,7 @@ function Cockpit({ interactive = true }){
       {viewMode === 'deck' && <DeckBrowseArrows/>}
       <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
-        <div style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
+        <div data-hud="return-control" style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
           <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:CURSOR_POINTER}}>esc · return</button>
         </div>
       )}
@@ -361,7 +364,7 @@ function SiteHeader(){
   })();
 
   return (
-    <header style={{
+    <header data-hud="site-header" style={{
       position:'absolute', top:0, left:0, right:0,
       height: HEADER_H, zIndex:30,
       pointerEvents:'auto',
@@ -845,7 +848,7 @@ function VinylInfoCard(){
   // Fixed bottom-center placard — under the bin, deliberately OFF the
   // record so the pulled sleeve is never covered by its own caption.
   return (
-    <div style={{
+    <div data-hud="vinyl-info-card" style={{
       position:'absolute', left:'50%', bottom: 44,
       transform:'translateX(-50%)',
       zIndex:16, pointerEvents:'none',
@@ -934,7 +937,7 @@ function BrowseArrows({ getInfo, getRect, hint }){
         top: rect.y + rect.h / 2 }
     : { [side]: 36, top: '50%' };
   const arrow = (side, glyph, delta, disabled) => (
-    <div style={{
+    <div data-hud={delta < 0 ? 'browse-arrow-prev' : 'browse-arrow-next'} style={{
       position:'absolute', ...anchor(side),
       transform:'translateY(-50%)',
       zIndex:17, pointerEvents: disabled ? 'none' : 'auto',
@@ -962,7 +965,7 @@ function BrowseArrows({ getInfo, getRect, hint }){
   return (
     <>
       {/* one-time hint, floated above the bin — NOT inside the info card */}
-      <div style={{
+      <div data-hud="browse-hint" style={{
         position:'absolute', top:76, left:'50%', transform:'translateX(-50%)',
         zIndex:17, pointerEvents:'none',
       }}>
@@ -1080,6 +1083,7 @@ function ScreenDialog({ interactive, active }){
   return (
     <div
       ref={wrapRef}
+      data-hud="screen-dialog"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
       style={{

@@ -20,8 +20,10 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { makeDecal, makeTextDecal } from "./decals"
-import { PROJECTS, makeDiscTexture } from "./projects"
+import { PROJECTS } from "@/lib/projects/catalog"
+import { makeDiscTexture } from "./project-textures"
 import { CURSOR_POINTER } from "./cursors"
+import { reportDeckTransient } from "./test-hooks"
 
 const SAGE = '#6F8D75';
 const MONO = '"JetBrains Mono", Consolas, monospace';
@@ -837,6 +839,15 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     beamT += (beamTgt - beamT) * Math.min(1, dt * 4.0 * K);
     cardT += (cardTgt - cardT) * Math.min(1, dt * 3.4 * K);
 
+    // §9.6.1 settle signal: the deck is transient while the tonearm swing,
+    // beam rise, or card fade is still easing — busy alone clears at disc
+    // landing, before these finish. Dev-only no-op in production.
+    reportDeckTransient(
+      Math.abs((landed ? 1 : 0) - armT) > 0.02 ||
+      Math.abs(beamTgt - beamT) > 0.02 ||
+      Math.abs(cardTgt - cardT) > 0.02
+    );
+
     const be = easeInOut(beamT);
     beam.visible = beamT > 0.02;
     if (beam.visible){
@@ -883,6 +894,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
     window.__cockpitDeck = null;
     window.__getCockpitDeckInfo = null;
     window.__getCockpitDeckCardRect = null;
+    reportDeckTransient(false);
   };
 
   return group;

@@ -15,6 +15,7 @@ import { buildTeaSet } from "./tea-set"
 import { buildIncense } from "./incense"
 import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
+import { markSceneConstructed, reportFrame } from "./test-hooks"
 
 // Globe.jsx — cockpit 3D scene.
 // A translucent x-ray retro computer sits on the RIGHT side of the desk
@@ -28,6 +29,9 @@ function GlobeCanvas({ yawRef, pitchRef }){
   React.useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    // Lifecycle cutoff for the §9.6.1 test bridge: visual-capture
+    // configuration must precede scene construction.
+    markSceneConstructed();
     THREE.ColorManagement.enabled = false;
 
     const scene = new THREE.Scene();
@@ -1126,6 +1130,9 @@ function GlobeCanvas({ yawRef, pitchRef }){
       camera.quaternion.copy(cockpitQuat).slerp(monitorQuat, mt);
 
       renderer.render(scene, camera);
+      // §9.6.1 settle signal: camera blend finished and no focused-pose
+      // switch in flight (deck busy is layered on in test-hooks).
+      reportFrame((FOCUSED(viewMode) ? modeT > 0.995 : modeT < 0.005) && !focusSwitch);
       raf = requestAnimationFrame(animate);
     };
     animate();

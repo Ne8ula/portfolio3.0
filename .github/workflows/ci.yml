@@ -1,0 +1,59 @@
+# Phase 0 minimal CI (docs/hud-responsive-layout-plan.md §8): the strict
+# enforcement island — lint, scoped typecheck, contract + catalog
+# validation, unit tests, and the single Chromium smoke test. The full
+# cross-browser matrix, geometry suite, and accessibility scans expand in
+# later phases; contract enforcement cannot wait.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (enforcement island)
+        run: npm run lint
+
+      - name: Scoped strict typecheck (tsconfig.contracts.json)
+        run: npm run typecheck:contracts
+
+      - name: Layout/content contract + catalog validation
+        run: npm run validate:contracts
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      # The smoke test runs against a dev server (Playwright webServer):
+      # __COCKPIT_TEST_HOOKS__ is compiled out of production builds by
+      # design — see components/cockpit/test-hooks.ts and
+      # docs/responsive-system.md. Phase 8 adds the production-build gate
+      # asserting the bridge is absent from the shipped artifact.
+      - name: Browser smoke test (Chromium)
+        run: npm run test:e2e
+        env:
+          CI: 'true'
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

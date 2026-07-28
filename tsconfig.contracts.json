@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": false,
+    "incremental": false,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "lib/**/*.ts",
+    "app/layout-contract.ts",
+    "components/cockpit/test-hooks.ts",
+    "scripts/**/*.ts",
+    "tests/unit/**/*.ts",
+    "e2e/**/*.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ]
+}

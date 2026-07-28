@@ -114,3 +114,37 @@ Keyframe library lives in `globals.css` — reuse before writing new ones.
 - [ ] Hover states additive (jade), idle states quiet
 - [ ] Reduced motion respected; focus-visible untouched
 - [ ] Microcopy in system voice (middots, brackets, version strings)
+
+## 10. Responsive & content contracts
+
+Technical source of truth: [docs/responsive-system.md](docs/responsive-system.md). This section is the design-level summary; where they differ, that document wins.
+
+**Invariant vs adaptive.** The 3D models never resize, deform, or independently rearrange — geometry, authored relative transforms, materials, and the hero hierarchy are fixed. What *may* respond to the viewport: camera aspect/distance/look target (framing), visible negative space and ambient scenery, HUD position and proportional scale, and the projected positions of subject-attached overlays. Ordinary content (text, navigation, metadata, dialogs) reflows like any well-behaved document. Letterboxing is not the default — controlled compositional variation beats bars.
+
+**Responsive tiers** (respond to available CSS viewport, never attempt zoom detection):
+
+| Tier | Viewport | Behavior |
+|---|---|---|
+| Normal | `1024×600` up to `3440×1536` | Dynamic 3D framing; HUD repositions/scales within design rules |
+| Zoom/narrow | below either normal threshold | Ordinary content reflows; cockpit lives in a contained pannable region |
+| Reflow floor | down to `320px` content width | Non-exempt content readable/operable in one primary scroll direction |
+| Large | above the normal max | Designed maximum scale is capped; center with negative space / ambient background — no 5K art direction |
+
+At 200% browser zoom, content must magnify — never counter-scale to cancel the user's zoom; nothing may be clipped or lost.
+
+**Stage chrome vs subject-attached HUD — the layout law.** If a DOM element describes or controls a 3D subject (name tag, info card, brackets, arrows), it anchors to that subject's *projected geometry*. If it is application chrome (wordmark, clock, theme toggle), it anchors to the stage per the §4 anchor map. CSS pixel constants are legal only for gaps, padding, and minimum hit areas — never for an unrelated absolute subject position. Spacing tokens live in one shared module, not as numeric literals sprinkled through JSX.
+
+**Accessibility baseline.** WCAG 2.2 AA always on — semantic landmarks, full keyboard operation, visible focus, no color-only information, hover duplicated by focus/click, ≥24×24 controls (44×44 preferred here). Five custom states beyond light/dark: **reduced-motion, high-contrast, reduced-transparency, large-text, large-controls** — system preferences as defaults, explicit overrides persisted. `forced-colors: active` and system preferences always win over authored styling; every accessibility state reaches boot and warp even though their palette stays authored-dark.
+
+**Canonical content rule.** The visible semantic DOM is the portfolio record; the cockpit is a presentation of it. It may select, arrange, animate, and decorate that record — it may never contain a project fact, explanation, outcome, or action that exists *only* in 3D, canvas textures, or hover state. Facts live solely in `lib/projects/catalog.ts` and `lib/portfolio/profile.ts`.
+
+**The contracts.** Every route or composed view declares a `LayoutContract` (support profile, protected regions with declared alternatives, allowed adaptations, accessibility states, viewport cases); content-bearing routes additionally declare a `ContentContract` (source, server-rendered / JS-independent / WebGL-independent delivery, discoverability, structured data). Declarations live in `lib/responsive/layout-contracts.ts` and `lib/content/content-contracts.ts`; the DOM carries the matching identifiers: `data-hud` (HUD elements), `data-layout-region` (named layout regions), `data-layout-contract` and `data-content-contract` (view ↔ registry reconciliation, verified by tests).
+
+### New page/view contract checklist (extends §9)
+
+- [ ] `LayoutContract` declared (+ `ContentContract` if content-bearing); registered, not just typed
+- [ ] `data-hud` / `data-layout-region` / `data-layout-contract` / `data-content-contract` identifiers on the rendered elements
+- [ ] Subject-attached HUD anchored to projected geometry; chrome to the stage; constants = spacing only
+- [ ] All five gates green: `npm run lint` · `npm run typecheck:contracts` · `npm run validate:contracts` · `npm run test:unit` · `npm run test:e2e`
+- [ ] No invented content — every fact traces to the canonical catalog/profile
+- [ ] New claims, metrics, or outcomes have explicit owner approval before entering the canonical source

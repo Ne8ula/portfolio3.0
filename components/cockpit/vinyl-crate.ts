@@ -25,7 +25,9 @@ import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHel
 import { CURSOR_POINTER } from "./cursors"
 import { PALETTE, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
-import { PROJECTS, makeDiscTexture } from "./projects"
+import { PROJECTS } from "@/lib/projects/catalog"
+import { makeDiscTexture } from "./project-textures"
+import { registerCrateActions, unregisterCrateActions } from "./test-hooks"
 
 // ── Reference material palette (brief: warm off-white base, milky
 // frost, muted sage accents only — never bright neon green) ─────────
@@ -499,6 +501,29 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     return true;
   };
 
+  // §9.6.1 test bridge: the same record→deck flow a crate click drives,
+  // exposed to __COCKPIT_TEST_HOOKS__.playRecord, plus a deterministic
+  // crate SELECTION (the legacy pull-out state — selectedIdx with no deck
+  // flight) for the Phase −1 entrance assertion. No-ops in production.
+  registerCrateActions({
+    playRecord: (idx) => {
+      if (idx < 0 || idx >= vinyls.length) return false;
+      const d = deck();
+      if (!d || d.busy || returning) return false;
+      if (viewMode() !== 'crate') return false;
+      const ok = sendToDeck(idx);
+      if (ok && window.__setCockpitViewMode) window.__setCockpitViewMode('deck');
+      return ok;
+    },
+    selectRecord: (idx) => {
+      if (idx < 0 || idx >= vinyls.length) return false;
+      if (viewMode() !== 'crate') return false;
+      if (deckOut || returning) return false;
+      selectedIdx = idx;
+      return true;
+    },
+  });
+
   const recallFromDeck = (idx, onDone) => {
     const d = deck();
     if (!d){ if (idx >= 0) vinyls[idx].disc.visible = true; if (onDone) onDone(); return; }
@@ -760,6 +785,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
     window.__getCockpitCrateRect = null;
     window.__getCockpitVinylHover = null;
     window.__cockpitVinylSelect = null;
+    unregisterCrateActions();
   };
 
   return group;

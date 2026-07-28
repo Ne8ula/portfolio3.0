@@ -1,8 +1,11 @@
 # Plan — Site-Wide Responsive System and Resolution-Independent Cockpit
 
 - **Status**: product decisions finalized; revision 6 contradiction and
-  enforceability audit applied. Phase −1 implementation is complete, with
-  its automated assertion scheduled for Phase 0; Phase 0 has not begun.
+  enforceability audit applied. Phase −1 is complete **including its
+  automated assertion** (delivered with Phase 0 in `e2e/smoke.spec.ts`).
+  **Phase 0 core is complete** (commit recorded in §8 Phase 0). Phase 0A is
+  in owner review (`docs/content-inventory.md`); Phases 0B–8 have not
+  started.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
   cockpit views (`deck`, `crate`, `monitor`) as the first adopter.
 - **Normal composition range**: `1024×600` CSS pixels through `3440×1536`,
@@ -170,11 +173,13 @@ decisions resolved all six:
 | 17 | `normalMin`/`normalMax` literal types block a future mobile profile | Named `SUPPORT_PROFILES` registry; `desktop-laptop-v1` sole current profile | §A.7 |
 | 18 | `/portfolio.json` purpose omission read as accidental | Explicit exclusion sentence added | §A.7 |
 
-**Phase −1 status: implemented** (Codex, verified 2026-07-27) — the three
-wrapper splits are correct and resting positions are unchanged; the
-entrance-transform **assertion is owed to Phase 0**, where the first test
-infrastructure lands. Phase −1 is complete in code, partial against its own
-spec until that assertion exists.
+**Phase −1 status: complete** (code by Codex, verified 2026-07-27; commit
+`ec521d6`). The entrance-transform assertion was **delivered with Phase 0**:
+`e2e/smoke.spec.ts` samples each outer anchor's computed transform at the
+start/mid/end of the inner entrance animation in Chromium and requires an
+identical matrix, and additionally proves the animation actually ran.
+Phase 8 expands this existing assertion across the final browser and
+viewport matrix.
 
 ---
 
@@ -1650,6 +1655,25 @@ replacing or discarding it.
 animation.
 
 ### Phase 0 — baseline, contracts, and executable enforcement
+
+**Implementation status: complete** (2026-07-27; commit — see the Phase 0
+entry in the repository history, recorded here in the follow-up commit).
+Delivered: catalog/texture split; strict contract/schema/validation modules
+under `lib/**`; runtime validators + route-coverage scan
+(`scripts/validate-contracts.ts`); scoped strict typecheck
+(`tsconfig.contracts.json`); 156 unit tests (Vitest); Chromium smoke suite
+incl. the Phase −1 assertion, §9.6.2 blank-canvas check, and the Phase 2 /
+Phase 6 assertions as `test.fixme` pending markers; `__COCKPIT_TEST_HOOKS__`
+bridge with the `configureVisualCapture` lifecycle guard; minimal CI
+(`.github/workflows/ci.yml`); docs (`docs/responsive-system.md`,
+`DESIGN.md` §10, `CLAUDE.md` rules, `AGENTS.md`,
+`docs/content-inventory.md`); baseline screenshots + measured failure
+record (`docs/baselines/phase-0/` — the deck hint↔card overlap reproduces
+on 12 of 17 matrix viewports). The two §9.6 decisions are settled and
+documented in `docs/responsive-system.md` §11: production exclusion via a
+static `NODE_ENV` guard, drawing-buffer reads via synchronous in-frame
+forced re-render. Completeness/approval checks run non-blocking pending
+Phase 0B, as specified.
 
 Contract enforcement cannot wait for the final phase. Without it, Phases 1–7
 would build against contracts CI never checks. Phase 0 therefore establishes

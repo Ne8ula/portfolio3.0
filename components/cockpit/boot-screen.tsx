@@ -195,6 +195,7 @@ function BootScreen({ onDone }) {
   return (
     <div
       data-screen-label="00 Boot"
+      data-layout-region="boot"
       style={{
         position: 'absolute', inset: 0,
         background: (phase === 'dark' || phase === 'crton') ? '#0a0908' : 'var(--cream)',
@@ -618,6 +619,7 @@ function ConfirmButton({ onConfirm, cursor }) {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, animation: 'termFadeIn 0.6s ease-out' }}>
       <button
         type="button"
+        data-hud="boot-enter"
         onClick={click}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}

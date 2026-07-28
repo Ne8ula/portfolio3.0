@@ -9,6 +9,7 @@ export function ThemeToggle({ theme, onToggle }) {
   return (
     <button
       type="button"
+      data-hud="theme-toggle"
       onClick={onToggle}
       aria-label={dark ? 'switch to light mode' : 'switch to dark mode'}
       style={{
