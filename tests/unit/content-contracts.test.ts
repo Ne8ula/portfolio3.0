@@ -185,6 +185,34 @@ describe('catalog-slug coverage of /projects/[slug]', () => {
 })
 
 describe('hardening — remaining malformed branches', () => {
+  it('returns structured issues, not TypeErrors, for malformed nested values', () => {
+    const noSources = validateContentContracts(
+      withHomeReplaced(variant({ sources: undefined })),
+      { catalogSlugs: realSlugs },
+    )
+    expect(hasError(noSources, HOME_SUBJECT, 'sources must be an array')).toBe(true)
+
+    const badStructured = validateContentContracts(
+      withHomeReplaced(variant({ structuredData: 'Person' })),
+      { catalogSlugs: realSlugs },
+    )
+    expect(hasError(badStructured, HOME_SUBJECT, 'structuredData must be an array')).toBe(true)
+
+    const badRoute = validateContentContracts(
+      withHomeReplaced(variant({ route: undefined })),
+      { catalogSlugs: realSlugs },
+    )
+    expect(hasError(badRoute, HOME_SUBJECT, 'must be site-relative')).toBe(true)
+
+    const nullContract = validateContentContracts(
+      [null as unknown as ContentContract],
+      { catalogSlugs: realSlugs },
+    )
+    expect(
+      hasError(nullContract, 'content-contract (malformed)', 'contract must be an object'),
+    ).toBe(true)
+  })
+
   it('rejects an unrecognized implementation value', () => {
     const issues = validateContentContracts(
       withHomeReplaced(variant({ implementation: 'shipped' })),

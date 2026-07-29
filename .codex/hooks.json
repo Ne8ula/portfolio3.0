@@ -1,0 +1,17 @@
+{
+  "description": "Capture substantive Codex turn summaries for cross-agent handoff.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/agent-handoff.mjs\" capture --agent codex",
+            "timeout": 10,
+            "statusMessage": "Recording cross-agent handoff"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -35,6 +35,92 @@
 
   --font-serif: "Cormorant Garamond", "EB Garamond", "Times New Roman", serif;
   --font-mono:  "JetBrains Mono", "Space Mono", "Courier New", monospace;
+
+  /* ── Phase 1 target visual tokens (roles, not families) ──────────────
+     Values still point at the loaded runtime fonts; Stage 2 of the visual
+     migration swaps them to Newsreader / IBM Plex without touching
+     consumers. New UI must consume roles, never literal families. */
+  --font-display:   var(--font-serif);
+  --font-ui:        var(--font-mono);
+  --font-label:     var(--font-mono);
+  --font-technical: var(--font-mono);
+  --font-terminal:  "VT323", "JetBrains Mono", monospace;
+
+  /* Fluid type scale (readable middle register; large-text scales it). */
+  --text-scale: 1;
+  --text-body:    calc(clamp(15px, 0.86rem + 0.25vw, 17px) * var(--text-scale));
+  --text-small:   calc(clamp(13px, 0.76rem + 0.2vw, 14px) * var(--text-scale));
+  --text-label:   calc(clamp(11px, 0.64rem + 0.15vw, 12px) * var(--text-scale));
+  --text-heading: calc(clamp(20px, 1.1rem + 0.7vw, 28px) * var(--text-scale));
+  --text-display: calc(clamp(34px, 1.6rem + 2.2vw, 64px) * var(--text-scale));
+  --leading-body: 1.6;
+
+  /* Spacing scale. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 14px;
+  --space-4: 22px;
+  --space-5: 36px;
+  --space-6: 58px;
+
+  /* Stage / safe-frame reservations (spacing constants only — never a
+     subject position; plan §3). */
+  --stage-gutter: 16px;
+
+  /* Panels — opaque backing by default; translucency is opt-in per
+     component and collapses under reduced transparency. */
+  --panel-bg:     var(--cream-warm);
+  --panel-ink:    var(--ink);
+  --panel-muted:  var(--ink-soft);
+  --panel-border: var(--ink);
+  --panel-border-width: 1px;
+  --overlay-scrim: color-mix(in srgb, var(--ink) 45%, transparent);
+
+  /* Focus + controls. */
+  --focus-ring: var(--jade-light);
+  --focus-ring-width: 2px;
+  --control-min: 44px;
+  --control-gap: var(--space-2);
+}
+
+/* Accessibility root states — stamped by AccessibilityProvider (resolved
+   from explicit overrides + system signals). */
+:root[data-a11y-text="large"] {
+  --text-scale: 1.25;
+  --leading-body: 1.75;
+}
+:root[data-a11y-controls="large"] {
+  --control-min: 56px;
+  --control-gap: var(--space-3);
+}
+:root[data-a11y-contrast="high"] {
+  --focus-ring-width: 3px;
+  --panel-border-width: 2px;
+  --ink-soft: var(--ink);
+  --ink-faint: var(--ink-soft);
+}
+
+/* Reduced transparency / high contrast / forced colors remove grain,
+   vignette, and other weak decorative overlays (§A.6.1). */
+:root[data-a11y-transparency="reduced"] .grain,
+:root[data-a11y-transparency="reduced"] .vignette,
+:root[data-a11y-transparency="reduced"] [data-boot-decor],
+:root[data-a11y-contrast="high"] .grain,
+:root[data-a11y-contrast="high"] .vignette,
+:root[data-a11y-contrast="high"] [data-boot-decor] {
+  display: none !important;
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root:not([data-a11y-transparency="standard"]) .grain,
+  :root:not([data-a11y-transparency="standard"]) .vignette,
+  :root:not([data-a11y-transparency="standard"]) [data-boot-decor] {
+    display: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .grain, .vignette, [data-boot-decor] {
+    display: none !important;
+  }
 }
 
 /* LIGHT — invert the cockpit. Scene becomes cream; HUD text inks darken. */
@@ -101,16 +187,28 @@ button:active:not(:disabled) {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--jade-light) !important;
+  outline: var(--focus-ring-width) solid var(--focus-ring) !important;
   outline-offset: 3px;
 }
 
+/* Reduced motion — system preference is the no-JS fallback; the resolved
+   data attribute (AccessibilityProvider) carries explicit overrides, and an
+   explicit "full" wins over the system signal (§A.6.1 precedence). */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  :root:not([data-a11y-motion="full"]) *,
+  :root:not([data-a11y-motion="full"]) *::before,
+  :root:not([data-a11y-motion="full"]) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+:root[data-a11y-motion="reduced"] *,
+:root[data-a11y-motion="reduced"] *::before,
+:root[data-a11y-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* ─── Typography helpers (from the prototype) ─────────────────── */
@@ -161,6 +259,192 @@ input:focus-visible {
 /* Object name tags — keeps the -50%/-100% positioning translate while fading in
    (termFadeIn's transform would override it and make the tag jump on appear). */
 @keyframes tagFadeIn { 0% { opacity: 0; transform: translate(-50%, calc(-100% + 8px)); } 100% { opacity: 1; transform: translate(-50%, -100%); } }
+
+/* ── Phase 1 foundation components (token-driven, hard-cornered, no
+      exterior drop shadows — DESIGN.md §2/§11) ─────────────────────── */
+
+/* Ordinary reflowing pages own document scroll (cockpit stays full-bleed). */
+html[data-document-scroll="reflow"],
+html[data-document-scroll="reflow"] body {
+  overflow: auto;
+  height: auto;
+  min-height: 100%;
+}
+
+.responsive-page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--ink);
+}
+
+.responsive-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.responsive-stage[data-stage-mode="contained"] {
+  /* Native scrolling = immediate, non-animated panning; scroll chaining at
+     the edges keeps document scroll reachable (§A.5). */
+  scroll-behavior: auto;
+}
+
+.experience-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min);
+  padding: 0 var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--text-small);
+  color: var(--jade);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.a11y-trigger {
+  position: fixed;
+  left: var(--stage-gutter);
+  bottom: var(--stage-gutter);
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-min);
+  min-width: var(--control-min);
+  padding: 0 var(--space-3);
+  background: var(--panel-bg);
+  color: var(--panel-ink);
+  border: var(--panel-border-width) solid var(--panel-border);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.a11y-trigger:hover { color: var(--jade-deep); border-color: var(--jade-deep); }
+.a11y-trigger-mark { color: var(--jade); font-size: 1.1em; }
+
+.a11y-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  background: var(--overlay-scrim);
+  overflow: auto;
+}
+:root[data-a11y-transparency="reduced"] .a11y-overlay {
+  background: var(--mauve-deep);
+}
+
+.a11y-dialog {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 2 * var(--space-3));
+  overflow: auto;
+  background: var(--panel-bg);
+  color: var(--panel-ink);
+  border: var(--panel-border-width) solid var(--panel-border);
+  padding: var(--space-4);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+.a11y-dialog-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.a11y-dialog-help {
+  margin: 0 0 var(--space-4);
+  color: var(--panel-muted);
+  font-size: var(--text-small);
+}
+.a11y-fieldset {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--ink-faint);
+}
+.a11y-legend {
+  padding: 0 var(--space-2);
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.a11y-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--control-gap);
+}
+.a11y-option label {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--ink-faint);
+  font-size: var(--text-small);
+  cursor: pointer;
+}
+.a11y-option input[type="radio"] {
+  /* Visually integrated with its label but still focusable/announced. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.a11y-option input[type="radio"]:checked + label {
+  border-color: var(--jade-deep);
+  color: var(--jade-deep);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--jade-deep);
+}
+.a11y-option input[type="radio"]:focus-visible + label {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.a11y-help {
+  margin: var(--space-2) 0 0;
+  color: var(--panel-muted);
+  font-size: var(--text-small);
+}
+.a11y-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--control-gap);
+  margin-top: var(--space-4);
+}
+.a11y-button {
+  min-height: var(--control-min);
+  padding: 0 var(--space-4);
+  background: transparent;
+  color: var(--panel-ink);
+  border: var(--panel-border-width) solid var(--panel-border);
+  font-family: var(--font-ui);
+  font-size: var(--text-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+.a11y-button:hover { color: var(--jade-deep); border-color: var(--jade-deep); }
+.a11y-button-primary {
+  background: var(--jade-deep);
+  color: var(--cream-warm);
+  border-color: var(--jade-deep);
+}
+html[data-theme="light"] .a11y-button-primary {
+  color: var(--ink);
+}
 
 /* ── ControlsLegend glyphs (bottom-right control hints) ── */
 @keyframes ctrlSway { 0%,100% { transform: translateX(-1.5px); } 50% { transform: translateX(1.5px); } }

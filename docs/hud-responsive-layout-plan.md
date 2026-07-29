@@ -3,9 +3,10 @@
 - **Status**: product decisions finalized; revision 6 contradiction and
   enforceability audit applied. Phase −1 is complete **including its
   automated assertion** (delivered with Phase 0 in `e2e/smoke.spec.ts`).
-  **Phases 0, 0A, and 0B are complete** (commits recorded in §8). The
-  canonical catalog/profile carry owner-approved strict records with
-  blocking approval gates. Phases 1–8 have not started.
+  **Phases 0, 0A, 0B, and 1 are complete** (commits recorded in §8; the
+  Phase 1 commit hash is recorded on review/merge). The canonical
+  catalog/profile carry owner-approved strict records with blocking
+  approval gates. Phases 2–8 have not started.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
   cockpit views (`deck`, `crate`, `monitor`) as the first adopter.
 - **Normal composition range**: `1024×600` CSS pixels through `3440×1536`,
@@ -1628,12 +1629,12 @@ responsive work and would otherwise persist through every intervening phase.
 
 ### Phase −1 — `termFadeIn` hotfix (pre-foundation)
 
-**Implementation status: code complete; automated verification pending
-Phase 0.** The three scoped sites now keep positioning transforms on stable
-outer anchors and run `termFadeIn` on inner elements. The production build
-passes. Phase 0 adds the focused Chromium start/mid/end computed-transform
-assertion; Phase 8 expands that existing assertion across the final browser
-and viewport matrix.
+**Implementation status: complete, including automated verification.** The
+three scoped sites keep positioning transforms on stable outer anchors and
+run `termFadeIn` on inner elements (code 2026-07-27). The focused Chromium
+start/mid/end computed-transform assertion was delivered with Phase 0 in
+`e2e/smoke.spec.ts`; Phase 8 expands that existing assertion across the
+final browser and viewport matrix.
 
 Scope is exactly the three defective sites in §2.2.1: `VinylInfoCard`, the
 previous/next arrows, and the browse hint.
@@ -1824,11 +1825,12 @@ placeholder content and Phase 2 remains blocked.
 
 **Implementation status: complete** (2026-07-28; commits `5dc7c70` +
 `12a3735`). All five steps ran: extraction (2026-07-27 dossier), gap
-listing + drafting (docs/content-inventory.md), two owner decision passes
-(20 ledger entries), full-content record approval for the profile and all
+listing + drafting (docs/content-inventory.md), five owner decision passes
+(26 ledger entries), full-content record approval for the profile and all
 six projects, and hash recording (`content/portfolio-approvals.json`,
-`2026-07-28T18:56:01Z`) via the owner-only
-`scripts/record-approvals.ts`. The catalog was converted to the strict
+most recently `2026-07-29T00:41:59Z` after the owner approved the current
+profile role, summary, and capabilities) via the
+owner-only `scripts/record-approvals.ts`. The catalog was converted to the strict
 schemas with a derived `SLEEVES` presentation adapter so the cockpit's
 look is unchanged except owner-corrected facts (Song of Maka title/
 pronoun/date-status, Tencent 2023). Honest gaps stayed gaps: Shanghai
@@ -1908,6 +1910,21 @@ Phase 0B requires both the Phase 0 validation infrastructure and the Phase
 dependency graph, not permission to merge Phase 2 with pending content.
 
 ### Phase 1 — shared responsive and accessibility foundation
+
+**Implementation status: complete** (2026-07-28; commit hash to be recorded
+here on review/merge). Delivered: role-based visual tokens (fonts, fluid
+type, spacing, panel, focus, control) in `app/globals.css`;
+`components/responsive/` primitives (`ResponsivePage`, `ResponsiveStage`,
+`SafeFrame`, `AccessibleExperienceLink`); root `AccessibilityProvider` with
+live matchMedia subscriptions, pre-paint attribute stamping, and persisted
+explicit overrides (`cockpit-a11y-v1`); the ACCESSIBILITY trigger + settings
+dialog (focus-contained, Escape, ≥44px targets) reachable from boot and
+cockpit; static reduced-motion boot with no JS timelines and skipped warp;
+boot gated on the operable trigger; the `/responsive-preview` representative
+page + `responsive-preview-v1` contract; unit coverage
+(`tests/unit/accessibility`) and Chromium coverage (`e2e/foundation.spec.ts`).
+Owner decision 2026-07-28: header weather + automatic geolocation removed
+entirely; sub-menu counts now derive from the canonical catalog.
 
 - Add shared layout tokens and the `ResponsivePage`, `ResponsiveStage`,
   `SafeFrame`, and `AccessibleExperienceLink` primitives.

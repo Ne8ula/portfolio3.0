@@ -105,4 +105,19 @@ describe('validateProfile — broken variants', () => {
     const errors = errorsOf(makeProfile({ resumeUrl: 'http://example.com/resume.pdf' }))
     expect(errors.some((i) => i.message.includes('resumeUrl'))).toBe(true)
   })
+
+  it('returns structured issues, not TypeErrors, for malformed nested values', () => {
+    const noCapabilities = makeProfile({
+      capabilities: undefined as unknown as PublicProfile['capabilities'],
+    })
+    expect(
+      errorsOf(noCapabilities).some((i) => i.message.includes('capabilities must be an array')),
+    ).toBe(true)
+
+    const noLinks = makeProfile({ links: undefined as unknown as PublicProfile['links'] })
+    expect(errorsOf(noLinks).some((i) => i.message.includes('links must be an array'))).toBe(true)
+
+    const nullLink = makeProfile({ links: [null] as unknown as PublicProfile['links'] })
+    expect(errorsOf(nullLink).some((i) => i.message.includes('link must be an object'))).toBe(true)
+  })
 })

@@ -1,13 +1,16 @@
 // @ts-nocheck
 "use client"
 // Cockpit HUD — mounts the 3D scene (GlobeCanvas) and all DOM chrome:
-// site header + live weather, title card, reticle, PC hover brackets,
-// the on-screen dialog, and the bottom editorial strip.
+// site header, title card, reticle, PC hover brackets, the on-screen
+// dialog, and the bottom editorial strip.
 // Ported from the Cockpit.html prototype (CockpitHUD.jsx).
+// (Weather + automatic geolocation were removed by owner decision,
+// 2026-07-28: no geolocation prompt, no third-party weather fetch.)
 import React from "react"
 import { GlobeCanvas } from "./globe-canvas"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 import { COCKPIT_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
+import { PROJECTS } from "@/lib/projects/catalog"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true }){
@@ -244,99 +247,21 @@ function SiteHeader(){
   const closeTimer = React.useRef(null);
   const [time, setTime] = React.useState(() => new Date());
 
-  // ── Live weather state (geolocation + Open-Meteo, no API key) ──
-  // Statuses: 'init' → 'locating' → 'fetching' → 'ready' | 'denied' | 'error'
-  const [weather, setWeather] = React.useState({ status: 'init' });
-
   React.useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000 * 30);
     return () => clearInterval(t);
   }, []);
 
-  // Fetch weather once on mount. If geolocation is unavailable or denied,
-  // fall back to NYC (matches the LOCATION line in the lockup).
-  React.useEffect(() => {
-    const NYC = { lat: 40.7128, lon: -74.0060, label: 'NYC' };
-    let cancelled = false;
-
-    const fetchWx = async (lat, lon, label, geo) => {
-      try {
-        if (!cancelled) setWeather({ status:'fetching', label });
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('wx http ' + res.status);
-        const data = await res.json();
-        const c = data && data.current;
-        if (!c) throw new Error('wx no current');
-        if (cancelled) return;
-        setWeather({
-          status: 'ready',
-          label,
-          geo: !!geo,
-          tempF: Math.round(c.temperature_2m),
-          windMph: Math.round(c.wind_speed_10m),
-          code: c.weather_code,
-        });
-      } catch (err) {
-        if (!cancelled) setWeather({ status:'error', label });
-      }
-    };
-
-    // Try to reverse-geocode the user's coords to a short city label.
-    const reverseGeocode = async (lat, lon) => {
-      try {
-        const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1&language=en&format=json`;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const data = await res.json();
-        const r = data && data.results && data.results[0];
-        if (!r) return null;
-        // Prefer short city/region; fall back gracefully.
-        const name = r.name || r.admin1 || r.country || null;
-        return name ? String(name).slice(0, 14) : null;
-      } catch { return null; }
-    };
-
-    if (typeof navigator !== 'undefined' && navigator.geolocation) {
-      setWeather({ status: 'locating' });
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          const label = (await reverseGeocode(latitude, longitude)) || 'HERE';
-          fetchWx(latitude, longitude, label, true);
-        },
-        () => fetchWx(NYC.lat, NYC.lon, NYC.label, false),
-        { timeout: 6000, maximumAge: 10 * 60 * 1000 }
-      );
-    } else {
-      fetchWx(NYC.lat, NYC.lon, NYC.label, false);
-    }
-
-    return () => { cancelled = true; };
-  }, []);
-
-  // Map WMO weather codes (Open-Meteo) → tiny glyph + short text.
-  // https://open-meteo.com/en/docs — codes 0..99
-  const wxFromCode = (code) => {
-    if (code == null) return { g:'~', t:'—' };
-    if (code === 0) return { g:'☀', t:'clear' };
-    if (code === 1) return { g:'☼', t:'mostly clear' };
-    if (code === 2) return { g:'⛅', t:'partly cloudy' };
-    if (code === 3) return { g:'☁', t:'overcast' };
-    if (code === 45 || code === 48) return { g:'≡', t:'fog' };
-    if (code >= 51 && code <= 57) return { g:'⋮', t:'drizzle' };
-    if (code >= 61 && code <= 67) return { g:'☂', t:'rain' };
-    if (code >= 71 && code <= 77) return { g:'❄', t:'snow' };
-    if (code >= 80 && code <= 82) return { g:'☂', t:'showers' };
-    if (code >= 85 && code <= 86) return { g:'❄', t:'snow showers' };
-    if (code >= 95) return { g:'⚡', t:'thunder' };
-    return { g:'~', t:'wx' };
-  };
+  // Sub-menu counts derive from the canonical catalog — never invented
+  // (DESIGN.md §12; the old "shipped · 12 / in-flight · 04" were fiction).
+  const completedCount = PROJECTS.filter((p) => p.status === 'completed').length;
+  const inProgressCount = PROJECTS.filter((p) => p.status === 'in-progress').length;
+  const pad2 = (n) => String(n).padStart(2, '0');
 
   const items = [
     { id:'projects', label:'projects', sub:[
-      { id:'finished', label:'finished',           hint:'shipped · 12' },
-      { id:'wip',      label:'work-in-progress',   hint:'in-flight · 04' },
+      { id:'finished', label:'finished',           hint:`completed · ${pad2(completedCount)}` },
+      { id:'wip',      label:'work-in-progress',   hint:`in-progress · ${pad2(inProgressCount)}` },
     ]},
     { id:'designs',  label:'designs' },
     { id:'about',    label:'about' },
@@ -435,32 +360,6 @@ function SiteHeader(){
               color:'var(--cream-deep)', opacity:.8, marginLeft:2,
             }}>studio</span>
           </span>
-
-          {/* ── Live weather — a single micro line ── */}
-          {(() => {
-            const wx = wxFromCode(weather.code);
-            const isReady = weather.status === 'ready';
-            const isLoading = weather.status === 'init' || weather.status === 'locating' || weather.status === 'fetching';
-            const placeLabel = (weather.label || 'NYC').toUpperCase();
-            return (
-              <span aria-label="weather" style={{
-                display:'inline-flex', alignItems:'center', gap:7,
-                borderLeft:'1px dotted var(--cream-deep)',
-                paddingLeft:14, marginLeft:4, height:20,
-                fontFamily:'var(--font-mono)', fontSize:9, fontWeight:500,
-                letterSpacing:'.24em', textTransform:'uppercase',
-                color:'var(--cream-deep)', whiteSpace:'nowrap',
-              }}>
-                <span aria-hidden style={{
-                  fontSize:11, color:'var(--jade-light)', width:12, textAlign:'center',
-                  animation: isLoading ? 'softPulse 1.4s ease-in-out infinite' : 'none',
-                }}>{isReady ? wx.g : '·'}</span>
-                {isReady
-                  ? <span>{weather.tempF}° · {placeLabel}</span>
-                  : <span style={{opacity:.7}}>{isLoading ? 'wx' : 'wx offline'}</span>}
-              </span>
-            );
-          })()}
 
         </div>
 

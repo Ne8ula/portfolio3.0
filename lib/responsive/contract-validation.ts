@@ -3,7 +3,7 @@
 // caught even where TypeScript is bypassed. Filesystem access (the route
 // scan) stays in the script; this module only judges the scan's findings.
 
-import { issue, type ValidationIssue } from '@/lib/shared/core'
+import { hasRecordShape, isRecord, issue, type ValidationIssue } from '@/lib/shared/core'
 import {
   ALLOWED_SUPPORT_PROFILES,
   LAYOUT_ADAPTATIONS,
@@ -25,19 +25,42 @@ export function validateSupportProfiles(
   const issues: ValidationIssue[] = []
   for (const [id, profile] of Object.entries(profiles)) {
     const subject = `support-profile ${id}`
+    if (!hasRecordShape(profile)) {
+      issues.push(issue(subject, 'profile must be an object'))
+      continue
+    }
     for (const [edge, size] of [
       ['normalMin', profile.normalMin],
       ['normalMax', profile.normalMax],
     ] as const) {
+      if (!isFiniteSize(size)) {
+        issues.push(issue(subject, `${edge} must be { w, h } finite numbers`))
+        continue
+      }
       if (!(size.w > 0) || !(size.h > 0)) {
         issues.push(issue(subject, `${edge} dimensions must be positive`))
       }
     }
-    if (profile.normalMax.w < profile.normalMin.w || profile.normalMax.h < profile.normalMin.h) {
+    const { normalMin, normalMax } = profile
+    if (
+      isFiniteSize(normalMin) &&
+      isFiniteSize(normalMax) &&
+      (normalMax.w < normalMin.w || normalMax.h < normalMin.h)
+    ) {
       issues.push(issue(subject, 'normalMax must be ≥ normalMin on both axes'))
     }
   }
   return issues
+}
+
+function isFiniteSize(value: unknown): value is { w: number; h: number } {
+  if (!isRecord(value)) return false
+  return (
+    typeof value.w === 'number' &&
+    Number.isFinite(value.w) &&
+    typeof value.h === 'number' &&
+    Number.isFinite(value.h)
+  )
 }
 
 export type LayoutValidationOptions = {
@@ -56,8 +79,16 @@ export function validateLayoutContracts(
   const allowedProfiles = options.allowedProfiles ?? ALLOWED_SUPPORT_PROFILES
   const requireFullMatrix = options.requireFullMatrix ?? true
 
+  if (!Array.isArray(contracts)) {
+    return [issue('layout-contracts', 'contracts must be an array')]
+  }
+
   const seenContractIds = new Set<string>()
   for (const contract of contracts) {
+    if (!hasRecordShape(contract)) {
+      issues.push(issue('layout-contract (malformed)', 'contract must be an object'))
+      continue
+    }
     const subject = `layout-contract ${contract.id || '(missing id)'}`
 
     if (!contract.id) issues.push(issue(subject, 'contract id is empty'))
@@ -84,75 +115,109 @@ export function validateLayoutContracts(
 
     // Protected regions.
     const seenRegionIds = new Set<string>()
-    for (const region of contract.protectedRegions) {
-      const regionSubject = `${subject} region ${region.id || '(missing id)'}`
-      if (!region.id) issues.push(issue(regionSubject, 'region id is empty'))
-      if (seenRegionIds.has(region.id)) issues.push(issue(regionSubject, 'duplicate region id'))
-      seenRegionIds.add(region.id)
-      if (region.kind !== 'three-dimensional' && region.kind !== 'two-dimensional') {
-        issues.push(issue(regionSubject, `unrecognized region kind "${String(region.kind)}"`))
-      }
-      const alt = region.alternative
-      if (
-        alt.kind !== 'route' &&
-        alt.kind !== 'inline-controls' &&
-        alt.kind !== 'description' &&
-        alt.kind !== 'decorative'
-      ) {
-        issues.push(issue(regionSubject, `unrecognized alternative kind`))
-      } else if (region.interactive && (alt.kind === 'description' || alt.kind === 'decorative')) {
-        issues.push(
-          issue(
-            regionSubject,
-            'an interactive protected region must declare a route or inline-controls alternative',
-          ),
-        )
-      }
-      if (alt.kind === 'route' && !alt.href.startsWith('/')) {
-        issues.push(issue(regionSubject, `alternative route "${alt.href}" must be site-relative`))
-      }
-      if (alt.kind === 'inline-controls' && !alt.regionId) {
-        issues.push(issue(regionSubject, 'inline-controls alternative needs a regionId'))
-      }
-      if (alt.kind === 'description' && !alt.labelledBy) {
-        issues.push(issue(regionSubject, 'description alternative needs a labelledBy id'))
+    if (!Array.isArray(contract.protectedRegions)) {
+      issues.push(issue(subject, 'protectedRegions must be an array'))
+    } else {
+      for (const region of contract.protectedRegions) {
+        if (!hasRecordShape(region)) {
+          issues.push(issue(`${subject} region (malformed)`, 'region must be an object'))
+          continue
+        }
+        const regionSubject = `${subject} region ${region.id || '(missing id)'}`
+        if (!region.id) issues.push(issue(regionSubject, 'region id is empty'))
+        if (seenRegionIds.has(region.id)) issues.push(issue(regionSubject, 'duplicate region id'))
+        seenRegionIds.add(region.id)
+        if (region.kind !== 'three-dimensional' && region.kind !== 'two-dimensional') {
+          issues.push(issue(regionSubject, `unrecognized region kind "${String(region.kind)}"`))
+        }
+        const alt = region.alternative
+        if (!hasRecordShape(alt)) {
+          issues.push(issue(regionSubject, 'alternative must be an object'))
+        } else if (
+          alt.kind !== 'route' &&
+          alt.kind !== 'inline-controls' &&
+          alt.kind !== 'description' &&
+          alt.kind !== 'decorative'
+        ) {
+          issues.push(issue(regionSubject, `unrecognized alternative kind`))
+        } else {
+          if (region.interactive && (alt.kind === 'description' || alt.kind === 'decorative')) {
+            issues.push(
+              issue(
+                regionSubject,
+                'an interactive protected region must declare a route or inline-controls alternative',
+              ),
+            )
+          }
+          if (alt.kind === 'route' && !alt.href.startsWith('/')) {
+            issues.push(
+              issue(regionSubject, `alternative route "${alt.href}" must be site-relative`),
+            )
+          }
+          if (alt.kind === 'inline-controls' && !alt.regionId) {
+            issues.push(issue(regionSubject, 'inline-controls alternative needs a regionId'))
+          }
+          if (alt.kind === 'description' && !alt.labelledBy) {
+            issues.push(issue(regionSubject, 'description alternative needs a labelledBy id'))
+          }
+        }
       }
     }
 
     // Adaptations.
-    if (contract.allowedAdaptations.length === 0) {
-      issues.push(issue(subject, 'allowedAdaptations is empty'))
-    }
-    const seenAdaptations = new Set<string>()
-    for (const adaptation of contract.allowedAdaptations) {
-      if (!LAYOUT_ADAPTATIONS.includes(adaptation)) {
-        issues.push(issue(subject, `unrecognized adaptation "${String(adaptation)}"`))
+    if (!Array.isArray(contract.allowedAdaptations)) {
+      issues.push(issue(subject, 'allowedAdaptations must be an array'))
+    } else {
+      if (contract.allowedAdaptations.length === 0) {
+        issues.push(issue(subject, 'allowedAdaptations is empty'))
       }
-      if (seenAdaptations.has(adaptation)) {
-        issues.push(issue(subject, `duplicate adaptation "${adaptation}"`))
+      const seenAdaptations = new Set<string>()
+      for (const adaptation of contract.allowedAdaptations) {
+        if (!LAYOUT_ADAPTATIONS.includes(adaptation)) {
+          issues.push(issue(subject, `unrecognized adaptation "${String(adaptation)}"`))
+        }
+        if (seenAdaptations.has(adaptation)) {
+          issues.push(issue(subject, `duplicate adaptation "${adaptation}"`))
+        }
+        seenAdaptations.add(adaptation)
       }
-      seenAdaptations.add(adaptation)
     }
 
     // Accessibility.
-    if (contract.accessibility.keyboard !== true) {
-      issues.push(issue(subject, 'accessibility.keyboard must be literally true'))
-    }
-    if (
-      contract.accessibility.reflow !== 'standard' &&
-      contract.accessibility.reflow !== 'contained-complex-region'
-    ) {
-      issues.push(issue(subject, 'unrecognized accessibility.reflow value'))
-    }
-    for (const state of REQUIRED_ACCESSIBILITY_STATES) {
-      if (!contract.accessibility.states.includes(state)) {
-        issues.push(issue(subject, `required accessibility state "${state}" is not declared`))
+    if (!hasRecordShape(contract.accessibility)) {
+      issues.push(issue(subject, 'accessibility must be an object'))
+    } else {
+      if (contract.accessibility.keyboard !== true) {
+        issues.push(issue(subject, 'accessibility.keyboard must be literally true'))
+      }
+      if (
+        contract.accessibility.reflow !== 'standard' &&
+        contract.accessibility.reflow !== 'contained-complex-region'
+      ) {
+        issues.push(issue(subject, 'unrecognized accessibility.reflow value'))
+      }
+      if (!Array.isArray(contract.accessibility.states)) {
+        issues.push(issue(subject, 'accessibility.states must be an array'))
+      } else {
+        for (const state of REQUIRED_ACCESSIBILITY_STATES) {
+          if (!contract.accessibility.states.includes(state)) {
+            issues.push(issue(subject, `required accessibility state "${state}" is not declared`))
+          }
+        }
       }
     }
 
     // Viewport cases.
     const seenCaseIds = new Set<string>()
+    if (!Array.isArray(contract.viewportCases)) {
+      issues.push(issue(subject, 'viewportCases must be an array'))
+      continue
+    }
     for (const viewportCase of contract.viewportCases) {
+      if (!hasRecordShape(viewportCase)) {
+        issues.push(issue(`${subject} viewport (malformed)`, 'viewport case must be an object'))
+        continue
+      }
       const caseSubject = `${subject} viewport ${viewportCase.id || '(missing id)'}`
       if (!viewportCase.id) issues.push(issue(caseSubject, 'viewport case id is empty'))
       if (seenCaseIds.has(viewportCase.id)) issues.push(issue(caseSubject, 'duplicate case id'))
@@ -180,7 +245,8 @@ export function validateLayoutContracts(
     if (requireFullMatrix) {
       for (const required of REQUIRED_VIEWPORT_CASES) {
         const covered = contract.viewportCases.some(
-          (c) => c.w === required.w && c.h === required.h && c.tier === required.tier,
+          (c: LayoutContract['viewportCases'][number]) =>
+            c.w === required.w && c.h === required.h && c.tier === required.tier,
         )
         if (!covered) {
           issues.push(

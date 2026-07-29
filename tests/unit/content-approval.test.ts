@@ -236,6 +236,38 @@ describe('validateApprovalManifest', () => {
     expect(issues.some((i) => i.message.includes('not a real date-time'))).toBe(true)
   })
 
+  it('fails day-overflow dates that Date.parse would silently normalize', () => {
+    for (const approvedAt of [
+      '2026-02-30T00:00:00Z', // Feb 30 → Date.parse gives Mar 2
+      '2026-04-31T00:00:00Z', // April has 30 days
+      '2027-02-29T00:00:00Z', // 2027 is not a leap year
+    ]) {
+      const issues = manifestErrors({ approvals: [{ ...VALID_RECORD, approvedAt }] })
+      expect(
+        issues.some((i) => i.message.includes('not a real date-time')),
+        approvedAt,
+      ).toBe(true)
+    }
+  })
+
+  it('fails impossible clock components', () => {
+    for (const approvedAt of ['2026-07-27T24:00:00Z', '2026-07-27T12:60:00Z']) {
+      const issues = manifestErrors({ approvals: [{ ...VALID_RECORD, approvedAt }] })
+      expect(
+        issues.some((i) => i.message.includes('not a real date-time')),
+        approvedAt,
+      ).toBe(true)
+    }
+  })
+
+  it('accepts a real leap-day timestamp', () => {
+    expect(
+      manifestErrors({
+        approvals: [{ ...VALID_RECORD, approvedAt: '2028-02-29T12:00:00Z' }],
+      }),
+    ).toEqual([])
+  })
+
   it('fails a non-object manifest', () => {
     expect(manifestErrors(null).length).toBeGreaterThan(0)
     expect(manifestErrors('nope').length).toBeGreaterThan(0)

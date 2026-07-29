@@ -13,6 +13,7 @@
 
 import {
   isNonEmptyString,
+  hasRecordShape,
   issue,
   type NonEmptyStrings,
   type ValidationIssue,
@@ -47,16 +48,19 @@ export type PublicProfile = {
   readonly resumeUrl?: string
 }
 
-/** The owner-approved public profile record (Phase 0A step 5). */
+/** Canonical public profile record (Phase 0A step 5).
+ *  Any public-field amendment requires the owner-controlled approval-hash
+ *  workflow documented in docs/responsive-system.md §9. */
 export const PROFILE: PublicProfile = {
   name: 'Alex Xiong',
-  targetRole: 'Creative Producer in gaming',
+  targetRole: 'Creative Technologist',
   summary:
-    'Producer and designer whose journey spans production, project ' +
-    'management, and UX design — ready to dive into any stage of the ' +
-    'development process. Now pursuing an information science and HCI ' +
+    'Producer and designer whose journey spans production, product ' +
+    'management, and UI/UX design. Ready to dive into any stage of the ' +
+    'development process. Passionate about interactive media and AI ' +
+    'technologies. Now pursuing an information science and HCI ' +
     'background at Cornell Tech.',
-  capabilities: ['Project Management', 'UI/UX Design', 'Graphic Design', 'Game Design'],
+  capabilities: ['Product Management', 'UI/UX Design', 'UX Research', 'Game Design'],
   links: [
     {
       label: 'LinkedIn',
@@ -88,33 +92,49 @@ export function validateProfile(profile: PublicProfile): ValidationIssue[] {
   const issues: ValidationIssue[] = []
   const subject = 'profile'
 
+  if (!hasRecordShape(profile)) return [issue(subject, 'profile must be an object')]
+
   if (!isNonEmptyString(profile.name)) issues.push(issue(subject, 'name is empty'))
   if (!isNonEmptyString(profile.targetRole)) issues.push(issue(subject, 'targetRole is empty'))
   if (!isNonEmptyString(profile.summary)) issues.push(issue(subject, 'summary is empty'))
-  if (profile.capabilities.length === 0) {
-    issues.push(issue(subject, 'capabilities is empty'))
-  }
-  profile.capabilities.forEach((capability, index) => {
-    if (!isNonEmptyString(capability)) {
-      issues.push(issue(subject, `capabilities[${index}] is empty`))
+  if (!Array.isArray(profile.capabilities)) {
+    issues.push(issue(subject, 'capabilities must be an array'))
+  } else {
+    if (profile.capabilities.length === 0) {
+      issues.push(issue(subject, 'capabilities is empty'))
     }
-  })
+    profile.capabilities.forEach((capability, index) => {
+      if (!isNonEmptyString(capability)) {
+        issues.push(issue(subject, `capabilities[${index}] is empty`))
+      }
+    })
+  }
 
   const seenHrefs = new Set<string>()
-  profile.links.forEach((link, index) => {
-    const linkSubject = `profile.links[${index}]`
-    if (!isNonEmptyString(link.label)) issues.push(issue(linkSubject, 'label is empty'))
-    if (!PROFILE_LINK_KINDS.includes(link.kind)) {
-      issues.push(issue(linkSubject, `unknown link kind "${String(link.kind)}"`))
-    }
-    if (!isValidProfileHref(link.href, link.kind)) {
-      issues.push(issue(linkSubject, `href "${link.href}" is not valid for kind "${link.kind}"`))
-    }
-    if (seenHrefs.has(link.href)) {
-      issues.push(issue(linkSubject, `duplicate href "${link.href}"`))
-    }
-    seenHrefs.add(link.href)
-  })
+  if (!Array.isArray(profile.links)) {
+    issues.push(issue(subject, 'links must be an array'))
+  } else {
+    profile.links.forEach((link: ProfileLink, index: number) => {
+      const linkSubject = `profile.links[${index}]`
+      if (!hasRecordShape(link)) {
+        issues.push(issue(linkSubject, 'link must be an object'))
+        return
+      }
+      if (!isNonEmptyString(link.label)) issues.push(issue(linkSubject, 'label is empty'))
+      if (!PROFILE_LINK_KINDS.includes(link.kind)) {
+        issues.push(issue(linkSubject, `unknown link kind "${String(link.kind)}"`))
+      }
+      if (typeof link.href !== 'string' || !isValidProfileHref(link.href, link.kind)) {
+        issues.push(
+          issue(linkSubject, `href "${String(link.href)}" is not valid for kind "${link.kind}"`),
+        )
+      }
+      if (seenHrefs.has(link.href)) {
+        issues.push(issue(linkSubject, `duplicate href "${link.href}"`))
+      }
+      seenHrefs.add(link.href)
+    })
+  }
 
   if (profile.email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
     issues.push(issue(subject, `email "${profile.email}" is not a valid address`))

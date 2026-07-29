@@ -40,6 +40,19 @@ export function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+/** True for a plain object — the shape guard validators use so malformed
+ *  nested values become structured issues instead of TypeErrors. */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/** Non-narrowing variant of `isRecord` for values that already carry a
+ *  compile-time type: filters runtime garbage without collapsing the typed
+ *  view to `Record<string, unknown>`. */
+export function hasRecordShape(value: unknown): boolean {
+  return isRecord(value)
+}
+
 /**
  * Deep key-sorted JSON serialization. Used for the §A.4.2 approval hash so
  * the same content always produces the same bytes regardless of key order.

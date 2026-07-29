@@ -3,7 +3,7 @@
 // related but independently enforceable; this file owns the type and the
 // pure validator, lib/content/content-contracts.ts owns the declarations.
 
-import { issue, type ValidationIssue } from '@/lib/shared/core'
+import { hasRecordShape, issue, type ValidationIssue } from '@/lib/shared/core'
 
 export type ContentPurpose =
   | 'entry'
@@ -105,15 +105,23 @@ export function validateContentContracts(
   const seenIds = new Set<string>()
   const seenRoutes = new Set<string>()
 
+  if (!Array.isArray(contracts)) {
+    return [issue('content-contracts', 'contracts must be an array')]
+  }
+
   for (const contract of contracts) {
+    if (!hasRecordShape(contract)) {
+      issues.push(issue('content-contract (malformed)', 'contract must be an object'))
+      continue
+    }
     const subject = `content-contract ${contract.id || '(missing id)'}`
 
     if (!contract.id) issues.push(issue(subject, 'contract id is empty'))
     if (seenIds.has(contract.id)) issues.push(issue(subject, 'duplicate contract id'))
     seenIds.add(contract.id)
 
-    if (!contract.route.startsWith('/')) {
-      issues.push(issue(subject, `route "${contract.route}" must be site-relative`))
+    if (typeof contract.route !== 'string' || !contract.route.startsWith('/')) {
+      issues.push(issue(subject, `route "${String(contract.route)}" must be site-relative`))
     }
     if (seenRoutes.has(contract.route)) {
       issues.push(issue(subject, `duplicate route "${contract.route}"`))
@@ -150,10 +158,14 @@ export function validateContentContracts(
       )
     }
 
-    if (contract.sources.length === 0) issues.push(issue(subject, 'sources is empty'))
-    for (const source of contract.sources) {
-      if (!CONTENT_SOURCES.includes(source)) {
-        issues.push(issue(subject, `unrecognized source "${String(source)}"`))
+    if (!Array.isArray(contract.sources)) {
+      issues.push(issue(subject, 'sources must be an array'))
+    } else {
+      if (contract.sources.length === 0) issues.push(issue(subject, 'sources is empty'))
+      for (const source of contract.sources) {
+        if (!CONTENT_SOURCES.includes(source)) {
+          issues.push(issue(subject, `unrecognized source "${String(source)}"`))
+        }
       }
     }
 
@@ -179,12 +191,16 @@ export function validateContentContracts(
       }
     }
 
-    if (contract.structuredData.length === 0) {
-      issues.push(issue(subject, 'structuredData is empty'))
-    }
-    for (const type of contract.structuredData) {
-      if (!STRUCTURED_DATA_TYPES.includes(type)) {
-        issues.push(issue(subject, `unrecognized structured-data type "${String(type)}"`))
+    if (!Array.isArray(contract.structuredData)) {
+      issues.push(issue(subject, 'structuredData must be an array'))
+    } else {
+      if (contract.structuredData.length === 0) {
+        issues.push(issue(subject, 'structuredData is empty'))
+      }
+      for (const type of contract.structuredData) {
+        if (!STRUCTURED_DATA_TYPES.includes(type)) {
+          issues.push(issue(subject, `unrecognized structured-data type "${String(type)}"`))
+        }
       }
     }
   }

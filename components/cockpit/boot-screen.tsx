@@ -33,9 +33,11 @@ const garbled = (len) => Array.from({ length: len }, () =>
 ).join('');
 
 // Scrambling text — random garbage for `corruptMs`, then resolves to `text`.
-function Scramble({ text, corruptMs = 600, tickMs = 45, className, style }) {
-  const [out, setOut] = useState(() => garbled(text.length));
+// `instant` (reduced motion) renders the resolved text with no interval.
+function Scramble({ text, corruptMs = 600, tickMs = 45, className, style, instant = false }) {
+  const [out, setOut] = useState(() => (instant ? text : garbled(text.length)));
   useEffect(() => {
+    if (instant) { setOut(text); return; }
     let elapsed = 0;
     const iv = setInterval(() => {
       elapsed += tickMs;
@@ -51,11 +53,15 @@ function Scramble({ text, corruptMs = 600, tickMs = 45, className, style }) {
       );
     }, tickMs);
     return () => clearInterval(iv);
-  }, [text, corruptMs, tickMs]);
+  }, [text, corruptMs, tickMs, instant]);
   return <span className={className} style={style}>{out}</span>;
 }
 
-function BootScreen({ onDone }) {
+// Reduced motion renders the boot terminal directly in its static READY
+// state (§A.6.2): no rAF master clock, no cursor/glitch intervals, no
+// typewriter or scramble timelines. The authored-dark terminal identity is
+// unchanged — only motion is removed.
+function BootScreen({ onDone, reduceMotion = false }) {
   // Master timeline in ms — each field is the START of that phase.
   const T = {
     scroll: 200,
@@ -68,12 +74,17 @@ function BootScreen({ onDone }) {
     done: 6200,
   };
 
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState(() => (reduceMotion ? T.done + 1 : 0));
   const [cursor, setCursor] = useState(true);
   const [glitchPulse, setGlitchPulse] = useState(0);
   const startRef = useRef(performance.now());
 
   useEffect(() => {
+    if (reduceMotion) {
+      // Static ready state — jump the timeline; never start the clock.
+      setNow(T.done + 1);
+      return;
+    }
     let raf;
     const tick = (t) => {
       setNow(t - startRef.current);
@@ -81,19 +92,21 @@ function BootScreen({ onDone }) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [reduceMotion]);
 
   // Cursor blink
   useEffect(() => {
+    if (reduceMotion) return;
     const iv = setInterval(() => setCursor(c => !c), 440);
     return () => clearInterval(iv);
-  }, []);
+  }, [reduceMotion]);
 
   // Periodic brief glitch pulses
   useEffect(() => {
+    if (reduceMotion) return;
     const iv = setInterval(() => setGlitchPulse(p => p + 1), 900);
     return () => clearInterval(iv);
-  }, []);
+  }, [reduceMotion]);
 
   const phase = (
     now < T.scroll ? 'init' :
@@ -205,7 +218,7 @@ function BootScreen({ onDone }) {
       }}
     >
       {/* Scanlines */}
-      <div aria-hidden style={{
+      <div aria-hidden data-boot-decor style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10,
         background: 'repeating-linear-gradient(to bottom, rgba(30,28,26,0.00) 0 2px, rgba(30,28,26,0.05) 2px 3px)',
         animation: 'termScanRoll 4s linear infinite',
@@ -213,7 +226,7 @@ function BootScreen({ onDone }) {
       }}/>
 
       {/* Rolling horizontal band (CRT rolling bar) */}
-      <div aria-hidden style={{
+      <div aria-hidden data-boot-decor style={{
         position: 'absolute', left: 0, right: 0, height: 80,
         background: 'linear-gradient(to bottom, transparent, rgba(30,28,26,0.08), transparent)',
         pointerEvents: 'none', zIndex: 11,
@@ -222,7 +235,7 @@ function BootScreen({ onDone }) {
       }}/>
 
       {/* Film-grain noise */}
-      <div aria-hidden style={{
+      <div aria-hidden data-boot-decor style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 12,
         backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.11  0 0 0 0 0.10  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
         backgroundSize: '240px 240px',
@@ -239,20 +252,27 @@ function BootScreen({ onDone }) {
           ...jitter,
           animation: phase === 'crash' ? 'termCrtOff 0.7s forwards' : undefined,
         }}>
-          {/* TOP LEFT — header */}
-          <div style={{ position: 'absolute', top: 24, left: 32, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
-            <HeaderBlock now={now} />
-          </div>
+          {/* TOP LEFT — header. Skipped in static-ready mode: it is opacity-0
+              at `ready` and its typewriters must not start timelines. */}
+          {!reduceMotion && (
+            <div style={{ position: 'absolute', top: 24, left: 32, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
+              <HeaderBlock now={now} />
+            </div>
+          )}
 
-          {/* TOP RIGHT — hardware plate */}
-          <div style={{ position: 'absolute', top: 24, right: 32, textAlign: 'right', opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
-            <HwPlate now={now} />
-          </div>
+          {/* TOP RIGHT — hardware plate (typewriters — same static-ready skip) */}
+          {!reduceMotion && (
+            <div style={{ position: 'absolute', top: 24, right: 32, textAlign: 'right', opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
+              <HwPlate now={now} />
+            </div>
+          )}
 
           {/* LEFT COLUMN — boot stages */}
-          <div style={{ position: 'absolute', top: 110, left: 32, minWidth: 280, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
-            <StageList phase={phase} now={now} cursor={cursor} />
-          </div>
+          {!reduceMotion && (
+            <div style={{ position: 'absolute', top: 110, left: 32, minWidth: 280, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
+              <StageList phase={phase} now={now} cursor={cursor} />
+            </div>
+          )}
 
           {/* CENTER — log stream (during scroll/stall/panic) or POST (reboot). Hidden in ready. */}
           {phase !== 'ready' && (
@@ -278,9 +298,11 @@ function BootScreen({ onDone }) {
           )}
 
           {/* RIGHT COLUMN — registers / bus */}
-          <div style={{ position: 'absolute', top: 110, right: 32, textAlign: 'right', minWidth: 260, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
-            <Registers now={now} hex={hex} pad={pad} phase={phase} />
-          </div>
+          {!reduceMotion && (
+            <div style={{ position: 'absolute', top: 110, right: 32, textAlign: 'right', minWidth: 260, opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out' }}>
+              <Registers now={now} hex={hex} pad={pad} phase={phase} />
+            </div>
+          )}
 
           {/* CENTER STATE WORD */}
           <div style={{
@@ -292,22 +314,25 @@ function BootScreen({ onDone }) {
             textAlign: 'center', width: '100%',
             transition: 'top 0.5s ease-out',
           }}>
-            <CenterWord phase={phase} cursor={cursor} />
+            <CenterWord phase={phase} cursor={cursor} instant={reduceMotion} />
             {phase === 'ready' && (
               <div style={{ marginTop: 36, display: 'flex', justifyContent: 'center' }}>
-                <ConfirmButton onConfirm={onDone} cursor={cursor} />
+                <ConfirmButton onConfirm={onDone} cursor={cursor} instant={reduceMotion} />
               </div>
             )}
           </div>
 
-          {/* FOOTER */}
-          <div style={{
-            position: 'absolute', left: 32, right: 32, bottom: 24,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 32,
-            opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out',
-          }}>
-            <Footer phase={phase} now={now} pad={pad} />
-          </div>
+          {/* FOOTER — left offset clears the fixed ACCESSIBILITY trigger
+              (stage chrome mounted above every phase by app/layout.tsx). */}
+          {!reduceMotion && (
+            <div style={{
+              position: 'absolute', left: 240, right: 32, bottom: 24,
+              display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 32,
+              opacity: phase === 'ready' ? 0 : 1, transition: 'opacity 0.5s ease-out',
+            }}>
+              <Footer phase={phase} now={now} pad={pad} />
+            </div>
+          )}
         </div>
       )}
 
@@ -526,7 +551,7 @@ function PostStream({ now, steps, cursor }) {
   );
 }
 
-function CenterWord({ phase, cursor }) {
+function CenterWord({ phase, cursor, instant = false }) {
   if (phase === 'init' || phase === 'scroll') {
     return (
       <div>
@@ -576,7 +601,7 @@ function CenterWord({ phase, cursor }) {
   return (
     <div>
       <div className="term-display" style={{ fontSize: 'clamp(64px, 11vw, 150px)', color: 'var(--ink)', lineHeight: 1 }}>
-        <Scramble text="{A_XIONG}" corruptMs={350} tickMs={25} />
+        <Scramble text="{A_XIONG}" corruptMs={350} tickMs={25} instant={instant} />
       </div>
       <div className="term-small" style={{ color: 'var(--jade)', marginTop: 10, letterSpacing: '.22em', fontWeight: 700 }}>
         ◆ READY · AWAITING CONFIRMATION{cursor ? '_' : ' '}
@@ -585,26 +610,35 @@ function CenterWord({ phase, cursor }) {
   );
 }
 
-function ConfirmButton({ onConfirm, cursor }) {
+function ConfirmButton({ onConfirm, cursor, instant = false }) {
   const [hover, setHover] = React.useState(false);
   const [pressed, setPressed] = React.useState(false);
+  // Reduced motion: activation is immediate (no pressed-state pause).
+  const confirmDelay = instant ? 0 : 180;
 
   React.useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
+        // Never hijack activation aimed at another control (e.g. the
+        // ACCESSIBILITY trigger or dialog radios).
+        const target = e.target;
+        if (target instanceof HTMLElement &&
+            (target.closest('button, a, input, select, textarea, [role="dialog"]'))) {
+          if (!target.closest('[data-hud="boot-enter"]')) return;
+        }
         e.preventDefault();
         setPressed(true);
-        setTimeout(() => onConfirm && onConfirm(), 180);
+        setTimeout(() => onConfirm && onConfirm(), confirmDelay);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onConfirm]);
+  }, [onConfirm, confirmDelay]);
 
   const click = () => {
     if (pressed) return;
     setPressed(true);
-    setTimeout(() => onConfirm && onConfirm(), 180);
+    setTimeout(() => onConfirm && onConfirm(), confirmDelay);
   };
 
   const Corner = ({ style }) => (

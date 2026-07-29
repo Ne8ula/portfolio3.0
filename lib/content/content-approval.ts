@@ -87,7 +87,30 @@ export function approvalSubjectIdFor(subject: ApprovalSubject): ApprovalSubjectI
 const HASH_SHAPE = /^[0-9a-f]{64}$/
 // RFC 3339 UTC: date-time with Z offset only (approval records are stored
 // normalized to UTC).
-const RFC3339_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?Z$/
+const RFC3339_UTC = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,9})?Z$/
+
+const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31] as const
+
+/** Calendar-validate a shape-valid timestamp. `Date.parse` silently
+ *  normalizes day overflow (Feb 30 → Mar 2), so check components. */
+function isRealUtcDateTime(value: string): boolean {
+  const match = RFC3339_UTC.exec(value)
+  if (!match) return false
+  const [, year, month, day, hour, minute, second] = match.map(Number)
+  if (
+    year === undefined || month === undefined || day === undefined ||
+    hour === undefined || minute === undefined || second === undefined
+  ) {
+    return false
+  }
+  if (month < 1 || month > 12) return false
+  const monthDays =
+    month === 2 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0)
+      ? 29
+      : DAYS_IN_MONTH[month - 1] ?? 0
+  if (day < 1 || day > monthDays) return false
+  return hour <= 23 && minute <= 59 && second <= 59
+}
 
 /**
  * Structural manifest validation (blocking from Phase 0): unique and known
@@ -147,7 +170,7 @@ export function validateApprovalManifest(
     }
     if (!isNonEmptyString(approvedAt) || !RFC3339_UTC.test(approvedAt)) {
       issues.push(issue(recordLabel, 'approvedAt must be an RFC 3339 UTC timestamp (…Z)'))
-    } else if (Number.isNaN(Date.parse(approvedAt))) {
+    } else if (!isRealUtcDateTime(approvedAt)) {
       issues.push(issue(recordLabel, `approvedAt "${approvedAt}" is not a real date-time`))
     }
   })

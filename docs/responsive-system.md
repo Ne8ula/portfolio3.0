@@ -303,7 +303,16 @@ DOM identifier scheme (used by diagnostics and browser tests):
 | `data-layout-region` | `cockpit-stage` (the WebGL stage), `boot` (boot region), `app-shell` |
 | `data-layout-contract` | the registered contract id (e.g. `cockpit-v1`) on the region root |
 | `data-content-contract` | the content-contract id (e.g. `content-home-v1`) |
-| `data-hud` | `site-header`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter` |
+| `data-hud` | `site-header`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog` |
+
+Phase 1 additions: the root `AccessibilityProvider` stamps the resolved
+accessibility state on `<html>` as `data-a11y-motion/contrast/transparency/
+text/controls` (values `reduced|full`, `high|standard`, `large|standard`);
+CSS keys off these with `prefers-*` media queries as the no-JS fallback.
+`ResponsivePage` exposes `data-responsive-tier` and sets
+`data-document-scroll="reflow"` on `<html>` (ordinary pages own document
+scroll); `ResponsiveStage` exposes `data-stage-mode="fit|contained"`. The
+storage key and attribute names are pinned by `tests/unit/accessibility`.
 
 Gate commands — run all of them before claiming a change done:
 
@@ -383,8 +392,8 @@ the active build-time boundary.
 | 0 | The enforcement island: strict `lib/` contracts + validators, catalog/texture split, scoped typecheck, unit tests, Chromium smoke harness, test bridge, this document | **Delivered** |
 | 0A | Owner-approved profile + six-project dossier (owner supplies facts) | **Delivered** (2026-07-28; all 7 records approved + hashed) |
 | 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
-| 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame` primitives, `AccessibilityProvider`, settings dialog, boot gating on the operable ACCESSIBILITY trigger | Pending |
-| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/recruiter`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts flip to `implemented` | Pending (blocked by 1) |
+| 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; not yet committed — hash recorded in the plan §8 on merge) |
+| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/recruiter`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts flip to `implemented` | Pending (unblocked: Phases 0B and 1 delivered) |
 | 3 | One idempotent renderer/viewport sizing function (`syncRendererSize`, DPR cap 2) | Pending |
 | 4 | Projection bridge, hud-layout solver, seedable random streams, deterministic capture, first scorecard baselines | Pending |
 | 5 | 3D fit solver + input normalization wiring | Pending |

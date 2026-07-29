@@ -12,6 +12,7 @@ import { Cockpit } from "./cockpit-hud"
 import { CURSOR_DEFAULT } from "./cursors"
 import { installTestHooks, registerPhaseController, unregisterPhaseController } from "./test-hooks"
 import { HOME_CONTENT_CONTRACT } from "@/lib/content/content-contracts"
+import { useAccessibility } from "@/components/responsive/accessibility-provider"
 
 // Dialed-in transforms from the prototype's TWEAK_DEFAULTS (Cockpit.html).
 const TWEAK_DEFAULTS = {
@@ -37,9 +38,12 @@ const TWEAK_DEFAULTS = {
 export function CockpitApp() {
   const [phase, setPhase] = useState('boot');
   const [interactive, setInteractive] = useState(false);
-  const [reduceMotion] = useState(() => (
-    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ));
+  // Resolved accessibility state from the root AccessibilityProvider
+  // (§A.6.2): live matchMedia + persisted explicit overrides, never a
+  // one-time snapshot. `introReady` gates boot timelines on the
+  // ACCESSIBILITY trigger being operable (§A.4.3 tier 2).
+  const { resolved, introReady } = useAccessibility();
+  const reduceMotion = resolved.reducedMotion;
   // Track the 3D view mode so chrome (theme toggle) can hide while the
   // camera is focused on the PC monitor or the vinyl crate.
   const [viewMode, setViewMode] = useState('cockpit');
@@ -134,7 +138,9 @@ export function CockpitApp() {
         background: 'radial-gradient(ellipse at 30% 20%, var(--page-grad-1), var(--page-grad-2) 45%, var(--page-grad-3) 100%)',
       }}
     >
-      {phase === 'boot' && <BootScreen onDone={enterRoom} />}
+      {phase === 'boot' && introReady && (
+        <BootScreen onDone={enterRoom} reduceMotion={reduceMotion} />
+      )}
       {phase === 'warp' && (
         <WarpTransition onComplete={() => { setPhase('cockpit'); setInteractive(true); }} />
       )}

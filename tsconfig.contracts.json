@@ -12,7 +12,10 @@
   "include": [
     "lib/**/*.ts",
     "app/layout-contract.ts",
+    "app/responsive-preview/**/*.ts",
+    "app/responsive-preview/**/*.tsx",
     "components/cockpit/test-hooks.ts",
+    "components/responsive/**/*.tsx",
     "scripts/**/*.ts",
     "tests/unit/**/*.ts",
     "e2e/**/*.ts",

@@ -10,10 +10,15 @@ export default tseslint.config(
     ignores: [
       'node_modules/**',
       '.next/**',
-      'components/cockpit/**',
+      // `dir/**` ignores the directory itself, which makes a `!dir/file`
+      // re-include unreachable; `dir/*` ignores entries individually so the
+      // negations below actually lint the two strict-island files.
+      'components/cockpit/*',
       '!components/cockpit/test-hooks.ts',
-      'app/**',
+      'app/*',
       '!app/layout-contract.ts',
+      '!app/layout.tsx',
+      '!app/responsive-preview/',
       'References/**',
       '3DModels/**',
       'backend/**',
@@ -31,7 +36,8 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ['lib/**/*.ts', 'scripts/**/*.ts', 'tests/**/*.ts', 'e2e/**/*.ts',
-      'app/layout-contract.ts', 'components/cockpit/test-hooks.ts',
+      'app/layout-contract.ts', 'app/layout.tsx', 'app/responsive-preview/**/*.{ts,tsx}',
+      'components/cockpit/test-hooks.ts', 'components/responsive/**/*.tsx',
       'vitest.config.ts', 'playwright.config.ts'],
     rules: {
       '@typescript-eslint/no-unused-vars': [

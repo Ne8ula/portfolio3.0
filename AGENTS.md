@@ -13,6 +13,51 @@ do not convert or introduce either. Design reference: `DESIGN.md`. Technical
 layout/content contract reference: `docs/responsive-system.md`. Full plan:
 `docs/hud-responsive-layout-plan.md`.
 
+## Three-agent roles and automatic handoff
+
+These are default ownership boundaries. An explicit owner request may override
+them, but an agent must say when it is working outside its default role.
+`AGENTS.md` coordinates behavior; it does not grant one client access to
+another vendor's model or subscription.
+
+- **Claude — design lead.** Own design exploration, interaction intent, visual
+  critique, and measurable acceptance criteria. For rendered work, reconcile
+  proposals with `DESIGN.md`, the responsive system, and the applicable
+  contracts. Do not implement production code unless the owner explicitly
+  assigns implementation.
+- **Codex — planning and engineering lead.** Own repository discovery,
+  implementation plans, production code, migrations, and developer-facing
+  verification. Implement the approved design intent without silently
+  redefining it. Return design ambiguity to Claude or the owner.
+- **Kimi K3 — independent QA lead.** Review the brief, live Git diff, and
+  Codex's verification evidence; run the applicable gates and inspect behavior
+  at risk. Default to no product-code edits while judging a change. Report
+  findings with severity, file/line, evidence, expected versus actual
+  behavior, and reproduction steps. A requested fix is a separate engineering
+  turn and requires a fresh independent QA pass.
+
+Use this sequence for work that needs all three roles:
+
+`owner brief → Claude design → owner approval when required → Codex plan/code
+→ Kimi QA → Codex fixes ↔ Kimi retest → owner/CI acceptance`
+
+Communication is repository-backed:
+
+1. Before acting, read `docs/agent-handoff.md`, `git status`, and the relevant
+   diff. Git and canonical repository files remain the source of truth.
+2. Only one agent may write to a shared worktree at a time. Never discard,
+   reset, stage, or rewrite another agent's changes to create a clean state.
+3. End a substantive turn with a compact final report containing `Handoff:`
+   plus the completed scope, files changed, verification run and results,
+   unresolved risks/decisions, and the next role.
+4. Lifecycle hooks capture that final report and the Git snapshot into the
+   single rolling `docs/agent-handoff.md`; the owner does not create a handoff
+   file per turn. If a client hook is unavailable, the finishing agent must
+   update the existing handoff itself before reporting completion.
+5. The receiving agent must verify the handoff against the live files and
+   diff. A handoff is context, not proof. Kimi cannot mark QA `PASS` with a red
+   required gate, and Codex cannot self-certify the independent QA role.
+
 ## Mandatory workflow for ANY rendered-UI, layout, or content change
 
 1. **Read first**: `DESIGN.md`, `docs/responsive-system.md`, and the relevant

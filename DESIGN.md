@@ -1,150 +1,601 @@
 # DESIGN.md — Editorial Cockpit Design Guide
 
-The reference for building any future web page, view, overlay, or component in this portfolio. The look is **"editorial cockpit"**: a literary print publication (cream paper, garamond display type, letterpress restraint) fused with a retro terminal / instrument-panel HUD (mono microtype, diagnostics, wireframes). Every new surface should read as both a *page from a fine-press book* and a *readout from a machine* through a minimalist, retro-futurism aesthetic style. 
+The visual and interaction reference for every page, view, overlay, and
+rendered artifact in this portfolio.
 
-Source of truth for tokens: [app/globals.css](app/globals.css) (`:root` vars) and [components/cockpit/materials.ts](components/cockpit/materials.ts) (`PALETTE` for 3D). This doc explains how to *use* them.
+**Editorial Cockpit** is a personal workstation imagined in 2050 through the
+industrial language of late-1990s translucent electronics. Its cockpit is a
+softly photographed desk of familiar, dreamlike artifacts. Its project pages
+are the accessible editorial catalogue that explains what those artifacts
+contain.
+
+The two experiences share one world, but they do different jobs:
+
+| Cockpit — the workstation | Project routes — the catalogue |
+|---|---|
+| Interactive 3D artifacts | Direct, semantic case studies |
+| Studio-lit atmosphere | Editorial product documentation |
+| Hazy acrylic and visible internals | Opaque, highly readable text surfaces |
+| Terminal and camera operation | Familiar headings and navigation |
+| Quiet fictional details | Explicit portfolio language |
+| Discovery and spatial memory | Complete canonical content |
+
+Do not force every surface to look simultaneously like a terminal, a product
+advertisement, and a book. The 3D world is the machine. The project routes
+are the catalogue.
+
+Token sources remain
+[app/globals.css](app/globals.css) (`:root` variables) and
+[components/cockpit/materials.ts](components/cockpit/materials.ts)
+(`PALETTE`). Exact object transforms and runtime dial-ins remain in code; this
+guide owns their visual hierarchy and intended relationships.
 
 ---
 
-## 1. Core principles
+## 1. North star
 
-1. **Cream, ink, mauve — and jade is the ONLY chromatic accent.** Never red, never blue, never yellow. Alerts, highlights, hovers, active states, cursors, status dots: all jade. If something needs to "pop," it pops jade or it pops via contrast/weight, not hue.
-2. **Zero border radius.** `--radius: 0` is law. Every box, button, chip, dialog, and input is hard-cornered. Softness comes from color (warm creams), grain, and blur — never from rounding.
-3. **Two typographic voices, always in tension.** Large serif display (Cormorant Garamond, light weight, tight tracking) against tiny uppercase mono labels (JetBrains Mono, wide tracking). A page with only one voice is off-brand.
-4. **Quiet at rest, expressive on interaction.** Default state is calm and near-monochrome; hover/focus/active introduce the jade wireframe/glow/dot language. Don't decorate idle states.
-5. **Diegetic chrome.** UI elements pretend to be part of the machine: version strings (`PORTFOLIO · V.2026.04`), system prefixes (`AX/OS v2.59 ready.`), coordinates, timestamps, `esc · return`. Prefer these over generic web furniture ("Menu", "Back", "Loading…").
-6. **Texture sells it.** The `.grain` multiply overlay + `.vignette` radial darken sit over full-bleed scenes. Flat digital-clean surfaces feel wrong here; a faint paper/photo quality is the signature.
+The portfolio should feel:
 
----
+- **personal** — a workstation owned and used by Alex, not an anonymous
+  spaceship or corporate control room;
+- **archival and friendly** — preserved equipment that invites inspection,
+  never hostile machinery;
+- **late-1990s by way of 2050** — translucent consumer electronics reimagined
+  with contemporary speculative rendering;
+- **photographed, not merely rendered** — composed through light, material,
+  atmosphere, and a studio background;
+- **dreamlike but plausible** — familiar product forms with restrained
+  exaggeration, not literal replicas or physically impossible spectacle;
+- **clear before clever** — interaction and content remain recognizably
+  portfolio-based.
 
-## 2. Palette
+The strongest reference qualities are:
 
-CSS vars in `globals.css`; use vars, never hex literals, in components (theme inversion depends on it).
+1. milky translucent shells with muted jade transmission;
+2. selectively visible circuitry and fasteners;
+3. consistent studio-product lighting;
+4. technical labeling integrated into objects;
+5. calm editorial framing around the work.
 
-| Token | Dark (default) | Role |
+## 2. Non-negotiable design laws
+
+1. **Cream, ink, mauve, and jade.** Jade is the only chromatic family. Never
+   introduce red, blue, orange, or yellow as an interface or material accent.
+2. **DOM geometry is hard-cornered.** `--radius: 0` remains the interface
+   rule. Physical objects may and should use believable molded radii, bevels,
+   seams, and softened polycarbonate edges.
+3. **The cockpit is quiet at rest.** Interaction reveals focus; it does not
+   compete with the objects through persistent glow, labels, or motion.
+4. **The catalogue is explicit.** Project pages use recognizable navigation
+   and section names. Vinyl references influence composition and material,
+   never information clarity.
+5. **Fiction stays peripheral.** Model numbers, firmware, and terminal
+   language may reward attention, but primary navigation and portfolio actions
+   say what they do.
+6. **Accessibility outranks atmosphere.** System preferences, visible focus,
+   contrast, text sizing, reduced transparency, and reduced motion always win.
+7. **The DOM owns meaning.** The cockpit presents canonical project/profile
+   records; it never becomes the sole source of a fact or action.
+8. **No cyberpunk.** No neon color soup, tactical HUD clutter, constant
+   glitches, hostile darkness, or decorative diagnostics without purpose.
+9. **No luxury editorial.** Avoid fashion-brand preciousness, ornamental
+   minimalism, and typography so delicate that the work feels untouchable.
+10. **No portfolio gimmick.** The experience may be memorable without
+    becoming unreadable, exhausting, or dependent on mastering an experiment.
+
+## 3. Palette and color hierarchy
+
+Use CSS variables in `globals.css`, never component-local hex values. Theme
+inversion and accessibility states depend on the token system.
+
+| Family | Role |
+|---|---|
+| `--cream` / `--cream-deep` / `--cream-warm` | Polycarbonate, paper, primary light-theme fields, dark-theme foreground |
+| `--ink` / `--ink-soft` / `--ink-faint` | Dark housings, dark-theme stage, primary and secondary text |
+| `--fog` / `--mist` | Diffusion, secondary shells, quiet rules, studio atmosphere |
+| `--mauve-deep` / `--mauve` / `--mauve-light` | Cool neutral depth, shadowed atmosphere, inactive structure |
+| `--jade` / `--jade-deep` / `--jade-light` | Material tint, circuitry, active state, focus, CTA |
+
+### 60 / 30 / 10
+
+Treat the split as a hierarchy of visual energy, not a literal pixel count:
+
+- **60% foundation** — cream, ink, fog, and mauve establish the scene;
+- **30% material jade** — muted tinted acrylic, circuitry, printed details,
+  reflections, and transmitted edge light;
+- **10% signal jade** — the most vivid jade, reserved for CTAs, focus, active
+  controls, and important indicators.
+
+Signal jade may occupy far less than 10% of the screen. Its job is to carry
+the final 10% of emphasis. Do not turn 40% of the viewport into saturated
+green.
+
+Additional rules:
+
+- Jade is a material as well as an interface accent.
+- Bright jade must indicate more than color alone through text, position,
+  shape, focus, or state.
+- When a vivid jade fill is used, choose ink or cream text by measured
+  contrast rather than habit.
+- Dark mode uses ink/mauve depth with cream objects and jade transmission.
+- Light mode uses cream/fog atmosphere with ink structure and the same jade
+  hierarchy.
+- Boot and warp retain their authored-dark identity subject to accessibility
+  overrides.
+
+## 4. Typography
+
+The approved direction is an editorial serif paired with an industrial
+grotesque and a true mono:
+
+- **Newsreader** — owner identity, project titles, major editorial headings,
+  and restrained italic captions;
+- **IBM Plex Sans** — body copy, navigation, controls, explanations, and
+  accessible reading;
+- **IBM Plex Sans Condensed** — compact product labels, metadata groups, and
+  technical captions;
+- **IBM Plex Mono** — model numbers, timestamps, object inscriptions, terminal
+  output, and diagnostic detail;
+- **VT323** — boot/CRT flavor only, never ordinary portfolio content.
+
+This is the target system. Migrating the currently loaded runtime fonts is a
+separate rendered-UI task and must be implemented and validated as one
+coherent change; do not leave old and new families mixed indefinitely.
+
+### Typographic roles
+
+| Role | Treatment | Example |
 |---|---|---|
-| `--cream` / `--cream-deep` / `--cream-warm` | `#E8E4DC` / `#D8D3C7` / `#F0EBE1` | Foreground text/lines on dark; page background on light |
-| `--fog` / `--mist` | `#CFC9C0` / `#B9B5AE` | Tertiary lines, trim, dividers |
-| `--ink` / `--ink-soft` / `--ink-faint` | `#1E1C1A` / `#55514B` / `#8E8A83` | Backgrounds (dark), secondary/tertiary text (light) |
-| `--mauve-deep` / `--mauve` / `--mauve-light` | `#3A3644` / `#6E6878` / `#A8A2B0` | Cool neutral: borders, muted UI, secondary buttons |
-| `--jade` / `--jade-deep` / `--jade-light` | `#4B6E4F` / `#3A5A3E` / `#7A9A7E` | THE accent: status dots, active states, focus rings, hover glow, links |
-| `--scene-bg` | `#2d2b30` | 3D scene / full-bleed stage background |
-
-Rules of thumb:
-- **Ratio:** ~90% cream/ink neutrals, ~7% mauve, ~3% jade. Jade is punctuation, not paint.
-- Translucent panels over scenes use ink glass: `rgba(30,28,26, .55–.96)` fills with `1px solid rgba(232,228,220, .16–.22)` borders.
-- Hairlines everywhere are 1px, low opacity (`.25–.65`), often gradient-faded at the ends: `linear-gradient(to right, transparent, rgba(232,228,220,.45) 12%, … 88%, transparent)`.
-- Light theme is a true inversion (vars swap, see `html[data-theme="light"]`) — never hand-pick light-mode colors; write against the vars and both themes work. Boot/warp phases are always dark.
-
-## 3. Typography
-
-Fonts: **Cormorant Garamond** (serif display), **JetBrains Mono** (everything else), **VT323** (terminal/boot text only).
-
-| Class / pattern | Spec | Use |
-|---|---|---|
-| `.display` | Serif, weight 300–400, `letter-spacing: -.02em`, `line-height: .9–.95` | Page titles, hero names ("Alex Xiong" at 120px), card titles (22–24px) |
-| `.label` | Mono 10px, `.22em` tracking, uppercase, 500, `--ink-soft` | Section labels, nav items, chip text |
-| `.micro` | Mono 9px, `.18em` tracking, uppercase, `--ink-faint` | Metadata, footnotes, coordinates |
-| `.term` / `.term-small` | VT323 15/13px | Boot screen and CRT/terminal contexts ONLY |
-| Nav / wordmark trim | Mono 12–13px, `.24–.32em` tracking, 500–600 | Header chips, clock, version string |
+| Owner identity | Newsreader Display, light/regular, large | `Alex Xiong` |
+| Professional role | IBM Plex Sans, medium, stable | `Creative Technologist` |
+| Project title | Newsreader Display, regular/medium | `Song of Maka` |
+| Project body | IBM Plex Sans, 17–19px target, `1.55–1.7` line height, `60–72ch` measure | Problem, process, contribution, outcome |
+| Section heading | IBM Plex Sans or Sans Condensed, semibold | `RESEARCH`, `CONTRIBUTIONS`, `OUTCOMES` |
+| Project metadata | IBM Plex Mono, 12–14px | `PROJECT 01 · 2025 · COMPLETED` |
+| Navigation and actions | IBM Plex Sans, 14–16px, medium | `View project`, `All projects`, `Contact` |
+| Object inscription | IBM Plex Sans Condensed or Mono | `AX-01`, serial and control labels |
+| Object screen | IBM Plex Mono; VT323 only where the screen is explicitly CRT-like | Playback information, AX/OS output |
+| Editorial caption | Newsreader italic, readable secondary size | Explanation beneath an image |
+| Decorative micrograph | IBM Plex Mono, may be smaller when nonessential | Registration marks and circuit labels |
 
 Rules:
-- **Scale jumps are extreme by design**: 9–13px mono sits directly next to 96–120px serif. There is almost no middle register; body copy is mono 11px / `line-height 1.55`, max-width ~560px.
-- All mono UI text is UPPERCASE with wide tracking. Serif is never uppercase and never tracked wide.
-- Serif italic (12px) is the flavor voice — taglines, purposes, one-line descriptions (`OBJECT · PURPOSE` tag pattern).
-- Separators are middots with spaces: `PORTFOLIO · V.2026.04`, `ESC · RETURN`, `12:31 · EST`. Never slashes or pipes in labels (pipes are allowed as 1px vertical *rule elements*, not characters).
-- Wordmark style: `{A_XIONG}` — serif with literal braces; system name style: `AX/OS`, `AX-01` — mono.
 
-## 4. Layout
+- Large identity and project titles may use extreme scale contrast, but
+  readable content must retain a normal middle register.
+- Never set project body copy in 9–11px mono.
+- Wide-tracked uppercase belongs to metadata and product labeling, not every
+  control or sentence.
+- Important instructions use ordinary letter spacing and direct wording.
+- Serif italic is an editorial voice, not a universal subtitle treatment.
+- Use middots for compact metadata groups. Slashes remain valid inside actual
+  model/system names such as `AX/OS` and `A.X / STUDIO`.
+- The landing identity reads its name and role from
+  `lib/portfolio/profile.ts`; never hard-code either in a client-only
+  component. The chosen role wording is **Creative Technologist**; the owner
+  approved the canonical amendment and recorded its content hash on
+  2026-07-28. Future wording changes use the same owner-controlled workflow.
+- The role may type on once, then remains stable. It does not delete and loop
+  indefinitely. Reduced motion renders it immediately.
 
-- **Full-bleed stage + floating HUD.** Pages are a single viewport (`overflow: hidden` on the cockpit; future scrolling pages may relax this) with UI pinned to edges over the content. Content owns the center; chrome owns the perimeter.
-- **Anchor map** (from the cockpit — reuse on new pages): top-left wordmark + status; top-right nav chips + clock; left edge vertical `writing-mode: vertical-rl` micro label; bottom edge gradient scrim (`linear-gradient(to top, rgba(30,28,26,.55), transparent)`) carrying captions/controls; bottom-right utility (theme toggle, legend); bottom-left avatar/glyph dot.
-- Generous edge insets: ~28–40px from viewport edges.
-- **Hero text overlaps the scene** (the name sits over the 3D desk). Don't box content away from imagery — layer it, then use scrims for legibility.
-- Corner-bracket framing (`⌐ ¬` style jade brackets) marks interactive/focusable regions — the "CLICK TO ENTER" pattern.
-- Grids are implicit; alignment comes from the shared edge insets and hairline rules, not from visible columns or cards-with-shadows. **No drop shadows** — depth = translucency + border + scrim.
+## 5. Cockpit composition
 
-## 5. Components
+The visitor is sitting at Alex's personal workstation. The view is spatial
+and interactive, but it remains recognizably a portfolio landing page.
 
-**Buttons** — transparent fill, `1px solid var(--mauve)`, mono 9px `.22em` uppercase, `padding: 6px 12px`, square. Hover: border/text shift toward cream or jade. Active: global `scale: .96`. Primary action may invert (ink text on cream fill) as on the boot screen's `[ENTER THE ROOM]`.
+- The desk and artifacts occupy the lower compositional field.
+- Owner identity has a distinct, readable landing-page region and does not
+  masquerade as object labeling.
+- The center remains calm enough for camera movement and object recognition.
+- Stage chrome belongs at the perimeter; subject-attached controls follow
+  projected geometry.
+- At most three large masses compete for first reading: the crate, turntable,
+  and AX-01 workstation.
+- Coffee and personal artifacts enrich the scene without creating a second
+  row of heroes.
+- Peripheral objects may fall outside the camera crop as aspect ratio changes;
+  they may not be independently rescaled or rearranged per viewport.
+- The scene should still read correctly if decorative props fail to load.
 
-**Chips / status pills** — ink glass (`rgba(30,28,26,.58)` + light border), mono 9px uppercase, containing a 3–6px square **jade dot** (never a circle) + text + optional 1px vertical divider. Used for weather, clock, hover tags.
+The cockpit may use model codes and quiet system details, but visible primary
+navigation remains literal: projects, about/recruiter information, contact,
+accessibility, theme, and return.
 
-**Dialogs / panels** ("AX/OS · DIALOG" pattern) — cream paper panel, hard corners, header row = mono bold uppercase title + jade underline rule + three ink dots (`● ● ●`) top-right, body in mono with `»`/`>` line prefixes, footer input as `> ask ax/os…` prompt with a bordered `SEND` label-button. Any future modal, form, or chat surface follows this anatomy.
+## 6. 3D physical scale and narrative hierarchy
 
-**Name tags** (hover labels) — ink glass chip, mono uppercase `OBJECT · PURPOSE` where PURPOSE is serif italic; animate in with `tagFadeIn` (never `termFadeIn` — transform keyframes must compose the positioning translate).
+Physical size, narrative importance, interaction priority, and screen
+coverage are different axes. The physically largest artifact does not
+automatically become the portfolio's primary hero.
 
-**Info cards** (VinylInfoCard pattern) — translucent gradient panel (`rgba(232,228,220,.10)` → `rgba(30,28,26,.18)`) with a faint diagonal sheen, serif 22–24px title + 1px divider + mono `.3em` code + serif italic subtitle, jade `◄ / ►` steppers.
+Use a 12-inch vinyl record as the world-scale anchor. Objects should feel
+plausibly related to that record and to one another. A restrained
+approximately 10–15% heroic exaggeration is allowed for the AX-01, crate, and
+turntable to preserve the dreamlike concept-render quality.
 
-**Focus** — global, already defined: `outline: 2px solid var(--jade-light); outline-offset: 3px`. Never remove it, never restyle per-component.
+The ratios below describe **perceived mass relative to one project hero**,
+not viewport percentages or literal Three.js `scale` values:
 
-**Selection** — inverted: ink background, cream text (`::selection`).
+| Artifact | Physical scale | Narrative tier | Visual treatment |
+|---|---:|---|---|
+| Vinyl crate | `1.0` hero reference | Primary | Project-bearing hero; layered sleeves, used surfaces, clear interaction |
+| A.X / STUDIO turntable | `1.0–1.1` | Primary | Project-bearing hero; precise mechanics, gently aged finish |
+| AX-01 PC + keyboard + mouse | `1.15–1.35` silhouette | Secondary workstation anchor | May be physically largest and partly edge-framed; protected visual benchmark |
+| Pour-over + mug | `0.3–0.45` | Ambient interactive | Pristine ritual object; quiet contrast and no project-level emphasis |
+| Drawing tablet | `0.45–0.6`, low profile | Personal artifact | Broad but visually flat; must not read as a fourth hero |
+| Saxophone | `0.3–0.45`, vertical | Personal artifact | Narrow silhouette and restrained reflectance |
+| Plant, handheld, shaker | `0.15–0.3` each | Personal/decorative | Small identity cues; limited detail and interaction emphasis |
 
-## 6. Motion
+Exact transforms remain in `TWEAK_DEFAULTS` and the model modules. Do not copy
+runtime scale numbers into this guide as a second source of truth.
 
-Keyframe library lives in `globals.css` — reuse before writing new ones.
+### Hierarchy laws
 
-- **Easing/tempo:** small and soft. Fade+rise entrances (`termFadeIn`/`typeIn`: 4–8px translateY), soft opacity pulses (`softBlink`, `softPulse`) for live indicators. Nothing bounces, nothing overshoots.
-- **CRT/terminal grammar** for phase changes: `termCrtOn/Off`, `termScanRoll`, `termSweep`, `termGlitch`, `termRGB`. Glitch is *subtle and brief* — a flicker riding a transition wavefront, never a persistent effect (see memory: no flashes; seamless diegetic reveals).
-- Hover reveals ease in ~200–400ms; idle scenes are dead still (only the turntable platter spins).
-- **`prefers-reduced-motion: reduce` is fully honored** — global animation kill switch exists; the warp is skipped. Any new bespoke JS animation must check it too.
-- Never animate `transform` in a keyframe on an element positioned by a translate without composing both (the `tagFadeIn` lesson).
+- Crate and turntable are the project-discovery heroes.
+- AX-01 establishes the personal-workstation fiction and is the protected
+  modeling/material benchmark. Future work may improve its lighting and
+  material response but must not casually redesign its form language.
+- A focused view may make one artifact temporarily dominant through camera,
+  lighting, and attached UI; it may not resize the artifact.
+- Responsive behavior changes camera aspect, distance, target, crop, and
+  negative space. Model geometry and authored relative transforms remain
+  invariant.
+- Detail density descends with hierarchy. Heroes receive internals, seams,
+  fasteners, decals, and material layering; small props receive only what
+  they need to read.
+- Hover treatment cannot promote an ambient object above a project hero.
+- Do not add new desk objects merely to fill negative space. New objects need
+  a narrative purpose, a hierarchy tier, and a density review.
 
-## 7. Voice & microcopy
+## 7. Material and aging language
 
-- System voice: lowercase-terminal or uppercase-label, never Title Case sentences. `AX/OS v2.59 ready.` / `Type a prompt to begin.` / `READY · AWAITING CONFIRMATION`.
-- Serif voice: humane, brief, italic where secondary — "hello." on the PC screen.
-- Prefer verbs-as-instructions in brackets: `[ENTER THE ROOM]`, `CLICK TO BROWSE`, `ESC · RETURN`.
-- Dates/versions as diegetic firmware strings: `V.2026.04`.
+The world is translucent but not uniformly transparent.
 
-## 8. 3D / imagery language (for any new scene or rendered asset)
+- **Hero glass** reveals an authored layer of the object, not the entire scene
+  behind it.
+- **Milky polycarbonate** diffuses silhouettes and transmitted jade while
+  preserving the object's mass.
+- **Opaque cream liners** prevent glass objects from reading as empty shells.
+- **Visible internals** are primary visual texture; they need not simulate a
+  complete functional circuit.
+- **Printed details** use lit materials. Unlit accent planes that glow like
+  light bars are forbidden for ordinary ink.
+- **Hazy acrylic** may carry mild bloom, diffusion, edge wear, and imperfect
+  refraction.
+- Avoid glass-on-glass stacks that collapse into visual noise or rendering
+  artifacts.
 
-- Product-render objects: off-white satin bases, milky **frost** panels, clear **hero glass** (`makeHeroGlass`/`makeFrost` in materials.ts), jade printed accents on LIT materials only (unlit basic materials glow like light-bars — forbidden for ink accents).
-- Decal text `#6F8D75`, accent bars jade `0x4B6E4F`; micrographic silkscreen sheets from `public/micrographics/` via `decals.ts`.
-- Hover language: light-jade wireframe edge trace (x-ray, normal blend) + name tag. No color washes, no outlines-at-rest.
-- Screenshots for reference: `boot-screen.png`, `cockpit-view.png`, `crate-view.png` at repo root.
+Condition is object-specific:
 
-## 9. Checklist for a new page
+| Object | Condition |
+|---|---|
+| AX-01 | Archival, friendly, personally familiar; current form is the benchmark |
+| Turntable | Gently aged, carefully maintained |
+| Vinyl crate and sleeves | Clearly handled and personally used |
+| Coffee equipment | Pristine and deliberate |
+| Personal artifacts | Selective wear appropriate to use, never universal grime |
 
-- [ ] Both themes verified (write against vars; boot/warp-style intros stay dark)
-- [ ] `.grain` + `.vignette` over any full-bleed scene
-- [ ] Serif display + mono microtype both present; no mid-size generic type
-- [ ] Jade only accent; no shadows; no rounded corners
-- [ ] Edge-anchored HUD chrome, 28–40px insets, hairline rules
-- [ ] Hover states additive (jade), idle states quiet
-- [ ] Reduced motion respected; focus-visible untouched
-- [ ] Microcopy in system voice (middots, brackets, version strings)
+Permitted imperfections include subtle scratches, softened printing, mild
+edge haze, fingerprints visible only in highlights, and gentle display aging.
+Avoid heavy dirt, horror decay, distressed overlays, or nostalgia applied as
+a uniform filter.
 
-## 10. Responsive & content contracts
+### External material reference boundary
 
-Technical source of truth: [docs/responsive-system.md](docs/responsive-system.md). This section is the design-level summary; where they differ, that document wins.
+[Modal's landing-page cube](https://modal.com/) is an approved **quality
+reference for its translucent shell texture only**, not a style, lighting, or
+motion source. Study only:
 
-**Invariant vs adaptive.** The 3D models never resize, deform, or independently rearrange — geometry, authored relative transforms, materials, and the hero hierarchy are fixed. What *may* respond to the viewport: camera aspect/distance/look target (framing), visible negative space and ambient scenery, HUD position and proportional scale, and the projected positions of subject-attached overlays. Ordinary content (text, navigation, metadata, dialogs) reflows like any well-behaved document. Letterboxing is not the default — controlled compositional variation beats bars.
+- the local opacity, roughness, and density variation that makes the shell
+  appear layered instead of uniformly transparent;
+- the way the surface texture preserves readable depth across broad faces and
+  rounded edges;
+- the balance between milky diffusion and selectively visible material behind
+  the shell.
 
-**Responsive tiers** (respond to available CSS viewport, never attempt zoom detection):
+Translate those qualities into this portfolio's own material system. Do not
+copy Modal's cube geometry, texture artwork, source assets, black-void
+composition, neon-lime palette, cyan/yellow color separation, lighting,
+post-processing, animation, particle field, layout, or brand presentation.
+Any new shell texture must be original or procedurally generated for this
+project. Lighting and motion continue to follow this guide independently and
+take no direction from the Modal website.
+
+The result must still read as Alex's cream/ink/mauve/jade personal
+workstation: milky polycarbonate, opaque cream liners, selectively visible
+internals, restrained jade transmission, believable wear, and physical
+grounding. Reference similarity is successful when the shell gains comparable
+textural depth—not when the cockpit begins to resemble Modal's landing page.
+
+## 8. Studio lighting and scene background
+
+Every cockpit view belongs to one consistent virtual product-photography
+studio. Interaction moves the camera through that studio; it does not switch
+to unrelated lighting setups per object.
+
+### Lighting roles
+
+1. **Large soft key** — broad cream light from above/front-side establishes
+   form without hard commercial gloss.
+2. **Low frontal fill** — preserves circuitry and labels inside translucent
+   shells.
+3. **Jade transmission/rim** — a controlled rear or side contribution catches
+   acrylic edges and internal material. It is not a neon outline.
+4. **Ambient studio field** — mauve/ink depth in dark mode and cream/fog depth
+   in light mode.
+5. **Physical grounding** — soft contact shadows and ambient occlusion connect
+   objects to the desk.
+
+The DOM rule against drop shadows remains. Physically generated 3D shadows
+are part of the photographed world and are encouraged when soft and
+plausible.
+
+### Background
+
+- Replace flat scene colors with slow, broad studio gradients or a curved
+  seamless-backdrop impression.
+- Gradients use palette tokens only; they do not introduce a second accent.
+- Dark mode should retain visible atmospheric separation between ink,
+  mauve, cream objects, and jade transmission.
+- Light mode should not wash cream objects into the background; edge
+  separation and contact grounding remain visible.
+- Grain and vignette are restrained finishing tools, not mandatory proof of
+  style. Reduced transparency, high contrast, and forced colors may remove
+  or replace them.
+- Exposure, tone mapping, and color balance remain consistent across cockpit,
+  crate, deck, and monitor camera views.
+
+The desired result is a scene that looks photographed from every interactive
+angle, not a single hero render that falls apart when the camera moves.
+
+## 9. Interaction and motion
+
+Interaction should feel like operating a terminal and moving a camera around
+a physical desk.
+
+- Free-look remains bounded and quiet.
+- Default camera and objects are still; only purposeful machinery moves.
+- Hover/focus uses a light-jade wireframe trace and a concise name tag.
+- Focused transitions reveal the artifact rather than performing spectacle.
+- Physical controls should feel pressed, lifted, opened, or moved—not merely
+  recolored.
+- The role text types once and settles. It never becomes a perpetual loading
+  indicator.
+- Glitch belongs to boot/warp transitions only, remains brief, and never
+  flashes continuously.
+- No bounce, overshoot, elastic easing, gratuitous parallax, or idle bobbing
+  that makes the desk feel weightless.
+
+`prefers-reduced-motion` and the explicit reduced-motion setting disable boot
+timelines, warp, free-look parallax, inertia, and nonessential object
+animation while preserving immediate state changes and explicit panning.
+
+Never animate `transform` on an element whose position also depends on a
+translate. Use the established wrapper split: the outer element owns
+position/transform; the inner element owns entrance animation.
+
+## 10. Project catalogue and case-study pages
+
+Project routes are first-class portfolio pages, not a fallback and not a
+flattened imitation of the cockpit.
+
+They should feel like an archival product catalogue with vinyl-related
+art direction:
+
+- sleeve-like hero imagery and square media crops;
+- liner-note captions;
+- catalogue numbers and technical metadata;
+- groove, label, spindle, track, and registration micrographics;
+- sequential previous/next project rhythm;
+- cream/ink/mauve fields with material jade and signal jade;
+- generous negative space and one clear reading column.
+
+The vinyl language is visual, not semantic. Use explicit headings such as:
+
+- `Overview`
+- `Problem`
+- `Role`
+- `Contributions`
+- `Process`
+- `Outcomes`
+- `Tools and skills`
+- `Next project`
+
+Do not replace these with `SIDE A`, `TRACK 01`, or other metaphors as the sole
+label. A decorative track number may accompany the real heading.
+
+Catalogue rules:
+
+- Body copy sits on opaque or sufficiently solid surfaces; never place long
+  reading text directly over busy glass or 3D imagery.
+- Navigation uses ordinary links and buttons with descriptive names.
+- The page may be editorially composed without forcing a single viewport or
+  hiding overflow.
+- Light and dark themes are both fully authored and honor the persisted theme
+  choice.
+- Reduced transparency replaces glass/blur framing with opaque equivalents
+  without weakening hierarchy.
+- Project pages remain complete without JavaScript, WebGL, animation, or the
+  cockpit.
+
+## 11. Components and interface chrome
+
+### Actions
+
+- Primary actions use direct labels and may use signal-jade fill when contrast
+  passes.
+- Secondary actions use transparent or neutral fills with tokenized borders.
+- All buttons remain hard-cornered and meet the shared hit-area policy.
+- Active/hover color is paired with border, weight, text, or motion-safe state
+  change.
+
+### Chips and metadata
+
+- Use compact rectilinear groups for state, category, date, and model
+  information.
+- A jade square or rule may punctuate a state, but never becomes the only
+  state indicator.
+- Avoid rounded status pills and excessive glass chips.
+
+### Dialogs and panels
+
+- AX/OS and object-screen panels may retain terminal anatomy.
+- Ordinary project forms and accessibility settings use clear web semantics,
+  labels, help text, error text, and predictable control placement.
+- Reduced transparency produces opaque backing.
+- Do not apply fictional headers to every modal.
+
+### Subject-attached UI
+
+- Name tags, brackets, browse arrows, and info cards attach to projected
+  subject geometry.
+- Stage chrome—identity, global navigation, accessibility, theme, and
+  return—attaches to the stage.
+- Subject UI is additive on hover/focus and has keyboard/click parity.
+
+### Focus and selection
+
+- Global focus remains visible and tokenized; never remove it.
+- Focus must not be obscured by the cockpit crop, stage controls, or a
+  translucent panel.
+- Selection may invert ink and cream when contrast remains valid.
+
+## 12. Voice and microcopy
+
+The dominant voice is Alex's portfolio, not a fictional operating system.
+
+- Navigation says `Projects`, `About` or `Recruiter overview`, `Contact`,
+  `Accessibility`, and `Theme`.
+- Project actions say `View project`, `Previous project`, and `Next project`.
+- System language is quietly discoverable in boot, model codes, object
+  screens, and technical annotations.
+- Use `AX/OS`, `AX-01`, firmware strings, coordinates, and timestamps as
+  texture—not as substitutes for explanation.
+- Avoid generic sci-fi phrases, tactical jargon, excessive brackets, and
+  fake warnings.
+- Serif captions are humane and brief; body copy is plain, specific, and
+  factual.
+
+Canonical project/profile facts live only in
+`lib/projects/catalog.ts` and `lib/portfolio/profile.ts`. Do not invent,
+paraphrase beyond approval, or store a fact solely in JSX, canvas, a decal,
+hover state, or a client-only module.
+
+## 13. Responsive and accessibility contract
+
+Technical source of truth:
+[docs/responsive-system.md](docs/responsive-system.md). Where this guide and
+the technical contract differ, the technical contract wins.
+
+### Invariant versus adaptive
+
+3D geometry, authored relative transforms, materials, and hero hierarchy are
+fixed. The following may adapt:
+
+- camera aspect, distance, and look target;
+- visible negative space and peripheral scenery;
+- stage-chrome position and proportional scale;
+- projected subject-attached UI;
+- ordinary document reflow.
+
+Never resize, deform, or independently rearrange models in response to
+resolution. Letterboxing is not the default.
+
+### Responsive tiers
 
 | Tier | Viewport | Behavior |
 |---|---|---|
-| Normal | `1024×600` up to `3440×1536` | Dynamic 3D framing; HUD repositions/scales within design rules |
-| Zoom/narrow | below either normal threshold | Ordinary content reflows; cockpit lives in a contained pannable region |
-| Reflow floor | down to `320px` content width | Non-exempt content readable/operable in one primary scroll direction |
-| Large | above the normal max | Designed maximum scale is capped; center with negative space / ambient background — no 5K art direction |
+| Normal | `1024×600` through `3440×1536` | Dynamic 3D framing; HUD repositions/scales within its contract |
+| Zoom/narrow | Below either normal threshold | Ordinary content reflows; cockpit becomes a contained pannable region |
+| Reflow floor | Down to `320px` content width | Non-exempt content remains readable in one primary scroll direction |
+| Large | Above the normal maximum | Cap designed scale and center with negative space or ambient background |
 
-At 200% browser zoom, content must magnify — never counter-scale to cancel the user's zoom; nothing may be clipped or lost.
+At 200% browser zoom, content magnifies. Never counter-scale to cancel zoom.
 
-**Stage chrome vs subject-attached HUD — the layout law.** If a DOM element describes or controls a 3D subject (name tag, info card, brackets, arrows), it anchors to that subject's *projected geometry*. If it is application chrome (wordmark, clock, theme toggle), it anchors to the stage per the §4 anchor map. CSS pixel constants are legal only for gaps, padding, and minimum hit areas — never for an unrelated absolute subject position. Spacing tokens live in one shared module, not as numeric literals sprinkled through JSX.
+### Layout law
 
-**Accessibility baseline.** WCAG 2.2 AA always on — semantic landmarks, full keyboard operation, visible focus, no color-only information, hover duplicated by focus/click, ≥24×24 controls (44×44 preferred here). Five custom states beyond light/dark: **reduced-motion, high-contrast, reduced-transparency, large-text, large-controls** — system preferences as defaults, explicit overrides persisted. `forced-colors: active` and system preferences always win over authored styling; every accessibility state reaches boot and warp even though their palette stays authored-dark.
+If a DOM element describes or controls a 3D subject, it anchors to that
+subject's projected geometry. If it is application chrome, it anchors to the
+stage. CSS pixel constants are legal only for gaps, padding, and minimum hit
+areas—not unrelated subject positions.
 
-**Canonical content rule.** The visible semantic DOM is the portfolio record; the cockpit is a presentation of it. It may select, arrange, animate, and decorate that record — it may never contain a project fact, explanation, outcome, or action that exists *only* in 3D, canvas textures, or hover state. Facts live solely in `lib/projects/catalog.ts` and `lib/portfolio/profile.ts`.
+### Accessibility baseline
 
-**The contracts.** Every route or composed view declares a `LayoutContract` (support profile, protected regions with declared alternatives, allowed adaptations, accessibility states, viewport cases); content-bearing routes additionally declare a `ContentContract` (source, server-rendered / JS-independent / WebGL-independent delivery, discoverability, structured data). Declarations live in `lib/responsive/layout-contracts.ts` and `lib/content/content-contracts.ts`; the DOM carries the matching identifiers: `data-hud` (HUD elements), `data-layout-region` (named layout regions), `data-layout-contract` and `data-content-contract` (view ↔ registry reconciliation, verified by tests).
+WCAG 2.2 AA is always on:
 
-### New page/view contract checklist (extends §9)
+- semantic landmarks and complete keyboard operation;
+- visible, unobscured focus;
+- no color-only information;
+- hover duplicated by focus/activation;
+- at least `24×24` targets under the WCAG spacing rule, with `44×44`
+  preferred for this portfolio;
+- complete content without WebGL;
+- system behavior and explicit states for reduced motion, high contrast,
+  reduced transparency, large text, and large controls;
+- `forced-colors` and system preferences win over authored styling.
 
-- [ ] `LayoutContract` declared (+ `ContentContract` if content-bearing); registered, not just typed
-- [ ] `data-hud` / `data-layout-region` / `data-layout-contract` / `data-content-contract` identifiers on the rendered elements
-- [ ] Subject-attached HUD anchored to projected geometry; chrome to the stage; constants = spacing only
-- [ ] All five gates green: `npm run lint` · `npm run typecheck:contracts` · `npm run validate:contracts` · `npm run test:unit` · `npm run test:e2e`
-- [ ] No invented content — every fact traces to the canonical catalog/profile
-- [ ] New claims, metrics, or outcomes have explicit owner approval before entering the canonical source
+Boot and warp keep their authored-dark identity, but they do not override
+motion, contrast, transparency, text, control-size, or forced-color needs.
+
+### Canonical content and degradation
+
+The visible semantic DOM is the portfolio record. Required project/profile
+information must be server-rendered and understandable without JavaScript,
+WebGL, hover, or cockpit navigation.
+
+- Tier 1, JavaScript disabled: semantic content and ordinary links remain.
+- Tier 2, JavaScript enabled and WebGL disabled: meaningful interactive DOM
+  alternatives remain.
+- Tier 3: full cockpit.
+
+Every route/view declares the required `LayoutContract`; content-bearing
+routes additionally declare a `ContentContract`. Rendered roots carry the
+matching `data-hud`, `data-layout-region`, `data-layout-contract`, and
+`data-content-contract` identifiers.
+
+## 14. Phase discipline
+
+The implementation sequence in
+[docs/hud-responsive-layout-plan.md](docs/hud-responsive-layout-plan.md)
+remains authoritative.
+
+- Do not implement later phases ad hoc.
+- Do not stopgap the known deck HUD overlap before Phase 6.
+- Typography migration, lighting implementation, scene-background work, and
+  identity animation are rendered changes: schedule them deliberately,
+  update applicable contracts, and run the full gates.
+- Preserve the documented `window.__cockpit*` bridge.
+- Test instrumentation stays additive and development-only through
+  `__COCKPIT_TEST_HOOKS__`.
+- Three.js remains imperative. Do not introduce React Three Fiber, WebGPU, or
+  TSL.
+
+## 15. Completion checklist
+
+### Any rendered page, view, component, or scene
+
+- [ ] Reads as part of the 2050 personal workstation / archival catalogue
+- [ ] Does not drift into cyberpunk, luxury editorial, or experimental-art
+      illegibility
+- [ ] Uses the approved palette hierarchy and no second chromatic family
+- [ ] Honors light/dark plus all accessibility states
+- [ ] Uses the approved typographic role rather than generic mono everywhere
+- [ ] Keeps DOM geometry square while allowing believable physical radii
+- [ ] Preserves the physical-scale and narrative hierarchy
+- [ ] Keeps essential facts/actions in the canonical semantic path
+- [ ] Respects reduced motion and the transform-wrapper rule
+- [ ] Uses stage versus subject attachment correctly
+
+### New or changed route/view
+
+- [ ] `LayoutContract` declared and registered
+- [ ] `ContentContract` declared when content-bearing
+- [ ] Matching `data-*` contract and HUD identifiers rendered
+- [ ] Ordinary content reflows; protected regions declare an alternative
+- [ ] No invented project/profile facts
+- [ ] Owner approval obtained before canonical public content changes
+- [ ] Both themes and all five accessibility states verified
+- [ ] Full gates green:
+      `npm run lint` ·
+      `npm run typecheck:contracts` ·
+      `npm run validate:contracts` ·
+      `npm run test:unit` ·
+      `npm run test:e2e`

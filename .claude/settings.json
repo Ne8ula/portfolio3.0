@@ -7,7 +7,43 @@
       "Bash(python3 -)",
       "Bash(echo \"TSC_EXIT=$?\")",
       "Bash(npx eslint *)",
-      "Bash(echo \"ESLINT_EXIT=$?\")"
+      "Bash(echo \"ESLINT_EXIT=$?\")",
+      "WebFetch(domain:huggingface.co)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:nerdschalk.com)",
+      "WebFetch(domain:www.morphllm.com)",
+      "Bash(lsof -nP -iTCP:3000 -sTCP:LISTEN)",
+      "Bash(ps -p 11229 -o pid,command)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null --max-time 2 http://localhost:3000/)",
+      "Bash(break)",
+      "Bash(curl -s -o /dev/null -w \"status=%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(node -v; ls \"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" 2>/dev/null && echo chrome-ok)",
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Bash(node --experimental-websocket -e \"console.log\\(typeof WebSocket\\)\")",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless=new --enable-unsafe-swiftshader --no-sandbox --remote-debugging-port=9222 --window-size=1440,900 --user-data-dir=./chrome-profile about:blank)",
+      "Bash(curl -s http://127.0.0.1:9222/json/version)",
+      "Bash(node --experimental-websocket drive.mjs cockpit.png)",
+      "Bash(pkill -f \"chrome-profile\")",
+      "Bash(open -a \"Google Chrome\" http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"port3000=%{http_code}\\\\n\" --max-time 2 http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"status=%{http_code} time=%{time_total}s\\\\n\" http://localhost:3000/)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --enable-unsafe-swiftshader --no-sandbox --screenshot=boot.png --window-size=1440,900 --virtual-time-budget=8000 http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"responsive-preview status=%{http_code}\\\\n\" http://localhost:3000/responsive-preview)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/agent-handoff.mjs\" capture --agent claude",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

@@ -280,7 +280,10 @@ describe('findRouteCoverageIssues', () => {
 
   it('passes the real registry on the happy path', () => {
     const issues = findRouteCoverageIssues(
-      [{ route: '/', hasCoLocatedContract: true }],
+      [
+        { route: '/', hasCoLocatedContract: true },
+        { route: '/responsive-preview', hasCoLocatedContract: true },
+      ],
       ROUTE_LAYOUT_CONTRACTS,
       declaredIds,
       ROUTE_CONTRACT_EXEMPTIONS,
@@ -363,6 +366,59 @@ describe('hardening — remaining malformed branches (§8 runtime-validator list
       }),
     ])
     expect(hasError(issues, SUBJECT, 'unrecognized accessibility.reflow')).toBe(true)
+  })
+
+  it('returns structured issues, not TypeErrors, for malformed nested values', () => {
+    expect(
+      hasError(validateLayoutContracts([variant({ protectedRegions: undefined })]), SUBJECT,
+        'protectedRegions must be an array'),
+    ).toBe(true)
+    expect(
+      hasError(validateLayoutContracts([variant({ protectedRegions: [null] })]),
+        'region (malformed)', 'region must be an object'),
+    ).toBe(true)
+    const regionWithoutAlternative = {
+      ...COCKPIT_LAYOUT_CONTRACT.protectedRegions[0],
+      alternative: undefined,
+    }
+    expect(
+      hasError(
+        validateLayoutContracts([variant({ protectedRegions: [regionWithoutAlternative] })]),
+        SUBJECT, 'alternative must be an object'),
+    ).toBe(true)
+    expect(
+      hasError(validateLayoutContracts([variant({ allowedAdaptations: 'scale' })]), SUBJECT,
+        'allowedAdaptations must be an array'),
+    ).toBe(true)
+    expect(
+      hasError(validateLayoutContracts([variant({ accessibility: null })]), SUBJECT,
+        'accessibility must be an object'),
+    ).toBe(true)
+    expect(
+      hasError(
+        validateLayoutContracts([
+          variant({
+            accessibility: { ...COCKPIT_LAYOUT_CONTRACT.accessibility, states: 'all' },
+          }),
+        ]),
+        SUBJECT, 'accessibility.states must be an array'),
+    ).toBe(true)
+    expect(
+      hasError(validateLayoutContracts([variant({ viewportCases: undefined })]), SUBJECT,
+        'viewportCases must be an array'),
+    ).toBe(true)
+    expect(
+      hasError(validateLayoutContracts([null as unknown as LayoutContract]),
+        'layout-contract (malformed)', 'contract must be an object'),
+    ).toBe(true)
+  })
+
+  it('returns structured issues for malformed support-profile sizes', () => {
+    const malformed = {
+      'broken-v1': { normalMin: null, normalMax: { w: 100, h: 100 } },
+    } as unknown as Parameters<typeof validateSupportProfiles>[0]
+    const issues = validateSupportProfiles(malformed)
+    expect(hasError(issues, 'broken-v1', 'normalMin must be { w, h } finite numbers')).toBe(true)
   })
 
   it('pins the §9.1 required viewport matrix exactly (17 cases)', () => {

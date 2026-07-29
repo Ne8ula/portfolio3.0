@@ -117,6 +117,26 @@ fixes, owner-approved):**
 24. Hashes re-recorded after this pass — see
     `content/portfolio-approvals.json` timestamps.
 
+**Fourth decision pass — recorded 2026-07-28 (profile role amendment,
+owner-approved):**
+
+25. **Profile target role: Creative Technologist** (supersedes the
+    dossier-extracted “Creative Producer in gaming”). The owner reviewed the
+    exact public-content change and re-recorded all approval hashes at
+    `2026-07-28T23:05:24Z`; the six project hashes are unchanged.
+
+**Fifth decision pass — recorded 2026-07-29 (profile summary and
+capabilities amendment, owner-approved):**
+
+26. **Profile summary and capabilities: revised.** The owner approved the
+    exact current summary, including product management, UI/UX design,
+    interactive media and AI technologies, and Cornell Tech, plus the
+    capabilities **Product Management · UI/UX Design · UX Research · Game
+    Design**. All approval hashes were re-recorded at
+    `2026-07-29T00:41:59Z`; the profile hash is
+    `2e5b3672703e71be145e6f4389266733a5fb4bef65e85006fd7e58c081eb7e13`
+    and the six project hashes are unchanged. This resolves QA finding F7.
+
 Remaining open items (non-blocking, future passes): Chu Yu Hong engine +
 measurable outcomes (if any exist), award-certificate verification for
 the non-CUSGA items, and additional link targets (Drive builds, Figma
@@ -126,12 +146,12 @@ pipeline, Maka case-study page) if the owner wants them published.
 
 ## 1. Profile
 
-**Current source (since Phase 0A, 2026-07-28):** `PROFILE` in
+**Current source (since Phase 0A, amended 2026-07-29):** `PROFILE` in
 [lib/portfolio/profile.ts](../lib/portfolio/profile.ts) is the
-owner-approved record (ledger #20) — name, target role, Cornell Tech
-summary, capabilities, LinkedIn/Instagram/email links, and the 2026 résumé
-(ledger #13, #19). The table below is the historical Phase 0A working
-record.
+owner-approved record (ledger #20, #25, and #26) — name, target role,
+Cornell Tech summary, capabilities, LinkedIn/Instagram/email links, and the
+2026 résumé (ledger #13, #19). The table below is the historical Phase 0A
+working record.
 
 | Strict `PublicProfile` field | Current value | Dossier-extracted candidate (NOT approved) | Status |
 |---|---|---|---|

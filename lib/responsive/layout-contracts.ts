@@ -4,12 +4,13 @@
 // against this registry.
 
 import { COCKPIT_LAYOUT_CONTRACT } from '@/app/layout-contract'
+import { RESPONSIVE_PREVIEW_LAYOUT_CONTRACT } from '@/app/responsive-preview/layout-contract'
 import {
   REQUIRED_VIEWPORT_CASES,
   type LayoutContract,
 } from '@/lib/responsive/layout-contract'
 
-export { COCKPIT_LAYOUT_CONTRACT }
+export { COCKPIT_LAYOUT_CONTRACT, RESPONSIVE_PREVIEW_LAYOUT_CONTRACT }
 
 /**
  * The semantic project catalog — the canonical DOM alternative the cockpit
@@ -41,11 +42,13 @@ export const PROJECTS_INDEX_LAYOUT_CONTRACT = {
 export const LAYOUT_CONTRACTS: readonly LayoutContract[] = [
   COCKPIT_LAYOUT_CONTRACT,
   PROJECTS_INDEX_LAYOUT_CONTRACT,
+  RESPONSIVE_PREVIEW_LAYOUT_CONTRACT,
 ]
 
 /** Route → contract-id map for existing routes (route-coverage scan). */
 export const ROUTE_LAYOUT_CONTRACTS: Readonly<Record<string, string>> = {
   '/': COCKPIT_LAYOUT_CONTRACT.id,
+  '/responsive-preview': RESPONSIVE_PREVIEW_LAYOUT_CONTRACT.id,
 }
 
 /**

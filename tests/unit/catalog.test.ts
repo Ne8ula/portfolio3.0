@@ -140,6 +140,33 @@ describe('validateCatalogStructure — blocking on malformed records', () => {
       hasError(validateCatalogStructure([variant({ visual: { bg: true } })]), 'visual.bg'),
     ).toBe(true)
   })
+
+  it('returns structured issues, not TypeErrors, for malformed nested values', () => {
+    expect(
+      hasError(validateCatalogStructure([variant({ cover: undefined })]), 'cover must be an object'),
+    ).toBe(true)
+    expect(
+      hasError(validateCatalogStructure([variant({ links: undefined })]), 'links must be an array'),
+    ).toBe(true)
+    expect(
+      hasError(validateCatalogStructure([variant({ links: [null] })]), 'link must be an object'),
+    ).toBe(true)
+    expect(
+      hasError(
+        validateCatalogStructure([variant({ constraints: 'tight timeline' })]),
+        'constraints must be an array',
+      ),
+    ).toBe(true)
+    expect(
+      hasError(validateCatalogStructure([variant({ visual: null })]), 'visual must be an object'),
+    ).toBe(true)
+    expect(
+      hasError(
+        validateCatalogStructure([null as unknown as Project]),
+        'record must be an object',
+      ),
+    ).toBe(true)
+  })
 })
 
 describe('sleeveRecord adapter (cockpit presentation, no unique facts)', () => {
