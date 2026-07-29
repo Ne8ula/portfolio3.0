@@ -184,86 +184,75 @@ test.describe('phase 0 smoke', () => {
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.enterView('crate'))
 
     // The assertion is TRANSFORM STABILITY on the outer anchor while the
-    // inner element animates — the animation's duration is not the property
-    // under test. Headless SwiftShader saturates the main thread (~3 FPS),
-    // so a 180ms window cannot be sampled at start/mid/end; stretch the
-    // entrance to 3s for this test only. A regression (animation back on
-    // the positioning element) is caught identically — for longer.
+    // inner element animates — elapsed wall-clock time is not the property
+    // under test. Pause the entrance and drive its Web Animations clock to
+    // start/mid/end explicitly. This preserves the Phase −1 acceptance
+    // criterion without depending on SwiftShader's frame rate.
     const ENTRANCE_MS = 3_000
     await page.addStyleTag({
       content:
         '[data-hud="vinyl-info-card"] > div, [data-hud="browse-arrow-prev"] > div, ' +
         '[data-hud="browse-arrow-next"] > div, [data-hud="browse-hint"] > div ' +
-        `{ animation-duration: ${ENTRANCE_MS}ms !important; }`,
+        `{ animation-duration: ${ENTRANCE_MS}ms !important; ` +
+        'animation-play-state: paused !important; }',
     })
 
-    const sampled = await page.evaluate(
-      ({ entranceMs }) =>
-        new Promise<
-          Record<
-            string,
-            {
-              samples: { dt: number; transform: string }[]
-              innerAnimationName: string
-              sawAnimationInProgress: boolean
-            }
-          >
-        >((resolve) => {
-          const names = ['vinyl-info-card', 'browse-arrow-prev', 'browse-arrow-next', 'browse-hint']
-          const found: Record<
-            string,
-            {
-              firstSeenAt: number
-              samples: { dt: number; transform: string }[]
-              innerAnimationName: string
-              sawAnimationInProgress: boolean
-            }
-          > = {}
-          window.__COCKPIT_TEST_HOOKS__!.selectRecord(0)
-          const start = performance.now()
-          const tick = () => {
-            const now = performance.now()
-            for (const name of names) {
-              const el = document.querySelector(`[data-hud="${name}"]`)
-              if (!el) continue
-              const entry = (found[name] ??= {
-                firstSeenAt: now,
-                samples: [],
-                innerAnimationName: '',
-                sawAnimationInProgress: false,
-              })
-              entry.samples.push({
-                dt: now - entry.firstSeenAt,
-                transform: getComputedStyle(el).transform,
-              })
-              const inner = el.firstElementChild
-              if (inner) {
-                const innerStyle = getComputedStyle(inner)
-                if (innerStyle.animationName !== 'none') {
-                  entry.innerAnimationName = innerStyle.animationName
-                }
-                if (Number(innerStyle.opacity) < 1) entry.sawAnimationInProgress = true
-              }
-            }
-            const done =
-              names.every((name) => found[name]) &&
-              names.every((name) => now - found[name]!.firstSeenAt > entranceMs + 200)
-            // Overlays mount on the scene's next rAF commit — at software-
-            // rendering speed that can lag by seconds; cap at 30s.
-            if (done || now - start > 30_000) resolve(found)
-            else setTimeout(tick, 16)
-          }
-          setTimeout(tick, 16)
-        }),
-      { entranceMs: ENTRANCE_MS },
-    )
-
-    for (const name of [
+    const names = [
       'vinyl-info-card',
       'browse-arrow-prev',
       'browse-arrow-next',
       'browse-hint',
-    ]) {
+    ] as const
+    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.selectRecord(0))
+    await page.waitForFunction(
+      (hudNames) => hudNames.every((name) => document.querySelector(`[data-hud="${name}"]`)),
+      names,
+      { timeout: 60_000 },
+    )
+
+    const sampled = await page.evaluate(
+      ({ entranceMs, hudNames }) => {
+        const positions = [
+          { phase: 'start', time: 1 },
+          { phase: 'mid', time: entranceMs / 2 },
+          { phase: 'end', time: entranceMs - 1 },
+        ] as const
+
+        return Object.fromEntries(
+          hudNames.map((name) => {
+            const outer = document.querySelector<HTMLElement>(`[data-hud="${name}"]`)
+            const inner = outer?.firstElementChild
+            if (!outer || !(inner instanceof HTMLElement)) {
+              return [name, null]
+            }
+
+            const innerAnimationName = getComputedStyle(inner).animationName
+            const entrance = inner.getAnimations().find((animation) => {
+              const namedAnimation = animation as Animation & { animationName?: string }
+              return namedAnimation.animationName?.includes('termFadeIn')
+            })
+            if (!entrance) {
+              return [name, { innerAnimationName, samples: [] }]
+            }
+
+            entrance.pause()
+            const samples = positions.map(({ phase, time }) => {
+              entrance.currentTime = time
+              return {
+                phase,
+                outerTransform: getComputedStyle(outer).transform,
+                innerTransform: getComputedStyle(inner).transform,
+                innerOpacity: Number(getComputedStyle(inner).opacity),
+              }
+            })
+            return [name, { innerAnimationName, samples }]
+          }),
+        )
+      },
+      { entranceMs: ENTRANCE_MS, hudNames: names },
+    )
+
+    for (const name of names) {
       const record = sampled[name]
       expect(record, `overlay [data-hud="${name}"] never appeared`).toBeTruthy()
       // Prove the entrance animation actually ran on the INNER element —
@@ -271,21 +260,21 @@ test.describe('phase 0 smoke', () => {
       expect(record!.innerAnimationName, `${name}: inner entrance animation missing`).toContain(
         'termFadeIn',
       )
-      expect(record!.sawAnimationInProgress, `${name}: never sampled mid-animation`).toBe(true)
-      // Start/mid/end coverage of the entrance window (§8 Phase −1 spec).
-      const thirds = [0, 1, 2].map((third) =>
-        record!.samples.filter(
-          (sample) =>
-            sample.dt >= (third * ENTRANCE_MS) / 3 && sample.dt < ((third + 1) * ENTRANCE_MS) / 3,
-        ),
+      expect(
+        record!.samples.map((sample) => sample.phase),
+        `${name}: start/mid/end samples missing`,
+      ).toEqual(['start', 'mid', 'end'])
+      expect(
+        new Set(record!.samples.map((sample) => sample.innerTransform)).size,
+        `${name}: inner entrance animation did not advance`,
+      ).toBeGreaterThan(1)
+      expect(
+        record!.samples[0]!.innerOpacity,
+        `${name}: inner entrance opacity did not advance`,
+      ).toBeLessThan(record!.samples[2]!.innerOpacity)
+      const uniqueTransforms = new Set(
+        record!.samples.map((sample) => sample.outerTransform),
       )
-      thirds.forEach((bucket, index) => {
-        expect(
-          bucket.length,
-          `${name}: no sample in entrance ${['start', 'mid', 'end'][index]} third`,
-        ).toBeGreaterThanOrEqual(1)
-      })
-      const uniqueTransforms = new Set(record!.samples.map((sample) => sample.transform))
       expect(
         [...uniqueTransforms],
         `${name}: outer anchor transform changed during entrance`,

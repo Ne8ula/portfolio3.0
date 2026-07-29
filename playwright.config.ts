@@ -10,9 +10,19 @@ import { defineConfig, devices } from '@playwright/test'
 // absent there.
 export default defineConfig({
   testDir: './e2e',
-  timeout: 90_000,
+  // GitHub's software-rendered three.js scene can spend most of the original
+  // 90s budget compiling the dev route and settling its first frames. Keep
+  // local feedback tight, but give CI enough total test budget for the
+  // existing bounded action/expect timeouts to complete.
+  timeout: process.env.CI ? 180_000 : 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
+  // `fullyParallel: false` serializes tests within a file, not across files.
+  // Running the Phase 0 cockpit smoke and Phase 1 foundation files together
+  // starts two software-WebGL scenes and has closed Chromium sessions on the
+  // two-core GitHub runner. Keep CI deterministic; local runs may use the
+  // default worker count.
+  workers: process.env.CI ? 1 : undefined,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
