@@ -27,10 +27,16 @@ function readTier(): ResponsiveTier {
 export function ResponsivePage({
   children,
   contractId,
+  contentContractId,
+  layoutRegion,
 }: {
   readonly children: React.ReactNode
   /** Registered LayoutContract id, exposed as data-layout-contract. */
   readonly contractId: string
+  /** Registered ContentContract id for content-bearing routes. */
+  readonly contentContractId?: string
+  /** Diagnostic region name for the route root. */
+  readonly layoutRegion?: string
 }): React.ReactElement {
   const [tier, setTier] = React.useState<ResponsiveTier>('normal')
 
@@ -54,6 +60,8 @@ export function ResponsivePage({
       <div
         className="responsive-page"
         data-layout-contract={contractId}
+        data-content-contract={contentContractId}
+        data-layout-region={layoutRegion}
         data-responsive-tier={tier}
       >
         {children}

@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest'
 
 import {
   canonicalUrl,
+  deriveProjectsCollectionJsonLd,
+  deriveProfileMetadata,
   deriveProjectMetadata,
   deriveProjectJsonLd,
   deriveProjectsItemListJsonLd,
@@ -13,7 +15,7 @@ import {
   derivePortfolioJson,
 } from '@/lib/content/serializers'
 import type { Project } from '@/lib/projects/catalog'
-import type { PublicProfile } from '@/lib/portfolio/profile'
+import { PROFILE, type PublicProfile } from '@/lib/portfolio/profile'
 
 const BASE = 'https://example.com'
 
@@ -62,6 +64,7 @@ const PROFILE_FIXTURE: PublicProfile = {
   name: 'Alex Example',
   targetRole: 'Technical Designer',
   summary: 'Builds interactive systems with owner-approved content.',
+  about: ['First approved paragraph.', 'Second approved paragraph.'],
   capabilities: ['Systems design', 'Prototyping'],
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/example', kind: 'linkedin' },
@@ -102,6 +105,36 @@ describe('deriveProjectMetadata', () => {
   })
 })
 
+describe('deriveProfileMetadata', () => {
+  it('derives the live root wording only from the canonical profile', () => {
+    expect(deriveProfileMetadata(PROFILE, BASE)).toEqual({
+      title: 'Alex Xiong — Creative Technologist',
+      description:
+        'Producer and designer whose journey spans product management, UX Research, and UI/UX design.',
+      canonical: 'https://example.com/',
+    })
+  })
+
+  it('derives the owner-approved title, concise description, and canonical root', () => {
+    const profile = {
+      ...PROFILE_FIXTURE,
+      summary:
+        'First sentence carries the concise description. Second sentence makes the summary exceed the metadata threshold. Additional approved context keeps this fixture comfortably longer than one hundred and sixty characters.',
+    }
+    const meta = deriveProfileMetadata(profile, BASE)
+    expect(meta).toEqual({
+      title: 'Alex Example — Technical Designer',
+      description: 'First sentence carries the concise description.',
+      canonical: 'https://example.com/',
+    })
+  })
+
+  it('keeps the complete summary when it is at most 160 characters', () => {
+    const meta = deriveProfileMetadata(PROFILE_FIXTURE, BASE)
+    expect(meta.description).toBe(PROFILE_FIXTURE.summary)
+  })
+})
+
 describe('derivePersonJsonLd', () => {
   it('describes the profile as a schema.org Person', () => {
     const person = derivePersonJsonLd(PROFILE_FIXTURE, BASE)
@@ -109,6 +142,7 @@ describe('derivePersonJsonLd', () => {
     expect(person.name).toBe(PROFILE_FIXTURE.name)
     expect(person.description).toBe(PROFILE_FIXTURE.summary)
     expect(person.jobTitle).toBe(PROFILE_FIXTURE.targetRole)
+    expect(person.description).not.toBe(PROFILE_FIXTURE.about?.join(' '))
   })
 
   it('sameAs carries ONLY linkedin/instagram/website hrefs', () => {
@@ -161,6 +195,18 @@ describe('deriveProjectsItemListJsonLd', () => {
       'https://example.com/projects/second-demo',
     ])
   })
+
+  it('wraps the same visible-order list in a CollectionPage', () => {
+    const collection = deriveProjectsCollectionJsonLd(PROJECTS_FIXTURE, BASE)
+    expect(collection).toMatchObject({
+      '@type': 'CollectionPage',
+      name: 'Projects',
+      url: 'https://example.com/projects',
+    })
+    expect(collection.mainEntity).toEqual(
+      deriveProjectsItemListJsonLd(PROJECTS_FIXTURE, BASE),
+    )
+  })
 })
 
 describe('derivePortfolioJson', () => {
@@ -169,6 +215,12 @@ describe('derivePortfolioJson', () => {
 
   it('carries schemaVersion 1', () => {
     expect(portfolio.schemaVersion).toBe(1)
+    expect(JSON.stringify(portfolio).match(/"schemaVersion"/g)).toHaveLength(1)
+  })
+
+  it('carries the approved About paragraphs visibly and in order', () => {
+    const profile = portfolio.profile as unknown as Record<string, unknown>
+    expect(profile.about).toEqual(PROFILE_FIXTURE.about)
   })
 
   it('every project entry equals the canonical fixture facts', () => {
@@ -213,5 +265,60 @@ describe('approval metadata never leaks', () => {
       expect(text).not.toContain('approvedContentHash')
       expect(text).not.toContain('approvedAt')
     }
+  })
+})
+
+describe('structured data never exceeds the visible canonical page models', () => {
+  it('maps every Person fact to the visible profile model', () => {
+    const person = derivePersonJsonLd(PROFILE_FIXTURE, BASE)
+    const visibleProfileModel = {
+      name: PROFILE_FIXTURE.name,
+      description: PROFILE_FIXTURE.summary,
+      jobTitle: PROFILE_FIXTURE.targetRole,
+      knowsAbout: [...PROFILE_FIXTURE.capabilities],
+      url: canonicalUrl(BASE, '/'),
+      sameAs: PROFILE_FIXTURE.links
+        .filter((link) =>
+          link.kind === 'linkedin' ||
+          link.kind === 'instagram' ||
+          link.kind === 'website',
+        )
+        .map((link) => link.href),
+      email: `mailto:${PROFILE_FIXTURE.email}`,
+    }
+    for (const [key, value] of Object.entries(visibleProfileModel)) {
+      expect(person[key]).toEqual(value)
+    }
+  })
+
+  it('maps every CreativeWork fact to the visible project model', () => {
+    if (PROJECT_A.cover.kind !== 'image') {
+      throw new Error('PROJECT_A must remain the image-cover fixture')
+    }
+    const work = deriveProjectJsonLd(PROJECT_A, BASE)
+    const visibleProjectModel = {
+      name: PROJECT_A.title,
+      description: PROJECT_A.summary,
+      genre: PROJECT_A.category,
+      dateCreated: PROJECT_A.date,
+      creativeWorkStatus: PROJECT_A.status,
+      url: canonicalUrl(BASE, `/projects/${PROJECT_A.slug}`),
+      keywords: [...PROJECT_A.skills],
+      image: canonicalUrl(BASE, PROJECT_A.cover.src),
+    }
+    for (const [key, value] of Object.entries(visibleProjectModel)) {
+      expect(work[key]).toEqual(value)
+    }
+  })
+
+  it('maps every ItemList fact to the visible project index model', () => {
+    const list = deriveProjectsItemListJsonLd(PROJECTS_FIXTURE, BASE)
+    const visibleIndexModel = PROJECTS_FIXTURE.map((project, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: project.title,
+      url: canonicalUrl(BASE, `/projects/${project.slug}`),
+    }))
+    expect(list.itemListElement).toEqual(visibleIndexModel)
   })
 })

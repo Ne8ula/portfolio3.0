@@ -10,7 +10,11 @@ import {
   validateContentContracts,
   type ContentContract,
 } from '@/lib/content/content-contract'
-import { CONTENT_CONTRACTS, HOME_CONTENT_CONTRACT } from '@/lib/content/content-contracts'
+import {
+  ABOUT_CONTENT_CONTRACT,
+  CONTENT_CONTRACTS,
+  HOME_CONTENT_CONTRACT,
+} from '@/lib/content/content-contracts'
 import { catalogSlugs, PROJECTS } from '@/lib/projects/catalog'
 import type { ValidationIssue } from '@/lib/shared/core'
 
@@ -45,13 +49,22 @@ const HOME_SUBJECT = 'content-contract content-home-v1'
 
 describe('real registry', () => {
   it('exposes the §A.4.2 constants', () => {
-    expect(REQUIRED_CONTENT_ROUTES).toEqual(['/', '/projects', '/projects/[slug]', '/recruiter'])
-    expect(PHASE_2_COMPLETE).toBe(false)
+    expect(REQUIRED_CONTENT_ROUTES).toEqual(['/', '/projects', '/projects/[slug]', '/about'])
+    expect(PHASE_2_COMPLETE).toBe(true)
+    expect(CONTENT_CONTRACTS.every((contract) => contract.implementation === 'implemented')).toBe(
+      true,
+    )
+    expect(ABOUT_CONTENT_CONTRACT).toMatchObject({
+      id: 'content-about-v1',
+      route: '/about',
+      purpose: 'professional-summary',
+      structuredData: ['Person'],
+    })
   })
 
   it('catalogSlugs(PROJECTS) yields the six real slugs', () => {
     expect(realSlugs).toEqual([
-      'thesongofmaka',
+      'songofmaka',
       'chuyuhong',
       'tencentgames',
       'nyuwelcome',
@@ -67,9 +80,14 @@ describe('real registry', () => {
 
 describe('validateContentContracts rejects malformed contracts', () => {
   it('rejects planned-phase-2 on a non-required route', () => {
-    const blog = variant({ id: 'content-blog-v1', route: '/blog' })
+    const blog = variant({
+      id: 'content-blog-v1',
+      route: '/blog',
+      implementation: 'planned-phase-2',
+    })
     const issues = validateContentContracts([...CONTENT_CONTRACTS, blog], {
       catalogSlugs: realSlugs,
+      phase2Complete: false,
     })
     expect(issues).toHaveLength(1)
     expect(
@@ -82,32 +100,27 @@ describe('validateContentContracts rejects malformed contracts', () => {
   })
 
   it('rejects every remaining planned-phase-2 contract once Phase 2 is complete', () => {
-    const planned = CONTENT_CONTRACTS.filter(
-      (contract) => contract.implementation === 'planned-phase-2',
-    )
-    expect(planned.length).toBeGreaterThan(0)
-    const issues = validateContentContracts(CONTENT_CONTRACTS, {
+    const plannedHome = variant({ implementation: 'planned-phase-2' })
+    const contracts = withHomeReplaced(plannedHome)
+    const issues = validateContentContracts(contracts, {
       catalogSlugs: realSlugs,
-      phase2Complete: true,
     })
-    for (const contract of planned) {
-      expect(
-        hasError(
-          issues,
-          `content-contract ${contract.id}`,
-          '"planned-phase-2" is no longer allowed',
-        ),
-      ).toBe(true)
-    }
+    expect(
+      hasError(
+        issues,
+        `content-contract ${plannedHome.id}`,
+        '"planned-phase-2" is no longer allowed',
+      ),
+    ).toBe(true)
   })
 
   it('names a dropped required route', () => {
     const issues = validateContentContracts(
-      CONTENT_CONTRACTS.filter((contract) => contract.route !== '/recruiter'),
+      CONTENT_CONTRACTS.filter((contract) => contract.route !== '/about'),
       { catalogSlugs: realSlugs },
     )
     expect(
-      hasError(issues, 'content-contracts', 'required route "/recruiter" has no content contract'),
+      hasError(issues, 'content-contracts', 'required route "/about" has no content contract'),
     ).toBe(true)
   })
 
@@ -167,10 +180,10 @@ describe('catalog-slug coverage of /projects/[slug]', () => {
 
   it('errors on a duplicate catalog slug', () => {
     const issues = validateContentContracts(CONTENT_CONTRACTS, {
-      catalogSlugs: [...realSlugs, 'thesongofmaka'],
+      catalogSlugs: [...realSlugs, 'songofmaka'],
     })
     expect(
-      hasError(issues, 'content-contracts', 'duplicate catalog slug "thesongofmaka"'),
+      hasError(issues, 'content-contracts', 'duplicate catalog slug "songofmaka"'),
     ).toBe(true)
   })
 

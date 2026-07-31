@@ -137,6 +137,31 @@ capabilities amendment, owner-approved):**
     `2e5b3672703e71be145e6f4389266733a5fb4bef65e85006fd7e58c081eb7e13`
     and the six project hashes are unchanged. This resolves QA finding F7.
 
+**Sixth decision pass — recorded 2026-07-29 (Phase 2 Step 0 professional
+summary, owner-approved):**
+
+27. Profile gains `about`: a four-paragraph professional summary for
+    `/about`, owner-authored and owner-approved verbatim.
+28. New ownership claim approved: **co-founded Silverjay Studio**
+    (extends the enumerated list in #11).
+29. New owner-supplied facts published: New York City base; game design
+    study at NYU; the Game Assemblies Lab NPC system (Unreal Engine 5,
+    LLM-driven characters, emotional states, real voices, no scripted lines);
+    the distilled small local model; the desktop companion project.
+30. "Shipped Song of Maka" corrected to "co-directed … now in
+    post-production" before publication, preserving consistency with the
+    project record's `in-progress` status and ledger #14. No project record
+    changed; the six project hashes stay untouched.
+31. Open, deliberately deferred: the Game Assemblies Lab NPC system
+    exists only as profile prose and has no catalogue record. Promoting it to a
+    seventh project is a future owner content turn, not Phase 2 work.
+32. **Song of Maka** has no leading “The”; its canonical identifier, slug,
+    project route, and self-link use `songofmaka`. The prior
+    `thesongofmaka` paths remain redirect-only aliases for existing bookmarks.
+33. **Profile summary wording amended.** The owner supplied and approved the
+    exact opening sentence: “Producer and designer whose journey spans product
+    management, UX Research, and UI/UX design.”
+
 Remaining open items (non-blocking, future passes): Chu Yu Hong engine +
 measurable outcomes (if any exist), award-certificate verification for
 the non-CUSGA items, and additional link targets (Drive builds, Figma
@@ -183,11 +208,11 @@ sleeve `title`, `category`, `date` (with `WIP` doubling as status),
 `tagline`, `role`, `tools` (single string), `url`, `cover` path (no alt),
 and presentation colors.
 
-### 2.1 Song of Maka (`/games/thesongofmaka`)
+### 2.1 Song of Maka (`/games/songofmaka`)
 
 | Strict field | Current provisional value | Dossier candidate (NOT approved) | Status |
 |---|---|---|---|
-| `id` / `slug` | derived: `thesongofmaka` | same | OK (mechanical) |
+| `id` / `slug` | owner-corrected: `songofmaka` | same | DECIDED |
 | `title` | `SONG\nOF MAKA` (sleeve form; `projectDisplayTitle()` → "SONG OF MAKA") | Owner-corrected: canonical name is "Song of Maka", no leading "The" (ledger #4); catalog updated | DECIDED |
 | `category` | `puzzle adventure` | 2D puzzle-adventure | OK |
 | `date` | `2024` | Span 2020–2024 confirmed by owner (ledger #5) | DECIDED |
@@ -202,7 +227,7 @@ and presentation colors.
 | `skills` | — | — (no normalized skills separate from tools were extracted) | NEEDS OWNER INPUT |
 | `team` | — | 15 (scouted and hired by Alex) — ownership claim | NEEDS OWNER CONFIRMATION |
 | `constraints` | — | — | NEEDS OWNER INPUT (optional field) |
-| `links` | `url` → alexxiong.me page only | prototype (Google Drive); case study `/thesongofmaka-casestudy` | NEEDS OWNER CONFIRMATION (targets + typed `kind`s) |
+| `links` | `url` → alexxiong.me page only | prototype (Google Drive); case study `/songofmaka-casestudy` | NEEDS OWNER CONFIRMATION (targets + typed `kind`s) |
 | `cover` / `alt` | `/vinyl-covers/song-of-maka.png`, no alt | — (alt text must describe visible information, not repeat the title) | NEEDS OWNER INPUT |
 
 ### 2.2 Chu Yu Hong 楚雨虹 (`/games/chuyuhong`)

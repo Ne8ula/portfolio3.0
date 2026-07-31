@@ -7,7 +7,7 @@
 // completeness, profile validation, and approval verification (missing or
 // STALE hashes vs the current content) are all BLOCKING: a canonical
 // content edit fails this gate until the owner re-approves the exact new
-// content. Route delivery assertions remain `pending` until Phase 2.
+// content. Phase 2 route delivery and action parity are blocking.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
@@ -27,6 +27,7 @@ import {
 } from '@/lib/responsive/layout-contracts'
 import { validateContentContracts } from '@/lib/content/content-contract'
 import { CONTENT_CONTRACTS } from '@/lib/content/content-contracts'
+import { validateActionParity } from '@/lib/content/action-parity'
 import {
   computeApprovalHash,
   validateApprovalManifest,
@@ -89,6 +90,7 @@ issues.push(
 
 const slugs = catalogSlugs(PROJECTS)
 issues.push(...validateContentContracts(CONTENT_CONTRACTS, { catalogSlugs: [...slugs] }))
+issues.push(...validateActionParity())
 
 issues.push(...validateCatalogStructure(PROJECTS))
 issues.push(...validateProfile(PROFILE))

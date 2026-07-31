@@ -256,7 +256,7 @@ function existingEntries(markdown) {
 function quoteBlock(text) {
   return text
     .split("\n")
-    .map((line) => `> ${line}`)
+    .map((line) => (line ? `> ${line}` : ">"))
     .join("\n");
 }
 

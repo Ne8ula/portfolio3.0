@@ -11,6 +11,10 @@ import { GlobeCanvas } from "./globe-canvas"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 import { COCKPIT_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
 import { PROJECTS } from "@/lib/projects/catalog"
+import { PROFILE } from "@/lib/portfolio/profile"
+import { SITE_NAV } from "@/lib/site/navigation"
+import { SITE_ROUTES } from "@/lib/site/site"
+import { AX_OS_FUTURE_STUB_LABEL } from "@/lib/content/action-parity"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true }){
@@ -97,6 +101,7 @@ function Cockpit({ interactive = true }){
       {viewMode === 'crate' && <VinylInfoCard/>}
       {viewMode === 'crate' && <VinylBrowseArrows/>}
       {viewMode === 'deck' && <DeckBrowseArrows/>}
+      {viewMode === 'deck' && <DeckProjectLink/>}
       <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
         <div data-hud="return-control" style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
@@ -114,7 +119,14 @@ function Cockpit({ interactive = true }){
 
       {/* Title card — sits below the header, on the left */}
       <div style={{position:'absolute',top:120,left:40,zIndex:20,color:'var(--cream)',maxWidth:560}}>
-        <h1 style={{margin:0,fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>Alex<br/>Xiong</h1>
+        <h1 style={{margin:0,fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>
+          {PROFILE.name.split(/\s+/).map((part, index) => (
+            <React.Fragment key={`${part}-${index}`}>
+              {index > 0 ? <br/> : null}
+              {part}
+            </React.Fragment>
+          ))}
+        </h1>
         <div style={{marginTop:20,display:'flex',gap:14,alignItems:'center'}}>
           <span style={{width:24,height:1,background:'var(--cream-deep)',display:'inline-block',opacity:.65}}/>
           <span style={{color:'var(--cream-deep)',letterSpacing:'.32em',fontWeight:600,fontFamily:'var(--font-mono)',fontSize:13,textTransform:'uppercase'}}>portfolio · v.2026.04</span>
@@ -245,6 +257,7 @@ function SiteHeader(){
   const [hovered, setHovered] = React.useState(null);
   const [openSub, setOpenSub] = React.useState(false);
   const closeTimer = React.useRef(null);
+  const projectsLinkRef = React.useRef(null);
   const [time, setTime] = React.useState(() => new Date());
 
   React.useEffect(() => {
@@ -258,15 +271,26 @@ function SiteHeader(){
   const inProgressCount = PROJECTS.filter((p) => p.status === 'in-progress').length;
   const pad2 = (n) => String(n).padStart(2, '0');
 
-  const items = [
-    { id:'projects', label:'projects', sub:[
-      { id:'finished', label:'finished',           hint:`completed · ${pad2(completedCount)}` },
-      { id:'wip',      label:'work-in-progress',   hint:`in-progress · ${pad2(inProgressCount)}` },
-    ]},
-    { id:'designs',  label:'designs' },
-    { id:'about',    label:'about' },
-    { id:'contact',  label:'contact' },
-  ];
+  const items = SITE_NAV.map((item) => item.href === SITE_ROUTES.projects
+    ? {
+        ...item,
+        id:'projects',
+        sub:[
+          {
+            id:'completed',
+            label:'Completed',
+            href:`${SITE_ROUTES.projects}#completed`,
+            hint:`completed · ${pad2(completedCount)}`,
+          },
+          {
+            id:'in-progress',
+            label:'In progress',
+            href:`${SITE_ROUTES.projects}#in-progress`,
+            hint:`in progress · ${pad2(inProgressCount)}`,
+          },
+        ],
+      }
+    : { ...item, id:item.label.toLowerCase() });
 
   const open = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -364,7 +388,7 @@ function SiteHeader(){
         </div>
 
         {/* RIGHT — primary nav + meta */}
-        <nav style={{display:'flex', alignItems:'center', gap:0}}>
+        <nav aria-label="Primary" style={{display:'flex', alignItems:'center', gap:0}}>
           {items.map((it, idx) => {
             const isActive = active === it.id;
             const isHover  = hovered === it.id;
@@ -374,10 +398,29 @@ function SiteHeader(){
                 key={it.id}
                 onMouseEnter={() => { setHovered(it.id); if (isProjects) open(); }}
                 onMouseLeave={() => { setHovered(null); if (isProjects) scheduleClose(); }}
+                onFocus={() => {
+                  setHovered(it.id);
+                  if (isProjects) open();
+                }}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setHovered(null);
+                    if (isProjects) setOpenSub(false);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (isProjects && openSub && event.key === 'Escape') {
+                    event.preventDefault();
+                    setOpenSub(false);
+                    projectsLinkRef.current?.focus();
+                  }
+                }}
                 style={{position:'relative', padding:'0 18px'}}
               >
-                <button
-                  type="button"
+                <a
+                  ref={isProjects ? projectsLinkRef : undefined}
+                  data-cockpit-nav-link
+                  href={it.href}
                   onClick={() => setActive(it.id)}
                   aria-expanded={isProjects ? openSub : undefined}
                   aria-haspopup={isProjects ? 'menu' : undefined}
@@ -391,6 +434,7 @@ function SiteHeader(){
                     transition:'color .2s ease',
                     position:'relative',
                     display:'flex', alignItems:'center', gap:6,
+                    textDecoration:'none',
                   }}
                 >
                   {/* number prefix — editorial ledger feel */}
@@ -417,7 +461,7 @@ function SiteHeader(){
                     transformOrigin:'center',
                     transition:'transform .25s ease, opacity .25s ease',
                   }}/>
-                </button>
+                </a>
 
                 {/* Projects sub-menu — renders above the header rule */}
                 {isProjects && openSub && (
@@ -452,9 +496,10 @@ function SiteHeader(){
                     </div>
                     <div style={{display:'flex', flexDirection:'column'}}>
                       {it.sub.map((s, sIdx) => (
-                        <button
-                          type="button"
+                        <a
                           key={s.id}
+                          data-cockpit-nav-link
+                          href={s.href}
                           onClick={() => { setActive(it.id); setOpenSub(false); }}
                           style={{
                             background:'transparent', border:'none',
@@ -465,6 +510,7 @@ function SiteHeader(){
                             borderTop: sIdx === 0 ? 'none' : '1px dotted rgba(232,228,220,0.14)',
                             color:'var(--cream-warm)',
                             transition:'color .15s ease',
+                            textDecoration:'none',
                           }}
                           onMouseOver={(e)=>{
                             e.currentTarget.style.color='var(--jade-light)';
@@ -500,7 +546,7 @@ function SiteHeader(){
                           }}>
                             {s.hint}
                           </span>
-                        </button>
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -811,6 +857,47 @@ function DeckBrowseArrows(){
   return <BrowseArrows getInfo={getInfo} getRect={getRect} hint="◄ ► to browse · esc to return"/>;
 }
 
+// The holographic card remains an in-scene texture, but its project action is
+// a real DOM anchor laid over the texture's existing VIEW MORE rectangle.
+// Navigation therefore keeps native link behavior; the legacy event is only
+// additive scene bookkeeping.
+function DeckProjectLink(){
+  const [target, setTarget] = React.useState(null);
+  React.useEffect(() => {
+    let raf;
+    const tick = () => {
+      const info = window.__getCockpitDeckInfo && window.__getCockpitDeckInfo();
+      const rect = window.__getCockpitDeckCardRect && window.__getCockpitDeckCardRect();
+      const project = info && PROJECTS[info.index];
+      setTarget(info && !info.busy && rect && project ? { info, rect, project } : null);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  if (!target) return null;
+
+  const { info, rect, project } = target;
+  const left = rect.x + rect.w * (56 / 640);
+  const top = rect.y + rect.h * (690 / 800);
+  const width = rect.w * (528 / 640);
+  const height = rect.h * (54 / 800);
+
+  return (
+    <a
+      className="cockpit-project-link"
+      href={`${SITE_ROUTES.projects}/${project.slug}`}
+      aria-label={`View more: ${project.title}`}
+      onClick={() => {
+        window.dispatchEvent(
+          new CustomEvent('cockpit-project-view', { detail: { index: info.index } }),
+        );
+      }}
+      style={{position:'absolute',left,top,width,height,zIndex:19}}
+    />
+  );
+}
+
 function BrowseArrows({ getInfo, getRect, hint }){
   const [info, setInfo] = React.useState(null);
   const [rect, setRect] = React.useState(null);
@@ -895,12 +982,6 @@ function BrowseArrows({ getInfo, getRect, hint }){
 function ScreenDialog({ interactive, active }){
   const wrapRef = React.useRef(null);
   const [rect, setRect] = React.useState(null);
-  const [messages, setMessages] = React.useState([
-    { role:'system', text:'AX/OS v2.59 ready.' },
-    { role:'system', text:'Type a prompt to begin.' }
-  ]);
-  const [input, setInput] = React.useState('');
-  const [sending, setSending] = React.useState(false);
   const listRef = React.useRef(null);
   // Idle screen follows the cockpit theme: ivory reference panel in light,
   // quiet dark CRT in dark. The woken dialog stays cream (screen is "lit").
@@ -923,34 +1004,6 @@ function ScreenDialog({ interactive, active }){
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, []);
-
-  React.useEffect(() => {
-    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [messages, sending]);
-
-  const send = async () => {
-    const q = input.trim();
-    if (!q || sending) return;
-    setMessages(m => [...m, { role:'user', text:q }]);
-    setInput('');
-    setSending(true);
-    // Placeholder: will be replaced with real API call by user.
-    try {
-      let reply = '...';
-      if (window.claude && window.claude.complete){
-        reply = await window.claude.complete({
-          messages:[{ role:'user', content:`You are a terse retro computer AI named AX/OS. Reply in ≤2 short sentences, lowercase, no emoji.\n\nuser: ${q}` }]
-        });
-      } else {
-        reply = `> ack. '${q}' logged. (api offline)`;
-      }
-      setMessages(m => [...m, { role:'ax', text: (reply || '').trim() || '> silence.' }]);
-    } catch (err){
-      setMessages(m => [...m, { role:'ax', text:'> link error. retry.' }]);
-    } finally {
-      setSending(false);
-    }
-  };
 
   if (!rect) return null;
   const { corners, hidden } = rect;
@@ -1030,7 +1083,9 @@ function ScreenDialog({ interactive, active }){
           <div style={{fontFamily:'"Cormorant Garamond", Georgia, serif', fontStyle:'italic', fontWeight:500, fontSize: baseFont*3.4, color: theme === 'light' ? '#1E1C1A' : 'rgba(232,228,220,0.92)', lineHeight:1}}>hello.</div>
           <div style={{fontSize: baseFont*0.85, marginTop: pad*0.55, letterSpacing:'.38em', color: theme === 'light' ? '#6F8D75' : '#7A9A7E', fontWeight:700}}>A.X / STUDIO</div>
           <div style={{fontSize: baseFont*0.75, marginTop: pad*0.4, opacity:.55}}>—</div>
-          <div style={{fontSize: baseFont*0.7, marginTop: pad*0.55, letterSpacing:'.3em', opacity:.7}}>AX/OS · CLICK TO WAKE</div>
+          <div style={{fontSize: baseFont*0.58, marginTop: pad*0.55, letterSpacing:'.08em', opacity:.7}}>
+            {AX_OS_FUTURE_STUB_LABEL}
+          </div>
           <div style={{fontSize: baseFont*0.75, marginTop: pad*0.35, opacity:.5, animation:'softBlink 1.4s infinite'}}>_</div>
         </div>
       ) : (
@@ -1047,7 +1102,7 @@ function ScreenDialog({ interactive, active }){
           paddingBottom: pad*0.3, marginBottom: pad*0.4,
           color:'#3A5A3E'
         }}>
-          <span style={{letterSpacing:'.18em', fontWeight:700}}>AX/OS · DIALOG</span>
+          <span style={{letterSpacing:'.18em', fontWeight:700}}>AX/OS · DEMONSTRATION</span>
           <span style={{opacity:.6}}>● ● ●</span>
         </div>
         {/* message list */}
@@ -1055,24 +1110,14 @@ function ScreenDialog({ interactive, active }){
           flex:1, overflowY:'auto', paddingRight: pad*0.2,
           scrollbarWidth:'thin', scrollbarColor:'#4B6E4F transparent'
         }}>
-          {messages.map((m, i) => (
-            <div key={i} style={{
-              marginBottom: pad*0.3,
-              color: m.role === 'user' ? '#1E1C1A' : m.role === 'system' ? '#8E8A83' : '#3A5A3E',
-              opacity: m.role === 'system' ? 0.9 : 1
-            }}>
-              <span style={{opacity:.6, marginRight: pad*0.2}}>
-                {m.role === 'user' ? '›' : m.role === 'system' ? '*' : '·'}
-              </span>
-              {m.text}
-            </div>
-          ))}
-          {sending && (
-            <div style={{color:'#6E6878', opacity:.8}}>
-              <span style={{opacity:.6, marginRight: pad*0.2}}>·</span>
-              <span style={{animation:'softBlink 1s infinite'}}>thinking_</span>
-            </div>
-          )}
+          <div id="axos-future-stub-label" style={{
+            marginBottom: pad*0.3,
+            color:'var(--ink-faint)',
+            opacity:0.9
+          }}>
+            <span style={{opacity:.6, marginRight: pad*0.2}}>*</span>
+            {AX_OS_FUTURE_STUB_LABEL}
+          </div>
         </div>
         {/* input row */}
         <div style={{
@@ -1082,14 +1127,14 @@ function ScreenDialog({ interactive, active }){
         }}>
           <span style={{color:'#3A5A3E', fontWeight:700}}>&gt;</span>
           <input
-            aria-label="Ask AX/OS"
+            aria-label={AX_OS_FUTURE_STUB_LABEL}
+            aria-describedby="axos-future-stub-label"
             name="axos-prompt"
             autoComplete="off"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
-            placeholder="ask ax/os…"
-            disabled={sending}
+            value=""
+            readOnly
+            placeholder="message sending unavailable"
+            disabled
             style={{
               flex:1, background:'transparent', border:'none', outline:'none',
               color:'#1E1C1A', fontFamily:'inherit', fontSize:'inherit',
@@ -1098,16 +1143,17 @@ function ScreenDialog({ interactive, active }){
           />
           <button
             type="button"
-            onClick={send}
-            disabled={sending || !input.trim()}
+            aria-label={AX_OS_FUTURE_STUB_LABEL}
+            aria-describedby="axos-future-stub-label"
+            disabled
             style={{
               background:'transparent', color:'#3A5A3E',
               border:'1px solid rgba(75,110,79,0.55)',
               padding:`${pad*0.15}px ${pad*0.4}px`,
-              cursor: sending ? CURSOR_DEFAULT : CURSOR_POINTER,
+              cursor:CURSOR_DEFAULT,
               fontFamily:'inherit', fontSize:'inherit', letterSpacing:'.1em',
               textTransform:'uppercase', fontWeight:700,
-              opacity: (sending || !input.trim()) ? .4 : 1
+              opacity:.4
             }}
           >send</button>
         </div>

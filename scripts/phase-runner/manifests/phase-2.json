@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "phase": 2,
+  "title": "Canonical DOM and recruiter-readable content path",
+  "source": "docs/phase-2-design.md",
+  "sourceSection": "§12",
+  "designAuthorities": [
+    "DESIGN.md",
+    "docs/responsive-system.md",
+    "docs/hud-responsive-layout-plan.md §8 Phase 2",
+    "lib/responsive/layout-contracts.ts",
+    "lib/content/content-contracts.ts"
+  ],
+  "requiredGates": [
+    "npm run lint",
+    "npm run typecheck:contracts",
+    "npm run validate:contracts",
+    "npm run test:unit",
+    "npm run test:e2e"
+  ],
+  "maxFixAttempts": 3,
+  "initialStep": "step-3",
+  "initiallyAcceptedThrough": "step-2",
+  "steps": [
+    {
+      "id": "step-0",
+      "title": "Canonical content",
+      "planItems": [0],
+      "scope": [
+        "Add and validate the owner-approved profile About prose exactly as specified.",
+        "Leave approval-record creation to the owner and record the required content ledger entries."
+      ],
+      "ownerGateAfter": true
+    },
+    {
+      "id": "step-1",
+      "title": "Foundations",
+      "planItems": [1, 2, 3],
+      "scope": [
+        "Add site, navigation, appearance, action-parity, document-token, scroll-lock, pre-paint, and metadata foundations.",
+        "Keep this work non-visible except for approved document-surface foundations."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-2",
+      "title": "The root boundary",
+      "planItems": [4, 5, 6],
+      "scope": [
+        "Add CockpitEntry with the client-only cockpit boundary, WebGL degradation, inert handoff, and scroll-lock lifecycle.",
+        "Convert the root page to the canonical server-rendered shell.",
+        "Make cockpit navigation, VIEW MORE, and the AX/OS future stub semantically real without starting route work."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-3",
+      "title": "The catalogue routes",
+      "planItems": [7, 8],
+      "scope": [
+        "Implement /projects, /projects/[slug], and /about with their co-located contracts and required data identifiers.",
+        "Implement sitemap, robots, /portfolio.json, permanent redirects, classifyProjectLink(), and detail-page link rendering exactly as §12 Step 3 specifies.",
+        "Do not begin the Revision 7 contract amendment, contract completion flips, import-boundary rule, final Phase 2 test expansion, or delivery documentation."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-4",
+      "title": "Enforcement and completion",
+      "planItems": [9, 10, 11, 12, 13],
+      "scope": [
+        "Apply the Revision 7 /recruiter to /about amendment as its own reviewable change.",
+        "Flip all Phase 2 content contracts to implemented, set PHASE_2_COMPLETE, extend route layout contracts, and amend cockpit-v1.",
+        "Add the import-boundary lint rule.",
+        "Complete AC-1 through AC-34 automated and manual evidence while preserving the Phase 6 test.fixme.",
+        "Update the required plan, responsive-system, DESIGN, and housekeeping documentation, then satisfy the complete Phase 2 definition of done."
+      ],
+      "ownerGateAfter": false
+    }
+  ]
+}

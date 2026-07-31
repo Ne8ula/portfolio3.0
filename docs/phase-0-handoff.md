@@ -171,7 +171,7 @@ decision or confirmation before entering the strict schema.
 Catalog (`projects.ts`) taglines/roles/tools already align with the site;
 dates needing confirmation are flagged.
 
-### 1. The Song of Maka — /games/thesongofmaka
+### 1. Song of Maka — /games/songofmaka
 - **Summary**: 2D puzzle-adventure — "a fallen king retaking their bird
   kingdom from a deadly disease." Evolved from Hollow Knight-inspired
   concepts to puzzle/environment-interaction over combat; ecological boss
@@ -189,7 +189,7 @@ dates needing confirmation are flagged.
   2024; Best Student Game nomination Tencent Game Awards 2024; Best Visual
   nomination 2nd CUSGA 2022; presented at GDC 2023 (NY State booth).
 - **Tools**: Unity, Figma, Procreate, Adobe Suite, Notion, Jira, Tinylytics.
-- **Links**: prototype (Google Drive); case study `/thesongofmaka-casestudy`.
+- **Links**: prototype (Google Drive); case study `/songofmaka-casestudy`.
 - **Gaps**: explicit problem statement; date confirmation.
 
 ### 2. Chu Yu Hong 楚雨虹 — /games/chuyuhong

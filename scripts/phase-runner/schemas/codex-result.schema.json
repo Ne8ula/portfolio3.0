@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "phase": {
+      "type": "integer"
+    },
+    "step": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["ready-for-qa", "blocked"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "filesChanged": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pass", "fail", "not-run"]
+          },
+          "details": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["command", "status", "details"]
+      }
+    },
+    "unresolvedRisks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "handoff": {
+      "type": "string",
+      "pattern": "^Handoff:",
+      "minLength": 9
+    }
+  },
+  "required": [
+    "phase",
+    "step",
+    "outcome",
+    "summary",
+    "filesChanged",
+    "gates",
+    "unresolvedRisks",
+    "handoff"
+  ]
+}

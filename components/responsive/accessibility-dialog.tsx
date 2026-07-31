@@ -20,6 +20,14 @@ import type {
   TextSetting,
   TransparencySetting,
 } from '@/lib/responsive/accessibility'
+import {
+  APPEARANCE_ATTRIBUTE,
+  APPEARANCE_EVENT,
+  APPEARANCE_STORAGE_KEY,
+  parseStoredAppearance,
+  resolveAppearance,
+  type AppearanceSetting,
+} from '@/lib/responsive/appearance'
 
 import { useAccessibility } from './accessibility-provider'
 
@@ -88,6 +96,34 @@ const SETTING_ROWS: readonly SettingRow[] = [
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+const APPEARANCE_OPTIONS: readonly {
+  readonly label: string
+  readonly value: AppearanceSetting
+}[] = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+]
+
+function readAppearanceSetting(): AppearanceSetting {
+  if (typeof window === 'undefined') return 'system'
+  try {
+    return parseStoredAppearance(
+      window.localStorage.getItem(APPEARANCE_STORAGE_KEY),
+    )
+  } catch {
+    return 'system'
+  }
+}
+
+function systemPrefersDark(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+}
+
 export function AccessibilityTrigger(): React.ReactElement | null {
   const { markTriggerReady, dialogOpen, setDialogOpen } = useAccessibility()
 
@@ -128,6 +164,9 @@ export function AccessibilityTrigger(): React.ReactElement | null {
 
 function AccessibilityDialog(): React.ReactElement {
   const { preferences, setPreference, resetToSystem, setDialogOpen } = useAccessibility()
+  const [appearance, setAppearanceState] =
+    React.useState<AppearanceSetting>(readAppearanceSetting)
+  const [prefersDark, setPrefersDark] = React.useState(systemPrefersDark)
   const panelRef = React.useRef<HTMLDivElement>(null)
   const returnFocusRef = React.useRef<Element | null>(null)
 
@@ -192,6 +231,46 @@ function AccessibilityDialog(): React.ReactElement {
     }
   }
 
+  React.useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const query = window.matchMedia('(prefers-color-scheme: dark)')
+    const onChange = (): void => setPrefersDark(query.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
+  }, [])
+
+  React.useEffect(() => {
+    const resolved = resolveAppearance(appearance, prefersDark)
+    document.documentElement.setAttribute(APPEARANCE_ATTRIBUTE, resolved)
+    window.dispatchEvent(
+      new CustomEvent(APPEARANCE_EVENT, {
+        detail: {
+          setting: appearance,
+          source: 'appearance-control',
+          theme: resolved,
+        },
+      }),
+    )
+  }, [appearance, prefersDark])
+
+  const setAppearance = (setting: AppearanceSetting): void => {
+    try {
+      if (setting === 'system') {
+        window.localStorage.removeItem(APPEARANCE_STORAGE_KEY)
+      } else {
+        window.localStorage.setItem(APPEARANCE_STORAGE_KEY, setting)
+      }
+    } catch {
+      // Persistence is best-effort; the in-session appearance still updates.
+    }
+    setAppearanceState(setting)
+  }
+
+  const resetAllToSystem = (): void => {
+    resetToSystem()
+    setAppearance('system')
+  }
+
   return (
     <div className="a11y-overlay" onClick={close}>
       {/* Dialog panel — clicks inside must not reach the closing backdrop. */}
@@ -213,6 +292,31 @@ function AccessibilityDialog(): React.ReactElement {
           System follows your operating-system preference. Explicit choices
           persist on this device.
         </p>
+
+        <fieldset className="a11y-fieldset" data-hud="appearance-control">
+          <legend className="a11y-legend">Appearance</legend>
+          <div className="a11y-options" role="presentation">
+            {APPEARANCE_OPTIONS.map((option) => {
+              const id = `appearance-${option.value}`
+              return (
+                <span key={option.value} className="a11y-option">
+                  <input
+                    checked={appearance === option.value}
+                    id={id}
+                    name="appearance"
+                    onChange={() => setAppearance(option.value)}
+                    type="radio"
+                    value={option.value}
+                  />
+                  <label htmlFor={id}>{option.label}</label>
+                </span>
+              )
+            })}
+          </div>
+          <p className="a11y-help">
+            System follows your color-scheme preference; Light and Dark persist.
+          </p>
+        </fieldset>
 
         {SETTING_ROWS.map((row) => {
           // Text/controls have no OS signal, so their rows expose no System
@@ -251,7 +355,7 @@ function AccessibilityDialog(): React.ReactElement {
         })}
 
         <div className="a11y-dialog-actions">
-          <button type="button" className="a11y-button" onClick={resetToSystem}>
+          <button type="button" className="a11y-button" onClick={resetAllToSystem}>
             Use system settings
           </button>
           <button type="button" className="a11y-button a11y-button-primary" onClick={close}>

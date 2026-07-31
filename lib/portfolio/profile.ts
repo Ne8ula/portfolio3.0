@@ -39,6 +39,8 @@ export type PublicProfile = {
   readonly targetRole: string
   /** Concise professional summary — owner-approved wording only. */
   readonly summary: string
+  /** Ordered professional-summary paragraphs — owner-approved wording only. */
+  readonly about?: NonEmptyStrings
   readonly capabilities: NonEmptyStrings
   readonly links: readonly ProfileLink[]
   /** Public contact email, when the owner publishes one. */
@@ -55,11 +57,31 @@ export const PROFILE: PublicProfile = {
   name: 'Alex Xiong',
   targetRole: 'Creative Technologist',
   summary:
-    'Producer and designer whose journey spans production, product ' +
-    'management, and UI/UX design. Ready to dive into any stage of the ' +
+    'Producer and designer whose journey spans product management, UX Research, ' +
+    'and UI/UX design. Ready to dive into any stage of the ' +
     'development process. Passionate about interactive media and AI ' +
     'technologies. Now pursuing an information science and HCI ' +
     'background at Cornell Tech.',
+  about: [
+    'Hello! I\'m Alex Xiong, a creative technologist specializing in product design ' +
+      'and UX research, based in New York City.',
+    'I started in games because I wanted to make people feel something. At NYU I ' +
+      'studied game design, co-founded Silverjay Studio, and co-directed Song of Maka, ' +
+      'an award-winning narrative adventure now in post-production. As I sat through ' +
+      'playtests, I realized the thing I couldn\'t stop watching was the players. Why ' +
+      'they hesitated, where they got lost, what made them stay. That curiosity slowly ' +
+      'became the catalyst to pivot.',
+    'Now I\'m at Cornell Tech studying HCI and Information Science, and I build NPCs ' +
+      'in the Game Assemblies Lab that hold a conversation instead of reciting one: ' +
+      'LLM-driven characters in Unreal Engine 5 with emotional states, real voices, and ' +
+      'no scripted lines. Lately I\'ve been distilling that system into a small local ' +
+      'model, and building a desktop companion that lives on your screen and talks back ' +
+      'with context.',
+    'The through-line is simple. Play stopped being a separate place a long time ago; ' +
+      'the systems behind our apps, feeds, and tools all borrow from games. I love ' +
+      'continuing to learn about the human side of interactive media and create more ' +
+      'projects not just for impact, but also for beauty.',
+  ],
   capabilities: ['Product Management', 'UI/UX Design', 'UX Research', 'Game Design'],
   links: [
     {
@@ -97,6 +119,20 @@ export function validateProfile(profile: PublicProfile): ValidationIssue[] {
   if (!isNonEmptyString(profile.name)) issues.push(issue(subject, 'name is empty'))
   if (!isNonEmptyString(profile.targetRole)) issues.push(issue(subject, 'targetRole is empty'))
   if (!isNonEmptyString(profile.summary)) issues.push(issue(subject, 'summary is empty'))
+  if (profile.about !== undefined) {
+    if (!Array.isArray(profile.about)) {
+      issues.push(issue(subject, 'about must be an array'))
+    } else {
+      if (profile.about.length === 0) {
+        issues.push(issue(subject, 'about is empty'))
+      }
+      profile.about.forEach((paragraph, index) => {
+        if (!isNonEmptyString(paragraph)) {
+          issues.push(issue(subject, `about[${index}] must be a non-empty string`))
+        }
+      })
+    }
+  }
   if (!Array.isArray(profile.capabilities)) {
     issues.push(issue(subject, 'capabilities must be an array'))
   } else {

@@ -59,6 +59,17 @@ describe('real registry', () => {
     const tiers = new Set(REQUIRED_VIEWPORT_CASES.map((viewportCase) => viewportCase.tier))
     expect(tiers).toEqual(new Set(['normal', 'zoom-narrow', 'large-smoke']))
   })
+
+  it('registers every Phase 2 route and lets the cockpit document reflow', () => {
+    expect(ROUTE_LAYOUT_CONTRACTS).toEqual({
+      '/': 'cockpit-v1',
+      '/about': 'about-v1',
+      '/projects': 'projects-index-v1',
+      '/projects/[slug]': 'project-detail-v1',
+      '/responsive-preview': 'responsive-preview-v1',
+    })
+    expect(COCKPIT_LAYOUT_CONTRACT.allowedAdaptations).toContain('reflow')
+  })
 })
 
 describe('validateLayoutContracts rejects malformed contracts', () => {
@@ -282,6 +293,9 @@ describe('findRouteCoverageIssues', () => {
     const issues = findRouteCoverageIssues(
       [
         { route: '/', hasCoLocatedContract: true },
+        { route: '/about', hasCoLocatedContract: true },
+        { route: '/projects', hasCoLocatedContract: true },
+        { route: '/projects/[slug]', hasCoLocatedContract: true },
         { route: '/responsive-preview', hasCoLocatedContract: true },
       ],
       ROUTE_LAYOUT_CONTRACTS,

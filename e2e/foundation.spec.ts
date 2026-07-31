@@ -64,7 +64,7 @@ test.describe('phase 1 foundation', () => {
     // Focus containment wraps in both directions: initial focus lands on
     // the first radio, Shift+Tab moves to the last control, and Tab returns
     // to the first without escaping behind the modal.
-    const firstControl = dialog.locator('#a11y-motion-system')
+    const firstControl = dialog.locator('#appearance-system')
     const lastControl = dialog.getByRole('button', { name: /^close$/i })
     await expect(firstControl).toBeFocused()
     await page.keyboard.press('Shift+Tab')
@@ -76,6 +76,7 @@ test.describe('phase 1 foundation', () => {
     // so their stored "system" state must present as Standard.
     await expect(dialog.locator('#a11y-text-standard')).toBeChecked()
     await expect(dialog.locator('#a11y-controls-standard')).toBeChecked()
+    await expect(dialog.locator('#appearance-system')).toBeChecked()
     await expect(dialog.locator('#a11y-motion-system')).toBeChecked()
 
     // Explicit override: Motion → Reduced (users hit the visible label; the

@@ -1,26 +1,32 @@
-import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata } from 'next'
+import type React from 'react'
 
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/next'
 
-import { AccessibilityProvider } from "@/components/responsive/accessibility-provider"
-import { AccessibilityTrigger } from "@/components/responsive/accessibility-dialog"
+import { AccessibilityTrigger } from '@/components/responsive/accessibility-dialog'
+import { AccessibilityProvider } from '@/components/responsive/accessibility-provider'
+import { deriveProfileMetadata } from '@/lib/content/serializers'
+import { PROFILE } from '@/lib/portfolio/profile'
+import { SITE_URL } from '@/lib/site/site'
 
-import "./globals.css"
+import './globals.css'
 
+const ROOT_METADATA = deriveProfileMetadata(PROFILE, SITE_URL)
 export const metadata: Metadata = {
-  title: "CLR // LIVE_GLOBE_FPS",
-  description: "Alex Xiong — Editorial Cockpit portfolio. Boot a retro terminal, warp into a first-person 3D desk, browse the crate.",
-  generator: "Next.js",
+  title: ROOT_METADATA.title,
+  description: ROOT_METADATA.description,
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: ROOT_METADATA.canonical,
+  },
+  generator: 'Next.js',
 }
 
-// Pre-hydration stamp of the RESOLVED accessibility state so first paint
-// already honors persisted overrides + system preferences (§A.6 "before
-// paint where possible"). Mirrors lib/responsive/accessibility.ts — the
-// storage key and attribute names are pinned by tests/unit/accessibility
-// so drift fails the unit gate. AccessibilityProvider re-resolves on mount
-// and owns the attributes from then on.
-const PRE_PAINT_ACCESSIBILITY_SCRIPT = `(function () {
+// Pre-hydration stamp of the resolved accessibility and document-appearance
+// states so first paint honors persisted overrides + system preferences.
+// Mirrors lib/responsive/accessibility.ts and lib/responsive/appearance.ts;
+// storage/attribute names are pinned by unit tests.
+const PRE_PAINT_PREFERENCES_SCRIPT = `(function () {
   try {
     var prefs = {};
     try { prefs = JSON.parse(localStorage.getItem('cockpit-a11y-v1')) || {}; } catch (e) {}
@@ -42,6 +48,12 @@ const PRE_PAINT_ACCESSIBILITY_SCRIPT = `(function () {
       (transparency === 'system' ? mq('(prefers-reduced-transparency: reduce)') : transparency === 'reduced') ? 'reduced' : 'standard');
     root.setAttribute('data-a11y-text', text === 'large' ? 'large' : 'standard');
     root.setAttribute('data-a11y-controls', controls === 'large' ? 'large' : 'standard');
+    var storedAppearance = null;
+    try { storedAppearance = localStorage.getItem('cockpit-theme'); } catch (e) {}
+    var appearance = (storedAppearance === 'light' || storedAppearance === 'dark')
+      ? storedAppearance
+      : (mq('(prefers-color-scheme: dark)') ? 'dark' : 'light');
+    root.setAttribute('data-appearance', appearance);
   } catch (e) {}
 })();`
 
@@ -62,7 +74,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Major+Mono+Display&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_ACCESSIBILITY_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_PREFERENCES_SCRIPT }} />
       </head>
       <body>
         <AccessibilityProvider>

@@ -38,7 +38,7 @@ describe('canonical catalog', () => {
 
   it('keeps the six stable public slugs', () => {
     expect(catalogSlugs(PROJECTS)).toEqual([
-      'thesongofmaka',
+      'songofmaka',
       'chuyuhong',
       'tencentgames',
       'nyuwelcome',

@@ -2,9 +2,9 @@
 //
 // Scope: boot reachable through the accessible control, layout identifiers
 // present, harness can resize the viewport, §9.6.2 blank-canvas check, and
-// the Phase −1 entrance-transform assertion. The initial-HTML content
-// assertion (Phase 2) and the deck-overlap assertion (Phase 6) are named
-// pending work via test.fixme — never passing baselines.
+// the Phase −1 entrance-transform assertion and the Phase 2 initial-HTML
+// links. The deck-overlap assertion (Phase 6) remains named pending work via
+// test.fixme — never a passing baseline.
 //
 // Runs against a DEVELOPMENT server: __COCKPIT_TEST_HOOKS__ is compiled out
 // of production bundles (components/cockpit/test-hooks.ts). Phase 8's
@@ -12,23 +12,11 @@
 
 import { expect, test, type Page } from '@playwright/test'
 
-// §9.6.4-style error capture, applied to the smoke suite. Allowlist, don't
-// disable: each entry names a documented-benign failure with a reason.
-const CONSOLE_ERROR_ALLOWLIST: readonly { pattern: RegExp; reason: string }[] = [
-  {
-    // Weather chip: reverse-geocode/Open-Meteo can fail on localhost (CORS
-    // or no geolocation) — documented expected fallback (handoff, §9.6.4).
-    pattern: /open-meteo|geocod|geolocation|weather|Failed to fetch|ERR_FAILED|CORS/i,
-    reason: 'weather chip network fallback is expected on localhost',
-  },
-]
-
 function collectErrors(page: Page): string[] {
   const errors: string[] = []
   page.on('console', (message) => {
     if (message.type() !== 'error') return
     const text = message.text()
-    if (CONSOLE_ERROR_ALLOWLIST.some((entry) => entry.pattern.test(text))) return
     errors.push(`console.error: ${text}`)
   })
   page.on('pageerror', (error) => {
@@ -329,20 +317,16 @@ test.describe('phase 0 smoke', () => {
     expect(lateError).toContain('before skipIntro')
   })
 
-  // ── Named pending work — never recorded as passing (§8 Phase 0) ────────
-
-  // Phase 2 (docs/hud-responsive-layout-plan.md §8 Phase 2): the initial
-  // HTML must visibly link to /projects and /recruiter before hydration.
-  // The current root is a client-only cockpit and must NOT be recorded as
-  // passing this.
-  test.fixme('initial HTML links to /projects and /recruiter before hydration (Phase 2)', async ({
+  test('initial HTML links to /projects and /about before hydration (Phase 2)', async ({
     page,
   }) => {
     const response = await page.request.get('/')
     const html = await response.text()
     expect(html).toContain('href="/projects"')
-    expect(html).toContain('href="/recruiter"')
+    expect(html).toContain('href="/about"')
   })
+
+  // ── Named pending work — never recorded as passing (§8 Phase 0) ────────
 
   // Phase 6 (plan §8 Phase 6 / §2.1): the deck browse hint overlaps the
   // holographic project card on shorter viewports. Deliberately NOT

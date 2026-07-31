@@ -1,12 +1,14 @@
 # Plan — Site-Wide Responsive System and Resolution-Independent Cockpit
 
-- **Status**: product decisions finalized; revision 6 contradiction and
+- **Status**: product decisions finalized; revision 7 route amendment and
   enforceability audit applied. Phase −1 is complete **including its
   automated assertion** (delivered with Phase 0 in `e2e/smoke.spec.ts`).
-  **Phases 0, 0A, 0B, and 1 are complete** (commits recorded in §8; the
-  Phase 1 commit hash is recorded on review/merge). The canonical
+  **Phases 0, 0A, 0B, and 1 are complete** (commits recorded in §8, including
+  Phase 1 at `809607c`). Phase 2 is code-complete in the current reviewable
+  worktree change and awaits independent QA/merge; its commit hash does not
+  exist until that merge. The canonical
   catalog/profile carry owner-approved strict records with blocking
-  approval gates. Phases 2–8 have not started.
+  approval gates. Phases 3–8 have not started.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
   cockpit views (`deck`, `crate`, `monitor`) as the first adopter.
 - **Normal composition range**: `1024×600` CSS pixels through `3440×1536`,
@@ -181,6 +183,15 @@ start/mid/end of the inner entrance animation in Chromium and requires an
 identical matrix, and additionally proves the animation actually ran.
 Phase 8 expands this existing assertion across the final browser and
 viewport matrix.
+
+### 0.6 Revision 7 — `/recruiter` becomes `/about`
+
+Owner decision D8, approved 2026-07-29, changes only the professional
+summary surface's path and label. The complete print-friendly requirement
+moves unchanged from `/recruiter` to `/about`; `/recruiter` remains a
+permanent redirect. `ContentPurpose` uses `professional-summary`, the
+contract id is `content-about-v1`, and all initial navigation says `About`.
+No canonical profile/project fact changed as part of this amendment.
 
 ---
 
@@ -400,10 +411,10 @@ Required delivery surfaces:
 
 | Surface | Initial-response requirement |
 |---|---|
-| `/` | Server-rendered identity/portfolio summary plus visible ordinary links to `VIEW PROJECTS`, `RECRUITER OVERVIEW`, and contact; these exist before boot or cockpit hydration |
+| `/` | Server-rendered identity/portfolio summary plus visible ordinary links to `VIEW PROJECTS`, `ABOUT`, and contact; these exist before boot or cockpit hydration |
 | `/projects` | Server-rendered complete project index using semantic headings, lists/articles, summaries, roles, outcomes, and normal links |
 | `/projects/[slug]` | Server-rendered case study with the full required project fields and a canonical URL |
-| `/recruiter` | Server-rendered, print-friendly professional overview: identity, target work, capabilities, selected evidence, project links, contact, and résumé link when available |
+| `/about` | Server-rendered, print-friendly professional overview: identity, target work, capabilities, selected evidence, project links, contact, and résumé link when available |
 | `/portfolio.json` | Supplementary public JSON generated from the same profile/catalog and carrying canonical HTML URLs; it never substitutes for visible HTML |
 
 The current root route mounts a client-only dynamic cockpit. Phase 2 must
@@ -449,7 +460,7 @@ The route implementation must also provide:
 - meaningful text alternatives for informative images and decorative
   classification for ornamental cockpit imagery;
 - JSON-LD generated from the same source as the visible HTML: `Person` on the
-  public profile/recruiter surface, `ItemList` or `CollectionPage` for the
+  public profile/About surface, `ItemList` or `CollectionPage` for the
   catalog, and `CreativeWork` or a more specific truthful type for each
   project;
 - structured data that matches the visible page; no facts may exist only in
@@ -484,7 +495,7 @@ The DOM alternative must provide meaningful action parity:
 | Browse crate or deck | Semantic project list with previous/next and direct selection |
 | Open `VIEW MORE` | Normal project link using the same `PROJECTS` data |
 | Enter/exit a focused view | Labeled open/close controls with `Escape` support |
-| Use AX/OS dialog | Normal DOM dialog/form with labels and keyboard operation |
+| Use AX/OS dialog | Shared future stub labelled honestly; message sending is not implemented |
 | Change theme/accessibility | Always-reachable settings controls |
 
 Parity means the same content or functional outcome, not a literal recreation
@@ -501,7 +512,7 @@ enforceable guarantee is three tiers, each tested separately:
 
 | Tier | Environment | Guarantee |
 |---|---|---|
-| 1 | JavaScript disabled | Server-rendered content, semantic headings, project/recruiter routes, ordinary links, and **browser/system** accessibility behavior (`prefers-*`, `forced-colors`) remain available |
+| 1 | JavaScript disabled | Server-rendered content, semantic headings, project/About routes, ordinary links, and **browser/system** accessibility behavior (`prefers-*`, `forced-colors`) remain available |
 | 2 | JavaScript enabled, WebGL disabled | All meaningful interactive DOM alternatives function: custom accessibility settings and persistence, theme persistence, dialogs, project controls |
 | 3 | JavaScript and WebGL enabled | The full cockpit experience |
 
@@ -1911,8 +1922,8 @@ dependency graph, not permission to merge Phase 2 with pending content.
 
 ### Phase 1 — shared responsive and accessibility foundation
 
-**Implementation status: complete** (2026-07-28; commit hash to be recorded
-here on review/merge). Delivered: role-based visual tokens (fonts, fluid
+**Implementation status: complete** (2026-07-28; commit `809607c`).
+Delivered: role-based visual tokens (fonts, fluid
 type, spacing, panel, focus, control) in `app/globals.css`;
 `components/responsive/` primitives (`ResponsivePage`, `ResponsiveStage`,
 `SafeFrame`, `AccessibleExperienceLink`); root `AccessibilityProvider` with
@@ -1946,6 +1957,11 @@ without cockpit-specific code.
 
 ### Phase 2 — canonical DOM and recruiter-readable content path
 
+**Implementation status (2026-07-30): code complete in the current
+reviewable worktree change; independent Kimi QA and merge are pending.**
+There is no Phase 2 commit hash before merge; record it here when the owner
+accepts and commits the reviewed change.
+
 - Convert `app/page.tsx` into a Server Component shell that emits the public
   identity/summary and visible ordinary navigation in the initial HTML;
   mount the client-only cockpit through the §A.4.2 boundary — a new
@@ -1958,7 +1974,8 @@ without cockpit-specific code.
   not import `three` or any cockpit runtime module.
 - Build server-rendered `/projects/[slug]` detail pages for every catalog
   entry, using `generateStaticParams` where appropriate, and the
-  print-friendly `/recruiter` overview from §A.4.2.
+  print-friendly `/about` overview from §A.4.2. Keep `/recruiter` as a
+  permanent redirect under Revision 7.
 - Generate per-route metadata and JSON-LD from the same canonical sources;
   add `sitemap.ts`, `robots.ts`, canonical URLs, and the supplementary
   `/portfolio.json` route handler.
@@ -1988,8 +2005,9 @@ without cockpit-specific code.
 available with JavaScript disabled; tier 2 — every currently implemented
 meaningful function outcome, including settings and theme persistence,
 remains available with WebGL disabled; both without hover or cockpit
-interaction. Every project is understandable from its canonical HTML, and
-future stubs are identified consistently in both experiences.
+interaction. Every project is understandable from its canonical HTML,
+`/about` supplies the print-friendly professional summary, and future stubs
+are identified consistently in both experiences.
 
 ### Phase 3 — renderer and viewport sizing
 
@@ -2294,7 +2312,7 @@ release.
 These checks verify delivery, not the behavior of a particular proprietary
 recruiting product:
 
-- request `/`, `/projects`, every `/projects/[slug]`, and `/recruiter`
+- request `/`, `/projects`, every `/projects/[slug]`, and `/about`
   directly and assert that the required headings, summaries, roles,
   contributions, outcomes, skills/tools, statuses, and ordinary links exist
   in the response-derived DOM before hydration;
@@ -2302,7 +2320,8 @@ recruiting product:
   no essential fact or route depends on boot, hover, canvas, WebGL, a texture,
   or client state;
 - assert that the initial `/` response visibly links to `/projects` and
-  `/recruiter`; a crawler must not have to infer routes from a canvas;
+  `/about`; assert `/recruiter` permanently redirects to `/about`; a crawler
+  must not have to infer routes from a canvas;
 - validate project/profile schemas, unique IDs/slugs, internal and canonical
   URLs, non-empty alternatives, and JSON serialization;
 - after Phase 0B, recompute every §A.4.2 approval hash, reject
@@ -2617,7 +2636,7 @@ not required for deterministic viewport coverage and should not replace CI.
 - If contained panning fails, fall back to the semantic project experience
   rather than clipping content or trapping focus.
 - If the cockpit, hydration, JavaScript, or WebGL fails, the initial document
-  and canonical routes still expose project/recruiter navigation and all
+  and canonical routes still expose project/About navigation and all
   essential portfolio content.
 - If structured-data or supplementary JSON generation fails validation,
   fail the build rather than publishing a representation that contradicts

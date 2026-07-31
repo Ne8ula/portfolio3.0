@@ -12,7 +12,7 @@
 //   - approval metadata is never emitted.
 
 import type { JsonObject } from '@/lib/shared/core'
-import type { Project } from '@/lib/projects/catalog'
+import type { Project, ProjectLink } from '@/lib/projects/catalog'
 import type { PublicProfile } from '@/lib/portfolio/profile'
 
 export const PORTFOLIO_JSON_SCHEMA_VERSION = 1
@@ -31,11 +31,60 @@ export type RouteMetadata = {
   readonly canonical: string
 }
 
+export type ProjectLinkClassification = 'external' | 'self'
+
+export function classifyProjectLink(
+  link: ProjectLink,
+  baseUrl: string,
+): ProjectLinkClassification {
+  return new URL(link.href).host === new URL(baseUrl).host ? 'self' : 'external'
+}
+
 export function deriveProjectMetadata(project: Project, baseUrl: string): RouteMetadata {
   return {
     title: `${project.title} — ${project.role}`,
     description: project.tagline,
     canonical: canonicalUrl(baseUrl, projectCanonicalPath(project.slug)),
+  }
+}
+
+export function profileMetadataDescription(summary: string): string {
+  const normalized = summary.trim()
+  if (normalized.length <= 160) return normalized
+  const firstSentence = /^[\s\S]*?[.!?](?=\s|$)/.exec(normalized)?.[0]
+  return firstSentence ?? normalized
+}
+
+export function deriveProfileMetadata(
+  profile: PublicProfile,
+  baseUrl: string,
+): RouteMetadata {
+  return {
+    title: `${profile.name} — ${profile.targetRole}`,
+    description: profileMetadataDescription(profile.summary),
+    canonical: canonicalUrl(baseUrl, '/'),
+  }
+}
+
+export function deriveProjectsIndexMetadata(
+  projects: readonly Project[],
+  baseUrl: string,
+): RouteMetadata {
+  return {
+    title: 'Projects',
+    description: projects.map((project) => project.title).join(' · '),
+    canonical: canonicalUrl(baseUrl, '/projects'),
+  }
+}
+
+export function deriveAboutMetadata(
+  profile: PublicProfile,
+  baseUrl: string,
+): RouteMetadata {
+  return {
+    title: `About — ${profile.name}`,
+    description: profileMetadataDescription(profile.summary),
+    canonical: canonicalUrl(baseUrl, '/about'),
   }
 }
 
@@ -93,6 +142,20 @@ export function deriveProjectsItemListJsonLd(
   } as unknown as JsonObject
 }
 
+/** Schema.org CollectionPage containing the same visible-order ItemList. */
+export function deriveProjectsCollectionJsonLd(
+  projects: readonly Project[],
+  baseUrl: string,
+): JsonObject {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Projects',
+    url: canonicalUrl(baseUrl, '/projects'),
+    mainEntity: deriveProjectsItemListJsonLd(projects, baseUrl),
+  } as unknown as JsonObject
+}
+
 /**
  * The supplementary public JSON representation. Carries canonical HTML
  * URLs for every entity; consumers that ignore it lose nothing because the
@@ -110,6 +173,7 @@ export function derivePortfolioJson(
       name: profile.name,
       targetRole: profile.targetRole,
       summary: profile.summary,
+      ...(profile.about !== undefined ? { about: [...profile.about] } : {}),
       capabilities: [...profile.capabilities],
       links: profile.links.map((link) => ({
         label: link.label,

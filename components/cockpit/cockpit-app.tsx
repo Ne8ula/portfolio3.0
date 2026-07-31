@@ -4,14 +4,13 @@
 // Ported from the Cockpit.html prototype's <App/>. The dev Tweaks panel and
 // edit-mode postMessage protocol are dropped; the dialed-in TWEAK_DEFAULTS are
 // hardcoded and pushed into the live 3D scene once it mounts.
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { BootScreen } from "./boot-screen"
 import { WarpTransition } from "./warp-transition"
 import { ThemeToggle } from "./theme-toggle"
 import { Cockpit } from "./cockpit-hud"
 import { CURSOR_DEFAULT } from "./cursors"
 import { installTestHooks, registerPhaseController, unregisterPhaseController } from "./test-hooks"
-import { HOME_CONTENT_CONTRACT } from "@/lib/content/content-contracts"
 import { useAccessibility } from "@/components/responsive/accessibility-provider"
 
 // Dialed-in transforms from the prototype's TWEAK_DEFAULTS (Cockpit.html).
@@ -35,7 +34,7 @@ const TWEAK_DEFAULTS = {
   ttX: 0.2, ttY: 0.18, ttZ: 0.9, ttRY: 0, ttS: 1.75,
 }
 
-export function CockpitApp() {
+export function CockpitApp({ onMountChange }) {
   const [phase, setPhase] = useState('boot');
   const [interactive, setInteractive] = useState(false);
   // Resolved accessibility state from the root AccessibilityProvider
@@ -48,14 +47,34 @@ export function CockpitApp() {
   // camera is focused on the PC monitor or the vinyl crate.
   const [viewMode, setViewMode] = useState('cockpit');
   useEffect(() => {
+    if (onMountChange) onMountChange(true);
+    return () => {
+      if (onMountChange) onMountChange(false);
+    };
+  }, [onMountChange]);
+  useEffect(() => {
     const onView = (e) => setViewMode(e.detail.mode);
     window.addEventListener('cockpit-view-mode', onView);
     return () => window.removeEventListener('cockpit-view-mode', onView);
   }, []);
   const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem('cockpit-theme') || 'dark'; }
+    try {
+      const stored = localStorage.getItem('cockpit-theme');
+      if (stored === 'light' || stored === 'dark') return stored;
+      return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
     catch { return 'dark'; }
   });
+  const persistThemeRef = useRef(true);
+  useEffect(() => {
+    const onAppearance = (event) => {
+      if (event.detail?.source !== 'appearance-control') return;
+      persistThemeRef.current = event.detail.setting !== 'system';
+      setTheme(event.detail.theme);
+    };
+    window.addEventListener('cockpit-theme', onAppearance);
+    return () => window.removeEventListener('cockpit-theme', onAppearance);
+  }, []);
 
   const enterRoom = () => {
     if (reduceMotion) {
@@ -79,7 +98,11 @@ export function CockpitApp() {
   // through the opening airlock doors already wears the final theme. Boot
   // always renders in the dark palette.
   useEffect(() => {
-    try { localStorage.setItem('cockpit-theme', theme); } catch {}
+    if (persistThemeRef.current) {
+      try { localStorage.setItem('cockpit-theme', theme); } catch {}
+    }
+    persistThemeRef.current = true;
+    document.documentElement.setAttribute('data-appearance', theme);
     if (phase === 'cockpit' || phase === 'warp') {
       document.documentElement.setAttribute('data-theme', theme);
       window.__cockpitTheme = theme;
@@ -126,10 +149,8 @@ export function CockpitApp() {
   }, [phase]);
 
   return (
-    <main
+    <div
       data-screen-label="01 Cockpit FPS"
-      data-layout-region="app-shell"
-      data-content-contract={HOME_CONTENT_CONTRACT.id}
       style={{
         position: 'fixed', inset: 0, overflow: 'hidden',
         // one cursor language for every phase — boot terminal included, so
@@ -157,6 +178,6 @@ export function CockpitApp() {
       {phase === 'cockpit' && viewMode === 'cockpit' && (
         <ThemeToggle theme={theme} onToggle={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))} />
       )}
-    </main>
+    </div>
   );
 }

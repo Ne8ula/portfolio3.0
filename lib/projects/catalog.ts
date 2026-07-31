@@ -67,8 +67,8 @@ export type Project = {
 
 export const PROJECTS: readonly Project[] = [
   {
-    id: 'thesongofmaka',
-    slug: 'thesongofmaka',
+    id: 'songofmaka',
+    slug: 'songofmaka',
     title: 'Song of Maka',
     category: 'puzzle adventure',
     date: '2021–Present',
@@ -117,7 +117,7 @@ export const PROJECTS: readonly Project[] = [
     links: [
       {
         label: 'Project page',
-        href: 'https://www.alexxiong.me/games/thesongofmaka',
+        href: 'https://www.alexxiong.me/games/songofmaka',
         kind: 'case-study',
       },
     ],

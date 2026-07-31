@@ -12,8 +12,9 @@ import {
  * The cockpit route. One protected three-dimensional region — the WebGL
  * cockpit stage — whose interactive content (project browsing, project
  * detail, AX/OS dialog) has `/projects` as its canonical DOM alternative
- * (route ships in Phase 2; its ContentContract is declared now as
- * `planned-phase-2`).
+ * (implemented in Phase 2). The ordinary server document beneath the stage
+ * reflows while the protected cockpit retains contained-complex-region
+ * behavior.
  */
 export const COCKPIT_LAYOUT_CONTRACT = {
   id: 'cockpit-v1',
@@ -26,7 +27,7 @@ export const COCKPIT_LAYOUT_CONTRACT = {
       alternative: { kind: 'route', href: '/projects' },
     },
   ],
-  allowedAdaptations: ['scale', 'reposition', 'contain'],
+  allowedAdaptations: ['scale', 'reposition', 'reflow', 'contain'],
   accessibility: {
     keyboard: true,
     reflow: 'contained-complex-region',

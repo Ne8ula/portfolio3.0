@@ -175,14 +175,17 @@ Strict schemas (server-safe, no `three`, no browser globals):
   — `PROFILE` is the owner-approved record (validated blocking).
 
 Required delivery surfaces, each declared as a `ContentContract`
-(currently all `planned-phase-2`; Phase 2 flips them to `implemented`):
+(all `implemented` since Phase 2):
 
 | Surface | Requirement (initial response) |
 |---|---|
-| `/` | Server-rendered identity/summary + visible ordinary links to VIEW PROJECTS, RECRUITER OVERVIEW, contact — before boot or hydration |
+| `/` | Server-rendered identity/summary + visible ordinary links to VIEW PROJECTS, ABOUT, contact — before boot or hydration |
 | `/projects` | Server-rendered complete project index with semantic headings, lists, summaries, roles, outcomes, normal links |
 | `/projects/[slug]` | Server-rendered case study with all required fields and a canonical URL; coverage checked against every catalog slug |
-| `/recruiter` | Server-rendered, print-friendly professional overview |
+| `/about` | Server-rendered, print-friendly professional overview |
+
+`/recruiter` is a permanent redirect to `/about` under the owner-approved
+Revision 7 amendment (2026-07-29); it is not a canonical content surface.
 
 `/portfolio.json` is a **derivative** discovery aid generated from the same
 sources ([lib/content/serializers.ts](../lib/content/serializers.ts)); it
@@ -203,7 +206,7 @@ guarantees, tested separately (plan §A.4.3):
 
 | Tier | Environment | Guarantee |
 |---|---|---|
-| 1 | JavaScript disabled | Server-rendered content, semantic headings, project/recruiter routes, ordinary links, and browser/system accessibility behavior (`prefers-*`, `forced-colors`) |
+| 1 | JavaScript disabled | Server-rendered content, semantic headings, project/About routes, ordinary links, and browser/system accessibility behavior (`prefers-*`, `forced-colors`) |
 | 2 | JavaScript enabled, WebGL disabled | All meaningful interactive DOM alternatives: custom accessibility settings and persistence, theme persistence, dialogs, project controls |
 | 3 | JavaScript and WebGL enabled | The full cockpit experience |
 
@@ -278,8 +281,8 @@ type LayoutContract = {
 type ContentContract = {
   id: string
   route: `/${string}`
-  implementation: 'planned-phase-2' | 'implemented'  // planned-… only for §A.4.2 surfaces
-  purpose: 'entry' | 'project-index' | 'project-detail' | 'recruiter-summary'
+  implementation: 'planned-phase-2' | 'implemented'  // Phase 2 completion rejects planned-…
+  purpose: 'entry' | 'project-index' | 'project-detail' | 'professional-summary'
   sources: readonly ('profile' | 'project-catalog')[]
   delivery: { serverRendered: true; javascriptIndependent: true; webglIndependent: true; visibleSemanticHtml: true }
   discoverability: { linkedFromInitialHtml: true; canonicalUrl: true; sitemap: true }
@@ -300,15 +303,20 @@ DOM identifier scheme (used by diagnostics and browser tests):
 
 | Attribute | Values |
 |---|---|
-| `data-layout-region` | `cockpit-stage` (the WebGL stage), `boot` (boot region), `app-shell` |
+| `data-layout-region` | `cockpit-stage` (the WebGL stage), `cockpit-shell` (client overlay root), `boot` (boot region), `app-shell` |
 | `data-layout-contract` | the registered contract id (e.g. `cockpit-v1`) on the region root |
 | `data-content-contract` | the content-contract id (e.g. `content-home-v1`) |
-| `data-hud` | `site-header`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog` |
+| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog` |
 
-Phase 1 additions: the root `AccessibilityProvider` stamps the resolved
+Phase 2 route roots additionally expose `projects-index-v1`,
+`project-detail-v1`, and `about-v1` with matching
+`content-projects-v1`, `content-project-detail-v1`, and `content-about-v1`.
+The root `AccessibilityProvider` stamps the resolved
 accessibility state on `<html>` as `data-a11y-motion/contrast/transparency/
 text/controls` (values `reduced|full`, `high|standard`, `large|standard`);
 CSS keys off these with `prefers-*` media queries as the no-JS fallback.
+Phase 2 adds `data-appearance="light|dark"` with the same pre-paint/system
+fallback policy for document surfaces.
 `ResponsivePage` exposes `data-responsive-tier` and sets
 `data-document-scroll="reflow"` on `<html>` (ordinary pages own document
 scroll); `ResponsiveStage` exposes `data-stage-mode="fit|contained"`. The
@@ -377,12 +385,12 @@ assertion: a blank frame invalidates every other result at that viewport.
 Scorecard baselines (§9.6.3) require the §9.6.5 deterministic scene state
 and are NOT recorded before Phase 4.
 
-**Deferred to Phase 2 (tracked):** the §A.4.1 import-boundary lint rule —
-no server component or `/projects` route may import `three`,
-`components/cockpit/project-textures`, or any cockpit runtime module. It
-lands with Phase 2's routes (there is no server component to protect yet);
-until then the `import "client-only"` marker in `project-textures.ts` is
-the active build-time boundary.
+**Delivered in Phase 2:** the §A.4.1 import-boundary lint rule rejects
+`three`, `components/cockpit/project-textures`, and every cockpit runtime
+module from `app/**` and `lib/**`. The sole allowance is
+`app/page.tsx` importing `components/cockpit/cockpit-entry`; the
+`import "client-only"` marker in `project-textures.ts` remains the second
+build-time boundary.
 
 ## 12. Phase status
 
@@ -392,8 +400,8 @@ the active build-time boundary.
 | 0 | The enforcement island: strict `lib/` contracts + validators, catalog/texture split, scoped typecheck, unit tests, Chromium smoke harness, test bridge, this document | **Delivered** |
 | 0A | Owner-approved profile + six-project dossier (owner supplies facts) | **Delivered** (2026-07-28; all 7 records approved + hashed) |
 | 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
-| 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; not yet committed — hash recorded in the plan §8 on merge) |
-| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/recruiter`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts flip to `implemented` | Pending (unblocked: Phases 0B and 1 delivered) |
+| 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; commit `809607c`) |
+| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered in code** (2026-07-30; independent QA/merge pending, so no commit hash exists yet) |
 | 3 | One idempotent renderer/viewport sizing function (`syncRendererSize`, DPR cap 2) | Pending |
 | 4 | Projection bridge, hud-layout solver, seedable random streams, deterministic capture, first scorecard baselines | Pending |
 | 5 | 3D fit solver + input normalization wiring | Pending |

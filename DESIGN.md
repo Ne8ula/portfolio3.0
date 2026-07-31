@@ -88,6 +88,12 @@ The strongest reference qualities are:
 Use CSS variables in `globals.css`, never component-local hex values. Theme
 inversion and accessibility states depend on the token system.
 
+Phase 2 document routes use the bounded `--doc-*` surface tier from
+`globals.css`. It draws only from this palette, follows
+`data-appearance="light|dark"` plus system fallbacks, and stays independent
+from the cockpit-only `data-theme` inversion. This is one palette with two
+presentation contexts, not a second design system.
+
 | Family | Role |
 |---|---|
 | `--cream` / `--cream-deep` / `--cream-warm` | Polycarbonate, paper, primary light-theme fields, dark-theme foreground |
@@ -462,8 +468,9 @@ Catalogue rules:
 
 The dominant voice is Alex's portfolio, not a fictional operating system.
 
-- Navigation says `Projects`, `About` or `Recruiter overview`, `Contact`,
-  `Accessibility`, and `Theme`.
+- Navigation says `Projects`, `About`, `Contact`, `Accessibility`, and
+  `Theme`. `/recruiter` is a legacy redirect to `/about`, not a navigation
+  label.
 - Project actions say `View project`, `Previous project`, and `Next project`.
 - System language is quietly discoverable in boot, model codes, object
   screens, and technical annotations.

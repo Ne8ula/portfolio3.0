@@ -30,6 +30,16 @@ describe('validateProfile — valid fixture', () => {
   it('reports zero issues for a well-formed profile', () => {
     expect(validateProfile(makeProfile())).toEqual([])
   })
+
+  it('accepts an ordered non-empty about paragraph list', () => {
+    expect(
+      validateProfile(
+        makeProfile({
+          about: ['First approved paragraph.', 'Second approved paragraph.'],
+        }),
+      ),
+    ).toEqual([])
+  })
 })
 
 describe('PROFILE export (owner-approved in Phase 0A)', () => {
@@ -40,6 +50,15 @@ describe('PROFILE export (owner-approved in Phase 0A)', () => {
 
   it('links the owner-supplied 2026 résumé from public/', () => {
     expect(PROFILE.resumeUrl).toBe('/AlexXiong_Resume26.pdf')
+  })
+
+  it('contains the four owner-approved about paragraphs in order', () => {
+    expect(PROFILE.about).toEqual([
+      'Hello! I\'m Alex Xiong, a creative technologist specializing in product design and UX research, based in New York City.',
+      'I started in games because I wanted to make people feel something. At NYU I studied game design, co-founded Silverjay Studio, and co-directed Song of Maka, an award-winning narrative adventure now in post-production. As I sat through playtests, I realized the thing I couldn\'t stop watching was the players. Why they hesitated, where they got lost, what made them stay. That curiosity slowly became the catalyst to pivot.',
+      'Now I\'m at Cornell Tech studying HCI and Information Science, and I build NPCs in the Game Assemblies Lab that hold a conversation instead of reciting one: LLM-driven characters in Unreal Engine 5 with emotional states, real voices, and no scripted lines. Lately I\'ve been distilling that system into a small local model, and building a desktop companion that lives on your screen and talks back with context.',
+      'The through-line is simple. Play stopped being a separate place a long time ago; the systems behind our apps, feeds, and tools all borrow from games. I love continuing to learn about the human side of interactive media and create more projects not just for impact, but also for beauty.',
+    ])
   })
 })
 
@@ -52,6 +71,46 @@ describe('validateProfile — broken variants', () => {
   it('errors on an empty capability entry', () => {
     const errors = errorsOf(makeProfile({ capabilities: ['Game production', ''] }))
     expect(errors.some((i) => i.message.includes('capabilities[1]'))).toBe(true)
+  })
+
+  it('returns structured issues for malformed about content', () => {
+    const notAnArray = makeProfile({
+      about: 'Not an array' as unknown as PublicProfile['about'],
+    })
+    expect(errorsOf(notAnArray)).toContainEqual(
+      expect.objectContaining({
+        subject: 'profile',
+        message: 'about must be an array',
+      }),
+    )
+
+    const emptyAbout = makeProfile({
+      about: [] as unknown as PublicProfile['about'],
+    })
+    expect(errorsOf(emptyAbout)).toContainEqual(
+      expect.objectContaining({
+        subject: 'profile',
+        message: 'about is empty',
+      }),
+    )
+
+    const emptyParagraph = makeProfile({ about: ['Approved paragraph.', '  '] })
+    expect(errorsOf(emptyParagraph)).toContainEqual(
+      expect.objectContaining({
+        subject: 'profile',
+        message: 'about[1] must be a non-empty string',
+      }),
+    )
+
+    const nonStringParagraph = makeProfile({
+      about: [null] as unknown as PublicProfile['about'],
+    })
+    expect(errorsOf(nonStringParagraph)).toContainEqual(
+      expect.objectContaining({
+        subject: 'profile',
+        message: 'about[0] must be a non-empty string',
+      }),
+    )
   })
 
   it('errors on an unknown link kind', () => {

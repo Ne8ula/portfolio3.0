@@ -9,7 +9,7 @@ export type ContentPurpose =
   | 'entry'
   | 'project-index'
   | 'project-detail'
-  | 'recruiter-summary'
+  | 'professional-summary'
 
 export type ContentSource = 'profile' | 'project-catalog'
 
@@ -24,10 +24,8 @@ export type StructuredDataType =
 export type ContentContract = {
   readonly id: string
   readonly route: `/${string}`
-  /** `planned-phase-2` is allowed ONLY for the exact §A.4.2 required
-   *  surfaces, means "validated but delivery tests are named pending work
-   *  linked to Phase 2", and must never be reported as passing. CI rejects
-   *  it once the Phase 2 completion marker is recorded. */
+  /** `planned-phase-2` is retained only so the validator can reject stale
+   *  pre-completion declarations after the Phase 2 completion marker. */
   readonly implementation: 'planned-phase-2' | 'implemented'
   readonly purpose: ContentPurpose
   readonly sources: readonly ContentSource[]
@@ -56,25 +54,24 @@ export const REQUIRED_CONTENT_ROUTES = [
   '/',
   '/projects',
   '/projects/[slug]',
-  '/recruiter',
+  '/about',
 ] as const
 
-/** Set true by the Phase 2 completion marker; from then on CI rejects any
- *  remaining `planned-phase-2` contract. */
-export const PHASE_2_COMPLETE = false
+/** Phase 2 completion marker: CI rejects every stale planned declaration. */
+export const PHASE_2_COMPLETE = true
 
 const ROUTE_PURPOSES: Readonly<Record<string, ContentPurpose>> = {
   '/': 'entry',
   '/projects': 'project-index',
   '/projects/[slug]': 'project-detail',
-  '/recruiter': 'recruiter-summary',
+  '/about': 'professional-summary',
 }
 
 const CONTENT_PURPOSES: readonly ContentPurpose[] = [
   'entry',
   'project-index',
   'project-detail',
-  'recruiter-summary',
+  'professional-summary',
 ]
 
 const CONTENT_SOURCES: readonly ContentSource[] = ['profile', 'project-catalog']
