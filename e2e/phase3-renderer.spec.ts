@@ -508,22 +508,9 @@ test.describe('Phase 3 renderer lifecycle', () => {
     expect(Number.parseFloat(noticeStyle.borderWidth)).toBeGreaterThanOrEqual(1)
 
     await notice.getByRole('button', { name: 'Restart the 3D cockpit' }).click()
-    await waitForRendererStatus(page, 'initializing')
-    await expect
-      .poll(
-        async () =>
-          page.evaluate(() => {
-            try {
-              window.__COCKPIT_TEST_HOOKS__!.skipIntro()
-              return true
-            } catch {
-              return false
-            }
-          }),
-        { timeout: 30_000 },
-      )
-      .toBe(true)
     await waitForRendererStatus(page, 'ready')
+    await expect(page.locator('[data-layout-region="boot"]')).toHaveCount(0)
+    await expect(page.locator('[data-screen-label="00b Warp"]')).toHaveCount(0)
     await expect(page.locator('[data-layout-region="cockpit-stage"] canvas')).toHaveCount(1)
     await expectCanvasNotBlank(page)
   })

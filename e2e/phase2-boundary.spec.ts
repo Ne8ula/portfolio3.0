@@ -121,4 +121,36 @@ test.describe('Phase 2 root boundary', () => {
     await expect(projectLink).toBeVisible()
     await expect(projectLink).toHaveAttribute('href', '/projects/songofmaka')
   })
+
+  test('completed intro does not replay after project navigation and browser Back', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+    await page.getByRole('button', { name: /enter the room/i }).click()
+    await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
+      timeout: 30_000,
+    })
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => sessionStorage.getItem('cockpit-intro-complete-v1'),
+        ),
+      )
+      .toBe('true')
+
+    await page
+      .locator('[data-hud="site-header"]')
+      .getByRole('link', { name: /^projects$/i })
+      .click()
+    await expect(page).toHaveURL(/\/projects$/)
+
+    await page.goBack()
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.locator('[data-layout-region="boot"]')).toHaveCount(0)
+    await expect(page.locator('[data-screen-label="00b Warp"]')).toHaveCount(0)
+    await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
+      timeout: 30_000,
+    })
+  })
 })

@@ -49,6 +49,21 @@ const TWEAK_DEFAULTS = {
 }
 
 const VIEW_MODES = new Set(['cockpit', 'monitor', 'crate', 'deck']);
+const INTRO_COMPLETE_KEY = 'cockpit-intro-complete-v1';
+
+function introCompletedInThisTab() {
+  try {
+    return sessionStorage.getItem(INTRO_COMPLETE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function rememberIntroCompletion() {
+  try {
+    sessionStorage.setItem(INTRO_COMPLETE_KEY, 'true');
+  } catch {}
+}
 
 function captureRestoreSnapshot() {
   const rawMode = window.__cockpitViewMode;
@@ -64,8 +79,9 @@ function captureRestoreSnapshot() {
 }
 
 export function CockpitApp({ onFatal, onMountChange }) {
-  const [phase, setPhase] = useState('boot');
-  const [interactive, setInteractive] = useState(false);
+  const [initialIntroCompleted] = useState(introCompletedInThisTab);
+  const [phase, setPhase] = useState(initialIntroCompleted ? 'cockpit' : 'boot');
+  const [interactive, setInteractive] = useState(initialIntroCompleted);
   const [lifecycle, dispatchLifecycle] = React.useReducer(
     reduceContextLifecycle,
     undefined,
@@ -116,6 +132,7 @@ export function CockpitApp({ onFatal, onMountChange }) {
   }, []);
 
   const enterRoom = () => {
+    rememberIntroCompletion();
     if (reduceMotion) {
       setPhase('cockpit');
       setInteractive(true);
@@ -215,7 +232,11 @@ export function CockpitApp({ onFatal, onMountChange }) {
   // no-op in production builds (see test-hooks.ts).
   useEffect(() => {
     installTestHooks();
-    registerPhaseController(() => { setPhase('cockpit'); setInteractive(true); });
+    registerPhaseController(() => {
+      rememberIntroCompletion();
+      setPhase('cockpit');
+      setInteractive(true);
+    });
     return () => unregisterPhaseController();
   }, []);
 
