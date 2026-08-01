@@ -140,6 +140,9 @@ describe('phase runner', () => {
     expect(getStep(phase3Manifest, 'step-3').ownerGateAfter).toBe(true)
     expect(getStep(phase3Manifest, 'step-3').commitAfterQa).toBeNull()
     expect(
+      getStep(phase3Manifest, 'step-2').commitAfterQa?.paths,
+    ).toContain('components/cockpit/cockpit-hud.tsx')
+    expect(
       pathMatchesAllowedCommitPath(
         'docs/baselines/phase-3-dpr/hardware.json',
         getStep(phase3Manifest, 'step-4').commitAfterQa?.paths ?? [],

@@ -63,6 +63,7 @@
           "tests/unit/context-lifecycle.test.ts",
           "components/cockpit/cockpit-app.tsx",
           "components/cockpit/cockpit-entry.tsx",
+          "components/cockpit/cockpit-hud.tsx",
           "components/cockpit/globe-canvas.tsx",
           "components/cockpit/warp-transition.tsx",
           "components/cockpit/vinyl-crate.ts",
