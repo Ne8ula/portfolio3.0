@@ -22,6 +22,12 @@ export interface PhaseStep {
   planItems: number[]
   scope: string[]
   ownerGateAfter: boolean
+  commitAfterQa: PhaseCommit | null
+}
+
+export interface PhaseCommit {
+  message: string
+  paths: string[]
 }
 
 export interface PhaseManifest {
@@ -34,7 +40,7 @@ export interface PhaseManifest {
   requiredGates: string[]
   maxFixAttempts: number
   initialStep: string
-  initiallyAcceptedThrough: string
+  initiallyAcceptedThrough: string | null
   steps: PhaseStep[]
 }
 
@@ -85,8 +91,10 @@ export interface PhaseRunnerState {
   currentStep: string
   status: RunnerStatus
   qaPassedSteps: string[]
-  ownerAcceptedThrough: string
+  ownerAcceptedThrough: string | null
   fixAttempts: Record<string, number>
+  stepCommits: Record<string, string | null>
+  initialDirtyPaths: string[]
   pendingFindings: QaFinding[]
   lastCodexResult: CodexResult | null
   lastKimiResult: KimiResult | null
@@ -126,6 +134,41 @@ function requireNumber(value: unknown, label: string): number {
   return value
 }
 
+function parseCommit(value: unknown, label: string): PhaseCommit | null {
+  if (value === undefined || value === null) return null
+  if (!isRecord(value)) throw new Error(`${label} must be an object or null`)
+
+  const paths = requireStringArray(value.paths, `${label}.paths`)
+  if (paths.length === 0) {
+    throw new Error(`${label}.paths must contain at least one path`)
+  }
+  for (const path of paths) {
+    if (
+      path.startsWith('/') ||
+      path === '.' ||
+      path.split('/').includes('..')
+    ) {
+      throw new Error(`${label}.paths contains an unsafe path: ${path}`)
+    }
+    const normalized = path.replace(/\/+$/, '')
+    if (
+      normalized === '.git' ||
+      normalized.startsWith('.git/') ||
+      normalized === '.agent-runs' ||
+      normalized.startsWith('.agent-runs/') ||
+      normalized === 'content/portfolio-approvals.json' ||
+      normalized === 'docs/agent-handoff.md'
+    ) {
+      throw new Error(`${label}.paths contains a protected path: ${path}`)
+    }
+  }
+
+  return {
+    message: requireString(value.message, `${label}.message`),
+    paths,
+  }
+}
+
 export function manifestDigest(rawManifest: string): string {
   return createHash('sha256').update(rawManifest).digest('hex').slice(0, 16)
 }
@@ -160,6 +203,10 @@ export function parseManifest(value: unknown): PhaseManifest {
         rawStep.ownerGateAfter,
         `steps[${index}].ownerGateAfter`,
       ),
+      commitAfterQa: parseCommit(
+        rawStep.commitAfterQa,
+        `steps[${index}].commitAfterQa`,
+      ),
     }
   })
 
@@ -169,18 +216,35 @@ export function parseManifest(value: unknown): PhaseManifest {
   }
 
   const initialStep = requireString(value.initialStep, 'initialStep')
-  const initiallyAcceptedThrough = requireString(
-    value.initiallyAcceptedThrough,
-    'initiallyAcceptedThrough',
-  )
-  if (!stepIds.has(initialStep) || !stepIds.has(initiallyAcceptedThrough)) {
-    throw new Error('initial step references must match a manifest step id')
+  const initiallyAcceptedThrough =
+    value.initiallyAcceptedThrough === null
+      ? null
+      : requireString(
+          value.initiallyAcceptedThrough,
+          'initiallyAcceptedThrough',
+        )
+  if (!stepIds.has(initialStep)) {
+    throw new Error('initialStep must match a manifest step id')
   }
-  if (
-    steps.findIndex((step) => step.id === initiallyAcceptedThrough) >=
-    steps.findIndex((step) => step.id === initialStep)
-  ) {
-    throw new Error('initiallyAcceptedThrough must precede initialStep')
+  const initialIndex = steps.findIndex((step) => step.id === initialStep)
+  if (initiallyAcceptedThrough === null) {
+    if (initialIndex !== 0) {
+      throw new Error(
+        'initiallyAcceptedThrough may be null only when initialStep is first',
+      )
+    }
+  } else {
+    if (!stepIds.has(initiallyAcceptedThrough)) {
+      throw new Error(
+        'initiallyAcceptedThrough must match a manifest step id or be null',
+      )
+    }
+    if (
+      steps.findIndex((step) => step.id === initiallyAcceptedThrough) >=
+      initialIndex
+    ) {
+      throw new Error('initiallyAcceptedThrough must precede initialStep')
+    }
   }
 
   const maxFixAttempts = requireNumber(value.maxFixAttempts, 'maxFixAttempts')
@@ -210,6 +274,7 @@ export function createInitialState(
   manifest: PhaseManifest,
   digest: string,
   now = new Date().toISOString(),
+  initialDirtyPaths: string[] = [],
 ): PhaseRunnerState {
   const initialIndex = manifest.steps.findIndex(
     (step) => step.id === manifest.initialStep,
@@ -223,6 +288,10 @@ export function createInitialState(
     qaPassedSteps: manifest.steps.slice(0, initialIndex).map((step) => step.id),
     ownerAcceptedThrough: manifest.initiallyAcceptedThrough,
     fixAttempts: Object.fromEntries(manifest.steps.map((step) => [step.id, 0])),
+    stepCommits: Object.fromEntries(
+      manifest.steps.map((step) => [step.id, null]),
+    ),
+    initialDirtyPaths,
     pendingFindings: [],
     lastCodexResult: null,
     lastKimiResult: null,
@@ -245,7 +314,47 @@ export function parseState(value: unknown, manifest: PhaseManifest): PhaseRunner
     throw new Error(`state references unknown step: ${currentStep}`)
   }
 
-  return value as unknown as PhaseRunnerState
+  const ownerAcceptedThrough =
+    value.ownerAcceptedThrough === null
+      ? null
+      : requireString(value.ownerAcceptedThrough, 'state.ownerAcceptedThrough')
+  if (
+    ownerAcceptedThrough !== null &&
+    !manifest.steps.some((step) => step.id === ownerAcceptedThrough)
+  ) {
+    throw new Error(
+      `state owner acceptance references unknown step: ${ownerAcceptedThrough}`,
+    )
+  }
+
+  const initialDirtyPaths =
+    value.initialDirtyPaths === undefined
+      ? []
+      : requireStringArray(value.initialDirtyPaths, 'state.initialDirtyPaths')
+  const stepCommits: Record<string, string | null> = Object.fromEntries(
+    manifest.steps.map((step) => [step.id, null]),
+  )
+  if (value.stepCommits !== undefined) {
+    if (!isRecord(value.stepCommits)) {
+      throw new Error('state.stepCommits must be an object')
+    }
+    for (const step of manifest.steps) {
+      const commit = value.stepCommits[step.id]
+      if (commit !== null && commit !== undefined) {
+        stepCommits[step.id] = requireString(
+          commit,
+          `state.stepCommits.${step.id}`,
+        )
+      }
+    }
+  }
+
+  return {
+    ...(value as unknown as PhaseRunnerState),
+    ownerAcceptedThrough,
+    stepCommits,
+    initialDirtyPaths,
+  }
 }
 
 export function getStep(
@@ -264,6 +373,50 @@ export function nextStep(
   const index = manifest.steps.findIndex((step) => step.id === stepId)
   if (index < 0) throw new Error(`unknown phase step: ${stepId}`)
   return manifest.steps[index + 1] ?? null
+}
+
+export function pathMatchesAllowedCommitPath(
+  path: string,
+  allowedPaths: string[],
+): boolean {
+  return allowedPaths.some((allowed) => {
+    if (allowed.endsWith('/')) return path.startsWith(allowed)
+    return path === allowed
+  })
+}
+
+export function acceptOwnerGate(
+  manifest: PhaseManifest,
+  state: PhaseRunnerState,
+  now = new Date().toISOString(),
+): PhaseRunnerState {
+  if (state.status !== 'awaiting-owner') {
+    throw new Error(
+      `owner acceptance requires awaiting-owner state; current state is ${state.status}`,
+    )
+  }
+  const step = getStep(manifest, state.currentStep)
+  if (!step.ownerGateAfter || !state.qaPassedSteps.includes(step.id)) {
+    throw new Error(
+      `owner acceptance is not configured after independently passed ${step.id}`,
+    )
+  }
+  const following = nextStep(manifest, step.id)
+  if (!following) {
+    throw new Error('final phase acceptance belongs to owner/CI, not phase:accept')
+  }
+
+  return {
+    ...state,
+    currentStep: following.id,
+    status: 'ready',
+    ownerAcceptedThrough: step.id,
+    pendingFindings: [],
+    lastCodexResult: null,
+    lastKimiResult: null,
+    lastError: null,
+    updatedAt: now,
+  }
 }
 
 export function canonicalGateCommand(command: string): string {
@@ -532,6 +685,21 @@ function formatFindings(findings: QaFinding[]): string {
     .join('\n')
 }
 
+function formatCommitBoundary(step: PhaseStep): string {
+  if (!step.commitAfterQa) {
+    return (
+      'This step has no automatic commit. Its approved evidence remains ' +
+      'uncommitted across the owner checkpoint and is included by the later ' +
+      'manifest commit boundary.'
+    )
+  }
+  return (
+    `After independent QA PASS, the controller will create "${step.commitAfterQa.message}" ` +
+    'from only these repository paths:\n' +
+    step.commitAfterQa.paths.map((path) => `- ${path}`).join('\n')
+  )
+}
+
 export function buildCodexPrompt(
   manifest: PhaseManifest,
   step: PhaseStep,
@@ -556,11 +724,16 @@ ${formatScope(step.scope)}
 Independent QA findings to address:
 ${formatFindings(state.pendingFindings)}
 
+Controller commit boundary:
+${formatCommitBoundary(step)}
+
 Rules:
 - Work only in the shared repository worktree; the phase runner holds the writer lock.
 - Preserve every existing owner/agent change. Never reset, clean, stage, or rewrite unrelated work.
+- Do not run git add or git commit. After independent QA PASS, the trusted phase controller owns only the manifest-approved commit boundary.
+- If the approved design genuinely requires a path outside the controller commit boundary, return outcome "blocked" before editing that path.
 - Do not begin another implementation step or a later phase.
-- Do not edit or regenerate content/portfolio-approvals.json.
+- Do not edit, regenerate, stage, or commit content/portfolio-approvals.json.
 - Preserve the Phase 6 deck-overlap test.fixme and all other documented phase boundaries.
 - Resolve ambiguity by returning outcome "blocked"; do not silently redefine the approved design.
 - Run all five required gates and do not return ready-for-qa while any required gate is red:

@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import {
   PHASE_RESULT_MARKER,
+  acceptOwnerGate,
   buildCodexPrompt,
   canonicalGateCommand,
   canonicalStepId,
@@ -11,6 +12,7 @@ import {
   getStep,
   isHostRecoverableE2eFailure,
   manifestDigest,
+  pathMatchesAllowedCommitPath,
   parseCodexResult,
   parseKimiResult,
   parseManifest,
@@ -28,6 +30,14 @@ const manifestPath = fileURLToPath(
 )
 const rawManifest = readFileSync(manifestPath, 'utf8')
 const manifest = parseManifest(JSON.parse(rawManifest))
+const phase3ManifestPath = fileURLToPath(
+  new URL(
+    '../../scripts/phase-runner/manifests/phase-3.json',
+    import.meta.url,
+  ),
+)
+const rawPhase3Manifest = readFileSync(phase3ManifestPath, 'utf8')
+const phase3Manifest = parseManifest(JSON.parse(rawPhase3Manifest))
 const requiredGates: GateResult[] = manifest.requiredGates.map((command) => ({
   command,
   status: 'pass',
@@ -50,9 +60,10 @@ function finding(): QaFinding {
 function kimiResult(
   step: string,
   verdict: KimiResult['verdict'],
+  phase = 2,
 ): KimiResult {
   return {
-    phase: 2,
+    phase,
     step,
     verdict,
     summary: `${step} ${verdict}`,
@@ -60,7 +71,7 @@ function kimiResult(
     findings: verdict === 'fail' ? [finding()] : [],
     residualRisks: [],
     nextContext: 'Verified context only.',
-    handoff: `Handoff: Phase 2 ${step} ${verdict}.`,
+    handoff: `Handoff: Phase ${phase} ${step} ${verdict}.`,
   }
 }
 
@@ -87,6 +98,59 @@ describe('phase runner', () => {
     expect(prompt).toContain('Do not begin another implementation step')
     expect(prompt).toContain("Kimi's nextContext is advisory only")
     expect(prompt).toContain('content/portfolio-approvals.json')
+    expect(prompt).toContain('Do not run git add or git commit')
+    expect(prompt).toContain('Controller commit boundary:')
+    expect(prompt).toContain(
+      'If the approved design genuinely requires a path outside',
+    )
+  })
+
+  it('initializes Phase 3 at its first step without fictional prior acceptance', () => {
+    const state = createInitialState(
+      phase3Manifest,
+      manifestDigest(rawPhase3Manifest),
+      '2026-07-31T00:00:00.000Z',
+      ['content/portfolio-approvals.json'],
+    )
+
+    expect(state.currentStep).toBe('step-1')
+    expect(state.qaPassedSteps).toEqual([])
+    expect(state.ownerAcceptedThrough).toBeNull()
+    expect(state.initialDirtyPaths).toEqual([
+      'content/portfolio-approvals.json',
+    ])
+    expect(state.stepCommits).toEqual({
+      'step-1': null,
+      'step-2': null,
+      'step-3': null,
+      'step-4': null,
+    })
+  })
+
+  it('maps Phase 3 into three commits around the owner-only AC-23 checkpoint', () => {
+    expect(
+      phase3Manifest.steps
+        .filter((step) => step.commitAfterQa)
+        .map((step) => step.planItems),
+    ).toEqual([
+      [1, 2, 3],
+      [4, 5, 6],
+      [8, 9],
+    ])
+    expect(getStep(phase3Manifest, 'step-3').ownerGateAfter).toBe(true)
+    expect(getStep(phase3Manifest, 'step-3').commitAfterQa).toBeNull()
+    expect(
+      pathMatchesAllowedCommitPath(
+        'docs/baselines/phase-3-dpr/hardware.json',
+        getStep(phase3Manifest, 'step-4').commitAfterQa?.paths ?? [],
+      ),
+    ).toBe(true)
+    expect(
+      pathMatchesAllowedCommitPath(
+        'content/portfolio-approvals.json',
+        getStep(phase3Manifest, 'step-4').commitAfterQa?.paths ?? [],
+      ),
+    ).toBe(false)
   })
 
   it('extracts a marked Kimi JSON result from stream-json output', () => {
@@ -150,6 +214,45 @@ describe('phase runner', () => {
 
     expect(next.status).toBe('complete-awaiting-owner-ci')
     expect(next.qaPassedSteps).toContain('step-4')
+  })
+
+  it('stops after Phase 3 tooling QA and requires explicit owner acceptance', () => {
+    const state = {
+      ...createInitialState(
+        phase3Manifest,
+        manifestDigest(rawPhase3Manifest),
+      ),
+      currentStep: 'step-3',
+      qaPassedSteps: ['step-1', 'step-2'],
+    }
+    const waiting = transitionAfterQa(
+      phase3Manifest,
+      state,
+      kimiResult('step-3', 'pass', 3),
+    )
+
+    expect(waiting.status).toBe('awaiting-owner')
+    expect(waiting.currentStep).toBe('step-3')
+    expect(waiting.ownerAcceptedThrough).toBeNull()
+
+    const accepted = acceptOwnerGate(
+      phase3Manifest,
+      waiting,
+      '2026-07-31T00:02:00.000Z',
+    )
+    expect(accepted.status).toBe('ready')
+    expect(accepted.currentStep).toBe('step-4')
+    expect(accepted.ownerAcceptedThrough).toBe('step-3')
+  })
+
+  it('refuses owner acceptance outside an awaiting-owner checkpoint', () => {
+    const state = createInitialState(
+      phase3Manifest,
+      manifestDigest(rawPhase3Manifest),
+    )
+    expect(() => acceptOwnerGate(phase3Manifest, state)).toThrow(
+      'owner acceptance requires awaiting-owner state',
+    )
   })
 
   it('normalizes CI-prefixed e2e gate reporting', () => {

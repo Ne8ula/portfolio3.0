@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "phase": 3,
+  "title": "Renderer and viewport sizing",
+  "source": "docs/phase-3-design.md",
+  "sourceSection": "§9",
+  "designAuthorities": [
+    "DESIGN.md",
+    "docs/responsive-system.md",
+    "docs/hud-responsive-layout-plan.md §8 Phase 3 and §10.1",
+    "app/layout-contract.ts",
+    "lib/responsive/layout-contract.ts"
+  ],
+  "requiredGates": [
+    "npm run lint",
+    "npm run typecheck:contracts",
+    "npm run validate:contracts",
+    "npm run test:unit",
+    "npm run test:e2e"
+  ],
+  "maxFixAttempts": 3,
+  "initialStep": "step-1",
+  "initiallyAcceptedThrough": null,
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Sizing policy and renderer parity",
+      "planItems": [1, 2, 3],
+      "scope": [
+        "Implement the strict pure render policy and its unit tests exactly as §3 and §9 Step 1 specify.",
+        "Implement the shared per-renderer size synchronizer and wire the main renderer with mount-box measurement, DPR re-arming, frame-start sync, and ordered cleanup.",
+        "Apply the same sizing contract to warp, remove window-sized rendering, and close the existing warp catch-path cleanup gap.",
+        "Verify AC-1 through AC-4, AC-7 through AC-9, and the scoped AC-17 cleanup assertion without beginning context recovery."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 3: implement renderer sizing policy",
+        "paths": [
+          "lib/responsive/render-policy.ts",
+          "tests/unit/render-policy.test.ts",
+          "components/cockpit/renderer-size-sync.ts",
+          "components/cockpit/globe-canvas.tsx",
+          "components/cockpit/warp-transition.tsx",
+          "e2e/smoke.spec.ts"
+        ]
+      }
+    },
+    {
+      "id": "step-2",
+      "title": "Context lifecycle, recovery, and browser coverage",
+      "planItems": [4, 5, 6],
+      "scope": [
+        "Implement the pure context lifecycle, rebuild-by-remount controller, durable snapshot seeding, transient reset, listener/loop discipline, and the full outgoing-context teardown order.",
+        "Implement the recovery panel, terminal runtime notice, CockpitEntry lost state, ResponsiveStage integration, focus/live-region/accessibility behavior, and warp loss completion using the exact approved copy.",
+        "Add development-only renderer test hooks and the Phase 3 browser suite for AC-5, AC-11 through AC-21 while preserving every documented bridge and the Phase 6 test.fixme.",
+        "Record any D4 or R2 fallback from implementation evidence; do not begin DPR baselines or documentation completion."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 3: add WebGL context recovery",
+        "paths": [
+          "lib/responsive/context-lifecycle.ts",
+          "tests/unit/context-lifecycle.test.ts",
+          "components/cockpit/cockpit-app.tsx",
+          "components/cockpit/cockpit-entry.tsx",
+          "components/cockpit/globe-canvas.tsx",
+          "components/cockpit/warp-transition.tsx",
+          "components/cockpit/vinyl-crate.ts",
+          "components/cockpit/turntable.ts",
+          "components/cockpit/test-hooks.ts",
+          "components/cockpit/renderer-recovery-panel.tsx",
+          "components/responsive/responsive-stage.tsx",
+          "app/globals.css",
+          "e2e/phase3-renderer.spec.ts",
+          "e2e/smoke.spec.ts"
+        ]
+      }
+    },
+    {
+      "id": "step-3",
+      "title": "DPR tooling and owner evidence checkpoint",
+      "planItems": [7],
+      "scope": [
+        "Implement scripts/perf/dpr-baseline.ts and the Phase 3 DPR evidence structure.",
+        "Run and record only the software-rendered capture with its unmasked renderer string, and prepare the owner hardware capture and about:gpucrash procedure.",
+        "Do not self-certify hardware or about:gpucrash evidence, do not decide from SwiftShader numbers, and do not begin final documentation.",
+        "After fresh Kimi QA, stop for the explicit AC-23 owner checkpoint; leave Step 7 changes uncommitted for the final baselines-and-docs commit group."
+      ],
+      "ownerGateAfter": true,
+      "commitAfterQa": null
+    },
+    {
+      "id": "step-4",
+      "title": "Contracts, documentation, and full acceptance evidence",
+      "planItems": [8, 9],
+      "scope": [
+        "Require and verify the owner-certified hardware capture and one-time about:gpucrash recovery evidence from the accepted Step 7 checkpoint; never self-certify either item.",
+        "Complete only the Phase 3 contract and documentation amendments in §6 and §9 Step 8, including the approved DESIGN.md bullet when applicable.",
+        "Do not include the separate Phase 2 housekeeping corrections without their own owner approval.",
+        "Run all five gates and complete AC-6, AC-22 through AC-24 evidence, visual review, untouched-boundary proof, fallback reporting, and the Phase 3 implementation report."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 3: record DPR evidence and delivery",
+        "paths": [
+          "scripts/perf/dpr-baseline.ts",
+          "docs/baselines/phase-3-dpr/",
+          "docs/phase-3-implementation.md",
+          "lib/responsive/render-policy.ts",
+          "docs/responsive-system.md",
+          "docs/hud-responsive-layout-plan.md",
+          "CLAUDE.md",
+          "AGENTS.md",
+          "DESIGN.md"
+        ]
+      }
+    }
+  ]
+}

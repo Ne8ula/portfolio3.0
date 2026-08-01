@@ -18,6 +18,7 @@
     "phase:pause": "node --import tsx scripts/phase-runner/phase-runner.ts pause",
     "phase:resume": "node --import tsx scripts/phase-runner/phase-runner.ts resume",
     "phase:retry": "node --import tsx scripts/phase-runner/phase-runner.ts retry",
+    "phase:accept": "node --import tsx scripts/phase-runner/phase-runner.ts accept",
     "phase:recover": "node --import tsx scripts/phase-runner/phase-runner.ts recover",
     "phase:continue": "node --import tsx scripts/phase-runner/phase-runner.ts continue",
     "phase:retest": "node --import tsx scripts/phase-runner/phase-runner.ts retest",

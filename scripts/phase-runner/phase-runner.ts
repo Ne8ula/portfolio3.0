@@ -24,6 +24,7 @@ import {
 import { homedir, tmpdir } from 'node:os'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import {
+  acceptOwnerGate,
   buildCodexPrompt,
   buildKimiPrompt,
   canonicalGateCommand,
@@ -32,6 +33,7 @@ import {
   getStep,
   isHostRecoverableE2eFailure,
   manifestDigest,
+  pathMatchesAllowedCommitPath,
   parseCodexResult,
   parseKimiResult,
   parseManifest,
@@ -95,6 +97,15 @@ function gitBuffer(args: string[], cwd: string): Buffer {
     maxBuffer: MAX_COMMAND_OUTPUT,
     stdio: ['ignore', 'pipe', 'pipe'],
   })
+}
+
+function gitCommandSucceeded(args: string[], cwd: string): boolean {
+  const result = spawnSync('git', args, {
+    cwd,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  return !result.error && result.status === 0
 }
 
 function repositoryRoot(cwd: string): string {
@@ -451,6 +462,189 @@ function untrackedPaths(root: string): string[] {
   return output.split('\0').filter(Boolean)
 }
 
+function changedRepositoryPaths(root: string): string[] {
+  return [
+    ...new Set([
+      ...gitText(['diff', '--name-only', 'HEAD', '--', '.'], root)
+        .split('\n')
+        .filter(Boolean),
+      ...untrackedPaths(root).filter(
+        (path) => !path.startsWith(`${RUNNER_DIRECTORY}/`),
+      ),
+    ]),
+  ].sort()
+}
+
+function selectedPathsSnapshot(root: string, paths: string[]): string {
+  const hash = createHash('sha256')
+  for (const path of [...new Set(paths)].sort()) {
+    if (path === HANDOFF_PATH) continue
+    hash.update(path)
+    const absolute = safeRepositoryPath(root, path)
+    if (!existsSync(absolute)) {
+      hash.update('missing')
+      continue
+    }
+    const stats = lstatSync(absolute)
+    if (stats.isSymbolicLink()) {
+      hash.update('symlink')
+      hash.update(readlinkSync(absolute))
+    } else if (stats.isFile()) {
+      hash.update('file')
+      hash.update(readFileSync(absolute))
+    } else {
+      hash.update('unsupported')
+    }
+  }
+  return hash.digest('hex')
+}
+
+function assertCommitInitializationReady(
+  loaded: LoadedRunner,
+): string[] {
+  const commitSteps = loaded.manifest.steps.filter(
+    (step) => step.commitAfterQa !== null,
+  )
+  const initialDirtyPaths = changedRepositoryPaths(loaded.paths.root)
+  if (commitSteps.length === 0) return initialDirtyPaths
+
+  if (
+    !gitCommandSucceeded(
+      ['diff', '--cached', '--quiet', '--exit-code', '--', '.'],
+      loaded.paths.root,
+    )
+  ) {
+    return fail(
+      'automatic phase commits require an empty Git index before initialization',
+    )
+  }
+
+  const manifestPath = relative(loaded.paths.root, loaded.paths.manifest)
+  for (const authorityPath of [manifestPath, loaded.manifest.source]) {
+    if (
+      !gitCommandSucceeded(
+        ['ls-files', '--error-unmatch', '--', authorityPath],
+        loaded.paths.root,
+      )
+    ) {
+      return fail(
+        `${authorityPath} must be tracked before initializing a phase with automatic commits`,
+      )
+    }
+    if (
+      gitText(
+        ['status', '--short', '--untracked-files=all', '--', authorityPath],
+        loaded.paths.root,
+      )
+    ) {
+      return fail(
+        `${authorityPath} must be clean before initializing a phase with automatic commits`,
+      )
+    }
+  }
+
+  const allAllowedPaths = commitSteps.flatMap(
+    (step) => step.commitAfterQa?.paths ?? [],
+  )
+  const conflicting = initialDirtyPaths.filter((path) =>
+    pathMatchesAllowedCommitPath(path, allAllowedPaths),
+  )
+  if (conflicting.length > 0) {
+    return fail(
+      'phase-owned commit paths must be clean before initialization: ' +
+        conflicting.join(', '),
+    )
+  }
+  return initialDirtyPaths
+}
+
+function commitPassedStep(
+  loaded: LoadedRunner,
+  state: PhaseRunnerState,
+  result: KimiResult,
+): PhaseRunnerState {
+  if (result.verdict !== 'pass') return state
+  const step = getStep(loaded.manifest, state.currentStep)
+  const commit = step.commitAfterQa
+  if (!commit) return state
+  if (state.stepCommits[step.id]) {
+    return fail(
+      `${step.id} already records commit ${state.stepCommits[step.id]}; the runner will not rewrite it automatically`,
+    )
+  }
+  if (
+    !gitCommandSucceeded(
+      ['diff', '--cached', '--quiet', '--exit-code', '--', '.'],
+      loaded.paths.root,
+    )
+  ) {
+    return fail('automatic phase commit refused a non-empty Git index')
+  }
+
+  const initialDirty = new Set(state.initialDirtyPaths)
+  const candidates = changedRepositoryPaths(loaded.paths.root).filter(
+    (path) =>
+      !initialDirty.has(path) &&
+      path !== HANDOFF_PATH &&
+      path !== 'content/portfolio-approvals.json',
+  )
+  if (candidates.length === 0) {
+    return fail(`${step.id} passed QA but has no new files to commit`)
+  }
+  const outsideBoundary = candidates.filter(
+    (path) => !pathMatchesAllowedCommitPath(path, commit.paths),
+  )
+  if (outsideBoundary.length > 0) {
+    return fail(
+      `${step.id} changed files outside its automatic commit boundary: ` +
+        outsideBoundary.join(', '),
+    )
+  }
+
+  execFileSync('git', ['add', '--', ...candidates], {
+    cwd: loaded.paths.root,
+    encoding: 'utf8',
+    maxBuffer: MAX_COMMAND_OUTPUT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  const staged = gitText(
+    ['diff', '--cached', '--name-only', '--', '.'],
+    loaded.paths.root,
+  )
+    .split('\n')
+    .filter(Boolean)
+    .sort()
+  if (
+    staged.length !== candidates.length ||
+    staged.some((path, index) => path !== candidates[index])
+  ) {
+    return fail(
+      'automatic phase commit staging did not match the verified candidate set',
+    )
+  }
+
+  execFileSync('git', ['commit', '-m', commit.message], {
+    cwd: loaded.paths.root,
+    encoding: 'utf8',
+    maxBuffer: MAX_COMMAND_OUTPUT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  })
+  const commitSha = gitText(['rev-parse', '--short=12', 'HEAD'], loaded.paths.root)
+  const next = {
+    ...state,
+    stepCommits: {
+      ...state.stepCommits,
+      [step.id]: commitSha,
+    },
+    updatedAt: new Date().toISOString(),
+  }
+  writeState(loaded.paths.state, next)
+  console.log(
+    `Committed independently passed ${step.id} as ${commitSha}: ${commit.message}`,
+  )
+  return next
+}
+
 function safeRepositoryPath(root: string, path: string): string {
   const resolved = resolve(root, path)
   if (resolved !== root && !resolved.startsWith(`${root}${sep}`)) {
@@ -701,6 +895,14 @@ async function runCodex(
     `${timestampSlug()}-${label}-codex.jsonl`,
   )
   const beforeHandoff = handoffHash(loaded.paths.root)
+  const protectedDirtyPaths = [
+    ...state.initialDirtyPaths,
+    'content/portfolio-approvals.json',
+  ]
+  const beforeProtectedDirty = selectedPathsSnapshot(
+    loaded.paths.root,
+    protectedDirtyPaths,
+  )
   const args = [
     'exec',
     '--sandbox',
@@ -727,6 +929,14 @@ async function runCodex(
     label: `Codex ${step.id}`,
     heartbeatMs: 30_000,
   })
+  if (
+    selectedPathsSnapshot(loaded.paths.root, protectedDirtyPaths) !==
+    beforeProtectedDirty
+  ) {
+    return fail(
+      'Codex changed an initialization-time owner file or the protected approval ledger',
+    )
+  }
   if (!existsSync(resultPath)) {
     return fail(`Codex did not write its structured result: ${resultPath}`)
   }
@@ -817,13 +1027,17 @@ function initialize(loaded: LoadedRunner): void {
       )}; initialization never overwrites existing progress`,
     )
   }
+  const initialDirtyPaths = assertCommitInitializationReady(loaded)
   const state = createInitialState(
     loaded.manifest,
     loaded.manifestDigest,
+    new Date().toISOString(),
+    initialDirtyPaths,
   )
   writeState(loaded.paths.state, state)
   console.log(
-    `Initialized Phase ${loaded.manifest.phase} at ${state.currentStep}; owner acceptance is recorded through ${state.ownerAcceptedThrough}.`,
+    `Initialized Phase ${loaded.manifest.phase} at ${state.currentStep}; ` +
+      `owner acceptance is recorded through ${state.ownerAcceptedThrough ?? 'none'}.`,
   )
 }
 
@@ -834,7 +1048,13 @@ function printStatus(loaded: LoadedRunner): void {
     `Phase ${state.phase}: ${state.status}\n` +
       `Current step: ${step.id} — ${step.title}\n` +
       `QA-passed: ${state.qaPassedSteps.join(', ') || 'none'}\n` +
-      `Owner accepted through: ${state.ownerAcceptedThrough}\n` +
+      `Owner accepted through: ${state.ownerAcceptedThrough ?? 'none'}\n` +
+      `Step commits: ${
+        Object.entries(state.stepCommits)
+          .filter(([, commit]) => commit)
+          .map(([stepId, commit]) => `${stepId}=${commit}`)
+          .join(', ') || 'none'
+      }\n` +
       `Fix attempts for current step: ${state.fixAttempts[step.id] ?? 0}\n` +
       `Updated: ${state.updatedAt}`,
   )
@@ -902,6 +1122,21 @@ function retry(loaded: LoadedRunner): void {
   console.log(
     `Phase ${state.phase} ${state.currentStep} is ready to retry. Existing QA findings were preserved.`,
   )
+}
+
+function acceptOwnerCheckpoint(loaded: LoadedRunner): void {
+  acquireLock(loaded.paths)
+  try {
+    const state = loadState(loaded)
+    const next = acceptOwnerGate(loaded.manifest, state)
+    writeState(loaded.paths.state, next)
+    console.log(
+      `Owner checkpoint accepted through ${state.currentStep}; ` +
+        `Phase ${state.phase} is ready at ${next.currentStep}.`,
+    )
+  } finally {
+    releaseLock(loaded.paths)
+  }
 }
 
 function processIsAlive(pid: number): boolean {
@@ -1029,9 +1264,24 @@ async function continueSavedCodexResult(
       throw error
     }
 
+    let stateAfterCommit: PhaseRunnerState
+    try {
+      stateAfterCommit = commitPassedStep(
+        loaded,
+        { ...state, status: 'qa-running' },
+        kimiResult,
+      )
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      state = updateState(loaded, state, {
+        status: 'blocked',
+        lastError: message,
+      })
+      throw error
+    }
     state = transitionAfterQa(
       loaded.manifest,
-      { ...state, status: 'qa-running' },
+      stateAfterCommit,
       kimiResult,
     )
     writeState(loaded.paths.state, state)
@@ -1203,9 +1453,24 @@ async function execute(loaded: LoadedRunner): Promise<void> {
         throw error
       }
 
+      let stateAfterCommit: PhaseRunnerState
+      try {
+        stateAfterCommit = commitPassedStep(
+          loaded,
+          { ...state, status: 'qa-running' },
+          kimiResult,
+        )
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        state = updateState(loaded, state, {
+          status: 'blocked',
+          lastError: message,
+        })
+        throw error
+      }
       state = transitionAfterQa(
         loaded.manifest,
-        { ...state, status: 'qa-running' },
+        stateAfterCommit,
         kimiResult,
       )
       writeState(loaded.paths.state, state)
@@ -1275,6 +1540,9 @@ async function main(): Promise<void> {
     case 'retry':
       retry(loaded)
       break
+    case 'accept':
+      acceptOwnerCheckpoint(loaded)
+      break
     case 'recover':
       recover(loaded)
       break
@@ -1286,7 +1554,7 @@ async function main(): Promise<void> {
       break
     default:
       fail(
-        'usage: phase-runner.ts [init|status|dry-run|doctor|run|pause|resume|retry|recover|continue|retest] [--phase 2]',
+        'usage: phase-runner.ts [init|status|dry-run|doctor|run|pause|resume|retry|accept|recover|continue|retest] [--phase N]',
       )
   }
 }

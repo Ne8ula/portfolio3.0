@@ -9,52 +9,68 @@ The runner does not control either VS Code chat panel. It starts separate,
 non-interactive CLI sessions using Codex `exec` and Kimi print mode, while the
 repository remains the communication and source-of-truth layer.
 
-## Current initialization
+## Versioned phase manifests
 
 Phase 2 Steps 0–2 have independent Kimi PASS reports. The owner accepted Step 2
 on 2026-07-31, so the Phase 2 manifest initializes at **Step 3**. A Step 3 PASS
 automatically advances to Step 4. A final Step 4 PASS stops in
-`complete-awaiting-owner-ci`; the runner never commits, pushes, merges, deploys,
-or grants final acceptance.
+`complete-awaiting-owner-ci`.
 
-The versioned manifest is
-`scripts/phase-runner/manifests/phase-2.json`. It translates
+`scripts/phase-runner/manifests/phase-2.json` translates
 `docs/phase-2-design.md` §12 into bounded work packages. The manifest—not either
 agent's generated prose—chooses the next step.
 
+`scripts/phase-runner/manifests/phase-3.json` translates the nine approved
+`docs/phase-3-design.md` §9 implementation steps into four automation packages:
+
+1. sizing (design Steps 1–3) → independent QA → commit 1;
+2. lifecycle/recovery/tests (Steps 4–6) → independent QA → commit 2;
+3. baseline tooling/software evidence (Step 7) → independent QA → explicit
+   owner hardware + `about:gpucrash` checkpoint; and
+4. contracts/docs/full evidence (Steps 8–9) → independent QA → commit 3.
+
+The Phase 3 controller creates each local commit only after a fresh Kimi PASS
+and only from the paths declared by that step's manifest. It never pushes,
+merges, deploys, or grants final owner/CI acceptance. The Codex child does not
+receive permission to write protected `.git` metadata.
+
 ## Commands
 
-Initialize once:
+Every command defaults to Phase 2 for compatibility. Select Phase 3 with
+`-- --phase 3`.
+
+Initialize once after the selected manifest and its design source are tracked
+and clean:
 
 ```sh
-npm run phase:init
+npm run phase:init -- --phase 3
 ```
 
 Inspect the current cursor:
 
 ```sh
-npm run phase:status
+npm run phase:status -- --phase 3
 ```
 
 Review both generated prompt templates without launching an agent or changing
 state:
 
 ```sh
-npm run phase:dry-run
+npm run phase:dry-run -- --phase 3
 ```
 
 Validate both CLI installations, structured-output files, local state, and an
 exact disposable QA snapshot without calling either model:
 
 ```sh
-npm run phase:doctor
+npm run phase:doctor -- --phase 3
 ```
 
 Run continuously until PASS advances the phase, QA returns BLOCKED, the retry
 limit is reached, a tool/environment failure occurs, or the phase completes:
 
 ```sh
-npm run phase:run
+npm run phase:run -- --phase 3
 ```
 
 Request a pause from another terminal. A running agent is allowed to finish so
@@ -62,16 +78,29 @@ its work and report are not truncated; the controller stops before the next
 agent:
 
 ```sh
-npm run phase:pause
-npm run phase:resume
+npm run phase:pause -- --phase 3
+npm run phase:resume -- --phase 3
 ```
+
+Phase 3 stops in `awaiting-owner` after Step 7 QA. After the owner records and
+certifies both the hardware DPR capture and the one-time `about:gpucrash`
+recovery result, explicitly accept that checkpoint and resume:
+
+```sh
+npm run phase:accept -- --phase 3
+npm run phase:run -- --phase 3
+```
+
+`phase:accept` cannot bypass Kimi: it works only when the current manifest step
+has independently passed and declares an owner gate. It records acceptance of
+the checkpoint and advances to the next canonical step.
 
 After resolving an authentication, environment, or owner/design blocker,
 explicitly make the same step runnable again:
 
 ```sh
-npm run phase:retry
-npm run phase:run
+npm run phase:retry -- --phase 3
+npm run phase:run -- --phase 3
 ```
 
 `retry` never advances the step and preserves any Kimi findings.
@@ -81,7 +110,7 @@ red gate was a sandbox-denied localhost bind, continue without repeating the
 Codex turn:
 
 ```sh
-npm run phase:continue
+npm run phase:continue -- --phase 3
 ```
 
 The controller validates the saved result against the active manifest step. If
@@ -95,7 +124,7 @@ verdict stale. Launch only a fresh independent Kimi review of the complete live
 snapshot without repeating the completed Codex implementation:
 
 ```sh
-npm run phase:retest
+npm run phase:retest -- --phase 3
 ```
 
 `retest` is accepted only from `complete-awaiting-owner-ci`. It treats the
@@ -108,7 +137,16 @@ the updated snapshot to Kimi.
 ## Safety and independence
 
 - An atomic lock under `.agent-runs/` enforces one controller writer.
-- Codex alone writes to the real worktree with a workspace-write sandbox.
+- Codex is the only model allowed to edit the real worktree, and it runs with
+  a workspace-write sandbox.
+- Codex never stages or commits. For manifest steps with `commitAfterQa`, the
+  trusted controller records a local commit only after Kimi PASS.
+- Automatic commits require a clean index, a tracked/clean manifest and design
+  source, and initially clean phase-owned paths. The controller subtracts the
+  initialization-time dirty set, verifies those owner files remain byte-stable
+  across every Codex turn, rejects every path outside the step allowlist, and
+  never stages `content/portfolio-approvals.json`,
+  `docs/agent-handoff.md`, or `.agent-runs/`.
 - Codex receives the approved step scope, the live handoff/diff, and only the
   findings for the same step.
 - Required browser tests that cannot bind localhost inside Codex's sandbox are
@@ -165,13 +203,13 @@ agent launch.
 
 ## Recovery
 
-If the process is interrupted, run `npm run phase:status`. A status of
+If the process is interrupted, run `npm run phase:status -- --phase N`. A status of
 `blocked` contains the failure reason; resolve it and use `phase:retry`. A hard
 interrupt may leave `codex-running` or `qa-running` plus a lock. Recover only
 after confirming the recorded process is no longer active:
 
 ```sh
-npm run phase:recover
+npm run phase:recover -- --phase 3
 ```
 
 `recover` validates that the recorded PID is dead before removing the exact
