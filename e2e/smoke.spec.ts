@@ -12,6 +12,20 @@
 
 import { expect, test, type Page } from '@playwright/test'
 
+import { DPR_CAP } from '../lib/responsive/render-policy'
+
+type MainRendererSnapshot = {
+  stageWidth: number
+  stageHeight: number
+  canvasWidth: number
+  canvasHeight: number
+  bufferWidth: number
+  bufferHeight: number
+  cameraAspect: number
+  rendererPixelRatio: number
+  devicePixelRatio: number
+}
+
 function collectErrors(page: Page): string[] {
   const errors: string[] = []
   page.on('console', (message) => {
@@ -43,6 +57,293 @@ async function enterCockpitDirect(page: Page): Promise<void> {
   )
   // Let decal/texture rasterization land a few frames before pixel checks.
   await page.waitForTimeout(1_500)
+}
+
+async function getMainRendererSnapshot(page: Page): Promise<MainRendererSnapshot | null> {
+  return page.evaluate(() => {
+    const w = window as Window & {
+      __cockpitRenderer?: {
+        domElement: HTMLCanvasElement
+        getPixelRatio(): number
+      } | null
+      __cockpitCamera?: { aspect: number } | null
+    }
+    const stage = document.querySelector<HTMLElement>('[data-layout-region="cockpit-stage"]')
+    const renderer = w.__cockpitRenderer
+    const camera = w.__cockpitCamera
+    if (!stage || !renderer || !camera) return null
+
+    const stageRect = stage.getBoundingClientRect()
+    const canvasRect = renderer.domElement.getBoundingClientRect()
+    return {
+      stageWidth: stageRect.width,
+      stageHeight: stageRect.height,
+      canvasWidth: canvasRect.width,
+      canvasHeight: canvasRect.height,
+      bufferWidth: renderer.domElement.width,
+      bufferHeight: renderer.domElement.height,
+      cameraAspect: camera.aspect,
+      rendererPixelRatio: renderer.getPixelRatio(),
+      devicePixelRatio: window.devicePixelRatio,
+    }
+  })
+}
+
+function mainRendererMatches(snapshot: MainRendererSnapshot | null): boolean {
+  if (!snapshot || snapshot.stageWidth <= 0 || snapshot.stageHeight <= 0) return false
+  const expectedDpr = Math.min(snapshot.devicePixelRatio, DPR_CAP)
+  return (
+    Math.abs(snapshot.cameraAspect - snapshot.stageWidth / snapshot.stageHeight) <= 0.001 &&
+    Math.abs(snapshot.canvasWidth - snapshot.stageWidth) <= 1 &&
+    Math.abs(snapshot.canvasHeight - snapshot.stageHeight) <= 1 &&
+    Math.abs(snapshot.rendererPixelRatio - expectedDpr) <= Number.EPSILON &&
+    Math.abs(snapshot.bufferWidth - Math.floor(snapshot.stageWidth * expectedDpr)) <= 1 &&
+    Math.abs(snapshot.bufferHeight - Math.floor(snapshot.stageHeight * expectedDpr)) <= 1
+  )
+}
+
+async function expectMainRendererSized(page: Page): Promise<MainRendererSnapshot> {
+  await expect
+    .poll(async () => mainRendererMatches(await getMainRendererSnapshot(page)), {
+      timeout: 15_000,
+    })
+    .toBe(true)
+
+  const snapshot = await getMainRendererSnapshot(page)
+  expect(snapshot, 'renderer/camera/stage bridge missing').not.toBeNull()
+  expect(mainRendererMatches(snapshot)).toBe(true)
+  return snapshot!
+}
+
+async function readMainCanvasMetrics(page: Page): Promise<{
+  distinctColors: number
+  dominantShare: number
+  nonDominantFraction: number
+  bufferWidth: number
+  bufferHeight: number
+} | null> {
+  return page.evaluate(() => {
+    const w = window as Window & {
+      __cockpitRenderer?: {
+        domElement: HTMLCanvasElement
+        render: (scene: unknown, camera: unknown) => void
+      } | null
+      __cockpitScene?: unknown
+      __cockpitCamera?: unknown
+    }
+    const renderer = w.__cockpitRenderer
+    if (!renderer || !w.__cockpitScene || !w.__cockpitCamera) return null
+    renderer.render(w.__cockpitScene, w.__cockpitCamera)
+    const source = renderer.domElement
+
+    const probeWidth = 160
+    const probeHeight = Math.max(1, Math.round((source.height / source.width) * probeWidth))
+    const probe = document.createElement('canvas')
+    probe.width = probeWidth
+    probe.height = probeHeight
+    const context = probe.getContext('2d')
+    if (!context) return null
+    context.drawImage(source, 0, 0, probeWidth, probeHeight)
+    const { data } = context.getImageData(0, 0, probeWidth, probeHeight)
+
+    const counts = new Map<number, number>()
+    for (let index = 0; index < data.length; index += 4) {
+      const key =
+        ((data[index]! >> 4) << 8) |
+        ((data[index + 1]! >> 4) << 4) |
+        (data[index + 2]! >> 4)
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    }
+
+    const total = probeWidth * probeHeight
+    let dominant = 0
+    for (const count of counts.values()) dominant = Math.max(dominant, count)
+    return {
+      distinctColors: counts.size,
+      dominantShare: dominant / total,
+      nonDominantFraction: 1 - dominant / total,
+      bufferWidth: source.width,
+      bufferHeight: source.height,
+    }
+  })
+}
+
+async function expectMainCanvasNotBlank(page: Page): Promise<void> {
+  const metrics = await readMainCanvasMetrics(page)
+  expect(metrics, 'renderer/scene/camera bridge missing').not.toBeNull()
+  expect(metrics!.bufferWidth).toBeGreaterThan(0)
+  expect(metrics!.bufferHeight).toBeGreaterThan(0)
+  expect(metrics!.distinctColors).toBeGreaterThanOrEqual(8)
+  expect(metrics!.dominantShare).toBeLessThan(0.98)
+  expect(metrics!.nonDominantFraction).toBeGreaterThan(0.02)
+}
+
+async function enterWarpViaBoot(page: Page, warpTimeScale: number): Promise<void> {
+  await page.goto('/')
+  const enter = page.getByRole('button', { name: /enter the room/i })
+  await expect(enter).toBeVisible({ timeout: 45_000 })
+  await page.evaluate((scale) => {
+    const w = window as Window & {
+      __phase3WarpSeen?: boolean
+      __warpTimeScale?: number
+    }
+    w.__warpTimeScale = scale
+    w.__phase3WarpSeen = Boolean(document.querySelector('[data-screen-label="00b Warp"]'))
+    if (!w.__phase3WarpSeen) {
+      const observer = new MutationObserver(() => {
+        if (!document.querySelector('[data-screen-label="00b Warp"]')) return
+        w.__phase3WarpSeen = true
+        observer.disconnect()
+      })
+      observer.observe(document.body, { childList: true, subtree: true })
+    }
+  }, warpTimeScale)
+  await enter.click()
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () => (window as Window & { __phase3WarpSeen?: boolean }).__phase3WarpSeen === true,
+        ),
+      { timeout: 45_000 },
+    )
+    .toBe(true)
+  await expect(page.locator('[data-screen-label="00b Warp"]')).toBeVisible({ timeout: 45_000 })
+}
+
+type RendererCallCounts = {
+  setPixelRatio: number
+  setSize: number
+}
+
+async function installRendererCallProbe(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const w = window as Window & {
+      __cockpitRenderer?: {
+        setPixelRatio(value: number): void
+        setSize(width: number, height: number, updateStyle?: boolean): void
+      } | null
+      __phase3RendererCallProbe?: { read(): RendererCallCounts }
+    }
+    const renderer = w.__cockpitRenderer
+    if (!renderer) throw new Error('main renderer is not ready')
+
+    const calls: RendererCallCounts = {
+      setPixelRatio: 0,
+      setSize: 0,
+    }
+    const setPixelRatio = renderer.setPixelRatio.bind(renderer)
+    const setSize = renderer.setSize.bind(renderer)
+
+    renderer.setPixelRatio = (value: number): void => {
+      calls.setPixelRatio += 1
+      setPixelRatio(value)
+    }
+    renderer.setSize = (width: number, height: number, updateStyle?: boolean): void => {
+      calls.setSize += 1
+      setSize(width, height, updateStyle)
+    }
+    w.__phase3RendererCallProbe = { read: () => ({ ...calls }) }
+  })
+}
+
+async function readRendererCallProbe(page: Page): Promise<RendererCallCounts> {
+  return page.evaluate(() => {
+    const probe = (
+      window as Window & {
+        __phase3RendererCallProbe?: { read(): RendererCallCounts }
+      }
+    ).__phase3RendererCallProbe
+    if (!probe) throw new Error('renderer call probe is not installed')
+    return probe.read()
+  })
+}
+
+function expectRectsUnchanged(
+  before: { x: number; y: number; w: number; h: number },
+  after: { x: number; y: number; w: number; h: number },
+  label: string,
+): void {
+  for (const key of ['x', 'y', 'w', 'h'] as const) {
+    expect(Math.abs(after[key] - before[key]), `${label}.${key} moved on DPR-only change`).toBeLessThan(
+      0.25,
+    )
+  }
+}
+
+type WarpRendererSnapshot = {
+  hostWidth: number
+  hostHeight: number
+  canvasWidth: number
+  canvasHeight: number
+  bufferWidth: number
+  bufferHeight: number
+  projectionAspect: number | null
+  devicePixelRatio: number
+}
+
+async function getWarpRendererSnapshot(page: Page): Promise<WarpRendererSnapshot | null> {
+  return page.evaluate(() => {
+    const warp = document.querySelector<HTMLElement>('[data-screen-label="00b Warp"]')
+    const canvas = warp?.querySelector('canvas')
+    const host = canvas?.parentElement
+    if (!canvas || !host) return null
+
+    const context = canvas.getContext('webgl2') ?? canvas.getContext('webgl')
+    let projectionAspect: number | null = null
+    if (context) {
+      const program = context.getParameter(context.CURRENT_PROGRAM) as WebGLProgram | null
+      const location = program ? context.getUniformLocation(program, 'projectionMatrix') : null
+      const matrix = program && location ? context.getUniform(program, location) : null
+      if (matrix instanceof Float32Array && matrix[0] && matrix[5]) {
+        projectionAspect = Math.abs(matrix[5] / matrix[0])
+      }
+    }
+
+    const hostRect = host.getBoundingClientRect()
+    const canvasRect = canvas.getBoundingClientRect()
+    return {
+      hostWidth: hostRect.width,
+      hostHeight: hostRect.height,
+      canvasWidth: canvasRect.width,
+      canvasHeight: canvasRect.height,
+      bufferWidth: canvas.width,
+      bufferHeight: canvas.height,
+      projectionAspect,
+      devicePixelRatio: window.devicePixelRatio,
+    }
+  })
+}
+
+function warpRendererMatches(snapshot: WarpRendererSnapshot | null): boolean {
+  if (
+    !snapshot ||
+    snapshot.hostWidth <= 0 ||
+    snapshot.hostHeight <= 0 ||
+    snapshot.projectionAspect === null
+  ) {
+    return false
+  }
+  const expectedDpr = Math.min(snapshot.devicePixelRatio, DPR_CAP)
+  return (
+    Math.abs(snapshot.projectionAspect - snapshot.hostWidth / snapshot.hostHeight) <= 0.001 &&
+    Math.abs(snapshot.canvasWidth - snapshot.hostWidth) <= 1 &&
+    Math.abs(snapshot.canvasHeight - snapshot.hostHeight) <= 1 &&
+    Math.abs(snapshot.bufferWidth - Math.floor(snapshot.hostWidth * expectedDpr)) <= 1 &&
+    Math.abs(snapshot.bufferHeight - Math.floor(snapshot.hostHeight * expectedDpr)) <= 1
+  )
+}
+
+async function expectWarpRendererSized(page: Page): Promise<WarpRendererSnapshot> {
+  await expect
+    .poll(async () => warpRendererMatches(await getWarpRendererSnapshot(page)), {
+      timeout: 15_000,
+    })
+    .toBe(true)
+  const snapshot = await getWarpRendererSnapshot(page)
+  expect(snapshot, 'warp renderer/host missing').not.toBeNull()
+  expect(warpRendererMatches(snapshot)).toBe(true)
+  return snapshot!
 }
 
 test.describe('phase 0 smoke', () => {
@@ -80,7 +381,7 @@ test.describe('phase 0 smoke', () => {
     await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
   })
 
-  test('harness can resize the viewport and the stage follows', async ({ page }) => {
+  test('renderer follows the stage at mount and across live resize', async ({ page }) => {
     await page.goto('/')
     await enterCockpitDirect(page)
 
@@ -89,12 +390,10 @@ test.describe('phase 0 smoke', () => {
       { width: 1440, height: 900 },
     ]) {
       await page.setViewportSize(viewport)
-      // §9.3 allows two frames to settle after a resize notification.
-      await page.waitForTimeout(100)
-      const box = await page.locator('[data-layout-region="cockpit-stage"]').boundingBox()
-      expect(box).not.toBeNull()
-      expect(Math.abs((box?.width ?? 0) - viewport.width)).toBeLessThanOrEqual(1)
-      expect(Math.abs((box?.height ?? 0) - viewport.height)).toBeLessThanOrEqual(1)
+      const snapshot = await expectMainRendererSized(page)
+      expect(Math.abs(snapshot.stageWidth - viewport.width)).toBeLessThanOrEqual(1)
+      expect(Math.abs(snapshot.stageHeight - viewport.height)).toBeLessThanOrEqual(1)
+      await expectMainCanvasNotBlank(page)
     }
   })
 
@@ -106,58 +405,356 @@ test.describe('phase 0 smoke', () => {
     // buffer via a synchronous in-frame forced re-render — render then
     // toDataURL in the same JS task, before the buffer is cleared. The flag
     // is never flipped in production.
-    const metrics = await page.evaluate(() => {
+    await expectMainCanvasNotBlank(page)
+  })
+
+  test('DPR-only change updates the buffer once without moving CSS geometry', async ({
+    page,
+    context,
+  }) => {
+    const cdp = await context.newCDPSession(page)
+    try {
+      await cdp.send('Emulation.setDeviceMetricsOverride', {
+        width: 1440,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: false,
+      })
+      await page.goto('/')
+      await enterCockpitDirect(page)
+      await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.enterView('crate'))
+
+      const beforeRenderer = await expectMainRendererSized(page)
+      const beforeHud = await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot())
+      expect(beforeHud.subject).not.toBeNull()
+      expect(beforeHud.overlays['return-control']).toBeDefined()
+
+      await installRendererCallProbe(page)
+      await cdp.send('Emulation.setDeviceMetricsOverride', {
+        width: 1440,
+        height: 900,
+        deviceScaleFactor: 2,
+        mobile: false,
+      })
+
+      await expect
+        .poll(async () => (await getMainRendererSnapshot(page))?.rendererPixelRatio, {
+          timeout: 15_000,
+        })
+        .toBe(2)
+
+      const afterRenderer = await expectMainRendererSized(page)
+      const afterHud = await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot())
+      const calls = await readRendererCallProbe(page)
+
+      // getRendererState() is introduced in Phase 3's later lifecycle/test-hook
+      // step. In this sizing-only boundary, one setPixelRatio call is the
+      // observable one-application/one-sizeVersion equivalent.
+      expect(calls.setPixelRatio).toBe(1)
+      expect(
+        Math.abs(afterRenderer.bufferWidth - beforeRenderer.bufferWidth * 2),
+      ).toBeLessThanOrEqual(1)
+      expect(
+        Math.abs(afterRenderer.bufferHeight - beforeRenderer.bufferHeight * 2),
+      ).toBeLessThanOrEqual(1)
+      expect(afterRenderer.canvasWidth).toBeCloseTo(beforeRenderer.canvasWidth, 6)
+      expect(afterRenderer.canvasHeight).toBeCloseTo(beforeRenderer.canvasHeight, 6)
+      expect(afterRenderer.cameraAspect).toBeCloseTo(beforeRenderer.cameraAspect, 12)
+
+      expect(afterHud.subject).not.toBeNull()
+      expect(afterHud.overlays['return-control']).toBeDefined()
+      expectRectsUnchanged(beforeHud.subject!, afterHud.subject!, 'subject')
+      expectRectsUnchanged(
+        beforeHud.overlays['return-control']!,
+        afterHud.overlays['return-control']!,
+        'return-control',
+      )
+    } finally {
+      await cdp.send('Emulation.clearDeviceMetricsOverride')
+    }
+  })
+
+  test('zero-size mount observations are inert and the next valid box applies', async ({
+    page,
+  }) => {
+    const errors = collectErrors(page)
+    await page.goto('/')
+    await enterCockpitDirect(page)
+    const before = await expectMainRendererSized(page)
+
+    const invalidState = await page.evaluate(async () => {
       const w = window as Window & {
-        __cockpitRenderer?: {
-          domElement: HTMLCanvasElement
-          render: (scene: unknown, camera: unknown) => void
+        __cockpitRenderer?: { domElement: HTMLCanvasElement } | null
+        __cockpitCamera?: {
+          aspect: number
+          projectionMatrix: { elements: ArrayLike<number> }
         } | null
-        __cockpitScene?: unknown
-        __cockpitCamera?: unknown
       }
-      const renderer = w.__cockpitRenderer
-      if (!renderer || !w.__cockpitScene || !w.__cockpitCamera) return null
-      renderer.render(w.__cockpitScene, w.__cockpitCamera)
-      const source = renderer.domElement
-
-      const probeW = 160
-      const probeH = Math.max(1, Math.round((source.height / source.width) * 160))
-      const probe = document.createElement('canvas')
-      probe.width = probeW
-      probe.height = probeH
-      const ctx = probe.getContext('2d')
-      if (!ctx) return null
-      ctx.drawImage(source, 0, 0, probeW, probeH)
-      const { data } = ctx.getImageData(0, 0, probeW, probeH)
-
-      const counts = new Map<number, number>()
-      for (let i = 0; i < data.length; i += 4) {
-        // 4-bit/channel quantization: robust to dithering/AA noise.
-        const key =
-          ((data[i]! >> 4) << 8) | ((data[i + 1]! >> 4) << 4) | (data[i + 2]! >> 4)
-        counts.set(key, (counts.get(key) ?? 0) + 1)
-      }
-      const total = probeW * probeH
-      let dominant = 0
-      for (const count of counts.values()) dominant = Math.max(dominant, count)
+      const mount = w.__cockpitRenderer?.domElement.parentElement
+      const camera = w.__cockpitCamera
+      if (!mount || !camera) return null
+      mount.style.display = 'none'
+      window.dispatchEvent(new Event('resize'))
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      })
       return {
-        distinctColors: counts.size,
-        dominantShare: dominant / total,
-        nonDominantFraction: 1 - dominant / total,
-        bufferWidth: source.width,
-        bufferHeight: source.height,
+        aspect: camera.aspect,
+        projectionFinite: Array.from(camera.projectionMatrix.elements).every(Number.isFinite),
+        mountWidth: mount.getBoundingClientRect().width,
+        mountHeight: mount.getBoundingClientRect().height,
       }
     })
 
-    expect(metrics, 'renderer/scene/camera bridge missing').not.toBeNull()
-    expect(metrics!.bufferWidth).toBeGreaterThan(0)
-    expect(metrics!.bufferHeight).toBeGreaterThan(0)
-    // Blank, uniform, or near-uniform frames fail (§9.6.2). Bands are
-    // deliberately loose — this is "did the render collapse", not a
-    // scorecard baseline (§9.6.3 baselines wait for Phase 4 determinism).
-    expect(metrics!.distinctColors).toBeGreaterThanOrEqual(8)
-    expect(metrics!.dominantShare).toBeLessThan(0.98)
-    expect(metrics!.nonDominantFraction).toBeGreaterThan(0.02)
+    expect(invalidState).not.toBeNull()
+    expect(invalidState!.mountWidth).toBe(0)
+    expect(invalidState!.mountHeight).toBe(0)
+    expect(invalidState!.aspect).toBe(before.cameraAspect)
+    expect(Number.isFinite(invalidState!.aspect)).toBe(true)
+    expect(invalidState!.projectionFinite).toBe(true)
+
+    await page.setViewportSize({ width: 1024, height: 600 })
+    await page.evaluate(() => {
+      const renderer = (
+        window as Window & {
+          __cockpitRenderer?: { domElement: HTMLCanvasElement } | null
+        }
+      ).__cockpitRenderer
+      const mount = renderer?.domElement.parentElement
+      if (!mount) throw new Error('main renderer mount missing')
+      mount.style.removeProperty('display')
+      window.dispatchEvent(new Event('resize'))
+    })
+
+    const restored = await expectMainRendererSized(page)
+    expect(restored.stageWidth).toBeCloseTo(1024, 0)
+    expect(restored.stageHeight).toBeCloseTo(600, 0)
+    await expectMainCanvasNotBlank(page)
+    expect(errors, `unexpected page errors:\n${errors.join('\n')}`).toEqual([])
+  })
+
+  test('unchanged resize events cause no renderer sizing churn', async ({ page }) => {
+    await page.goto('/')
+    await enterCockpitDirect(page)
+    await expectMainRendererSized(page)
+    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.enterView('crate'))
+    await expect(page.locator('[data-hud="return-control"]')).toBeVisible()
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+        }),
+    )
+    await installRendererCallProbe(page)
+
+    const memoryBefore = await page.evaluate(() => {
+      const renderer = (
+        window as Window & {
+          __cockpitRenderer?: {
+            info: { memory: { geometries: number; textures: number } }
+          } | null
+        }
+      ).__cockpitRenderer
+      return renderer ? { ...renderer.info.memory } : null
+    })
+
+    await page.evaluate(async () => {
+      for (let index = 0; index < 20; index += 1) {
+        window.dispatchEvent(new Event('resize'))
+      }
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      })
+    })
+
+    const calls = await readRendererCallProbe(page)
+    const memoryAfter = await page.evaluate(() => {
+      const renderer = (
+        window as Window & {
+          __cockpitRenderer?: {
+            info: { memory: { geometries: number; textures: number } }
+          } | null
+        }
+      ).__cockpitRenderer
+      return renderer ? { ...renderer.info.memory } : null
+    })
+
+    expect(calls).toEqual({
+      setPixelRatio: 0,
+      setSize: 0,
+    })
+    expect(memoryBefore).not.toBeNull()
+    expect(memoryAfter).toEqual(memoryBefore)
+  })
+
+  test('warp renderer follows its host box and live viewport changes', async ({ page }) => {
+    test.setTimeout(120_000)
+    await enterWarpViaBoot(page, 100)
+
+    const initial = await expectWarpRendererSized(page)
+    expect(initial.hostWidth).toBeCloseTo(1440, 0)
+    expect(initial.hostHeight).toBeCloseTo(900, 0)
+
+    // A host-only change proves the renderer measures its mount rather than
+    // window.innerWidth/window.innerHeight.
+    await page.evaluate(() => {
+      const host = document.querySelector('[data-screen-label="00b Warp"] canvas')?.parentElement
+      if (!host) throw new Error('warp host missing')
+      host.style.right = '137px'
+    })
+    const hostOnly = await expectWarpRendererSized(page)
+    expect(hostOnly.hostWidth).toBeCloseTo(1440 - 137, 0)
+    expect(hostOnly.hostHeight).toBeCloseTo(900, 0)
+
+    await page.evaluate(() => {
+      const host = document.querySelector('[data-screen-label="00b Warp"] canvas')?.parentElement
+      if (!host) throw new Error('warp host missing')
+      host.style.right = '0px'
+    })
+    await page.setViewportSize({ width: 1024, height: 600 })
+    const resized = await expectWarpRendererSized(page)
+    expect(resized.hostWidth).toBeCloseTo(1024, 0)
+    expect(resized.hostHeight).toBeCloseTo(600, 0)
+  })
+
+  test('warp catch path removes the size controller resize listener', async ({ page }) => {
+    test.setTimeout(120_000)
+    await page.goto('/')
+    const enter = page.getByRole('button', { name: /enter the room/i })
+    await expect(enter).toBeVisible({ timeout: 45_000 })
+
+    await page.evaluate(() => {
+      type Listener = EventListenerOrEventListenerObject
+      type CatchProbe = {
+        read(): {
+          thrown: boolean
+          candidateCaptured: boolean
+          candidateActive: boolean
+          candidateRemoved: boolean
+        }
+      }
+      const w = window as Window & {
+        __warpTimeScale?: number
+        __phase3WarpCatchProbe?: CatchProbe
+      }
+      w.__warpTimeScale = 0.2
+
+      const nativeAdd = window.addEventListener.bind(window)
+      const nativeRemove = window.removeEventListener.bind(window)
+      const nativeRaf = window.requestAnimationFrame.bind(window)
+      const NativeResizeObserver = window.ResizeObserver
+      const activeResize = new Set<Listener>()
+      const removedResize = new Set<Listener>()
+      let latestResize: Listener | null = null
+      let warpResize: Listener | null = null
+      let candidate: Listener | null = null
+      let thrown = false
+
+      window.addEventListener = ((
+        type: string,
+        listener: EventListenerOrEventListenerObject | null,
+        options?: boolean | AddEventListenerOptions,
+      ): void => {
+        if (type === 'resize' && listener) {
+          activeResize.add(listener)
+          latestResize = listener
+        }
+        if (listener) nativeAdd(type, listener, options)
+      }) as typeof window.addEventListener
+
+      window.removeEventListener = ((
+        type: string,
+        listener: EventListenerOrEventListenerObject | null,
+        options?: boolean | EventListenerOptions,
+      ): void => {
+        if (type === 'resize' && listener) {
+          activeResize.delete(listener)
+          removedResize.add(listener)
+        }
+        if (listener) nativeRemove(type, listener, options)
+      }) as typeof window.removeEventListener
+
+      window.ResizeObserver = class {
+        readonly inner: ResizeObserver
+
+        constructor(callback: ResizeObserverCallback) {
+          this.inner = new NativeResizeObserver(callback)
+        }
+
+        observe(target: Element, options?: ResizeObserverOptions): void {
+          if (target.closest('[data-screen-label="00b Warp"]')) {
+            warpResize = latestResize
+          }
+          this.inner.observe(target, options)
+        }
+
+        unobserve(target: Element): void {
+          this.inner.unobserve(target)
+        }
+
+        disconnect(): void {
+          this.inner.disconnect()
+        }
+      } as typeof ResizeObserver
+
+      window.requestAnimationFrame = ((callback: FrameRequestCallback): number => {
+        if (!thrown && warpResize) {
+          thrown = true
+          candidate = warpResize
+          throw new Error('phase3 intentional warp setup failure')
+        }
+        return nativeRaf(callback)
+      }) as typeof window.requestAnimationFrame
+
+      w.__phase3WarpCatchProbe = {
+        read: () => ({
+          thrown,
+          candidateCaptured: candidate !== null,
+          candidateActive: candidate !== null && activeResize.has(candidate),
+          candidateRemoved: candidate !== null && removedResize.has(candidate),
+        }),
+      }
+    })
+
+    await enter.click()
+    await page.waitForFunction(
+      () =>
+        (
+          window as Window & {
+            __phase3WarpCatchProbe?: { read(): { thrown: boolean } }
+          }
+        ).__phase3WarpCatchProbe?.read().thrown === true,
+      undefined,
+      { timeout: 15_000 },
+    )
+
+    const probe = await page.evaluate(() => {
+      const value = (
+        window as Window & {
+          __phase3WarpCatchProbe?: {
+            read(): {
+              thrown: boolean
+              candidateCaptured: boolean
+              candidateActive: boolean
+              candidateRemoved: boolean
+            }
+          }
+        }
+      ).__phase3WarpCatchProbe
+      if (!value) throw new Error('warp catch probe missing')
+      return value.read()
+    })
+
+    expect(probe).toEqual({
+      thrown: true,
+      candidateCaptured: true,
+      candidateActive: false,
+      candidateRemoved: true,
+    })
+    await expect(page.locator('[data-screen-label="00b Warp"]')).toHaveCount(0, {
+      timeout: 15_000,
+    })
+    await expect(page.locator('[data-layout-region="cockpit-stage"] canvas')).toBeVisible()
   })
 
   test('Phase −1: entrance animation never moves the positioning anchor', async ({ page }) => {

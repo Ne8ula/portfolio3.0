@@ -16,6 +16,7 @@ import { buildIncense } from "./incense"
 import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
 import { markSceneConstructed, reportFrame } from "./test-hooks"
+import { createRendererSizeSync } from "./renderer-size-sync"
 
 // Globe.jsx — cockpit 3D scene.
 // A translucent x-ray retro computer sits on the RIGHT side of the desk
@@ -119,17 +120,29 @@ function GlobeCanvas({ yawRef, pitchRef }){
     };
     window.addEventListener('cockpit-theme', onTheme);
 
-    const camera = new THREE.PerspectiveCamera(68, mount.clientWidth/mount.clientHeight, 0.1, 2000);
+    const camera = new THREE.PerspectiveCamera(68, 1, 0.1, 2000);
     camera.position.set(0, 0, 0);
     window.__cockpitCamera = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
+    Object.assign(renderer.domElement.style, {
+      position: 'absolute',
+      inset: '0',
+      width: '100%',
+      height: '100%',
+      display: 'block',
+    });
     mount.appendChild(renderer.domElement);
     window.__cockpitRenderer = renderer;
+    const sizeSync = createRendererSizeSync({
+      mount,
+      renderer,
+      camera,
+      onApplied: () => renderer.render(scene, camera),
+    });
+    sizeSync.sync();
 
     // Starfield — sparse cream dots
     const starGeo = new THREE.BufferGeometry();
@@ -975,6 +988,7 @@ function GlobeCanvas({ yawRef, pitchRef }){
     const clock = new THREE.Clock();
     let raf;
     const animate = () => {
+      sizeSync.sync();
       const dt = clock.getDelta();
       const t = clock.elapsedTime;
 
@@ -1137,26 +1151,19 @@ function GlobeCanvas({ yawRef, pitchRef }){
     };
     animate();
 
-    const onResize = () => {
-      camera.aspect = mount.clientWidth/mount.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(mount.clientWidth, mount.clientHeight);
-    };
-    window.addEventListener('resize', onResize);
-
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
       window.removeEventListener('cockpit-theme', onTheme);
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('cockpit-crate-hover', onCrateHoverGlow);
+      sizeSync.dispose();
       if (crate && crate.disposeCrate) crate.disposeCrate();
       if (turntable && turntable.disposeDeck) turntable.disposeDeck();
       if (coffeeStation && coffeeStation.dispose) coffeeStation.dispose();
       if (decorations && decorations.dispose) decorations.dispose();
       if (teaSet && teaSet.dispose) teaSet.dispose();
       if (incense && incense.dispose) incense.dispose();
-      window.removeEventListener('cockpit-crate-hover', onCrateHoverGlow);
       edgeGlow.dispose();
       window.__getCockpitAnchors = null;
       window.__cockpitHoveredTag = null;

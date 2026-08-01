@@ -10,6 +10,7 @@
 // Debug: set window.__warpTimeScale = N before entering to play N× slower.
 import React from "react"
 import * as THREE from "three"
+import { createRendererSizeSync } from "./renderer-size-sync"
 
 const DURATION_MS = 2500
 const timeScale = () => (typeof window !== "undefined" && window.__warpTimeScale) || 1
@@ -229,18 +230,36 @@ export function WarpTransition({ onComplete }) {
   React.useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    let renderer, raf
+    host.style.removeProperty("background")
+    let renderer, raf, sizeSync
+    let disposed = false
     const disposables = []
+    const cleanup = () => {
+      if (disposed) return
+      disposed = true
+      if (raf !== undefined) cancelAnimationFrame(raf)
+      sizeSync?.dispose()
+      disposables.forEach((disposable) => {
+        try { disposable.dispose() } catch {}
+      })
+      try { renderer?.dispose() } catch {}
+      try { renderer?.domElement.remove() } catch {}
+    }
+
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-      renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.setClearColor(CREAM, 1)
-      Object.assign(renderer.domElement.style, { position: "absolute", inset: "0" })
+      Object.assign(renderer.domElement.style, {
+        position: "absolute",
+        inset: "0",
+        width: "100%",
+        height: "100%",
+        display: "block",
+      })
       host.appendChild(renderer.domElement)
 
       const scene = new THREE.Scene()
-      const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 120)
+      const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 120)
       camera.position.set(0, 0.35, 7.2)
       camera.lookAt(0, 0.15, -10)
 
@@ -293,17 +312,19 @@ export function WarpTransition({ onComplete }) {
       scene.add(portal)
       disposables.push(portalGeo, portalMat)
 
-      const onResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight
-        camera.updateProjectionMatrix()
-        renderer.setSize(window.innerWidth, window.innerHeight)
-      }
-      window.addEventListener("resize", onResize)
+      sizeSync = createRendererSizeSync({
+        mount: host,
+        renderer,
+        camera,
+        onApplied: () => renderer.render(scene, camera),
+      })
+      sizeSync.sync()
 
       // [time s, amplitude] — timed so a wavefront is crossing visible geometry
       const GLITCHES = [[0.22, 0.9], [1.2, 0.7], [1.85, 0.55]]
       const start = performance.now()
       const tick = () => {
+        sizeSync.sync()
         const t = (performance.now() - start) / 1000 / timeScale()
         uniforms.uTime.value = t
 
@@ -327,18 +348,13 @@ export function WarpTransition({ onComplete }) {
       }
       raf = requestAnimationFrame(tick)
 
-      return () => {
-        cancelAnimationFrame(raf)
-        window.removeEventListener("resize", onResize)
-        disposables.forEach((d) => d.dispose())
-        renderer.dispose()
-        renderer.domElement.remove()
-      }
+      return cleanup
     } catch {
       // WebGL unavailable — fall back to an opaque cream card so the timeout
       // + text overlay still carry the transition (no hole to reveal through)
       host.style.background = "var(--cream)"
-      if (renderer) { try { renderer.dispose(); renderer.domElement.remove() } catch {} }
+      cleanup()
+      return cleanup
     }
   }, [])
 
