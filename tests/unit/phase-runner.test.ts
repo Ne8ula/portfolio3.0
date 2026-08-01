@@ -298,6 +298,36 @@ describe('phase runner', () => {
     ).toBe(true)
   })
 
+  it('recognizes the bind-denied EPERM wording from a saved Codex result', () => {
+    const result = parseCodexResult(
+      {
+        phase: 3,
+        step: 'Step 1 — sizing policy and renderer parity',
+        outcome: 'blocked',
+        summary: 'Only the sandboxed browser gate is blocked.',
+        filesChanged: ['lib/responsive/render-policy.ts'],
+        gates: requiredGates.map((gate) =>
+          gate.command === 'npm run test:e2e'
+            ? {
+                ...gate,
+                status: 'fail',
+                details:
+                  'Failed before test execution: Next dev server bind denied with EPERM on 0.0.0.0:3000.',
+              }
+            : gate,
+        ),
+        unresolvedRisks: ['Browser verification requires the host controller.'],
+        handoff: 'Handoff: Step 1 awaits host E2E.',
+      },
+      phase3Manifest,
+      getStep(phase3Manifest, 'step-1'),
+    )
+
+    expect(
+      isHostRecoverableE2eFailure(result, phase3Manifest.requiredGates),
+    ).toBe(true)
+  })
+
   it('rejects PASS when a required gate is red', () => {
     const result = {
       ...kimiResult('step-3', 'pass'),
