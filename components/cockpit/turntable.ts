@@ -28,7 +28,7 @@ import { reportDeckTransient } from "./test-hooks"
 const SAGE = '#6F8D75';
 const MONO = '"JetBrains Mono", Consolas, monospace';
 
-export function buildTurntable(scene, tableGroup, camera, renderer){
+export function buildTurntable(scene, tableGroup, camera, renderer, options = {}){
   const group = new THREE.Group();
   group.position.set(0, 0.18, 0.8);
   group.rotation.y = 0;   // faces the viewer dead-on
@@ -613,14 +613,35 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
   holo.traverse(o => { o.userData.noPick = true; });
 
   // ── Playback state machine ────────────────────────────────────
-  let playing = -1;       // project index on (or inbound to) the platter
-  let landed = false;
+  const restoredDeckIndex = options.restore?.viewMode === 'deck'
+    && Number.isInteger(options.restore?.recordIndex)
+    && options.restore.recordIndex >= 0
+    && options.restore.recordIndex < PROJECTS.length
+    ? options.restore.recordIndex
+    : -1;
+  let playing = restoredDeckIndex; // project index on (or inbound to) the platter
+  let landed = restoredDeckIndex >= 0;
   let flight = null;      // { dir, t, dur, started, from(), to(), q0, q0fn(), q1fn(), s0, s1, onDone }
   let queued = null;      // play args waiting behind an eject (swap)
   let pendingEject = null;
-  let coverT = 0, armT = 0, beamT = 0, cardT = 0;
+  let coverT = landed ? 1 : 0;
+  let armT = landed ? 1 : 0;
+  let beamT = landed ? 1 : 0;
+  let cardT = landed ? 1 : 0;
   let btnHover = false;
   let elapsed = 0;
+
+  if (landed) {
+    drawCard(playing, false);
+    discMat.map = discTex(playing);
+    discMat.needsUpdate = true;
+    spin.add(deckDisc);
+    deckDisc.position.set(0, DISC_REST_Y, 0);
+    deckDisc.rotation.set(0, 0, 0);
+    deckDisc.scale.setScalar(1);
+    deckDisc.visible = true;
+    coverHinge.rotation.x = -1.8;
+  }
 
   const V3 = new THREE.Vector3();
   const VERT_QUAT = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
@@ -890,7 +911,6 @@ export function buildTurntable(scene, tableGroup, camera, renderer){
       renderer.domElement.removeEventListener('pointerdown', onDeckDown, true);
     }
     window.removeEventListener('cockpit-theme', onTheme);
-    if (deckDisc.parent) deckDisc.parent.remove(deckDisc);
     window.__cockpitDeck = null;
     window.__getCockpitDeckInfo = null;
     window.__getCockpitDeckCardRect = null;

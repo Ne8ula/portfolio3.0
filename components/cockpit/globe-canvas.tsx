@@ -15,7 +15,12 @@ import { buildTeaSet } from "./tea-set"
 import { buildIncense } from "./incense"
 import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
-import { markSceneConstructed, reportFrame } from "./test-hooks"
+import {
+  clearMainRendererSize,
+  markSceneConstructed,
+  reportFrame,
+  reportMainRendererSize,
+} from "./test-hooks"
 import { createRendererSizeSync } from "./renderer-size-sync"
 
 // Globe.jsx — cockpit 3D scene.
@@ -24,7 +29,7 @@ import { createRendererSizeSync } from "./renderer-size-sync"
 // so the glowing jade screen is visible; CRT funnel, circuit board, keys,
 // mouse and cable all rendered as frosted shell + jade-wireframe internals
 // in the site's editorial palette.
-function GlobeCanvas({ yawRef, pitchRef }){
+function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
   const mountRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -124,7 +129,36 @@ function GlobeCanvas({ yawRef, pitchRef }){
     camera.position.set(0, 0, 0);
     window.__cockpitCamera = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+    } catch {
+      window.removeEventListener('cockpit-theme', onTheme);
+      disposeObjectGraph(scene);
+      window.__cockpitScene = null;
+      window.__cockpitCamera = null;
+      onContextEvent?.('failed');
+      return;
+    }
+    let disposed = false;
+    let contextAlive = true;
+    let raf;
+    const onContextLost = (event) => {
+      event.preventDefault();
+      if (disposed || !contextAlive) return;
+      contextAlive = false;
+      if (raf !== undefined) cancelAnimationFrame(raf);
+      raf = undefined;
+      sizeSync.dispose();
+      reportFrame(false);
+      onContextEvent?.('lost');
+    };
+    const onContextRestored = () => {
+      if (disposed) return;
+      onContextEvent?.('restored');
+    };
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
+    renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     Object.assign(renderer.domElement.style, {
@@ -140,7 +174,10 @@ function GlobeCanvas({ yawRef, pitchRef }){
       mount,
       renderer,
       camera,
-      onApplied: () => renderer.render(scene, camera),
+      onApplied: (target, sizeVersion) => {
+        reportMainRendererSize(target, sizeVersion);
+        if (contextAlive && !disposed) renderer.render(scene, camera);
+      },
     });
     sizeSync.sync();
 
@@ -366,6 +403,10 @@ function GlobeCanvas({ yawRef, pitchRef }){
       color: 0x2B4A30
     });
 
+    let pmrem = null;
+    let envScene = null;
+    let environmentTexture = null;
+
     // Add soft lighting so Lambert materials render properly.
     // (Previous version used MeshBasicMaterial everywhere; switching
     // to Lambert gives us subtle shading for the opaque shell.)
@@ -382,12 +423,12 @@ function GlobeCanvas({ yawRef, pitchRef }){
       // PMREM environment so the translucent acrylic has something to
       // reflect/refract against. Uses RoomEnvironment when available.
       try {
-        const pmrem = new THREE.PMREMGenerator(renderer);
+        pmrem = new THREE.PMREMGenerator(renderer);
         pmrem.compileEquirectangularShader();
         // Build a small "room" by hand: a box of colored emissive planes
         // around the origin. Produces a convincing PBR env for the
         // MeshPhysicalMaterial (reflections + refraction).
-        const envScene = new THREE.Scene();
+        envScene = new THREE.Scene();
         const boxGeo = new THREE.BoxGeometry(1, 1, 1);
         const boxMat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, side: THREE.BackSide });
         const room = new THREE.Mesh(boxGeo, boxMat);
@@ -414,7 +455,8 @@ function GlobeCanvas({ yawRef, pitchRef }){
         top.position.set(0, 9.9, 0);
         top.rotation.x = Math.PI/2;
         envScene.add(top);
-        scene.environment = pmrem.fromScene(envScene, 0.04).texture;
+        environmentTexture = pmrem.fromScene(envScene, 0.04).texture;
+        scene.environment = environmentTexture;
       } catch(e){ /* ok — material just won't refract as richly */ }
     }
 
@@ -879,13 +921,14 @@ function GlobeCanvas({ yawRef, pitchRef }){
     // 0 → 1 toward the focused pose; focusKind remembers WHICH pose
     // so the ease-out after exiting still uses the right target.
     // ══════════════════════════════════════════════════════════════
-    let viewMode = 'cockpit';
-    let focusKind = 'monitor';
-    let modeT = 0;  // 0 = cockpit, 1 = focused (monitor, crate or deck)
+    const restoredViewMode = restore?.viewMode ?? 'cockpit';
+    let viewMode = restoredViewMode;
+    let focusKind = restoredViewMode === 'cockpit' ? 'monitor' : restoredViewMode;
+    let modeT = restoredViewMode === 'cockpit' ? 0 : 1;
     let focusSwitch = null;  // eases between two focused poses (crate → deck)
     let smoothYaw = 0, smoothPitch = 0;  // butter-lerped toward cursor target
     const FOCUSED = (m) => m === 'monitor' || m === 'crate' || m === 'deck';
-    window.__cockpitViewMode = 'cockpit';
+    window.__cockpitViewMode = restoredViewMode;
     const setViewMode = (m) => {
       const wasFocused = FOCUSED(viewMode);
       viewMode = m;
@@ -907,9 +950,13 @@ function GlobeCanvas({ yawRef, pitchRef }){
     // Attach the wooden vinyl crate (VinylCrate.jsx port). It registers its own
     // hover/scroll listeners and a per-frame tick the render loop pumps.
     let crate = null;
-    try { crate = buildVinylCrate(scene, tableGroup, camera, renderer); } catch (e) { /* crate optional */ }
+    try {
+      crate = buildVinylCrate(scene, tableGroup, camera, renderer, { restore });
+    } catch (e) { /* crate optional */ }
     let turntable = null;
-    try { turntable = buildTurntable(scene, tableGroup, camera, renderer); } catch (e) { /* turntable optional */ }
+    try {
+      turntable = buildTurntable(scene, tableGroup, camera, renderer, { restore });
+    } catch (e) { /* turntable optional */ }
     let coffeeStation = null;
     try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer); } catch (e) { /* coffee optional */ }
     let decorations = null;
@@ -986,8 +1033,9 @@ function GlobeCanvas({ yawRef, pitchRef }){
     };
 
     const clock = new THREE.Clock();
-    let raf;
+    let firstFrameReported = false;
     const animate = () => {
+      if (disposed || !contextAlive) return;
       sizeSync.sync();
       const dt = clock.getDelta();
       const t = clock.elapsedTime;
@@ -1147,12 +1195,20 @@ function GlobeCanvas({ yawRef, pitchRef }){
       // §9.6.1 settle signal: camera blend finished and no focused-pose
       // switch in flight (deck busy is layered on in test-hooks).
       reportFrame((FOCUSED(viewMode) ? modeT > 0.995 : modeT < 0.005) && !focusSwitch);
-      raf = requestAnimationFrame(animate);
+      if (!firstFrameReported) {
+        firstFrameReported = true;
+        onContextEvent?.('ready');
+      }
+      if (!disposed && contextAlive) raf = requestAnimationFrame(animate);
     };
     animate();
 
     return () => {
-      cancelAnimationFrame(raf);
+      disposed = true;
+      contextAlive = false;
+      if (raf !== undefined) cancelAnimationFrame(raf);
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
       window.removeEventListener('cockpit-theme', onTheme);
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
@@ -1165,8 +1221,14 @@ function GlobeCanvas({ yawRef, pitchRef }){
       if (teaSet && teaSet.dispose) teaSet.dispose();
       if (incense && incense.dispose) incense.dispose();
       edgeGlow.dispose();
+      disposeObjectGraph(scene);
+      if (envScene) disposeObjectGraph(envScene);
+      if (environmentTexture) environmentTexture.dispose();
+      scene.environment = null;
+      if (pmrem) pmrem.dispose();
       window.__getCockpitAnchors = null;
       window.__cockpitHoveredTag = null;
+      window.__cockpitHoverPC = null;
       window.__cockpitTick = null;
       window.__cockpitScene = null;
       window.__cockpitCamera = null;
@@ -1177,10 +1239,19 @@ function GlobeCanvas({ yawRef, pitchRef }){
       window.__cockpitFPV = null;
       window.__cockpitVinyl = null;
       window.__cockpitTurntable = null;
+      window.__cockpitCube = null;
+      window.__cockpitGLBDebug = null;
+      window.__cockpitGLBLoaded = null;
+      window.__cockpitSmoothedYaw = null;
+      window.__cockpitSmoothedPitch = null;
+      window.__cockpitViewMode = null;
       window.__getCockpitScreenRect = null;
       window.__getCockpitPCRect = null;
+      window.__getCockpitCubeScreenTarget = null;
       window.__setCockpitViewMode = null;
+      clearMainRendererSize();
       renderer.dispose();
+      try { renderer.forceContextLoss(); } catch {}
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);
     };
   }, []);
@@ -1189,4 +1260,37 @@ function GlobeCanvas({ yawRef, pitchRef }){
 }
 
 function easeInOut(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
+
+function disposeObjectGraph(root){
+  const geometries = new Set();
+  const materials = new Set();
+  const textures = new Set();
+  const disposeTexture = (value) => {
+    if (!value || !value.isTexture || textures.has(value)) return;
+    textures.add(value);
+    value.dispose();
+  };
+  const disposeMaterial = (material) => {
+    if (!material || materials.has(material)) return;
+    materials.add(material);
+    Object.values(material).forEach(disposeTexture);
+    if (material.uniforms) {
+      Object.values(material.uniforms).forEach((uniform) => {
+        disposeTexture(uniform?.value);
+      });
+    }
+    material.dispose();
+  };
+  root.traverse((object) => {
+    if (object.geometry && !geometries.has(object.geometry)) {
+      geometries.add(object.geometry);
+      object.geometry.dispose();
+    }
+    const material = object.material;
+    if (Array.isArray(material)) material.forEach(disposeMaterial);
+    else disposeMaterial(material);
+  });
+  root.clear();
+}
+
 export { GlobeCanvas };

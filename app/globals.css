@@ -172,6 +172,16 @@
   .grain, .vignette, [data-boot-decor] {
     display: none !important;
   }
+  .renderer-recovery,
+  .home-cockpit-runtime-notice,
+  .home-cockpit-restart {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border-color: CanvasText !important;
+  }
+  .renderer-recovery-link {
+    color: LinkText !important;
+  }
 }
 
 /* LIGHT — invert the cockpit. Scene becomes cream; HUD text inks darken. */
@@ -617,6 +627,24 @@ html[data-document-scroll="reflow"] body {
 .home-cockpit-notice p + p {
   margin-top: var(--space-2);
 }
+.home-cockpit-runtime-notice:focus-visible {
+  outline: var(--focus-ring-width) solid var(--doc-jade-strong);
+  outline-offset: 3px;
+}
+.home-cockpit-restart {
+  min-height: var(--control-min);
+  padding: 0 var(--space-3);
+  background: transparent;
+  color: var(--doc-jade-strong);
+  border: var(--panel-border-width) solid var(--doc-rule);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+.home-cockpit-restart:hover,
+.home-cockpit-restart:focus-visible {
+  border-color: var(--doc-jade-strong);
+}
 
 .home-footer {
   padding-block: var(--space-5);
@@ -634,6 +662,61 @@ html[data-document-scroll="reflow"] body {
 }
 .cockpit-shell[data-cockpit-mounted="false"] {
   pointer-events: none;
+}
+[data-layout-region="cockpit-stage"]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+.renderer-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.renderer-recovery {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 100;
+  width: min(420px, calc(100% - 2 * var(--space-4)));
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  padding: var(--space-4);
+  background: var(--ink);
+  color: var(--cream);
+  border: var(--panel-border-width) solid var(--mauve);
+  border-radius: var(--radius);
+  pointer-events: auto;
+}
+.renderer-recovery:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: 3px;
+}
+.renderer-recovery-label {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: .22em;
+}
+.renderer-recovery-copy {
+  margin: var(--space-3) 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+.renderer-recovery-link {
+  min-height: var(--control-min);
+  display: inline-flex;
+  align-items: center;
+  color: var(--jade-light);
+  font-family: var(--font-ui);
+  font-size: var(--text-small);
+  text-underline-offset: 4px;
 }
 
 .cockpit-project-link {

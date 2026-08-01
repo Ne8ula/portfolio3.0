@@ -12,13 +12,18 @@ const CockpitApp = dynamic(
   { ssr: false },
 )
 
-type WebGlCapability = 'checking' | 'available' | 'unavailable'
+type WebGlCapability = 'checking' | 'available' | 'unavailable' | 'lost'
 
 export function CockpitEntry(): React.ReactElement | null {
   const [capability, setCapability] = React.useState<WebGlCapability>('checking')
   const [cockpitMounted, setCockpitMounted] = React.useState(false)
+  const [restartKey, setRestartKey] = React.useState(0)
+  const runtimeNoticeRef = React.useRef<HTMLElement>(null)
   const onCockpitMountChange = React.useCallback((mounted: boolean): void => {
     setCockpitMounted(mounted)
+  }, [])
+  const onCockpitFatal = React.useCallback((): void => {
+    setCapability('lost')
   }, [])
 
   React.useEffect(() => {
@@ -30,6 +35,11 @@ export function CockpitEntry(): React.ReactElement | null {
       setCapability('unavailable')
     }
   }, [])
+
+  React.useEffect(() => {
+    if (capability !== 'lost') return
+    runtimeNoticeRef.current?.focus({ preventScroll: true })
+  }, [capability])
 
   React.useEffect(() => {
     if (capability !== 'available' || !cockpitMounted) return
@@ -77,13 +87,53 @@ export function CockpitEntry(): React.ReactElement | null {
     )
   }
 
+  if (capability === 'lost') {
+    return (
+      <aside
+        ref={runtimeNoticeRef}
+        className="home-cockpit-notice home-cockpit-runtime-notice"
+        data-hud="cockpit-runtime-notice"
+        role="status"
+        tabIndex={-1}
+      >
+        <p>
+          The 3D cockpit stopped after a graphics interruption and could not restart.
+          Everything on this site is available as ordinary pages.
+        </p>
+        <p>
+          <a href={SITE_ROUTES.projects}>View projects</a>
+          <span aria-hidden> · </span>
+          <a href={SITE_ROUTES.about}>About</a>
+        </p>
+        <p>
+          <button
+            type="button"
+            className="home-cockpit-restart"
+            data-hud="renderer-restart"
+            onClick={() => {
+              setCockpitMounted(false)
+              setCapability('available')
+              setRestartKey((key) => key + 1)
+            }}
+          >
+            Restart the 3D cockpit
+          </button>
+        </p>
+      </aside>
+    )
+  }
+
   return (
     <div
       className="cockpit-shell"
       data-layout-region="cockpit-shell"
       data-cockpit-mounted={cockpitMounted ? 'true' : 'false'}
     >
-      <CockpitApp onMountChange={onCockpitMountChange} />
+      <CockpitApp
+        key={restartKey}
+        onFatal={onCockpitFatal}
+        onMountChange={onCockpitMountChange}
+      />
     </div>
   )
 }

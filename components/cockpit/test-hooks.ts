@@ -41,6 +41,21 @@ export type HudSnapshot = {
   frameId: number
 }
 
+export type RendererSizeSnapshot = {
+  readonly cssWidth: number
+  readonly cssHeight: number
+  readonly dpr: number
+  readonly bufferWidth: number
+  readonly bufferHeight: number
+  readonly sizeVersion: number
+}
+
+export type RendererLifecycleSnapshot = {
+  readonly status: 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
+  readonly rebuildCount: number
+  readonly main: RendererSizeSnapshot | null
+}
+
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
   skipIntro(): void
@@ -53,6 +68,7 @@ export type CockpitTestHooks = {
   selectRecord(index: number): void
   getHudSnapshot(): Promise<HudSnapshot>
   isSettled(): boolean
+  getRendererState(): RendererLifecycleSnapshot
 }
 
 declare global {
@@ -83,6 +99,11 @@ type Registry = {
   frameId: number
   skipIntroImpl: (() => void) | null
   crateActions: CrateActions | null
+  rendererLifecycle: {
+    status: RendererLifecycleSnapshot['status']
+    rebuildCount: number
+  }
+  mainRenderer: RendererSizeSnapshot | null
 }
 
 const registry: Registry = {
@@ -94,6 +115,11 @@ const registry: Registry = {
   frameId: 0,
   skipIntroImpl: null,
   crateActions: null,
+  rendererLifecycle: {
+    status: 'initializing',
+    rebuildCount: 0,
+  },
+  mainRenderer: null,
 }
 
 // ── Reporting API for cockpit modules (no-ops in production) ─────────────
@@ -143,6 +169,28 @@ export function registerCrateActions(actions: CrateActions): void {
 export function unregisterCrateActions(): void {
   if (!testHooksEnabled) return
   registry.crateActions = null
+}
+
+export function reportRendererLifecycle(
+  status: RendererLifecycleSnapshot['status'],
+  rebuildCount: number,
+): void {
+  if (!testHooksEnabled) return
+  registry.rendererLifecycle = { status, rebuildCount }
+}
+
+export function reportMainRendererSize(
+  target: Omit<RendererSizeSnapshot, 'sizeVersion'>,
+  sizeVersion: number,
+): void {
+  if (!testHooksEnabled) return
+  registry.mainRenderer = { ...target, sizeVersion }
+}
+
+export function clearMainRendererSize(): void {
+  if (!testHooksEnabled) return
+  registry.mainRenderer = null
+  registry.settled = false
 }
 
 // ── Hook implementation ──────────────────────────────────────────────────
@@ -338,6 +386,13 @@ function buildHooks(): CockpitTestHooks {
 
     isSettled(): boolean {
       return isSettledNow()
+    },
+
+    getRendererState(): RendererLifecycleSnapshot {
+      return {
+        ...registry.rendererLifecycle,
+        main: registry.mainRenderer ? { ...registry.mainRenderer } : null,
+      }
     },
   }
 }

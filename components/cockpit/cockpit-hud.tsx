@@ -17,10 +17,10 @@ import { SITE_ROUTES } from "@/lib/site/site"
 import { AX_OS_FUTURE_STUB_LABEL } from "@/lib/content/action-parity"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
-function Cockpit({ interactive = true }){
+function Cockpit({ interactive = true, onContextEvent, restore = null }){
   const yawRef = React.useRef(0);
   const pitchRef = React.useRef(0);
-  const [viewMode, setViewMode] = React.useState('cockpit');
+  const [viewMode, setViewMode] = React.useState(() => restore?.viewMode ?? 'cockpit');
   const [hoveringPC, setHoveringPC] = React.useState(false);
   const [hoveringCrate, setHoveringCrate] = React.useState(false);
 
@@ -88,12 +88,18 @@ function Cockpit({ interactive = true }){
     <div ref={stageRef} data-screen-label="02 Cockpit FPS"
       data-layout-region="cockpit-stage"
       data-layout-contract={COCKPIT_LAYOUT_CONTRACT.id}
+      tabIndex={-1}
       // overflow:hidden still scrolls PROGRAMMATICALLY (focus/scrollIntoView
       // against the matrix3d ScreenDialog, which juts far past the viewport)
       // — that silently pans the whole stage. Pin it at 0.
       onScroll={(e) => { e.currentTarget.scrollLeft = 0; e.currentTarget.scrollTop = 0; }}
       style={{position:'absolute',inset:0,overflow:'hidden',background:'var(--scene-bg)',cursor:CURSOR_DEFAULT}}>
-      <GlobeCanvas yawRef={yawRef} pitchRef={pitchRef}/>
+      <GlobeCanvas
+        yawRef={yawRef}
+        pitchRef={pitchRef}
+        onContextEvent={onContextEvent}
+        restore={restore}
+      />
 
       {viewMode === 'cockpit' && <ObjectTags/>}
       {viewMode === 'cockpit' && <PCHoverHighlight hovering={hoveringPC}/>}
@@ -412,7 +418,7 @@ function SiteHeader(){
                   if (isProjects && openSub && event.key === 'Escape') {
                     event.preventDefault();
                     setOpenSub(false);
-                    projectsLinkRef.current?.focus();
+                    projectsLinkRef.current?.focus({ preventScroll: true });
                   }
                 }}
                 style={{position:'relative', padding:'0 18px'}}

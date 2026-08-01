@@ -193,7 +193,7 @@ function makeHaloTexture(){
   return new THREE.CanvasTexture(c);
 }
 
-export function buildVinylCrate(scene, tableGroup, camera, renderer){
+export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {}){
   const group = new THREE.Group();
   tableGroup.add(group);
 
@@ -204,6 +204,12 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   // stepped-down section over the front opening, thin full-height
   // corner posts at the very front, all on an off-white base band.
   const N = PROJECTS.length;
+  const restore = options.restore;
+  const restoredIndex = Number.isInteger(restore?.recordIndex)
+    && restore.recordIndex >= 0
+    && restore.recordIndex < N
+    ? restore.recordIndex
+    : -1;
   const SLEEVE_W = 0.95;   // cover width  (X)
   const SLEEVE_H = 0.98;   // cover height (Y)
   const SLEEVE_T = 0.045;  // sleeve thickness (Z) — real-LP proportion
@@ -465,7 +471,9 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   let hoveredIdx = -1;      // highlight only (pins + cursor) — never moves records
-  let selectedIdx = -1;     // click-selected record — the one pulled out
+  let selectedIdx = (restore?.viewMode === 'crate' || restore?.viewMode === 'deck')
+    ? restoredIndex
+    : -1;
   let hoverCrate = false;   // cockpit-view hover (for HUD brackets)
 
   const sleevePickables = vinyls.map(v => v.sleeve);
@@ -478,8 +486,22 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer){
   // keeps owning SELECTION (sleeve tip animation + ◄/► stepping); the deck
   // owns the flight, platter, beam and card. Live world-position getters
   // are passed so flights track the sleeves while they animate.
-  let deckOut = false;     // a record is out on the turntable
+  let deckOut = restore?.viewMode === 'deck' && restoredIndex >= 0;
   let returning = false;   // fly-back in progress after leaving deck view
+  if (selectedIdx >= 0) {
+    vinyls.forEach((vinyl) => {
+      const selected = vinyl.data.i === selectedIdx;
+      const inFront = vinyl.data.i < selectedIdx;
+      vinyl.data.tilt = selected || inFront ? 1 : 0;
+      vinyl.data.hover = selected ? 1 : 0;
+      vinyl.data.disc = selected ? 1 : 0;
+      vinyl.group.rotation.x = -LEAN + vinyl.data.tilt * (LEAN + TILT);
+      vinyl.group.position.y = vinyl.data.restY + vinyl.data.hover * LIFT;
+      vinyl.group.position.z = vinyl.data.restZ + vinyl.data.hover * PUSH;
+      vinyl.disc.position.y = vinyl.data.disc * DISC_RISE;
+    });
+    if (deckOut) vinyls[selectedIdx].disc.visible = false;
+  }
   const deck = () => window.__cockpitDeck;
   const discWorldPos  = (i) => () => vinyls[i].disc.getWorldPosition(new THREE.Vector3());
   const discWorldQuat = (i) => () => vinyls[i].disc.getWorldQuaternion(new THREE.Quaternion());

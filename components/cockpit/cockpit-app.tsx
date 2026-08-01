@@ -10,8 +10,22 @@ import { WarpTransition } from "./warp-transition"
 import { ThemeToggle } from "./theme-toggle"
 import { Cockpit } from "./cockpit-hud"
 import { CURSOR_DEFAULT } from "./cursors"
-import { installTestHooks, registerPhaseController, unregisterPhaseController } from "./test-hooks"
+import {
+  installTestHooks,
+  registerPhaseController,
+  reportRendererLifecycle,
+  unregisterPhaseController,
+} from "./test-hooks"
+import { RendererRecoveryPanel } from "./renderer-recovery-panel"
 import { useAccessibility } from "@/components/responsive/accessibility-provider"
+import { ResponsiveStage } from "@/components/responsive/responsive-stage"
+import {
+  READY_BUDGET_RESET_MS,
+  RESTORE_WAIT_MS,
+  STABILIZE_MS,
+  createContextLifecycleState,
+  reduceContextLifecycle,
+} from "@/lib/responsive/context-lifecycle"
 
 // Dialed-in transforms from the prototype's TWEAK_DEFAULTS (Cockpit.html).
 const TWEAK_DEFAULTS = {
@@ -34,9 +48,34 @@ const TWEAK_DEFAULTS = {
   ttX: 0.2, ttY: 0.18, ttZ: 0.9, ttRY: 0, ttS: 1.75,
 }
 
-export function CockpitApp({ onMountChange }) {
+const VIEW_MODES = new Set(['cockpit', 'monitor', 'crate', 'deck']);
+
+function captureRestoreSnapshot() {
+  const rawMode = window.__cockpitViewMode;
+  const viewMode = VIEW_MODES.has(rawMode) ? rawMode : 'cockpit';
+  const playing = window.__cockpitDeck?.index;
+  const selected = window.__getCockpitVinylHover?.()?.index;
+  const recordIndex = Number.isInteger(playing) && playing >= 0
+    ? playing
+    : Number.isInteger(selected) && selected >= 0
+      ? selected
+      : null;
+  return { viewMode, recordIndex };
+}
+
+export function CockpitApp({ onFatal, onMountChange }) {
   const [phase, setPhase] = useState('boot');
   const [interactive, setInteractive] = useState(false);
+  const [lifecycle, dispatchLifecycle] = React.useReducer(
+    reduceContextLifecycle,
+    undefined,
+    createContextLifecycleState,
+  );
+  const [rebuildKey, setRebuildKey] = useState(0);
+  const [restore, setRestore] = useState(null);
+  const restoreSnapshotRef = useRef({ viewMode: 'cockpit', recordIndex: null });
+  const focusedRebuildRef = useRef(0);
+  const [rendererAnnouncement, setRendererAnnouncement] = useState('');
   // Resolved accessibility state from the root AccessibilityProvider
   // (§A.6.2): live matchMedia + persisted explicit overrides, never a
   // one-time snapshot. `introReady` gates boot timelines on the
@@ -84,6 +123,93 @@ export function CockpitApp({ onMountChange }) {
     }
     setPhase('warp');
   };
+  const completeWarp = React.useCallback(() => {
+    setPhase('cockpit');
+    setInteractive(true);
+  }, []);
+
+  const onContextEvent = React.useCallback((event) => {
+    if (event === 'lost') {
+      const snapshot = captureRestoreSnapshot();
+      restoreSnapshotRef.current = snapshot;
+      setViewMode(snapshot.viewMode);
+      dispatchLifecycle({ type: 'context-lost' });
+      return;
+    }
+    if (event === 'restored') {
+      dispatchLifecycle({ type: 'context-restored' });
+      return;
+    }
+    if (event === 'failed') {
+      dispatchLifecycle({ type: 'restore-failed' });
+      return;
+    }
+    if (event === 'ready') {
+      dispatchLifecycle({ type: 'frame-ready' });
+    }
+  }, []);
+
+  useEffect(() => {
+    reportRendererLifecycle(lifecycle.status, lifecycle.rebuildCount);
+    if (lifecycle.status === 'lost') {
+      setRendererAnnouncement(
+        'The 3D scene was interrupted. Waiting for the graphics system…',
+      );
+    } else if (lifecycle.status === 'restoring') {
+      setRendererAnnouncement('Restoring the scene…');
+    } else if (lifecycle.status === 'ready' && lifecycle.rebuildCount > 0) {
+      setRendererAnnouncement('3D scene restored.');
+    } else if (lifecycle.status === 'terminal') {
+      setRendererAnnouncement(
+        'The 3D cockpit stopped after a graphics interruption and could not restart.',
+      );
+      onFatal?.();
+    }
+  }, [lifecycle.rebuildCount, lifecycle.status, onFatal]);
+
+  useEffect(() => {
+    if (lifecycle.status !== 'lost') return;
+    const timer = window.setTimeout(() => {
+      dispatchLifecycle({ type: 'restore-timeout' });
+    }, RESTORE_WAIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [lifecycle.status]);
+
+  useEffect(() => {
+    if (lifecycle.status !== 'restoring') return;
+    const timer = window.setTimeout(() => {
+      const snapshot = restoreSnapshotRef.current;
+      setRestore(snapshot);
+      setViewMode(snapshot.viewMode);
+      setRebuildKey(lifecycle.rebuildCount);
+    }, STABILIZE_MS);
+    return () => window.clearTimeout(timer);
+  }, [lifecycle.rebuildCount, lifecycle.status]);
+
+  useEffect(() => {
+    if (lifecycle.status !== 'ready') return;
+    const timer = window.setTimeout(() => {
+      dispatchLifecycle({ type: 'ready-budget-reset' });
+    }, READY_BUDGET_RESET_MS);
+    return () => window.clearTimeout(timer);
+  }, [lifecycle.rebuildCount, lifecycle.status]);
+
+  useEffect(() => {
+    if (
+      lifecycle.status !== 'ready' ||
+      lifecycle.rebuildCount === 0 ||
+      focusedRebuildRef.current === lifecycle.rebuildCount
+    ) {
+      return;
+    }
+    focusedRebuildRef.current = lifecycle.rebuildCount;
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .querySelector('[data-layout-region="cockpit-stage"]')
+        ?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [lifecycle.rebuildCount, lifecycle.status]);
 
   // Deterministic test bridge (§9.6.1) — additive to the __cockpit* bridge,
   // no-op in production builds (see test-hooks.ts).
@@ -146,7 +272,7 @@ export function CockpitApp({ onMountChange }) {
     };
     apply();
     return () => { cancelled = true; };
-  }, [phase]);
+  }, [phase, rebuildKey]);
 
   return (
     <div
@@ -163,15 +289,26 @@ export function CockpitApp({ onMountChange }) {
         <BootScreen onDone={enterRoom} reduceMotion={reduceMotion} />
       )}
       {phase === 'warp' && (
-        <WarpTransition onComplete={() => { setPhase('cockpit'); setInteractive(true); }} />
+        <WarpTransition onComplete={completeWarp} />
       )}
       {/* The cockpit mounts UNDER the warp overlay so the real desk shows
           through the opening airlock doors (the warp canvas punches a
           transparent hole in the doorway as the panels part). */}
       {(phase === 'cockpit' || phase === 'warp') && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-          <Cockpit interactive={interactive} />
-        </div>
+        <ResponsiveStage label="Cockpit stage" regionId="cockpit-stage-region">
+          <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+            <Cockpit
+              key={rebuildKey}
+              interactive={interactive}
+              onContextEvent={onContextEvent}
+              restore={restore}
+            />
+          </div>
+          <RendererRecoveryPanel
+            announcement={rendererAnnouncement}
+            status={lifecycle.status}
+          />
+        </ResponsiveStage>
       )}
       <div className="grain" />
       <div className="vignette" />

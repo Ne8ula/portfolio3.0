@@ -425,9 +425,13 @@ test.describe('phase 0 smoke', () => {
       await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.enterView('crate'))
 
       const beforeRenderer = await expectMainRendererSized(page)
+      const beforeState = await page.evaluate(() =>
+        window.__COCKPIT_TEST_HOOKS__!.getRendererState(),
+      )
       const beforeHud = await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot())
       expect(beforeHud.subject).not.toBeNull()
       expect(beforeHud.overlays['return-control']).toBeDefined()
+      expect(beforeState.main).not.toBeNull()
 
       await installRendererCallProbe(page)
       await cdp.send('Emulation.setDeviceMetricsOverride', {
@@ -444,13 +448,15 @@ test.describe('phase 0 smoke', () => {
         .toBe(2)
 
       const afterRenderer = await expectMainRendererSized(page)
+      const afterState = await page.evaluate(() =>
+        window.__COCKPIT_TEST_HOOKS__!.getRendererState(),
+      )
       const afterHud = await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot())
       const calls = await readRendererCallProbe(page)
 
-      // getRendererState() is introduced in Phase 3's later lifecycle/test-hook
-      // step. In this sizing-only boundary, one setPixelRatio call is the
-      // observable one-application/one-sizeVersion equivalent.
       expect(calls.setPixelRatio).toBe(1)
+      expect(afterState.main).not.toBeNull()
+      expect(afterState.main!.sizeVersion).toBe(beforeState.main!.sizeVersion + 1)
       expect(
         Math.abs(afterRenderer.bufferWidth - beforeRenderer.bufferWidth * 2),
       ).toBeLessThanOrEqual(1)
@@ -546,6 +552,9 @@ test.describe('phase 0 smoke', () => {
         }),
     )
     await installRendererCallProbe(page)
+    const stateBefore = await page.evaluate(() =>
+      window.__COCKPIT_TEST_HOOKS__!.getRendererState(),
+    )
 
     const memoryBefore = await page.evaluate(() => {
       const renderer = (
@@ -568,6 +577,9 @@ test.describe('phase 0 smoke', () => {
     })
 
     const calls = await readRendererCallProbe(page)
+    const stateAfter = await page.evaluate(() =>
+      window.__COCKPIT_TEST_HOOKS__!.getRendererState(),
+    )
     const memoryAfter = await page.evaluate(() => {
       const renderer = (
         window as Window & {
@@ -583,6 +595,7 @@ test.describe('phase 0 smoke', () => {
       setPixelRatio: 0,
       setSize: 0,
     })
+    expect(stateAfter.main?.sizeVersion).toBe(stateBefore.main?.sizeVersion)
     expect(memoryBefore).not.toBeNull()
     expect(memoryAfter).toEqual(memoryBefore)
   })

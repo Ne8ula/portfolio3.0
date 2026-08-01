@@ -221,33 +221,57 @@ function framePoints(W, H, cy) {
 
 export function WarpTransition({ onComplete }) {
   const hostRef = React.useRef(null)
+  const completedRef = React.useRef(false)
+  const complete = React.useCallback(() => {
+    if (completedRef.current) return
+    completedRef.current = true
+    onComplete?.()
+  }, [onComplete])
 
   React.useEffect(() => {
-    const t = setTimeout(() => onComplete && onComplete(), DURATION_MS * timeScale())
+    const t = setTimeout(complete, DURATION_MS * timeScale())
     return () => clearTimeout(t)
-  }, [onComplete])
+  }, [complete])
 
   React.useEffect(() => {
     const host = hostRef.current
     if (!host) return
     host.style.removeProperty("background")
-    let renderer, raf, sizeSync
+    let renderer, scene, raf, sizeSync, onContextLost, onContextRestored
     let disposed = false
+    let contextAlive = true
     const disposables = []
     const cleanup = () => {
       if (disposed) return
       disposed = true
+      contextAlive = false
       if (raf !== undefined) cancelAnimationFrame(raf)
+      renderer?.domElement.removeEventListener('webglcontextlost', onContextLost)
+      renderer?.domElement.removeEventListener('webglcontextrestored', onContextRestored)
       sizeSync?.dispose()
       disposables.forEach((disposable) => {
         try { disposable.dispose() } catch {}
       })
+      try { disposeSceneGraph(scene) } catch {}
       try { renderer?.dispose() } catch {}
+      try { renderer?.forceContextLoss() } catch {}
       try { renderer?.domElement.remove() } catch {}
     }
 
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+      onContextLost = (event) => {
+        event.preventDefault()
+        if (disposed || !contextAlive) return
+        contextAlive = false
+        if (raf !== undefined) cancelAnimationFrame(raf)
+        raf = undefined
+        sizeSync?.dispose()
+        complete()
+      }
+      onContextRestored = () => {}
+      renderer.domElement.addEventListener('webglcontextlost', onContextLost)
+      renderer.domElement.addEventListener('webglcontextrestored', onContextRestored)
       renderer.setClearColor(CREAM, 1)
       Object.assign(renderer.domElement.style, {
         position: "absolute",
@@ -258,7 +282,7 @@ export function WarpTransition({ onComplete }) {
       })
       host.appendChild(renderer.domElement)
 
-      const scene = new THREE.Scene()
+      scene = new THREE.Scene()
       const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 120)
       camera.position.set(0, 0.35, 7.2)
       camera.lookAt(0, 0.15, -10)
@@ -316,7 +340,9 @@ export function WarpTransition({ onComplete }) {
         mount: host,
         renderer,
         camera,
-        onApplied: () => renderer.render(scene, camera),
+        onApplied: () => {
+          if (contextAlive && !disposed) renderer.render(scene, camera)
+        },
       })
       sizeSync.sync()
 
@@ -324,6 +350,7 @@ export function WarpTransition({ onComplete }) {
       const GLITCHES = [[0.22, 0.9], [1.2, 0.7], [1.85, 0.55]]
       const start = performance.now()
       const tick = () => {
+        if (disposed || !contextAlive) return
         sizeSync.sync()
         const t = (performance.now() - start) / 1000 / timeScale()
         uniforms.uTime.value = t
@@ -344,7 +371,9 @@ export function WarpTransition({ onComplete }) {
         camera.position.z = 7.2 + (0.5 - 7.2) * easeInCubic(clamp01((t - 0.55) / 1.9))
 
         renderer.render(scene, camera)
-        if (t < DURATION_MS / 1000 + 0.2) raf = requestAnimationFrame(tick)
+        if (contextAlive && t < DURATION_MS / 1000 + 0.2) {
+          raf = requestAnimationFrame(tick)
+        }
       }
       raf = requestAnimationFrame(tick)
 
@@ -356,7 +385,7 @@ export function WarpTransition({ onComplete }) {
       cleanup()
       return cleanup
     }
-  }, [])
+  }, [complete])
 
   return (
     <div data-screen-label="00b Warp" style={{
@@ -393,4 +422,39 @@ export function WarpTransition({ onComplete }) {
       }}/>
     </div>
   );
+}
+
+function disposeSceneGraph(scene) {
+  if (!scene) return
+  const geometries = new Set()
+  const materials = new Set()
+  const textures = new Set()
+  const disposeTexture = (value) => {
+    if (!value?.isTexture || textures.has(value)) return
+    textures.add(value)
+    value.dispose()
+  }
+  const disposeMaterial = (material) => {
+    if (!material || materials.has(material)) return
+    materials.add(material)
+    Object.values(material).forEach(disposeTexture)
+    if (material.uniforms) {
+      Object.values(material.uniforms).forEach((uniform) => {
+        disposeTexture(uniform?.value)
+      })
+    }
+    material.dispose()
+  }
+  scene.traverse((object) => {
+    if (object.geometry && !geometries.has(object.geometry)) {
+      geometries.add(object.geometry)
+      object.geometry.dispose()
+    }
+    if (Array.isArray(object.material)) {
+      object.material.forEach(disposeMaterial)
+    } else {
+      disposeMaterial(object.material)
+    }
+  })
+  scene.clear()
 }
