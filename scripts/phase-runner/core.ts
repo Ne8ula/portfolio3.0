@@ -460,7 +460,7 @@ export function isHostRecoverableE2eFailure(
     if (canonical === e2eCommand) {
       if (
         gate.status !== 'fail' ||
-        !/(?:listen\s+EPERM|could not bind|bind(?:ing)?\s+(?:was\s+)?denied.*EPERM|port denial|port-enabled)/i.test(
+        !/(?:listen\s+EPERM|could not bind|bind(?:ing)?\s+(?:was\s+)?denied.*EPERM|denied\s+bind(?:ing)?.*EPERM|port denial|port-enabled)/i.test(
           gate.details,
         )
       ) {
