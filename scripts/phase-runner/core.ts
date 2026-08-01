@@ -424,8 +424,8 @@ export function canonicalGateCommand(command: string): string {
 }
 
 export function canonicalStepId(value: string): string {
-  const match = /^step-\d+(?=$|[\s:—-])/i.exec(value.trim())
-  return match?.[0].toLowerCase() ?? value.trim()
+  const match = /^step(?:-|\s+)(\d+)(?=$|[\s:—-])/i.exec(value.trim())
+  return match ? `step-${match[1]}` : value.trim()
 }
 
 export function validateGateResults(

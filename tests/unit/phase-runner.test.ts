@@ -264,6 +264,7 @@ describe('phase runner', () => {
   it('normalizes a descriptive step label without changing its step number', () => {
     expect(canonicalStepId('step-3 — catalogue routes')).toBe('step-3')
     expect(canonicalStepId('Step-4: enforcement')).toBe('step-4')
+    expect(canonicalStepId('Step 1 — sizing policy')).toBe('step-1')
     expect(canonicalStepId('step-30 catalogue routes')).toBe('step-30')
   })
 
