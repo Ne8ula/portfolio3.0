@@ -62,6 +62,27 @@ export type WarpLifecycleSnapshot = {
   readonly contextLossHandled: boolean
 }
 
+export type DeckTetherSnapshot = {
+  readonly visible: boolean
+  readonly forcedColors: boolean
+  readonly reducedMotion: boolean
+  readonly reducedTransparency: boolean
+  readonly highContrast: boolean
+  readonly hairlineScaleY: number
+  readonly hairlineOpacity: number
+  readonly footOpacity: number
+  readonly ringOpacity: number
+  readonly hairlineColor: string
+  readonly footColor: string
+  readonly ringColor: string
+  readonly drawCalls: number
+  readonly triangles: number
+  readonly lineSegments: number
+  readonly shaderMaterials: number
+  readonly textures: number
+  readonly normalBlending: boolean
+}
+
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
   skipIntro(): void
@@ -77,11 +98,13 @@ export type CockpitTestHooks = {
   getHudSnapshot(): Promise<HudSnapshot>
   isSettled(): boolean
   getRendererState(): RendererLifecycleSnapshot
+  getDeckTether(): DeckTetherSnapshot
 }
 
 declare global {
   interface Window {
     __COCKPIT_TEST_HOOKS__?: CockpitTestHooks
+    __cockpitTheme?: string
     __cockpitViewMode?: string
     __setCockpitViewMode?: ((mode: string) => void) | null
     __cockpitDeck?: { busy: boolean; index: number } | null
@@ -97,6 +120,8 @@ type CrateActions = {
   playRecord: (index: number) => boolean
   selectRecord: (index: number) => boolean
 }
+
+type DeckTetherProbe = () => DeckTetherSnapshot
 
 type Registry = {
   introSkipped: boolean
@@ -114,6 +139,7 @@ type Registry = {
   mainRenderer: RendererSizeSnapshot | null
   warpContextLossArmed: boolean
   warpLifecycle: WarpLifecycleSnapshot
+  deckTetherProbe: DeckTetherProbe | null
 }
 
 const registry: Registry = {
@@ -136,6 +162,7 @@ const registry: Registry = {
     contextLossTriggered: false,
     contextLossHandled: false,
   },
+  deckTetherProbe: null,
 }
 
 // ── Reporting API for cockpit modules (no-ops in production) ─────────────
@@ -185,6 +212,16 @@ export function registerCrateActions(actions: CrateActions): void {
 export function unregisterCrateActions(): void {
   if (!testHooksEnabled) return
   registry.crateActions = null
+}
+
+export function registerDeckTetherProbe(probe: DeckTetherProbe): void {
+  if (!testHooksEnabled) return
+  registry.deckTetherProbe = probe
+}
+
+export function unregisterDeckTetherProbe(): void {
+  if (!testHooksEnabled) return
+  registry.deckTetherProbe = null
 }
 
 export function reportRendererLifecycle(
@@ -452,6 +489,13 @@ function buildHooks(): CockpitTestHooks {
         ...registry.rendererLifecycle,
         main: registry.mainRenderer ? { ...registry.mainRenderer } : null,
       }
+    },
+
+    getDeckTether(): DeckTetherSnapshot {
+      if (!registry.deckTetherProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: deck tether is not ready')
+      }
+      return registry.deckTetherProbe()
     },
   }
 }

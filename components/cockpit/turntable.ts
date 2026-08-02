@@ -10,20 +10,25 @@
 // The deck also PLAYS records (Figma Weave "Vinyl Player" flow): clicking a
 // record in the crate flies its disc onto the platter — the dust cover swings
 // open on its rear hinges, the tonearm swings from its parked post onto the
-// record, a jade
-// projector beam rises from the platter and a holographic PROJECT INFO card
-// (true in-scene canvas-textured plane) materializes above the deck. The
+// record, a jade registration tether draws from the record label to a
+// holographic PROJECT INFO card (true in-scene canvas-textured plane) above
+// the deck. The
 // crate orchestrates WHICH record plays via window.__cockpitDeck
-// { play, eject, busy, index }; this file owns the flight, cover, arm, beam
+// { play, eject, busy, index }; this file owns the flight, cover, arm, tether
 // and card. Card's VIEW MORE button is raycast-picked (UV → canvas px);
 // clicking empty space in deck view returns to the cockpit.
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import { makeDecal, makeTextDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
 import { CURSOR_POINTER } from "./cursors"
-import { reportDeckTransient } from "./test-hooks"
+import {
+  registerDeckTetherProbe,
+  reportDeckTransient,
+  unregisterDeckTetherProbe,
+} from "./test-hooks"
 
 const SAGE = '#6F8D75';
 const MONO = '"JetBrains Mono", Consolas, monospace';
@@ -324,30 +329,29 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   });
 
   // ══════════════════════════════════════════════════════════════
-  // DECK — playback machinery (record flight, cover, arm, beam, card)
+  // DECK — playback machinery (record flight, cover, arm, tether, card)
   // ══════════════════════════════════════════════════════════════
-  const REDUCE = typeof window !== 'undefined' && window.matchMedia
-    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const readReducedMotion = () =>
+    document.documentElement.getAttribute('data-a11y-motion') === 'reduced'
+    || (typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  let reduceMotion = readReducedMotion();
   const vm = () => window.__cockpitViewMode || 'cockpit';
   const WS = () => group.getWorldScale(new THREE.Vector3()).x || 1;
   const easeInOut = (x) => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
 
   // Card palette — mirrors the site's HUD placard language (see
   // VinylInfoCard / globals.css tokens): ink placard + cream type + jade
-  // accents in dark; ivory placard + ink type + deep jade in light. Only
-  // the projector beam keeps the saturated hologram jade (additive over
-  // ink; normal blend over cream, which clamps additive to white).
+  // accents in dark; ivory placard + ink type + deep jade in light.
   const deckTheme = () => (window.__cockpitTheme === 'light')
     ? { bg: 'rgba(240,235,225,0.92)', border: 'rgba(30,28,26,0.3)',
         hair: 'rgba(30,28,26,0.2)',   faint: 'rgba(30,28,26,0.38)',
         text: '#14110F', textSoft: '#3A3733',
-        jade: '#3A5A3E', jadeLite: '#4B6E4F', btnHover: 'rgba(58,90,62,0.14)',
-        beam: 0x3A5A3E, blend: THREE.NormalBlending, beamOpacity: 0.26 }
+        jade: '#3A5A3E', jadeLite: '#4B6E4F', btnHover: 'rgba(58,90,62,0.14)' }
     : { bg: 'rgba(30,28,26,0.88)',    border: 'rgba(232,228,220,0.25)',
         hair: 'rgba(232,228,220,0.18)', faint: 'rgba(232,228,220,0.4)',
         text: '#F0EBE1', textSoft: '#D8D3C7',
-        jade: '#4B6E4F', jadeLite: '#7A9A7E', btnHover: 'rgba(75,110,79,0.28)',
-        beam: 0x7FE6A4, blend: THREE.AdditiveBlending, beamOpacity: 0.5 };
+        jade: '#4B6E4F', jadeLite: '#7A9A7E', btnHover: 'rgba(75,110,79,0.28)' };
   let COL = deckTheme();
   const SERIF = '"Cormorant Garamond", Georgia, serif';
 
@@ -380,7 +384,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     return img;
   };
 
-  // ── Holographic PROJECT INFO card + projector beam ────────────
+  // ── Holographic PROJECT INFO card + registration tether ───────
   const holo = new THREE.Group();
   holo.position.set(PLATTER_X, 0, 0);
   holo.userData.noGlow = true;    // never edge-glow-traced
@@ -390,9 +394,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const CARD_W = 0.94, CARD_H = 1.175;
   const BEAM_BOT = topY + 0.09, CARD_BOT = 0.95;
   const CARD_Y = CARD_BOT + CARD_H / 2;
-  // Beam overshoots INTO the card (+0.12) — the card's depth mask hides the
-  // overlap, so the cone always meets the (bobbing, scaling) bottom edge.
-  const BEAM_H = CARD_BOT + 0.12 - BEAM_BOT;
+  // The tether overshoots into the card; the card depth mask hides the
+  // overlap so the hairlines always meet its bobbing bottom edge.
+  const TETHER_BASE_Y = BEAM_BOT + 0.004;
+  const TETHER_TOP_Y = CARD_BOT + 0.05;
+  const TETHER_H = TETHER_TOP_Y - TETHER_BASE_Y;
   const BTN = { x: 56, y: 690, w: 528, h: 54 };   // canvas-px VIEW MORE hit rect
 
   const cardCanvas = document.createElement('canvas');
@@ -539,9 +545,8 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   card.visible = false;
   holo.add(card);
   // Invisible depth mask riding just behind the card face: it writes depth
-  // BEFORE the beam draws (994.5 < 995), so the depth-tested beam is culled
-  // behind the card silhouette — the cone ties cleanly into the card's
-  // bottom edge instead of washing through its translucent body.
+  // before the tether draws (994.5 < 995), so the depth-tested hairline
+  // overshoot is culled behind the card silhouette.
   const cardMask = new THREE.Mesh(
     new THREE.PlaneGeometry(CARD_W, CARD_H),
     new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true })
@@ -550,65 +555,195 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   cardMask.renderOrder = 994.5;
   card.add(cardMask);
 
-  // Projector beam — volumetric-looking cone: a fresnel shader fades the
-  // silhouette to nothing (no hard cone edges), keeps a bright core where
-  // the view ray runs through the "volume", feathers the base, and eases
-  // off toward the card. View-space normals handle the non-uniform
-  // scale.y used for the rise animation. Tip overshoot stays hidden
-  // behind the card's depth mask.
-  const beamMat = new THREE.ShaderMaterial({
-    uniforms: {
-      uColor:   { value: new THREE.Color(COL.beam) },
-      uOpacity: { value: 0 },
-      uTime:    { value: 0 },
-    },
-    vertexShader: `
-      varying vec3 vN; varying vec3 vV; varying float vH;
-      void main(){
-        vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        vN = normalMatrix * normal;
-        vV = -mv.xyz;
-        vH = position.y + 0.5;          // 0 base … 1 tip (unit cylinder)
-        gl_Position = projectionMatrix * mv;
-      }`,
-    fragmentShader: `
-      uniform vec3 uColor; uniform float uOpacity; uniform float uTime;
-      varying vec3 vN; varying vec3 vV; varying float vH;
-      void main(){
-        float core = pow(abs(dot(normalize(vN), normalize(vV))), 1.7);
-        float vert = smoothstep(0.0, 0.08, vH) * mix(1.0, 0.45, smoothstep(0.08, 1.0, vH));
-        float shimmer = 0.94 + 0.06 * sin(vH * 26.0 - uTime * 1.6);
-        gl_FragColor = vec4(uColor, uOpacity * core * vert * shimmer);
-      }`,
-    transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    blending: COL.blend,
+  // Registration tether — two label-radius leader lines, two tiny signal
+  // squares, and an etched index ring. All three draws use basic materials
+  // with normal blending: no volume, additive wash, shader, glow texture, or
+  // settled ambient motion.
+  const tether = new THREE.Group();
+  tether.name = 'deck-registration-tether';
+  tether.visible = false;
+  holo.add(tether);
+
+  const hairlineMat = new THREE.LineBasicMaterial({
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    depthTest: true,
+    toneMapped: false,
+    blending: THREE.NormalBlending,
   });
-  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.09, 1, 48, 24, true), beamMat);
-  beam.renderOrder = 995;
-  beam.visible = false;
-  holo.add(beam);
-  // soft glow pool on the platter under the beam
-  const glowCanvas = document.createElement('canvas');
-  glowCanvas.width = glowCanvas.height = 128;
-  {
-    const gctx = glowCanvas.getContext('2d');
-    const g = gctx.createRadialGradient(64, 64, 4, 64, 64, 64);
-    g.addColorStop(0, 'rgba(255,255,255,0.9)');
-    g.addColorStop(0.5, 'rgba(255,255,255,0.25)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    gctx.fillStyle = g;
-    gctx.fillRect(0, 0, 128, 128);
-  }
-  const baseGlowMat = new THREE.MeshBasicMaterial({
-    map: new THREE.CanvasTexture(glowCanvas), color: COL.beam, transparent: true,
-    opacity: 0, blending: COL.blend, depthWrite: false, toneMapped: false,
+  const hairlineGeo = new THREE.BufferGeometry();
+  hairlineGeo.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([
+      -0.155, 0, 0,
+      -0.155, TETHER_H, 0,
+       0.155, 0, 0,
+       0.155, TETHER_H, 0,
+    ], 3),
+  );
+  const hairlines = new THREE.LineSegments(hairlineGeo, hairlineMat);
+  hairlines.name = 'deck-registration-tether-hairlines';
+  hairlines.position.y = TETHER_BASE_Y;
+  hairlines.scale.y = 0.001;
+  hairlines.renderOrder = 995;
+  tether.add(hairlines);
+
+  const footParts = [-0.155, 0.155].map((x) =>
+    new THREE.PlaneGeometry(0.014, 0.014).translate(x, 0, 0)
+  );
+  const footGeo = mergeGeometries(footParts);
+  footParts.forEach((geometry) => geometry.dispose());
+  const footMat = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    depthTest: true,
+    toneMapped: false,
+    blending: THREE.NormalBlending,
   });
-  const baseGlow = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), baseGlowMat);
-  baseGlow.rotation.x = -Math.PI / 2;
-  baseGlow.position.y = BEAM_BOT + 0.004;
-  baseGlow.renderOrder = 994;
-  baseGlow.visible = false;
-  holo.add(baseGlow);
+  const footSquares = new THREE.Mesh(footGeo, footMat);
+  footSquares.name = 'deck-registration-tether-feet';
+  footSquares.rotation.x = -Math.PI / 2;
+  footSquares.position.y = BEAM_BOT + 0.003;
+  footSquares.renderOrder = 995;
+  tether.add(footSquares);
+
+  const ringMat = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    depthTest: true,
+    toneMapped: false,
+    blending: THREE.NormalBlending,
+  });
+  const indexRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.505, 0.518, 72),
+    ringMat,
+  );
+  indexRing.name = 'deck-registration-tether-ring';
+  indexRing.rotation.x = -Math.PI / 2;
+  indexRing.position.y = BEAM_BOT + 0.002;
+  indexRing.renderOrder = 994;
+  tether.add(indexRing);
+
+  const tetherMaterials = [hairlineMat, footMat, ringMat];
+  const root = document.documentElement;
+  const forcedColorsQuery = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(forced-colors: active)')
+    : null;
+  let tetherState = {
+    forcedColors: forcedColorsQuery?.matches === true,
+    reducedTransparency:
+      root.getAttribute('data-a11y-transparency') === 'reduced',
+    highContrast: root.getAttribute('data-a11y-contrast') === 'high',
+    hairlineOpacity: 0.55,
+    footOpacity: 0.9,
+    ringOpacity: 0.45,
+    ringAllowed: true,
+  };
+  const cssColor = (name) =>
+    getComputedStyle(root).getPropertyValue(name).trim();
+  const applyTetherPresentation = () => {
+    reduceMotion = readReducedMotion();
+    const light = window.__cockpitTheme === 'light';
+    const reducedTransparency =
+      root.getAttribute('data-a11y-transparency') === 'reduced';
+    const highContrast = root.getAttribute('data-a11y-contrast') === 'high';
+    const forcedColors = forcedColorsQuery?.matches === true;
+    let hairlineColor;
+    let footColor;
+    let ringColor;
+    let hairlineOpacity;
+    let footOpacity;
+    let ringOpacity;
+    let ringAllowed = true;
+
+    if (highContrast){
+      hairlineColor = footColor = ringColor = cssColor('--cream-warm');
+      hairlineOpacity = footOpacity = ringOpacity = 1;
+      ringAllowed = false;
+    } else if (reducedTransparency){
+      const structural = cssColor(light ? '--jade' : '--jade-light');
+      hairlineColor = footColor = ringColor = structural;
+      hairlineOpacity = footOpacity = ringOpacity = 1;
+    } else if (light){
+      hairlineColor = footColor = ringColor = cssColor('--jade');
+      hairlineOpacity = 0.5;
+      footOpacity = 1;
+      ringOpacity = 0.3;
+    } else {
+      hairlineColor = cssColor('--jade-light');
+      footColor = cssColor('--jade-signal');
+      ringColor = cssColor('--jade');
+      hairlineOpacity = 0.55;
+      footOpacity = 0.9;
+      ringOpacity = 0.45;
+    }
+
+    hairlineMat.color.set(hairlineColor);
+    footMat.color.set(footColor);
+    ringMat.color.set(ringColor);
+    tetherState = {
+      forcedColors,
+      reducedTransparency,
+      highContrast,
+      hairlineOpacity,
+      footOpacity,
+      ringOpacity,
+      ringAllowed,
+    };
+  };
+  applyTetherPresentation();
+
+  const accessibilityObserver = new MutationObserver(applyTetherPresentation);
+  accessibilityObserver.observe(root, {
+    attributes: true,
+    attributeFilter: [
+      'data-a11y-motion',
+      'data-a11y-transparency',
+      'data-a11y-contrast',
+    ],
+  });
+  forcedColorsQuery?.addEventListener('change', applyTetherPresentation);
+
+  const geometryTriangles = (geometry) =>
+    geometry.index
+      ? geometry.index.count / 3
+      : geometry.getAttribute('position').count / 3;
+  const tetherTriangles =
+    geometryTriangles(footGeo) + geometryTriangles(indexRing.geometry);
+  let renderedHairlineScale = hairlines.scale.y;
+  let renderedHairlineOpacity = hairlineMat.opacity;
+  let renderedFootOpacity = footMat.opacity;
+  let renderedRingOpacity = ringMat.opacity;
+  registerDeckTetherProbe(() => ({
+    visible: tether.visible,
+    forcedColors: tetherState.forcedColors,
+    reducedMotion: reduceMotion,
+    reducedTransparency: tetherState.reducedTransparency,
+    highContrast: tetherState.highContrast,
+    hairlineScaleY: renderedHairlineScale,
+    hairlineOpacity: renderedHairlineOpacity,
+    footOpacity: renderedFootOpacity,
+    ringOpacity: renderedRingOpacity,
+    hairlineColor: `#${hairlineMat.color.getHexString()}`,
+    footColor: `#${footMat.color.getHexString()}`,
+    ringColor: `#${ringMat.color.getHexString()}`,
+    drawCalls: tether.visible
+      ? 1 + Number(footSquares.visible) + Number(indexRing.visible)
+      : 0,
+    triangles: tetherTriangles,
+    lineSegments: hairlineGeo.getAttribute('position').count / 2,
+    shaderMaterials: tetherMaterials.filter(
+      (material) => material instanceof THREE.ShaderMaterial,
+    ).length,
+    textures: tetherMaterials.filter((material) => material.map).length,
+    normalBlending: tetherMaterials.every(
+      (material) => material.blending === THREE.NormalBlending,
+    ),
+  }));
+
   // Hologram pieces never intercept the cockpit hover raycast
   holo.traverse(o => { o.userData.noPick = true; });
 
@@ -661,7 +796,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     deckDisc.visible = true;
     const r0 = args.fromRadius ? args.fromRadius() : 0.45 * WS();
     flight = {
-      dir: 'in', t: 0, dur: REDUCE ? 0.01 : 0.72, started: false,
+      dir: 'in', t: 0, dur: reduceMotion ? 0.01 : 0.72, started: false,
       from: args.from, to: platterWorld,
       q0: null,
       q0fn: () => (args.fromQuat ? args.fromQuat() : VERT_QUAT.clone()),
@@ -682,7 +817,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     if (deckDisc.parent !== scene) scene.attach(deckDisc);
     const curPos = deckDisc.position.clone();
     flight = {
-      dir: 'out', t: 0, dur: REDUCE ? 0.01 : 0.6, started: true,
+      dir: 'out', t: 0, dur: reduceMotion ? 0.01 : 0.6, started: true,
       from: () => curPos, to: args.to || platterWorld,
       q0: deckDisc.quaternion.clone(),
       q0fn: null,
@@ -796,18 +931,16 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
 
   const onTheme = () => {
     COL = deckTheme();
-    beamMat.uniforms.uColor.value.setHex(COL.beam);
-    beamMat.blending = COL.blend; beamMat.needsUpdate = true;
-    baseGlowMat.color.setHex(COL.beam); baseGlowMat.blending = COL.blend; baseGlowMat.needsUpdate = true;
+    applyTetherPresentation();
     if (playing >= 0) drawCard(playing, btnHover);
   };
   window.addEventListener('cockpit-theme', onTheme);
 
   // ── Per-frame: spin + playback sequencing ─────────────────────
-  const K = REDUCE ? 20 : 1;
   group.tick = function(dt, t){
     elapsed = (typeof t === 'number') ? t : elapsed + dt;
     spin.rotation.y += dt * 1.6;
+    const K = reduceMotion ? 20 : 1;
 
     // Cover: swings open on its rear hinges whenever a record is on
     // deck/inbound — ~103° past vertical, a real dust-cover resting pose.
@@ -854,14 +987,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     // stylus clears the record while sweeping across, then settles on it
     armAssembly.rotation.z = ARM_PARK.z + (ARM_PLAY.z - ARM_PARK.z) * ae - 0.09 * Math.sin(Math.PI * ae);
 
-    // Beam rises once the arm is engaging; card materializes out of it.
+    // Tether draws once the arm is engaging; card materializes above it.
     const beamTgt = (landed && armT > 0.55) ? 1 : 0;
     const cardTgt = (landed && armT > 0.82) ? 1 : 0;
     beamT += (beamTgt - beamT) * Math.min(1, dt * 4.0 * K);
     cardT += (cardTgt - cardT) * Math.min(1, dt * 3.4 * K);
 
     // §9.6.1 settle signal: the deck is transient while the tonearm swing,
-    // beam rise, or card fade is still easing — busy alone clears at disc
+    // tether draw, or card fade is still easing — busy alone clears at disc
     // landing, before these finish. Dev-only no-op in production.
     reportDeckTransient(
       Math.abs((landed ? 1 : 0) - armT) > 0.02 ||
@@ -870,21 +1003,43 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     );
 
     const be = easeInOut(beamT);
-    beam.visible = beamT > 0.02;
-    if (beam.visible){
-      beam.scale.set(1, Math.max(0.001, be), 1);
-      beam.position.y = BEAM_BOT + BEAM_H * be * 0.5;
-      beamMat.uniforms.uOpacity.value = COL.beamOpacity * be;
-      beamMat.uniforms.uTime.value = elapsed;
+    const tetherProgress = reduceMotion ? Number(cardTgt > 0) : be;
+    const ringProgress = reduceMotion
+      ? tetherProgress
+      : easeInOut(Math.min(1, beamT / 0.4));
+    const footProgress = reduceMotion
+      ? tetherProgress
+      : easeInOut(Math.max(0, Math.min(1, (beamT - 0.7) / 0.3)));
+    tether.visible = !tetherState.forcedColors && tetherProgress > 0.001;
+    indexRing.visible =
+      tether.visible && tetherState.ringAllowed && ringProgress > 0.001;
+    footSquares.visible = tether.visible && footProgress > 0.001;
+    if (Math.abs(renderedHairlineScale - tetherProgress) > 0.0001){
+      renderedHairlineScale = Math.max(0.001, tetherProgress);
+      hairlines.scale.y = renderedHairlineScale;
     }
-    baseGlow.visible = beam.visible;
-    if (baseGlow.visible) baseGlowMat.opacity = 0.35 * be;
+    const nextHairlineOpacity =
+      tetherState.hairlineOpacity * tetherProgress;
+    const nextFootOpacity = tetherState.footOpacity * footProgress;
+    const nextRingOpacity = tetherState.ringOpacity * ringProgress;
+    if (Math.abs(renderedHairlineOpacity - nextHairlineOpacity) > 0.0001){
+      renderedHairlineOpacity = nextHairlineOpacity;
+      hairlineMat.opacity = nextHairlineOpacity;
+    }
+    if (Math.abs(renderedFootOpacity - nextFootOpacity) > 0.0001){
+      renderedFootOpacity = nextFootOpacity;
+      footMat.opacity = nextFootOpacity;
+    }
+    if (Math.abs(renderedRingOpacity - nextRingOpacity) > 0.0001){
+      renderedRingOpacity = nextRingOpacity;
+      ringMat.opacity = nextRingOpacity;
+    }
 
     const ce = easeInOut(cardT);
     card.visible = cardT > 0.02;
     // The mask writes depth in the OPAQUE pass, so it culls EVERY later
     // depth-tested draw behind it — the transmissive dust cover included,
-    // not just the beam it was cut for. While the card is still fading it
+    // not just the tether it was cut for. While the card is still fading it
     // is too translucent to hide that hole, so the cover reads as blinking
     // out in a card-shaped rectangle (worst on a swap, which fades the card
     // out and back in). Arm the mask only once the card can cover its own
@@ -903,6 +1058,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
         card.lookAt(cp);
       }
     }
+    if (tether.visible) tether.quaternion.copy(card.quaternion);
   };
 
   group.disposeDeck = function(){
@@ -911,6 +1067,9 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       renderer.domElement.removeEventListener('pointerdown', onDeckDown, true);
     }
     window.removeEventListener('cockpit-theme', onTheme);
+    accessibilityObserver.disconnect();
+    forcedColorsQuery?.removeEventListener('change', applyTetherPresentation);
+    unregisterDeckTetherProbe();
     window.__cockpitDeck = null;
     window.__getCockpitDeckInfo = null;
     window.__getCockpitDeckCardRect = null;

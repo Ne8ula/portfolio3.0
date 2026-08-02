@@ -25,6 +25,7 @@
   --jade:         #4B6E4F;
   --jade-deep:    #3A5A3E;
   --jade-light:   #7A9A7E;
+  --jade-signal:  #7FE6A4;
   /* Boot/warp keep their authored palette across cockpit theme inversion. */
   --warp-cream:   #E8E4DC;
 
@@ -204,6 +205,7 @@ html[data-theme="light"] {
   --jade:         #3A5A3E;
   --jade-deep:    #2A4830;
   --jade-light:   #4B6E4F;
+  --jade-signal:  #3A5A3E;
 
   --scene-bg:     #ECE6D8;
   --page-grad-1:  #F4EFE2;
