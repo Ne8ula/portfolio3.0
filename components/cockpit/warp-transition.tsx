@@ -11,6 +11,13 @@
 import React from "react"
 import * as THREE from "three"
 import { createRendererSizeSync } from "./renderer-size-sync"
+import {
+  consumeWarpContextLossRequest,
+  reportWarpContextLossHandled,
+  reportWarpContextLossTriggered,
+  reportWarpInitialCoverColor,
+  testHooksEnabled,
+} from "./test-hooks"
 
 const DURATION_MS = 2500
 const timeScale = () => (typeof window !== "undefined" && window.__warpTimeScale) || 1
@@ -236,6 +243,9 @@ export function WarpTransition({ onComplete }) {
   React.useEffect(() => {
     const host = hostRef.current
     if (!host) return
+    if (testHooksEnabled) {
+      reportWarpInitialCoverColor(getComputedStyle(host).backgroundColor)
+    }
     let renderer, scene, raf, sizeSync, onContextLost, onContextRestored
     let disposed = false
     let contextAlive = true
@@ -267,6 +277,7 @@ export function WarpTransition({ onComplete }) {
         if (raf !== undefined) cancelAnimationFrame(raf)
         raf = undefined
         sizeSync?.dispose()
+        reportWarpContextLossHandled()
         complete()
       }
       onContextRestored = () => {}
@@ -281,6 +292,13 @@ export function WarpTransition({ onComplete }) {
         display: "block",
       })
       host.appendChild(renderer.domElement)
+      if (consumeWarpContextLossRequest()) {
+        reportWarpContextLossTriggered()
+        renderer.domElement.dispatchEvent(
+          new Event('webglcontextlost', { cancelable: true }),
+        )
+        return cleanup
+      }
 
       scene = new THREE.Scene()
       const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 120)

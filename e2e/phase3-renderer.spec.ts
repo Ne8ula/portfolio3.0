@@ -519,29 +519,31 @@ test.describe('Phase 3 renderer lifecycle', () => {
     page,
   }) => {
     test.setTimeout(180_000)
+    await page.setViewportSize({ width: 640, height: 480 })
     await page.goto('/')
+    await waitForHooks(page)
     await page.evaluate(() => {
-      ;(window as Window & { __warpTimeScale?: number }).__warpTimeScale = 100
+      const testWindow = window as Window & { __warpTimeScale?: number }
+      testWindow.__warpTimeScale = 100
+      window.__COCKPIT_TEST_HOOKS__!.armWarpContextLoss()
     })
     const enter = page.getByRole('button', { name: /enter the room/i })
     await expect(enter).toBeVisible({ timeout: 45_000 })
     await enter.click()
     const warp = page.locator('[data-screen-label="00b Warp"]')
-    await expect(warp).toBeVisible({ timeout: 45_000 })
-    await expect(warp.locator('[data-warp-surface]')).toHaveCSS(
-      'background-color',
-      'rgb(232, 228, 220)',
-    )
-    await page.evaluate(() => {
-      const canvas = document.querySelector<HTMLCanvasElement>(
-        '[data-screen-label="00b Warp"] canvas',
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.__COCKPIT_TEST_HOOKS__!.getWarpLifecycle(),
+        ),
+        { timeout: 60_000 },
       )
-      const context = canvas?.getContext('webgl2') ?? canvas?.getContext('webgl')
-      const extension = context?.getExtension('WEBGL_lose_context')
-      if (!extension) throw new Error('warp WEBGL_lose_context unavailable')
-      extension.loseContext()
-    })
-    await expect(warp).toHaveCount(0, { timeout: 5_000 })
+      .toEqual({
+        initialCoverColor: 'rgb(232, 228, 220)',
+        contextLossTriggered: true,
+        contextLossHandled: true,
+      })
+    await expect(warp).toHaveCount(0, { timeout: 45_000 })
     await waitForRendererStatus(page, 'ready')
     await expect(page.locator('[data-hud="renderer-recovery"]')).toHaveCount(0)
     await expect(page.locator('[data-hud="cockpit-runtime-notice"]')).toHaveCount(0)

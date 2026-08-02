@@ -56,9 +56,17 @@ export type RendererLifecycleSnapshot = {
   readonly main: RendererSizeSnapshot | null
 }
 
+export type WarpLifecycleSnapshot = {
+  readonly initialCoverColor: string | null
+  readonly contextLossTriggered: boolean
+  readonly contextLossHandled: boolean
+}
+
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
   skipIntro(): void
+  armWarpContextLoss(): void
+  getWarpLifecycle(): WarpLifecycleSnapshot
   enterView(mode: CockpitViewMode): Promise<void>
   playRecord(index: number): Promise<void>
   /** Phase 0 addition beyond the §9.6.1 minimum: deterministic crate
@@ -104,6 +112,8 @@ type Registry = {
     rebuildCount: number
   }
   mainRenderer: RendererSizeSnapshot | null
+  warpContextLossArmed: boolean
+  warpLifecycle: WarpLifecycleSnapshot
 }
 
 const registry: Registry = {
@@ -120,6 +130,12 @@ const registry: Registry = {
     rebuildCount: 0,
   },
   mainRenderer: null,
+  warpContextLossArmed: false,
+  warpLifecycle: {
+    initialCoverColor: null,
+    contextLossTriggered: false,
+    contextLossHandled: false,
+  },
 }
 
 // ── Reporting API for cockpit modules (no-ops in production) ─────────────
@@ -191,6 +207,36 @@ export function clearMainRendererSize(): void {
   if (!testHooksEnabled) return
   registry.mainRenderer = null
   registry.settled = false
+}
+
+export function reportWarpInitialCoverColor(color: string): void {
+  if (!testHooksEnabled) return
+  registry.warpLifecycle = {
+    ...registry.warpLifecycle,
+    initialCoverColor: color,
+  }
+}
+
+export function consumeWarpContextLossRequest(): boolean {
+  if (!testHooksEnabled || !registry.warpContextLossArmed) return false
+  registry.warpContextLossArmed = false
+  return true
+}
+
+export function reportWarpContextLossTriggered(): void {
+  if (!testHooksEnabled) return
+  registry.warpLifecycle = {
+    ...registry.warpLifecycle,
+    contextLossTriggered: true,
+  }
+}
+
+export function reportWarpContextLossHandled(): void {
+  if (!testHooksEnabled) return
+  registry.warpLifecycle = {
+    ...registry.warpLifecycle,
+    contextLossHandled: true,
+  }
 }
 
 // ── Hook implementation ──────────────────────────────────────────────────
@@ -274,6 +320,19 @@ function buildHooks(): CockpitTestHooks {
       }
       registry.introSkipped = true
       registry.skipIntroImpl()
+    },
+
+    armWarpContextLoss(): void {
+      registry.warpContextLossArmed = true
+      registry.warpLifecycle = {
+        initialCoverColor: null,
+        contextLossTriggered: false,
+        contextLossHandled: false,
+      }
+    },
+
+    getWarpLifecycle(): WarpLifecycleSnapshot {
+      return { ...registry.warpLifecycle }
     },
 
     async enterView(mode: CockpitViewMode): Promise<void> {
