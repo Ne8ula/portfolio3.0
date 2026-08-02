@@ -236,10 +236,10 @@ export function WarpTransition({ onComplete }) {
   React.useEffect(() => {
     const host = hostRef.current
     if (!host) return
-    host.style.removeProperty("background")
     let renderer, scene, raf, sizeSync, onContextLost, onContextRestored
     let disposed = false
     let contextAlive = true
+    let initialCoverRemoved = false
     const disposables = []
     const cleanup = () => {
       if (disposed) return
@@ -371,6 +371,13 @@ export function WarpTransition({ onComplete }) {
         camera.position.z = 7.2 + (0.5 - 7.2) * easeInCubic(clamp01((t - 0.55) / 1.9))
 
         renderer.render(scene, camera)
+        // React commits the real cockpit and this transparent overlay in the
+        // same paint. Keep the DOM cover until the canvas has rendered a
+        // closed airlock frame, then clear it just before the doors part.
+        if (!initialCoverRemoved && t >= 0.45) {
+          host.style.removeProperty("background")
+          initialCoverRemoved = true
+        }
         if (contextAlive && t < DURATION_MS / 1000 + 0.2) {
           raf = requestAnimationFrame(tick)
         }
@@ -381,7 +388,7 @@ export function WarpTransition({ onComplete }) {
     } catch {
       // WebGL unavailable — fall back to an opaque cream card so the timeout
       // + text overlay still carry the transition (no hole to reveal through)
-      host.style.background = "var(--cream)"
+      host.style.background = "var(--warp-cream)"
       cleanup()
       return cleanup
     }
@@ -397,7 +404,12 @@ export function WarpTransition({ onComplete }) {
       pointerEvents: 'none',
     }}>
       {/* three.js airlock scene */}
-      <div ref={hostRef} aria-hidden style={{ position: 'absolute', inset: 0 }} />
+      <div
+        ref={hostRef}
+        aria-hidden
+        data-warp-surface
+        style={{ position: 'absolute', inset: 0, background: 'var(--warp-cream)' }}
+      />
 
       {/* Center text */}
       <div style={{

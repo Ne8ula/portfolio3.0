@@ -25,6 +25,8 @@
   --jade:         #4B6E4F;
   --jade-deep:    #3A5A3E;
   --jade-light:   #7A9A7E;
+  /* Boot/warp keep their authored palette across cockpit theme inversion. */
+  --warp-cream:   #E8E4DC;
 
   /* Document surfaces are independent from cockpit `data-theme` inversion.
      The no-JS default is light; prefers-color-scheme supplies the tier-1

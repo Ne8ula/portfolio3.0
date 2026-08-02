@@ -521,13 +521,17 @@ test.describe('Phase 3 renderer lifecycle', () => {
     test.setTimeout(180_000)
     await page.goto('/')
     await page.evaluate(() => {
-      ;(window as Window & { __warpTimeScale?: number }).__warpTimeScale = 10
+      ;(window as Window & { __warpTimeScale?: number }).__warpTimeScale = 100
     })
     const enter = page.getByRole('button', { name: /enter the room/i })
     await expect(enter).toBeVisible({ timeout: 45_000 })
     await enter.click()
     const warp = page.locator('[data-screen-label="00b Warp"]')
     await expect(warp).toBeVisible({ timeout: 45_000 })
+    await expect(warp.locator('[data-warp-surface]')).toHaveCSS(
+      'background-color',
+      'rgb(232, 228, 220)',
+    )
     await page.evaluate(() => {
       const canvas = document.querySelector<HTMLCanvasElement>(
         '[data-screen-label="00b Warp"] canvas',
