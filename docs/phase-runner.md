@@ -119,6 +119,14 @@ the only failure is `listen EPERM` for E2E, it runs the fixed
 host gate proceeds directly to fresh Kimi QA; any real browser failure remains
 blocking.
 
+The argument-free `CI=true` E2E gate runs every `e2e/*.spec.ts` file
+sequentially in a fresh Playwright process. This preserves the complete test
+inventory, CI retries, and failure artifacts while preventing a software-WebGL
+stall in one file from contaminating the next file's Chromium process.
+Explicitly targeted commands and ordinary local `npm run test:e2e` runs still
+delegate directly to Playwright. Set `E2E_ISOLATE_FILES=1` to opt in manually
+or `E2E_ISOLATE_FILES=0` to diagnose the legacy single-process path.
+
 After the final step has passed, owner-approved amendments make the previous QA
 verdict stale. Launch only a fresh independent Kimi review of the complete live
 snapshot without repeating the completed Codex implementation:

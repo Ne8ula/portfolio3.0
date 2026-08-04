@@ -25,7 +25,7 @@
     "typecheck:contracts": "tsc -p tsconfig.contracts.json",
     "validate:contracts": "node --import tsx scripts/validate-contracts.ts",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "node scripts/run-e2e.mjs"
   },
   "dependencies": {
     "@pmndrs/vanilla": "^1.25.0",
