@@ -129,6 +129,10 @@ test.describe('phase 1 foundation', () => {
   test('boot waits for the operable ACCESSIBILITY trigger and honors reduced motion', async ({
     page,
   }) => {
+    // The cockpit is a client-only dynamic chunk. A cold software-rendered CI
+    // dev server can spend more than 30 seconds compiling that chunk after
+    // the Enter click even though the rendered stage is healthy.
+    test.setTimeout(process.env.CI ? 300_000 : 90_000)
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
 
@@ -147,7 +151,7 @@ test.describe('phase 1 foundation', () => {
     // Entering skips the warp under reduced motion.
     await page.getByRole('button', { name: /enter the room/i }).click()
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
-      timeout: 30_000,
+      timeout: process.env.CI ? 120_000 : 30_000,
     })
   })
 })
