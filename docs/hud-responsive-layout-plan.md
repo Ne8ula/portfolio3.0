@@ -1230,17 +1230,15 @@ work, and is the one defect in this document that is cheap to fix now.
 
 ### 2.3 Renderer resize audit
 
-[globe-canvas.tsx](../components/cockpit/globe-canvas.tsx) currently:
-
-- sets DPR once during renderer creation;
-- sizes the renderer from `mount.clientWidth/clientHeight`;
-- updates camera aspect and renderer size on `window.resize`;
-- does not update DPR when the window moves between displays with different
-  scale factors;
-- does not observe mount-only size changes.
-
-This is adequate for many fullscreen resizes, but it is not a complete
-dynamic-resolution contract.
+**Superseded by Phase 3.** Both
+[globe-canvas.tsx](../components/cockpit/globe-canvas.tsx) and
+[warp-transition.tsx](../components/cockpit/warp-transition.tsx) now use the
+shared [renderer-size-sync.ts](../components/cockpit/renderer-size-sync.ts)
+controller. It measures the renderer mount, separates unrounded CSS geometry
+from capped-DPR drawing-buffer resolution, observes mount-only changes,
+re-arms on DPR changes, retains `window.resize` as a fallback, and
+synchronizes at frame start. The durable contract is recorded in
+[docs/responsive-system.md](responsive-system.md#31-renderer-sizing-and-context-lifecycle).
 
 ### 2.4 Camera-fit audit
 
@@ -1374,7 +1372,10 @@ Create one idempotent `syncRendererSize()` function:
 4. Set `camera.aspect = width / height` and update its projection matrix.
 5. Calculate `effectiveDpr = min(window.devicePixelRatio || 1, DPR_CAP)`.
 6. If DPR changed, call `renderer.setPixelRatio(effectiveDpr)`.
-7. If CSS size changed, call `renderer.setSize(round(width), round(height))`.
+7. If CSS size or DPR changed, call
+   `renderer.setSize(width, height, false)`. The canvas remains CSS-filled by
+   stylesheet; only the drawing buffer is rounded, by flooring
+   `width × effectiveDpr` and `height × effectiveDpr`.
 8. Cache the applied width, height, and DPR so unchanged notifications are
    no-ops.
 
@@ -2010,6 +2011,10 @@ interaction. Every project is understandable from its canonical HTML,
 are identified consistently in both experiences.
 
 ### Phase 3 — renderer and viewport sizing
+
+**Implementation status: complete in the reviewable worktree** (2026-08-03;
+owner checkpoint complete; independent QA and the controller-owned
+`Phase 3: record DPR evidence and delivery` commit pending).
 
 - Add the idempotent mount/DPR resize function.
 - Add `ResizeObserver` and DPR-change handling.
@@ -2651,22 +2656,18 @@ crate placement, input normalization, DOM parity, canonical content delivery,
 structured-data generation, WebGL context recovery, and accessibility
 settings remain separable rollback boundaries.
 
-### 10.1 WebGL context loss — currently unhandled
+### 10.1 WebGL context loss — delivered in Phase 3
 
-**Verified gap.** The codebase has no context-loss handling of any kind. The
-only error handler in the cockpit is an `img.onerror` in
-[decals.ts](../components/cockpit/decals.ts). There is no
-`webglcontextlost` listener, no restore path, and no user-facing message.
+**Implementation status: complete in the reviewable worktree** (2026-08-03;
+independent QA and controller delivery commit pending).
 
-Context loss is a normal browser event, not an exotic one: GPU driver reset,
-laptop sleep/wake, a long-backgrounded tab, or too many live WebGL contexts
-across tabs will all take the context. Today the result is a **permanently
-blank canvas with no error and no recovery** — for a portfolio whose product
-*is* the scene, a silent total failure. This is also exactly the state the
-§9.6.2 blank-canvas check detects in test; §10.1 is its production
-counterpart.
+The pre-Phase-3 audit found no `webglcontextlost` listener, restore path, or
+user-facing message. That historical gap is now closed. Context loss remains
+a normal browser event — GPU reset, sleep/wake, long-background eviction, or
+too many live WebGL contexts — and §9.6.2's blank-canvas check remains its
+test-side detector.
 
-Required handling, added in Phase 3 alongside the renderer contract:
+Delivered handling:
 
 - **Listen at initialization**, on the canvas from both
   [globe-canvas.tsx](../components/cockpit/globe-canvas.tsx) and
@@ -2700,8 +2701,11 @@ amendment 7).
 **Test path**: force loss with the `WEBGL_lose_context` extension
 (`loseContext()` / `restoreContext()`) in the Phase 3 browser tests, and
 assert that the scene returns to a rendering state passing §9.6.2. Chrome's
-`about:gpucrash` remains a manual verification for real driver-level loss,
-which the extension does not fully reproduce.
+`about:gpucrash` remains the one-time manual verification for real
+driver-level loss, which the extension does not fully reproduce. The owner
+certified that production recovery run in
+`docs/baselines/phase-3-dpr/OWNER-CHECKPOINT-2026-08-02.md`; no agent
+self-certified it.
 
 ---
 

@@ -82,6 +82,80 @@ Pure rectangle/stage geometry lives in
 [lib/responsive/geometry.ts](../lib/responsive/geometry.ts) (stage
 coordinates: CSS pixels, +y down, origin at the stage's top-left).
 
+### 3.1 Renderer sizing and context lifecycle
+
+Both WebGL renderers use
+[createRendererSizeSync()](../components/cockpit/renderer-size-sync.ts)
+against their own mount box. The controller keeps CSS geometry and device
+resolution separate:
+
+- unrounded `getBoundingClientRect()` width/height drive camera aspect and
+  stage geometry;
+- [computeRenderSizeTarget()](../lib/responsive/render-policy.ts) rejects
+  invalid CSS sizes, guards invalid DPR at `1`, and caps effective DPR at
+  `DPR_CAP`;
+- only drawing-buffer dimensions are floored (`floor(css × dpr)`);
+- `renderer.setSize(cssWidth, cssHeight, false)` leaves the canvas CSS-filled
+  by stylesheet rather than rewriting its layout size;
+- initial sync, `ResizeObserver`, `window.resize`, a re-armed resolution
+  media query, and frame-start sync all converge on one exact idempotence
+  gate. Camera projection updates before renderer size and before the frame's
+  HUD projection reads.
+
+The main and warp renderers share this policy, not live renderer state.
+Contained mode measures the `1024×600` `ResponsiveStage` surface rather than
+the narrower viewport. Browser zoom is never detected or counter-scaled.
+
+`DPR_CAP = 2` was retained by the owner on 2026-08-02 from the
+decision-eligible `1512×982` hardware production capture: crate DPR 2
+recorded 15.8 ms median / 17.3 ms p95, and deck DPR 2 recorded 16.6 ms
+median / 17.4 ms p95. Both meet the approved ≤16.7 ms median / ≤33.3 ms p95
+threshold. Raw evidence and owner certification live in
+[`docs/baselines/phase-3-dpr/`](baselines/phase-3-dpr/); software-rendered
+measurements are never decision-eligible. A future cap change is an
+owner-approved policy amendment using `docs/phase-3-design.md` §5, never an
+adaptive or component-local tweak.
+
+The main renderer lifecycle is a bounded state machine in
+[lib/responsive/context-lifecycle.ts](../lib/responsive/context-lifecycle.ts):
+
+```text
+initializing → ready → lost → restoring → ready
+                         └──────────────→ terminal
+terminal ── manual restart ─────────────→ initializing
+```
+
+Context listeners register before the first render. Loss is
+default-prevented, parks sizing and rendering, and captures durable state.
+Restore waits 500 ms, then rebuilds the full scene by keyed remount; two
+automatic restorations are allowed per 60-second stable-ready window. A lost
+context that does not restore within 10 seconds, or an exhausted retry
+budget, releases the cockpit and exposes the canonical document plus a manual
+restart. Warp context loss ends the disposable transition immediately.
+
+Capability failure and runtime interruption use deliberately different
+language:
+
+| Case | Surface | Wording anchor |
+|---|---|---|
+| Initial WebGL probe fails | In-document notice; cockpit never mounts | “unavailable in this browser” |
+| Runtime context lost | Stage recovery panel | “The 3D scene was interrupted. Waiting for the graphics system…” |
+| Runtime rebuilding | Stage recovery panel | “Restoring the scene…” |
+| Runtime restored | Polite live-region announcement | “3D scene restored.” |
+| Runtime terminal | In-document notice + restart | “stopped after a graphics interruption and could not restart” |
+
+Restoration preserves meaning while resetting mechanics:
+
+| State | Class | Restoration behavior |
+|---|---|---|
+| Theme and accessibility preferences | durable | remain owned outside the scene; the rebuilt scene re-reads them |
+| View mode and selected/playing record | durable | captured once and seeded into the rebuilt scene and React HUD |
+| Dialed-in transforms | durable | re-applied after the keyed rebuild |
+| Camera interpolation and pointer/hover state | transient | reset to the selected view's settled pose |
+| Disc flight, queue/eject, tonearm, projection-card fades | transient | reset; deck restoration constructs the same record landed at rest |
+| Coffee liquid, steam/smoke, platter accumulation | transient | reset to authored idle |
+| Screen-dialog attachment | derived | re-derived from the rebuilt projection getter |
+
 ## 4. Layout law
 
 The single placement rule (plan §3):
@@ -306,7 +380,7 @@ DOM identifier scheme (used by diagnostics and browser tests):
 | `data-layout-region` | `cockpit-stage` (the WebGL stage), `cockpit-shell` (client overlay root), `boot` (boot region), `app-shell` |
 | `data-layout-contract` | the registered contract id (e.g. `cockpit-v1`) on the region root |
 | `data-content-contract` | the content-contract id (e.g. `content-home-v1`) |
-| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog` |
+| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog`, `renderer-status`, `renderer-recovery`, `renderer-restart`, `cockpit-runtime-notice` |
 
 Phase 2 route roots additionally expose `projects-index-v1`,
 `project-detail-v1`, and `about-v1` with matching
@@ -351,11 +425,30 @@ type CockpitTestHooks = {
   selectRecord(index: number): void          // Phase 0 addition — see note below
   getHudSnapshot(): Promise<HudSnapshot>     // one atomic read inside a single rAF
   isSettled(): boolean                       // settle gate; promises never sleep through timeouts
+  getRendererState(): {
+    status: 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
+    rebuildCount: number
+    main: {
+      cssWidth: number
+      cssHeight: number
+      dpr: number
+      bufferWidth: number
+      bufferHeight: number
+      sizeVersion: number
+    } | null
+  }
 }
 ```
 
 It is **additive only**: it never replaces or alters the preserved
 `window.__cockpit*` live-tuning bridge.
+
+`getRendererState()` is the Phase 3 sizing/lifecycle observable. It records
+only development-test evidence: lifecycle status, rebuild count, unrounded
+CSS size, capped DPR, drawing-buffer dimensions, and the idempotent
+`sizeVersion`. It is protected by the same `testHooksEnabled` production
+guard as the rest of the bridge and introduces no new live
+`window.__cockpit*` global.
 
 `selectRecord` is a Phase 0 addition beyond the §9.6.1 minimum shape: it
 puts the crate into its deterministic selection state (the legacy pull-out —
@@ -402,7 +495,7 @@ build-time boundary.
 | 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
 | 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; commit `809607c`) |
 | 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered in code** (2026-07-30; independent QA/merge pending, so no commit hash exists yet) |
-| 3 | One idempotent renderer/viewport sizing function (`syncRendererSize`, DPR cap 2) | Pending |
+| 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered in the reviewable worktree** (2026-08-03; independent QA and controller commit pending) |
 | 4 | Projection bridge, hud-layout solver, seedable random streams, deterministic capture, first scorecard baselines | Pending |
 | 5 | 3D fit solver + input normalization wiring | Pending |
 | 6 / 7 | Re-anchor deck HUD / crate HUD (the known deck overlap is fixed HERE, not by an interim constant) | Pending |

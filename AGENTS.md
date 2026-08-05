@@ -102,6 +102,13 @@ CI, not an agent's judgment, is the final enforcement authority.
 - Test instrumentation is **additive only**, via `__COCKPIT_TEST_HOOKS__`
   (dev-only, compiled out of production builds). Never fold test behavior
   into the `__cockpit*` bridge, and never ship test hooks to production.
+- Phase 3 renderer policy is shared by the main and warp renderers:
+  mount-box CSS sizing, capped DPR drawing buffers, `ResizeObserver`,
+  resize/DPR fallbacks, and frame-start synchronization. Main-context loss
+  rebuilds by remount with durable state restored at rest; repeated failure
+  returns the visitor to canonical document routes. `getRendererState()` is
+  development-only test instrumentation; the live `window.__cockpit*` bridge
+  remains unchanged.
 
 ## Design system hard rules
 

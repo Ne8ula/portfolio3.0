@@ -446,6 +446,9 @@ Catalogue rules:
 - AX/OS and object-screen panels may retain terminal anatomy.
 - Ordinary project forms and accessibility settings use clear web semantics,
   labels, help text, error text, and predictable control placement.
+- Status and recovery notices use the standard panel anatomy: plain factual
+  wording, palette-only treatment with jade reserved for the action, no alarm
+  color, no decorative animation, and always a visible canonical route out.
 - Reduced transparency produces opaque backing.
 - Do not apply fictional headers to every modal.
 

@@ -2,7 +2,24 @@
 // pixels; DPR affects only the drawing buffer and is capped by one shared
 // policy value.
 
-/** Retained pending the owner-certified Phase 3 DPR performance baseline. */
+/**
+ * Owner-certified Phase 3 decision (2026-08-02): retain DPR_CAP = 2.
+ *
+ * The decision-eligible 1512×982 hardware production capture recorded:
+ *
+ * | view  | DPR 1 median / p95 | DPR 2 median / p95 |
+ * |-------|--------------------|--------------------|
+ * | crate | 8.3 / 8.7 ms       | 15.8 / 17.3 ms     |
+ * | deck  | 8.3 / 16.6 ms      | 16.6 / 17.4 ms     |
+ *
+ * Both DPR 2 views meet the approved ≤16.7 ms median / ≤33.3 ms p95
+ * threshold. Evidence:
+ * docs/baselines/phase-3-dpr/owner-hardware-2026-08-02-r2.json and
+ * docs/baselines/phase-3-dpr/OWNER-CHECKPOINT-2026-08-02.md.
+ * SwiftShader measurements are decision-ineligible. Amend this value only
+ * through the owner-approved measurement protocol in
+ * docs/phase-3-design.md §5.
+ */
 export const DPR_CAP = 2
 
 export type RenderSizeInput = {

@@ -47,8 +47,8 @@ modules remain `@ts-nocheck`.
 
 | File | Current responsibility |
 |---|---|
-| `cockpit-app.tsx` | Phase machine, theme, `TWEAK_DEFAULTS`; ~180-frame apply loop guards StrictMode cleanup races. |
-| `cockpit-hud.tsx` | Site header (weather/geolocation owner-removed; counts derive from catalog), projected tags/brackets, browse UI, VinylInfoCard, ScreenDialog. |
+| `cockpit-app.tsx` | Phase machine, theme, lifecycle/rebuild, `TWEAK_DEFAULTS`. |
+| `cockpit-hud.tsx` | Site header, projected tags/brackets, browse UI, VinylInfoCard, ScreenDialog. |
 | `globe-canvas.tsx` | Scene/render loop, camera modes, picking, themes, object builders. |
 | `materials.ts` / `decals.ts` / `highlights.ts` | Glass/frost, micrographics, hover-only x-ray edges. |
 | `glass-mac.ts` | AX-01 monitor/keyboard/mouse; protected benchmark. |
@@ -66,9 +66,8 @@ Canonical public facts live only in `lib/projects/catalog.ts` +
 hash-protected); client artwork in `components/cockpit/project-textures.ts`
 derives the `SLEEVES` visual tokens.
 
-Root `app/page.tsx` still mounts CockpitApp client-only; Phase 2 adds the
-server shell, semantic routes, and discovery metadata (contracts stay
-`planned-phase-2`).
+The root enhances Phase 2's server shell/routes with the cockpit. Phase 3 adds
+`ResponsiveStage`, shared sizing, recovery, and canonical fallback.
 
 ## `window.__cockpit*` bridge — preserve exactly
 
@@ -92,12 +91,12 @@ rAF/HUD getters: `__getCockpitScreenRect`, `__getCockpitPCRect`,
 
 Screen contract: AX-01 sets `xray.userData.screenGroup` and
 `screenCorners{tl,tr,bl,br}`; monitor camera and ScreenDialog depend on both.
-Test behavior is additive only through dev-only `__COCKPIT_TEST_HOOKS__`;
-never fold it into this runtime bridge.
+Test behavior, including Phase 3's `getRendererState()`, is additive only
+through dev-only `__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
 
 ## Responsive/content workflow — mandatory
 
-Phases −1 through 1 are delivered; Phase 2 is next. The owner-approved
+Phases −1 through 3 are delivered; Phase 3 awaits QA/controller commit. The owner-approved
 `PROFILE.targetRole` is “Creative Technologist” and its current content hash
 is recorded. Before any rendered
 UI, layout, typography, 3D framing/material/lighting, interaction, or canonical
@@ -162,10 +161,11 @@ reduced-transparency/high-contrast/forced-colors states.
   `depthTest:false`, `renderOrder:999`.
 - Never let an entrance keyframe overwrite a positioning transform: outer
   anchor positions, inner child animates (`tagFadeIn` pattern).
-- Cockpit scroll is forcibly reset (matrix3d ScreenDialog can trigger
-  `scrollIntoView`); rescope it when Phase 2 integrates the contained stage.
+- `ResponsiveStage` owns contained panning; only its inner surface keeps the
+  scroll pin. Dialog focus uses `preventScroll`.
 
 ## Next
 
-Phase 2 semantic routes → Phases 3–8 per the plan. Approved visual migrations
-require scheduled rendered work; preserve phase dependencies.
+Phase 3 independent QA/controller delivery → Phases 4–8 per the plan.
+Approved visual migrations require scheduled rendered work; preserve phase
+dependencies.
