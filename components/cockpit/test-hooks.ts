@@ -81,6 +81,41 @@ export type DeckTetherSnapshot = {
   readonly shaderMaterials: number
   readonly textures: number
   readonly normalBlending: boolean
+  readonly receiverIntegrated: boolean
+  readonly attachmentGap: number
+  readonly deckProgramsReady: boolean
+}
+
+export type VinylSleeveSnapshot = {
+  readonly phase: 'idle' | 'preview' | 'departing' | 'returning' | 'inserting'
+  readonly activeIndex: number
+  readonly openMouth: boolean
+  readonly mouthGap: number
+  readonly sleeveTopY: number
+  readonly discRadius: number
+  readonly previewRise: number
+  readonly clearRise: number
+  readonly clearanceMargin: number
+  readonly activeRise: number
+  readonly discBottomClearance: number
+  readonly returnInsertionObserved: boolean
+  readonly returnStartedAtClearWaypoint: boolean
+}
+
+export type VinylFlightSnapshot = {
+  readonly phase: 'idle' | 'extracting' | 'airborne-in' | 'airborne-out'
+  readonly index: number
+  readonly openSleeve: boolean
+  readonly clearanceMargin: number
+  readonly extractionProgress: number
+  readonly lateralMotionAllowed: boolean
+  readonly extractionObserved: boolean
+  readonly clearanceBoundaryPassed: boolean
+}
+
+export type VinylMotionSnapshot = {
+  readonly sleeve: VinylSleeveSnapshot
+  readonly flight: VinylFlightSnapshot
 }
 
 export type CockpitTestHooks = {
@@ -99,6 +134,7 @@ export type CockpitTestHooks = {
   isSettled(): boolean
   getRendererState(): RendererLifecycleSnapshot
   getDeckTether(): DeckTetherSnapshot
+  getVinylMotion(): VinylMotionSnapshot
 }
 
 declare global {
@@ -122,6 +158,8 @@ type CrateActions = {
 }
 
 type DeckTetherProbe = () => DeckTetherSnapshot
+type VinylSleeveProbe = () => VinylSleeveSnapshot
+type VinylFlightProbe = () => VinylFlightSnapshot
 
 type Registry = {
   introSkipped: boolean
@@ -140,6 +178,8 @@ type Registry = {
   warpContextLossArmed: boolean
   warpLifecycle: WarpLifecycleSnapshot
   deckTetherProbe: DeckTetherProbe | null
+  vinylSleeveProbe: VinylSleeveProbe | null
+  vinylFlightProbe: VinylFlightProbe | null
 }
 
 const registry: Registry = {
@@ -163,6 +203,8 @@ const registry: Registry = {
     contextLossHandled: false,
   },
   deckTetherProbe: null,
+  vinylSleeveProbe: null,
+  vinylFlightProbe: null,
 }
 
 // ── Reporting API for cockpit modules (no-ops in production) ─────────────
@@ -222,6 +264,26 @@ export function registerDeckTetherProbe(probe: DeckTetherProbe): void {
 export function unregisterDeckTetherProbe(): void {
   if (!testHooksEnabled) return
   registry.deckTetherProbe = null
+}
+
+export function registerVinylSleeveProbe(probe: VinylSleeveProbe): void {
+  if (!testHooksEnabled) return
+  registry.vinylSleeveProbe = probe
+}
+
+export function unregisterVinylSleeveProbe(): void {
+  if (!testHooksEnabled) return
+  registry.vinylSleeveProbe = null
+}
+
+export function registerVinylFlightProbe(probe: VinylFlightProbe): void {
+  if (!testHooksEnabled) return
+  registry.vinylFlightProbe = probe
+}
+
+export function unregisterVinylFlightProbe(): void {
+  if (!testHooksEnabled) return
+  registry.vinylFlightProbe = null
 }
 
 export function reportRendererLifecycle(
@@ -496,6 +558,16 @@ function buildHooks(): CockpitTestHooks {
         throw new Error('__COCKPIT_TEST_HOOKS__: deck tether is not ready')
       }
       return registry.deckTetherProbe()
+    },
+
+    getVinylMotion(): VinylMotionSnapshot {
+      if (!registry.vinylSleeveProbe || !registry.vinylFlightProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: vinyl motion is not ready')
+      }
+      return {
+        sleeve: registry.vinylSleeveProbe(),
+        flight: registry.vinylFlightProbe(),
+      }
     },
   }
 }

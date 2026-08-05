@@ -72,12 +72,12 @@ function makeWoodTexture(){
 
 export function buildTeaSet(scene, tableGroup){
   const group = new THREE.Group();
-  group.position.set(-5.7, 0.18, 1.75);   // BEHIND the incense, in the open pocket
+  group.position.set(-5.9, 0.5, 1.75);   // BEHIND the incense, in the open pocket
                                           // left of the crate and back of the mug
   // Quarter-turned off the crate's yaw so the box runs BACK-TO-FRONT into the
   // scene instead of lying across it: teapot at the far end, spout and cups
   // stepping toward the viewer (the tall piece never hides the small ones).
-  group.rotation.y = 0.35 - Math.PI / 2;
+  group.rotation.y = 0.65 - Math.PI / 2;
   group.scale.setScalar(0.85);
   tableGroup.add(group);
 

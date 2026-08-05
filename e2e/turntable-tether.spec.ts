@@ -37,12 +37,19 @@ async function playFirstRecord(page: Page): Promise<void> {
     .toBe('deck')
 }
 
-test.describe('approved turntable registration tether', () => {
+test.describe('approved turntable wireframe registration tether', () => {
   test('uses the three-draw basic-material budget and live theme/accessibility palette', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await enterCockpit(page, 'dark')
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.__COCKPIT_TEST_HOOKS__!.getDeckTether().deckProgramsReady,
+        ),
+      )
+      .toBe(true)
     await playFirstRecord(page)
 
     const dark = await page.evaluate(() =>
@@ -54,19 +61,23 @@ test.describe('approved turntable registration tether', () => {
       reducedMotion: false,
       reducedTransparency: false,
       highContrast: false,
-      hairlineOpacity: 0.55,
+      hairlineOpacity: 0.72,
       footOpacity: 0.9,
       ringOpacity: 0.45,
-      hairlineColor: '#7a9a7e',
+      hairlineColor: '#4b6e4f',
       footColor: '#7fe6a4',
       ringColor: '#4b6e4f',
       drawCalls: 3,
-      lineSegments: 2,
+      lineSegments: 8,
       shaderMaterials: 0,
       textures: 0,
       normalBlending: true,
+      receiverIntegrated: true,
+      deckProgramsReady: true,
     })
-    expect(dark.hairlineScaleY).toBeCloseTo(1, 3)
+    expect(dark.hairlineScaleY).toBeGreaterThan(0.97)
+    expect(dark.hairlineScaleY).toBeLessThan(1.03)
+    expect(dark.attachmentGap).toBeLessThan(0.002)
     expect(dark.triangles).toBeLessThanOrEqual(160)
 
     await page.evaluate(() => {
@@ -119,9 +130,9 @@ test.describe('approved turntable registration tether', () => {
       )
       .toMatchObject({
         highContrast: true,
-        hairlineColor: '#14110f',
-        footColor: '#14110f',
-        ringColor: '#14110f',
+        hairlineColor: '#3a5a3e',
+        footColor: '#3a5a3e',
+        ringColor: '#3a5a3e',
         hairlineOpacity: 1,
         footOpacity: 1,
         drawCalls: 2,
@@ -149,11 +160,17 @@ test.describe('approved turntable registration tether', () => {
       .toMatchObject({
         visible: true,
         reducedMotion: true,
-        hairlineScaleY: 1,
-        hairlineOpacity: 0.55,
+        hairlineOpacity: 0.72,
         footOpacity: 0.9,
         ringOpacity: 0.45,
+        receiverIntegrated: true,
       })
+    const reducedMotionTether = await page.evaluate(() =>
+      window.__COCKPIT_TEST_HOOKS__!.getDeckTether(),
+    )
+    expect(reducedMotionTether.hairlineScaleY).toBeGreaterThan(0.97)
+    expect(reducedMotionTether.hairlineScaleY).toBeLessThan(1.03)
+    expect(reducedMotionTether.attachmentGap).toBeLessThan(0.002)
     await page.evaluate(async () => {
       const runtime = window as Window & {
         __tetherPlayPromise?: Promise<void>

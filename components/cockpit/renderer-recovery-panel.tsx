@@ -34,6 +34,13 @@ export function RendererRecoveryPanel({
 
   return (
     <>
+      {recovering ? (
+        <div
+          aria-hidden="true"
+          className="renderer-recovery-backdrop"
+          data-renderer-recovery-backdrop
+        />
+      ) : null}
       <p
         className="renderer-status"
         data-hud="renderer-status"

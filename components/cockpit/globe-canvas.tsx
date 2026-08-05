@@ -926,6 +926,11 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     let focusKind = restoredViewMode === 'cockpit' ? 'monitor' : restoredViewMode;
     let modeT = restoredViewMode === 'cockpit' ? 0 : 1;
     let focusSwitch = null;  // eases between two focused poses (crate → deck)
+    const focusLookCamera = new THREE.PerspectiveCamera();
+    const focusDirection = new THREE.Vector3();
+    const focusPosition = new THREE.Vector3();
+    const focusBlendPosition = new THREE.Vector3();
+    const focusBlendQuaternion = new THREE.Quaternion();
     let smoothYaw = 0, smoothPitch = 0;  // butter-lerped toward cursor target
     const FOCUSED = (m) => m === 'monitor' || m === 'crate' || m === 'deck';
     window.__cockpitViewMode = restoredViewMode;
@@ -935,9 +940,17 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       if (FOCUSED(m)){
         // Switching directly between two focused poses (crate → deck):
         // modeT is already ~1, so without this the camera would snap.
-        // Capture the current pose and blend toward the new target.
+        // Capture the current pose and blend toward the new target. The
+        // crate→deck move completes just before the dust cover clears at
+        // ~400ms, so the record flight is viewed from a stable camera
+        // instead of combining two large motions in the same frames.
         if (wasFocused && focusKind !== m && modeT > 0.3){
-          focusSwitch = { pos: camera.position.clone(), quat: camera.quaternion.clone(), t: 0 };
+          focusSwitch = {
+            pos: camera.position.clone(),
+            quat: camera.quaternion.clone(),
+            t: 0,
+            duration: focusKind === 'crate' && m === 'deck' ? 0.38 : 0.85,
+          };
         }
         focusKind = m;
       }
@@ -1094,16 +1107,18 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         const info = turntable.getFocusTarget();
         const fovY = camera.fov * Math.PI / 180;
         const dist = Math.max(2, (info.fitHeight / 0.85) / (2 * Math.tan(fovY / 2)));
-        const dir = info.outward.clone().add(new THREE.Vector3(0, 0.42, 0)).normalize();
-        monitorPos = info.center.clone().add(dir.multiplyScalar(dist));
+        focusDirection.copy(info.outward);
+        focusDirection.y += 0.42;
+        focusDirection.normalize();
+        focusPosition.copy(info.center).addScaledVector(focusDirection, dist);
+        monitorPos = focusPosition;
         // Tiny cursor parallax — the hologram should feel dimensional
         monitorPos.x += yaw * 0.12;
         monitorPos.y += pitch * 0.08;
-        const look = new THREE.PerspectiveCamera();
-        look.position.copy(monitorPos);
-        look.up.set(0, 1, 0);
-        look.lookAt(info.center);
-        monitorQuat = look.quaternion.clone();
+        focusLookCamera.position.copy(monitorPos);
+        focusLookCamera.up.set(0, 1, 0);
+        focusLookCamera.lookAt(info.center);
+        monitorQuat = focusLookCamera.quaternion;
       } else if (focusKind === 'crate' && crate && crate.getFocusTarget){
         // Crate target — hover above-and-in-front of the bin, looking
         // down into it so the covers + top edges read while digging.
@@ -1111,16 +1126,18 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         const fovY = camera.fov * Math.PI / 180;
         // Distance so the record row (crate depth) fits the viewport height.
         const dist = Math.max(1.5, (info.fitDepth / 0.8) / (2 * Math.tan(fovY / 2)));
-        const dir = info.outward.clone().add(new THREE.Vector3(0, 1.8, 0)).normalize();   // steep top-down over the bin
-        monitorPos = info.center.clone().add(dir.multiplyScalar(dist));
+        focusDirection.copy(info.outward);
+        focusDirection.y += 1.8;
+        focusDirection.normalize();   // steep top-down over the bin
+        focusPosition.copy(info.center).addScaledVector(focusDirection, dist);
+        monitorPos = focusPosition;
         // NO cursor parallax here — the crate view must hold a fixed
         // perspective while records are pulled/browsed (moving toward the
         // HUD arrows would otherwise swing the camera).
-        const look = new THREE.PerspectiveCamera();
-        look.position.copy(monitorPos);
-        look.up.set(0, 1, 0);
-        look.lookAt(info.center);
-        monitorQuat = look.quaternion.clone();
+        focusLookCamera.position.copy(monitorPos);
+        focusLookCamera.up.set(0, 1, 0);
+        focusLookCamera.lookAt(info.center);
+        monitorQuat = focusLookCamera.quaternion;
       } else {
       // Monitor target — aim camera directly at the 3D screen center.
       // The PC (xray) is yawed so its local +Z faces the viewer (default
@@ -1156,11 +1173,10 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         // Compute the look-at quaternion using a throwaway Camera so we
         // use Three's camera convention (-Z forward). Object3D.lookAt
         // orients +Z which would flip us 180°.
-        const look = new THREE.PerspectiveCamera();
-        look.position.copy(monitorPos);
-        look.up.set(0, 1, 0);
-        look.lookAt(center);
-        monitorQuat = look.quaternion.clone();
+        focusLookCamera.position.copy(monitorPos);
+        focusLookCamera.up.set(0, 1, 0);
+        focusLookCamera.lookAt(center);
+        monitorQuat = focusLookCamera.quaternion;
       } else {
         // Fallback
         const pcWorld = new THREE.Vector3();
@@ -1173,10 +1189,12 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       // Focused-pose switch (crate → deck): blend from the captured pose
       // toward the new focus target so the camera glides instead of snapping.
       if (focusSwitch){
-        focusSwitch.t += dt / 0.85;
+        focusSwitch.t += dt / focusSwitch.duration;
         const s = easeInOut(Math.min(1, focusSwitch.t));
-        monitorPos = focusSwitch.pos.clone().lerp(monitorPos, s);
-        monitorQuat = focusSwitch.quat.clone().slerp(monitorQuat, s);
+        focusBlendPosition.copy(focusSwitch.pos).lerp(monitorPos, s);
+        focusBlendQuaternion.copy(focusSwitch.quat).slerp(monitorQuat, s);
+        monitorPos = focusBlendPosition;
+        monitorQuat = focusBlendQuaternion;
         if (focusSwitch.t >= 1) focusSwitch = null;
       }
 

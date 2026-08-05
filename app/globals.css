@@ -176,6 +176,7 @@
     display: none !important;
   }
   .renderer-recovery,
+  .renderer-recovery-backdrop,
   .home-cockpit-runtime-notice,
   .home-cockpit-restart {
     background: Canvas !important;
@@ -663,9 +664,26 @@ html[data-document-scroll="reflow"] body {
   inset: 0;
   z-index: 100;
   overflow: hidden;
+  background: var(--ink);
 }
 .cockpit-shell[data-cockpit-mounted="false"] {
   pointer-events: none;
+}
+.cockpit-pending-screen {
+  display: none;
+}
+html[data-cockpit-enhancement="pending"] .cockpit-pending-screen {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--ink);
+}
+html[data-cockpit-enhancement="pending"] .home-shell > .home-skip-link,
+html[data-cockpit-enhancement="pending"] .home-shell > .home-header,
+html[data-cockpit-enhancement="pending"] .home-shell > .home-main,
+html[data-cockpit-enhancement="pending"] .home-shell > .home-footer {
+  visibility: hidden;
 }
 [data-layout-region="cockpit-stage"]:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring);
@@ -680,6 +698,17 @@ html[data-document-scroll="reflow"] body {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+.renderer-scene[data-recovery-hidden="true"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+.renderer-recovery-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  background: var(--ink);
+  pointer-events: none;
 }
 .renderer-recovery {
   position: absolute;

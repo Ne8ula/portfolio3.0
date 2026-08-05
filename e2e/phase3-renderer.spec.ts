@@ -230,6 +230,8 @@ test.describe('Phase 3 renderer lifecycle', () => {
     test.setTimeout(180_000)
     await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
     await enterCockpitDirect(page)
+    await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
+    await expect(page.locator('[data-hud="theme-toggle"]')).toBeVisible()
 
     const probeIndex = await loseMainContext(page)
     await waitForRendererStatus(page, 'lost')
@@ -249,6 +251,15 @@ test.describe('Phase 3 renderer lifecycle', () => {
     await expect(panel).toContainText(
       'The 3D scene was interrupted. Waiting for the graphics system…',
     )
+    const rendererScene = page.locator('[data-recovery-hidden]')
+    await expect(rendererScene).toHaveAttribute('data-recovery-hidden', 'true')
+    await expect(rendererScene).toBeHidden()
+    await expect(page.locator('[data-renderer-recovery-backdrop]')).toBeVisible()
+    await expect(page.locator('[data-hud="site-header"]')).toBeHidden()
+    await expect(page.locator('[data-hud="screen-dialog"]')).toBeHidden()
+    await expect(page.locator('[data-hud="theme-toggle"]')).toHaveCount(0)
+    await expect(page.locator('.grain')).toHaveCount(0)
+    await expect(page.locator('.vignette')).toHaveCount(0)
     const projects = panel.getByRole('link', { name: 'View projects' })
     await expect(projects).toHaveAttribute('href', '/projects')
     await page.keyboard.press('Tab')
@@ -281,6 +292,11 @@ test.describe('Phase 3 renderer lifecycle', () => {
       '3D scene restored.',
     )
     await expect(page.locator('[data-hud="renderer-recovery"]')).toHaveCount(0)
+    await expect(page.locator('[data-renderer-recovery-backdrop]')).toHaveCount(0)
+    await expect(rendererScene).toHaveAttribute('data-recovery-hidden', 'false')
+    await expect(rendererScene).toBeVisible()
+    await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
+    await expect(page.locator('[data-hud="theme-toggle"]')).toBeVisible()
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeFocused()
     await expect(page.locator('[data-layout-region="cockpit-stage"] canvas')).toHaveCount(1)
     expect(

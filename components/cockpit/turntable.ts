@@ -10,7 +10,7 @@
 // The deck also PLAYS records (Figma Weave "Vinyl Player" flow): clicking a
 // record in the crate flies its disc onto the platter — the dust cover swings
 // open on its rear hinges, the tonearm swings from its parked post onto the
-// record, a jade registration tether draws from the record label to a
+// record, a jade wireframe registration tether draws from the record label to a
 // holographic PROJECT INFO card (true in-scene canvas-textured plane) above
 // the deck. The
 // crate orchestrates WHICH record plays via window.__cockpitDeck
@@ -24,10 +24,13 @@ import { makeDecal, makeTextDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
 import { CURSOR_POINTER } from "./cursors"
+import { canBeginLateralVinylFlight } from "./vinyl-motion"
 import {
   registerDeckTetherProbe,
+  registerVinylFlightProbe,
   reportDeckTransient,
   unregisterDeckTetherProbe,
+  unregisterVinylFlightProbe,
 } from "./test-hooks"
 
 const SAGE = '#6F8D75';
@@ -337,7 +340,8 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   let reduceMotion = readReducedMotion();
   const vm = () => window.__cockpitViewMode || 'cockpit';
-  const WS = () => group.getWorldScale(new THREE.Vector3()).x || 1;
+  const worldScaleScratch = new THREE.Vector3();
+  const WS = () => group.getWorldScale(worldScaleScratch).x || 1;
   const easeInOut = (x) => x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2;
 
   // Card palette — mirrors the site's HUD placard language (see
@@ -359,25 +363,67 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   // Lives at scene root during flight (world-space bezier), then attaches
   // into the spin group so the platter rotation carries it.
   const DISC_REST_Y = 0.078;   // spin-local — floats 2mm over the jade label
-  const discMat = new THREE.MeshPhysicalMaterial({ roughness: 0.55, clearcoat: 1, clearcoatRoughness: 0.18 });
+  // Keep the material in its textured shader variant from construction.
+  // The first selected record can then reuse the crate's already-uploaded
+  // texture without compiling a new MeshPhysicalMaterial program mid-flight.
+  const deckDiscWarmupTex = new THREE.DataTexture(
+    new Uint8Array([18, 16, 15, 255]),
+    1,
+    1,
+    THREE.RGBAFormat,
+  );
+  deckDiscWarmupTex.colorSpace = THREE.SRGBColorSpace;
+  deckDiscWarmupTex.needsUpdate = true;
+  const discMat = new THREE.MeshPhysicalMaterial({
+    map: deckDiscWarmupTex,
+    roughness: 0.55,
+    clearcoat: 1,
+    clearcoatRoughness: 0.18,
+  });
   const deckDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.018, 48), discMat);
   deckDisc.visible = false;
   deckDisc.userData.noGlow = true;
   scene.add(deckDisc);
+  let deckDiscWarmupTexDisposed = false;
   const discTexCache = new Map();
   const discTex = (i) => {
     if (!discTexCache.has(i)) discTexCache.set(i, makeDiscTexture(i));
     return discTexCache.get(i);
   };
-  // Card artwork thumbnails (public/vinyl-covers) — lazily loaded; the
-  // card repaints once the image lands if that project is still playing.
+  const assignDiscTexture = (texture) => {
+    if (!texture) return;
+    discMat.map = texture;
+    if (!deckDiscWarmupTexDisposed){
+      deckDiscWarmupTex.dispose();
+      deckDiscWarmupTexDisposed = true;
+    }
+    // `map` has been non-null since construction and matches the mapped crate
+    // disc shader signature, so swapping the texture does not toggle program
+    // defines or require `material.needsUpdate`.
+  };
+
+  // Card artwork thumbnails are requested and decoded while the user is
+  // still exploring the cockpit. `drawCard` only paints decoded images, so
+  // a first vinyl click can never trigger a synchronous large-image decode.
   const coverImgs = new Map();
+  const decodedCovers = new Set();
   const coverImg = (i) => {
     if (!PROJECTS[i].cover) return null;
     let img = coverImgs.get(i);
     if (!img){
       img = new Image();
-      img.onload = () => { if (playing === i) drawCard(i, btnHover); };
+      img.decoding = 'async';
+      img.onload = () => {
+        const markDecoded = () => {
+          decodedCovers.add(i);
+          if (playing === i) drawCard(i, btnHover);
+        };
+        if (typeof img.decode === 'function'){
+          img.decode().then(markDecoded, markDecoded);
+        } else {
+          markDecoded();
+        }
+      };
       img.src = PROJECTS[i].cover;
       coverImgs.set(i, img);
     }
@@ -394,11 +440,15 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const CARD_W = 0.94, CARD_H = 1.175;
   const BEAM_BOT = topY + 0.09, CARD_BOT = 0.95;
   const CARD_Y = CARD_BOT + CARD_H / 2;
-  // The tether overshoots into the card; the card depth mask hides the
-  // overlap so the hairlines always meet its bobbing bottom edge.
+  const LATTICE_X = 0.155;
+  const CARD_FRAME_INSET_PX = 10;
+  const CARD_RULE_LOCAL_Y =
+    -CARD_H / 2 + CARD_H * CARD_FRAME_INSET_PX / CARD_PX_H;
+  const CARD_RULE_REST_Y = CARD_Y + CARD_RULE_LOCAL_Y;
+  // The lattice ends at the card's visible bottom rule. Its height follows
+  // the card pose below, so no geometry overshoots into the card texture.
   const TETHER_BASE_Y = BEAM_BOT + 0.004;
-  const TETHER_TOP_Y = CARD_BOT + 0.05;
-  const TETHER_H = TETHER_TOP_Y - TETHER_BASE_Y;
+  const TETHER_H = CARD_RULE_REST_Y - TETHER_BASE_Y;
   const BTN = { x: 56, y: 690, w: 528, h: 54 };   // canvas-px VIEW MORE hit rect
 
   const cardCanvas = document.createElement('canvas');
@@ -430,7 +480,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     cctx.fillRect(56, 92, W - 112, 1.5);
     // artwork — real thumbnail (cover-cropped) or the pending placeholder
     const art = coverImg(index);
-    if (art && art.complete && art.naturalWidth){
+    if (art && decodedCovers.has(index) && art.naturalWidth){
       const aw = W - 112, ah = 262;
       const s = Math.max(aw / art.naturalWidth, ah / art.naturalHeight);
       cctx.save();
@@ -528,6 +578,20 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     cctx.font = `600 18px ${MONO}`;
     cctx.fillStyle = COL.text;
     cctx.fillText('VIEW MORE', W / 2 + 3, BTN.y + 35);
+    // Registration receiver — part of the card texture, not a second
+    // overlapping object. Its endpoints use the same ±label-radius spacing
+    // as the lattice rails, so the geometry terminates directly into it.
+    const receiverHalf = LATTICE_X / CARD_W * W;
+    const receiverY = H - CARD_FRAME_INSET_PX;
+    cctx.strokeStyle = COL.jade;
+    cctx.lineWidth = 3;
+    cctx.beginPath();
+    cctx.moveTo(W / 2 - receiverHalf, receiverY);
+    cctx.lineTo(W / 2 + receiverHalf, receiverY);
+    cctx.stroke();
+    cctx.fillStyle = COL.jade;
+    cctx.fillRect(W / 2 - receiverHalf - 3, receiverY - 3, 6, 6);
+    cctx.fillRect(W / 2 + receiverHalf - 3, receiverY - 3, 6, 6);
     cctx.letterSpacing = '0px';
     cardTex.needsUpdate = true;
   }
@@ -544,19 +608,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   card.renderOrder = 996;
   card.visible = false;
   holo.add(card);
-  // Invisible depth mask riding just behind the card face: it writes depth
-  // before the tether draws (994.5 < 995), so the depth-tested hairline
-  // overshoot is culled behind the card silhouette.
-  const cardMask = new THREE.Mesh(
-    new THREE.PlaneGeometry(CARD_W, CARD_H),
-    new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true })
-  );
-  cardMask.position.z = -0.002;
-  cardMask.renderOrder = 994.5;
-  card.add(cardMask);
 
-  // Registration tether — two label-radius leader lines, two tiny signal
-  // squares, and an etched index ring. All three draws use basic materials
+  // Registration tether — a sparse triangulated wireframe rises between two
+  // label-radius rails, with two tiny signal squares and an etched index ring.
+  // The open lattice reads as a technical projection volume without filling
+  // the gap or washing out the record. All three draws use basic materials
   // with normal blending: no volume, additive wash, shader, glow texture, or
   // settled ambient motion.
   const tether = new THREE.Group();
@@ -573,14 +629,36 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     blending: THREE.NormalBlending,
   });
   const hairlineGeo = new THREE.BufferGeometry();
+  const latticeLevels = [0, 0.34, 0.67, 1];
+  const latticeVertices = [];
+  const addLatticeSegment = (x1, t1, x2, t2) => {
+    latticeVertices.push(
+      x1, t1 * TETHER_H, 0,
+      x2, t2 * TETHER_H, 0,
+    );
+  };
+  // Two structural rails.
+  addLatticeSegment(-LATTICE_X, 0, -LATTICE_X, 1);
+  addLatticeSegment(LATTICE_X, 0, LATTICE_X, 1);
+  // Three open rungs; the record-label edge itself remains unobscured.
+  latticeLevels.slice(1).forEach((level) => {
+    addLatticeSegment(-LATTICE_X, level, LATTICE_X, level);
+  });
+  // Alternating braces divide the ribbon into triangular wireframe cells.
+  for (let i = 0; i < latticeLevels.length - 1; i += 1) {
+    const lower = latticeLevels[i];
+    const upper = latticeLevels[i + 1];
+    const leftToRight = i % 2 === 0;
+    addLatticeSegment(
+      leftToRight ? -LATTICE_X : LATTICE_X,
+      lower,
+      leftToRight ? LATTICE_X : -LATTICE_X,
+      upper,
+    );
+  }
   hairlineGeo.setAttribute(
     'position',
-    new THREE.Float32BufferAttribute([
-      -0.155, 0, 0,
-      -0.155, TETHER_H, 0,
-       0.155, 0, 0,
-       0.155, TETHER_H, 0,
-    ], 3),
+    new THREE.Float32BufferAttribute(latticeVertices, 3),
   );
   const hairlines = new THREE.LineSegments(hairlineGeo, hairlineMat);
   hairlines.name = 'deck-registration-tether-hairlines';
@@ -637,7 +715,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     reducedTransparency:
       root.getAttribute('data-a11y-transparency') === 'reduced',
     highContrast: root.getAttribute('data-a11y-contrast') === 'high',
-    hairlineOpacity: 0.55,
+    hairlineOpacity: 0.72,
     footOpacity: 0.9,
     ringOpacity: 0.45,
     ringAllowed: true,
@@ -660,7 +738,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     let ringAllowed = true;
 
     if (highContrast){
-      hairlineColor = footColor = ringColor = cssColor('--cream-warm');
+      // High contrast increases opacity and removes the low-priority ring,
+      // but the card connection remains jade instead of becoming a white
+      // line detached from the card's visual language.
+      const structural = cssColor(light ? '--jade' : '--jade-light');
+      hairlineColor = footColor = ringColor = structural;
       hairlineOpacity = footOpacity = ringOpacity = 1;
       ringAllowed = false;
     } else if (reducedTransparency){
@@ -673,10 +755,12 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       footOpacity = 1;
       ringOpacity = 0.3;
     } else {
-      hairlineColor = cssColor('--jade-light');
+      // Keep the lattice visibly jade rather than letting a pale pair of
+      // lines read as white against the dark cockpit.
+      hairlineColor = cssColor('--jade');
       footColor = cssColor('--jade-signal');
       ringColor = cssColor('--jade');
-      hairlineOpacity = 0.55;
+      hairlineOpacity = 0.72;
       footOpacity = 0.9;
       ringOpacity = 0.45;
     }
@@ -717,6 +801,12 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   let renderedHairlineOpacity = hairlineMat.opacity;
   let renderedFootOpacity = footMat.opacity;
   let renderedRingOpacity = ringMat.opacity;
+  let renderedCardRuleY = CARD_RULE_REST_Y;
+  // The deck disc is constructed with the same mapped clearcoat shader
+  // signature as the crate discs, which the normal scene render prepares.
+  // Keeping `map` non-null from construction lets the renderer reuse that
+  // cached program when the hidden deck copy first becomes visible.
+  const deckProgramsReady = Boolean(discMat.map);
   registerDeckTetherProbe(() => ({
     visible: tether.visible,
     forcedColors: tetherState.forcedColors,
@@ -742,6 +832,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     normalBlending: tetherMaterials.every(
       (material) => material.blending === THREE.NormalBlending,
     ),
+    receiverIntegrated: true,
+    attachmentGap: tether.visible
+      ? Math.abs(
+        renderedCardRuleY
+        - (TETHER_BASE_Y + TETHER_H * renderedHairlineScale)
+      )
+      : 0,
+    deckProgramsReady,
   }));
 
   // Hologram pieces never intercept the cockpit hover raycast
@@ -756,7 +854,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     : -1;
   let playing = restoredDeckIndex; // project index on (or inbound to) the platter
   let landed = restoredDeckIndex >= 0;
-  let flight = null;      // { dir, t, dur, started, from(), to(), q0, q0fn(), q1fn(), s0, s1, onDone }
+  let flight = null;      // two-stage extraction/flight state
   let queued = null;      // play args waiting behind an eject (swap)
   let pendingEject = null;
   let coverT = landed ? 1 : 0;
@@ -765,11 +863,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   let cardT = landed ? 1 : 0;
   let btnHover = false;
   let elapsed = 0;
+  let inboundExtractionObserved = false;
+  let inboundClearanceBoundaryPassed = false;
+
+  PROJECTS.forEach((_, index) => { coverImg(index); });
 
   if (landed) {
     drawCard(playing, false);
-    discMat.map = discTex(playing);
-    discMat.needsUpdate = true;
+    assignDiscTexture(discTex(playing));
     spin.add(deckDisc);
     deckDisc.position.set(0, DISC_REST_Y, 0);
     deckDisc.rotation.set(0, 0, 0);
@@ -787,17 +888,24 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const flatWorldQuat = () => group.getWorldQuaternion(new THREE.Quaternion());
 
   function startPlay(args){
+    inboundExtractionObserved = false;
+    inboundClearanceBoundaryPassed = false;
     playing = args.index;
     drawCard(args.index, false);
-    discMat.map = discTex(args.index);
-    discMat.needsUpdate = true;
+    assignDiscTexture(args.texture || discTex(args.index));
     if (args.onDepart) args.onDepart();
     if (deckDisc.parent !== scene) scene.attach(deckDisc);
     deckDisc.visible = true;
     const r0 = args.fromRadius ? args.fromRadius() : 0.45 * WS();
     flight = {
       dir: 'in', t: 0, dur: reduceMotion ? 0.01 : 0.72, started: false,
-      from: args.from, to: platterWorld,
+      extractionT: 0,
+      extractionDur: reduceMotion ? 0.01 : 0.42,
+      extractFrom: args.from,
+      from: args.fromClear || args.from,
+      to: platterWorld,
+      clearance: args.clearance || 0,
+      openSleeve: args.openSleeve === true,
       q0: null,
       q0fn: () => (args.fromQuat ? args.fromQuat() : VERT_QUAT.clone()),
       q1fn: flatWorldQuat,
@@ -819,6 +927,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     flight = {
       dir: 'out', t: 0, dur: reduceMotion ? 0.01 : 0.6, started: true,
       from: () => curPos, to: args.to || platterWorld,
+      extractionT: 1,
+      extractionDur: 0,
+      extractFrom: null,
+      clearance: args.clearance || 0,
+      openSleeve: args.openSleeve === true,
       q0: deckDisc.quaternion.clone(),
       q0fn: null,
       q1fn: () => (args.toQuat ? args.toQuat() : VERT_QUAT.clone()),
@@ -848,6 +961,35 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     get busy(){ return !!(flight || queued || pendingEject); },
     get index(){ return playing; },
   };
+  registerVinylFlightProbe(() => {
+    if (!flight){
+      return {
+        phase: 'idle',
+        index: playing,
+        openSleeve: true,
+        clearanceMargin: 0,
+        extractionProgress: 1,
+        lateralMotionAllowed: false,
+        extractionObserved: inboundExtractionObserved,
+        clearanceBoundaryPassed: inboundClearanceBoundaryPassed,
+      };
+    }
+    const inbound = flight.dir === 'in';
+    return {
+      phase: inbound
+        ? (flight.started ? 'airborne-in' : 'extracting')
+        : 'airborne-out',
+      index: playing,
+      openSleeve: flight.openSleeve,
+      clearanceMargin: flight.clearance,
+      extractionProgress: inbound
+        ? Math.min(1, flight.extractionT / flight.extractionDur)
+        : 1,
+      lateralMotionAllowed: !inbound || flight.started,
+      extractionObserved: inboundExtractionObserved,
+      clearanceBoundaryPassed: inboundClearanceBoundaryPassed,
+    };
+  });
   // HUD bridge — deck-view browse arrows
   window.__getCockpitDeckInfo = () => (vm() === 'deck' && playing >= 0)
     ? { index: playing, count: PROJECTS.length, busy: !!(flight || queued || pendingEject) }
@@ -871,13 +1013,25 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   };
 
   // ── Camera-focus target for GlobeCanvas ('deck' view mode) ────
+  const deckFocusCenter = new THREE.Vector3();
+  const deckFocusQuaternion = new THREE.Quaternion();
+  const deckFocusOutward = new THREE.Vector3();
+  const deckFocusTarget = {
+    center: deckFocusCenter,
+    outward: deckFocusOutward,
+    fitHeight: 0,
+  };
   group.getFocusTarget = function(){
     group.updateMatrixWorld(true);
     const ws = WS();
-    const center = group.localToWorld(new THREE.Vector3(PLATTER_X, 1.08, 0));
-    const q = group.getWorldQuaternion(new THREE.Quaternion());
-    const outward = new THREE.Vector3(0, 0, 1).applyQuaternion(q).normalize();
-    return { center, outward, fitHeight: 2.5 * ws };
+    deckFocusCenter.set(PLATTER_X, 1.08, 0).applyMatrix4(group.matrixWorld);
+    group.getWorldQuaternion(deckFocusQuaternion);
+    deckFocusOutward
+      .set(0, 0, 1)
+      .applyQuaternion(deckFocusQuaternion)
+      .normalize();
+    deckFocusTarget.fitHeight = 2.5 * ws;
+    return deckFocusTarget;
   };
 
   // ── Deck-view picking: VIEW MORE hover/click + click-away exit ─
@@ -948,16 +1102,34 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     coverT += (coverTgt - coverT) * Math.min(1, dt * 2.6 * K);
     coverHinge.rotation.x = -1.8 * easeInOut(coverT);
 
-    // Record flight — quadratic bezier between LIVE endpoints (the crate
-    // sleeve keeps animating while the disc is airborne).
+    // Record motion has a collision boundary at the sleeve mouth. Inbound,
+    // the disc first travels only along the sleeve's local +Y axis until its
+    // lower edge has cleared the jacket; lateral Bézier travel cannot begin
+    // before that waypoint. Outbound lands at that same clear waypoint, then
+    // vinyl-crate owns the final vertical insertion into the open mouth.
     if (flight){
-      if (!flight.started && flight.dir === 'in' && coverT < 0.65){
-        // hold on the (rising) sleeve until the cover is out of the way
-        deckDisc.position.copy(flight.from());
+      if (!flight.started && flight.dir === 'in'){
+        inboundExtractionObserved = true;
+        flight.extractionT += dt;
+        const extractionProgress = easeInOut(
+          Math.min(1, flight.extractionT / flight.extractionDur),
+        );
+        deckDisc.position
+          .copy(flight.extractFrom())
+          .lerp(flight.from(), extractionProgress);
         deckDisc.quaternion.copy(flight.q0fn());
         deckDisc.scale.setScalar(flight.s0);
-      } else {
-        if (!flight.started){ flight.started = true; flight.q0 = flight.q0fn ? flight.q0fn() : flight.q0; }
+        if (canBeginLateralVinylFlight(
+          flight.extractionT,
+          flight.extractionDur,
+          coverT,
+        )){
+          flight.started = true;
+          inboundClearanceBoundaryPassed = true;
+          flight.q0 = flight.q0fn();
+        }
+      }
+      if (flight.started){
         flight.t += dt;
         const e = easeInOut(Math.min(1, flight.t / flight.dur));
         const p0 = flight.from(), p2 = flight.to();
@@ -1002,6 +1174,25 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       Math.abs(cardTgt - cardT) > 0.02
     );
 
+    const ce = easeInOut(cardT);
+    const cardScale = 0.9 + 0.1 * ce;
+    const cardY =
+      CARD_Y + 0.06 * (1 - ce) + 0.012 * Math.sin(elapsed * 1.4);
+    card.visible = cardT > 0.02;
+    if (card.visible){
+      card.scale.setScalar(cardScale);
+      card.position.y = cardY;
+      // subtle materialize flicker while fading in — settles at full
+      cardMat.opacity = (0.96 - 0.16 * Math.max(0, Math.sin(elapsed * 42)) * (1 - ce)) * ce;
+      // yaw-only billboard: face the camera, stay upright
+      if (camera){
+        const wp = card.getWorldPosition(new THREE.Vector3());
+        const cp = camera.getWorldPosition(new THREE.Vector3());
+        cp.y = wp.y;
+        card.lookAt(cp);
+      }
+    }
+
     const be = easeInOut(beamT);
     const tetherProgress = reduceMotion ? Number(cardTgt > 0) : be;
     const ringProgress = reduceMotion
@@ -1014,8 +1205,13 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     indexRing.visible =
       tether.visible && tetherState.ringAllowed && ringProgress > 0.001;
     footSquares.visible = tether.visible && footProgress > 0.001;
-    if (Math.abs(renderedHairlineScale - tetherProgress) > 0.0001){
-      renderedHairlineScale = Math.max(0.001, tetherProgress);
+    renderedCardRuleY = cardY + CARD_RULE_LOCAL_Y * cardScale;
+    const connectionScale =
+      (renderedCardRuleY - TETHER_BASE_Y) / TETHER_H;
+    const nextHairlineScale =
+      Math.max(0.001, tetherProgress * connectionScale);
+    if (Math.abs(renderedHairlineScale - nextHairlineScale) > 0.0001){
+      renderedHairlineScale = nextHairlineScale;
       hairlines.scale.y = renderedHairlineScale;
     }
     const nextHairlineOpacity =
@@ -1034,30 +1230,6 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       renderedRingOpacity = nextRingOpacity;
       ringMat.opacity = nextRingOpacity;
     }
-
-    const ce = easeInOut(cardT);
-    card.visible = cardT > 0.02;
-    // The mask writes depth in the OPAQUE pass, so it culls EVERY later
-    // depth-tested draw behind it — the transmissive dust cover included,
-    // not just the tether it was cut for. While the card is still fading it
-    // is too translucent to hide that hole, so the cover reads as blinking
-    // out in a card-shaped rectangle (worst on a swap, which fades the card
-    // out and back in). Arm the mask only once the card can cover its own
-    // silhouette.
-    cardMask.visible = ce > 0.9;
-    if (card.visible){
-      card.scale.setScalar(0.9 + 0.1 * ce);
-      card.position.y = CARD_Y + 0.06 * (1 - ce) + 0.012 * Math.sin(elapsed * 1.4);
-      // subtle materialize flicker while fading in — settles at full
-      cardMat.opacity = (0.96 - 0.16 * Math.max(0, Math.sin(elapsed * 42)) * (1 - ce)) * ce;
-      // yaw-only billboard: face the camera, stay upright
-      if (camera){
-        const wp = card.getWorldPosition(new THREE.Vector3());
-        const cp = camera.getWorldPosition(new THREE.Vector3());
-        cp.y = wp.y;
-        card.lookAt(cp);
-      }
-    }
     if (tether.visible) tether.quaternion.copy(card.quaternion);
   };
 
@@ -1070,9 +1242,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     accessibilityObserver.disconnect();
     forcedColorsQuery?.removeEventListener('change', applyTetherPresentation);
     unregisterDeckTetherProbe();
+    unregisterVinylFlightProbe();
     window.__cockpitDeck = null;
     window.__getCockpitDeckInfo = null;
     window.__getCockpitDeckCardRect = null;
+    if (!deckDiscWarmupTexDisposed){
+      deckDiscWarmupTex.dispose();
+      deckDiscWarmupTexDisposed = true;
+    }
     reportDeckTransient(false);
   };
 

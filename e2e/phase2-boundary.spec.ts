@@ -38,6 +38,10 @@ test.describe('Phase 2 root boundary', () => {
     const notice = page.locator('.home-cockpit-notice')
 
     await expect(notice).toBeVisible()
+    await expect(page.locator('html')).not.toHaveAttribute(
+      'data-cockpit-enhancement',
+      /.+/,
+    )
     await expect(page.locator('[data-layout-region="cockpit-shell"]')).toHaveCount(0)
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toHaveCount(0)
     await expect(header).not.toHaveAttribute('inert', '')
@@ -84,12 +88,17 @@ test.describe('Phase 2 root boundary', () => {
       )
     const cockpitHeader = page.locator('[data-hud="site-header"]')
     const cockpitNav = cockpitHeader.locator('nav[aria-label="Primary"]')
+    await expect(cockpitHeader.getByRole('link', { name: /home/i })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
     const cockpitNavHrefs = await cockpitNav.locator(':scope > div > a').evaluateAll(
       (anchors) => anchors.map((anchor) => anchor.getAttribute('href')),
     )
     expect(cockpitNavHrefs).toEqual(documentNavHrefs)
 
     const projectsLink = cockpitNav.getByRole('link', { name: /^projects$/i })
+    await expect(projectsLink).toHaveAttribute('data-active', 'false')
     await projectsLink.focus()
     await expect(cockpitNav.getByRole('link', { name: /^completed\b/i })).toBeVisible()
     await expect(
@@ -152,5 +161,13 @@ test.describe('Phase 2 root boundary', () => {
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
       timeout: 30_000,
     })
+    const cockpitHeader = page.locator('[data-hud="site-header"]')
+    await expect(cockpitHeader.getByRole('link', { name: /home/i })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    await expect(
+      cockpitHeader.getByRole('link', { name: /^projects$/i }),
+    ).toHaveAttribute('data-active', 'false')
   })
 })

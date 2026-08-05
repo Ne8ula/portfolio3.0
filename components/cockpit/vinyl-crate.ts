@@ -22,12 +22,23 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper.js"
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import { CURSOR_POINTER } from "./cursors"
 import { PALETTE, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
-import { registerCrateActions, unregisterCrateActions } from "./test-hooks"
+import {
+  computeSleeveClearRise,
+  computeSleeveMouthGap,
+  isAtSleeveClearWaypoint,
+} from "./vinyl-motion"
+import {
+  registerCrateActions,
+  registerVinylSleeveProbe,
+  unregisterCrateActions,
+  unregisterVinylSleeveProbe,
+} from "./test-hooks"
 
 // ── Reference material palette (brief: warm off-white base, milky
 // frost, muted sage accents only — never bright neon green) ─────────
@@ -236,7 +247,15 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
   const LIFT      = 0.34;  // sleeve rise
   const PUSH      = 0.04;  // sleeve toward viewer
   const TILT      = 0.14;  // sleeve tips toward viewer (rad, from vertical)
-  const DISC_RISE = 0.52;  // disc slides out of the sleeve mouth
+  const DISC_RADIUS = SLEEVE_H * 0.46;
+  const DISC_RISE = 0.52;  // selected preview: disc remains partly jacketed
+  const DISC_CLEARANCE = 0.025;
+  const DISC_CLEAR_RISE = computeSleeveClearRise({
+    sleeveHeight: SLEEVE_H,
+    discRadius: DISC_RADIUS,
+    clearance: DISC_CLEARANCE,
+  });
+  const DISC_CLEAR_PROGRESS = DISC_CLEAR_RISE / DISC_RISE;
 
   const baseX = -3.2, baseY = 0.18, baseZ = 1.15;
   const baseRX = 0, baseRY = 0.35, baseRZ = 0;
@@ -393,6 +412,14 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
   const haloTex = makeHaloTexture();
   const vinyls = [];
   const frontZ = CRATE_D/2 - PAD_FRONT - SLEEVE_T/2;
+  const SLEEVE_PANEL_T = 0.006;
+  const SLEEVE_INNER_GAP = computeSleeveMouthGap(
+    SLEEVE_T,
+    SLEEVE_PANEL_T,
+  );
+  const SLEEVE_SEAM_W = 0.012;
+  const SLEEVE_SEAM_H = 0.012;
+  const SLEEVE_PANEL_Z = (SLEEVE_T - SLEEVE_PANEL_T) / 2;
 
   for (let i = 0; i < N; i++){
     const vinyl = new THREE.Group();
@@ -405,19 +432,76 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     const coverTex = makeCoverTexture(i);
     const topTex = makeTopEdgeTexture(i);
     const edgeCol = new THREE.MeshLambertMaterial({ color: PROJECTS[i].bg });
-    const sleeveMats = [
-      edgeCol,                                             // +X edge
-      edgeCol,                                             // -X edge
-      new THREE.MeshLambertMaterial({ map: topTex }),      // +Y top — readable strip
-      edgeCol,                                             // -Y bottom
-      new THREE.MeshLambertMaterial({ map: coverTex }),    // +Z front — cover art
-      new THREE.MeshLambertMaterial({ color: PROJECTS[i].bg })  // -Z back
-    ];
+    const coverMat = new THREE.MeshLambertMaterial({ map: coverTex });
+    const topMat = new THREE.MeshLambertMaterial({
+      map: topTex,
+      side: THREE.DoubleSide,
+    });
+    // Open paper jacket: separate front/back boards plus side and bottom
+    // seams. The former BoxGeometry top cap is intentionally absent, leaving
+    // an actual gap wider than the 0.02-thick disc.
+    const frontGeometry = new THREE.BoxGeometry(
+      SLEEVE_W,
+      SLEEVE_H,
+      SLEEVE_PANEL_T,
+    ).translate(0, 0, SLEEVE_PANEL_Z);
+    const sleeveShellGeometry = mergeGeometries([
+      new THREE.BoxGeometry(
+        SLEEVE_W,
+        SLEEVE_H,
+        SLEEVE_PANEL_T,
+      ).translate(0, 0, -SLEEVE_PANEL_Z),
+      new THREE.BoxGeometry(
+        SLEEVE_SEAM_W,
+        SLEEVE_H,
+        SLEEVE_INNER_GAP,
+      ).translate(
+        -SLEEVE_W / 2 + SLEEVE_SEAM_W / 2,
+        0,
+        0,
+      ),
+      new THREE.BoxGeometry(
+        SLEEVE_SEAM_W,
+        SLEEVE_H,
+        SLEEVE_INNER_GAP,
+      ).translate(
+        SLEEVE_W / 2 - SLEEVE_SEAM_W / 2,
+        0,
+        0,
+      ),
+      new THREE.BoxGeometry(
+        SLEEVE_W - SLEEVE_SEAM_W * 2,
+        SLEEVE_SEAM_H,
+        SLEEVE_INNER_GAP,
+      ).translate(
+        0,
+        -SLEEVE_H / 2 + SLEEVE_SEAM_H / 2,
+        0,
+      ),
+    ]);
+
+    // Preserve the readable top-edge title as a raised rear registration
+    // lip. It sits behind the open mouth instead of sealing it.
+    const rearLipGeometry = new THREE.PlaneGeometry(
+      SLEEVE_W * 0.92,
+      0.06,
+    ).translate(
+      0,
+      SLEEVE_H / 2 + 0.025,
+      -SLEEVE_PANEL_Z - SLEEVE_PANEL_T / 2 - 0.001,
+    );
+    // The cover board, U-shell, and rear lip share one mesh with three
+    // material groups. This is fewer sleeve draw calls than the former
+    // closed six-face box while preserving the physical opening.
     const sleeve = new THREE.Mesh(
-      new THREE.BoxGeometry(SLEEVE_W, SLEEVE_H, SLEEVE_T),
-      sleeveMats
+      mergeGeometries(
+        [frontGeometry, sleeveShellGeometry, rearLipGeometry],
+        true,
+      ),
+      [coverMat, edgeCol, topMat],
     );
     vinyl.add(sleeve);
+
     const sleeveEdge = new THREE.LineSegments(
       new THREE.EdgesGeometry(sleeve.geometry),
       new THREE.LineBasicMaterial({ color: 0x1E1C1A, transparent:true, opacity:0.5 })
@@ -435,7 +519,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
 
     // Disc — hidden inside the sleeve at rest, slides up +Y on hover.
     const disc = new THREE.Mesh(
-      new THREE.CylinderGeometry(SLEEVE_H*0.46, SLEEVE_H*0.46, 0.02, 40),
+      new THREE.CylinderGeometry(DISC_RADIUS, DISC_RADIUS, 0.02, 40),
       // Clearcoat = pressed-vinyl gloss; the matte cardboard sleeves stay Lambert.
       new THREE.MeshPhysicalMaterial({ map: makeDiscTexture(i), roughness: 0.55, clearcoat: 1, clearcoatRoughness: 0.18 })
     );
@@ -488,6 +572,9 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
   // are passed so flights track the sleeves while they animate.
   let deckOut = restore?.viewMode === 'deck' && restoredIndex >= 0;
   let returning = false;   // fly-back in progress after leaving deck view
+  let insertingIdx = -1;   // returned disc lowering vertically into its mouth
+  let returnInsertionObserved = false;
+  let returnStartedAtClearWaypoint = false;
   if (selectedIdx >= 0) {
     vinyls.forEach((vinyl) => {
       const selected = vinyl.data.i === selectedIdx;
@@ -504,9 +591,16 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
   }
   const deck = () => window.__cockpitDeck;
   const discWorldPos  = (i) => () => vinyls[i].disc.getWorldPosition(new THREE.Vector3());
+  const discWorldClearPos = (i) => {
+    const point = new THREE.Vector3();
+    return () => vinyls[i].group.localToWorld(
+      point.set(0, DISC_CLEAR_RISE, 0),
+    );
+  };
   const discWorldQuat = (i) => () => vinyls[i].disc.getWorldQuaternion(new THREE.Quaternion());
   const discWorldRadius = (i) => () =>
-    SLEEVE_H * 0.46 * (vinyls[i].disc.getWorldScale(new THREE.Vector3()).x || 1);
+    DISC_RADIUS * (vinyls[i].disc.getWorldScale(new THREE.Vector3()).x || 1);
+  const discTexture = (i) => vinyls[i].disc.material.map;
 
   const sendToDeck = (idx) => {
     const d = deck();
@@ -516,8 +610,12 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     d.play({
       index: idx,
       from: discWorldPos(idx),
+      fromClear: discWorldClearPos(idx),
       fromQuat: discWorldQuat(idx),
       fromRadius: discWorldRadius(idx),
+      clearance: DISC_CLEARANCE,
+      openSleeve: true,
+      texture: discTexture(idx),
       onDepart: () => { vinyls[idx].disc.visible = false; },
     });
     return true;
@@ -545,15 +643,61 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
       return true;
     },
   });
+  registerVinylSleeveProbe(() => {
+    const activeIndex =
+      insertingIdx >= 0 ? insertingIdx : selectedIdx;
+    const activeVinyl =
+      activeIndex >= 0 ? vinyls[activeIndex] : null;
+    const activeRise = activeVinyl
+      ? activeVinyl.data.disc * DISC_RISE
+      : 0;
+    let phase = 'idle';
+    if (insertingIdx >= 0) phase = 'inserting';
+    else if (returning) phase = 'returning';
+    else if (deckOut && deck()?.busy) phase = 'departing';
+    else if (selectedIdx >= 0) phase = 'preview';
+    return {
+      phase,
+      activeIndex,
+      openMouth: true,
+      mouthGap: SLEEVE_INNER_GAP,
+      sleeveTopY: SLEEVE_H / 2,
+      discRadius: DISC_RADIUS,
+      previewRise: DISC_RISE,
+      clearRise: DISC_CLEAR_RISE,
+      clearanceMargin: DISC_CLEARANCE,
+      activeRise,
+      discBottomClearance:
+        activeRise - DISC_RADIUS - SLEEVE_H / 2,
+      returnInsertionObserved,
+      returnStartedAtClearWaypoint,
+    };
+  });
 
   const recallFromDeck = (idx, onDone) => {
     const d = deck();
     if (!d){ if (idx >= 0) vinyls[idx].disc.visible = true; if (onDone) onDone(); return; }
     d.eject({
-      to: discWorldPos(idx),
+      to: discWorldClearPos(idx),
       toQuat: discWorldQuat(idx),
       toRadius: discWorldRadius(idx),
-      onArrive: () => { if (idx >= 0) vinyls[idx].disc.visible = true; if (onDone) onDone(); },
+      clearance: DISC_CLEARANCE,
+      openSleeve: true,
+      onArrive: () => {
+        if (idx >= 0){
+          const vinyl = vinyls[idx];
+          vinyl.data.disc = DISC_CLEAR_PROGRESS;
+          vinyl.disc.position.y = DISC_CLEAR_RISE;
+          vinyl.disc.visible = true;
+          insertingIdx = idx;
+          returnInsertionObserved = true;
+          returnStartedAtClearWaypoint = isAtSleeveClearWaypoint(
+            vinyl.data.disc * DISC_RISE,
+            DISC_CLEAR_RISE,
+          );
+        }
+        if (onDone) onDone();
+      },
     });
   };
 
@@ -736,8 +880,12 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
       d.play({
         index: n,
         from: discWorldPos(n),
+        fromClear: discWorldClearPos(n),
         fromQuat: discWorldQuat(n),
         fromRadius: discWorldRadius(n),
+        clearance: DISC_CLEARANCE,
+        openSleeve: true,
+        texture: discTexture(n),
         onDepart: () => { vinyls[n].disc.visible = false; },
       });
     } else if (mode === 'crate'){
@@ -770,13 +918,24 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
       const liftTarget = isHover ? 1 : 0;
       d.tilt  += (tiltTarget - d.tilt)  * Math.min(1, dt * 8);
       d.hover += (liftTarget - d.hover) * Math.min(1, dt * 8);
-      d.disc  += (liftTarget - d.disc)  * Math.min(1, dt * 5);  // lags the sleeve — two-stage feel
+      const discTarget = d.i === insertingIdx ? 0 : liftTarget;
+      d.disc  += (discTarget - d.disc)  * Math.min(1, dt * 5);
       v.group.rotation.x = -LEAN + d.tilt * (LEAN + TILT);
       v.group.position.y = d.restY + d.hover * LIFT;
       v.group.position.z = d.restZ + d.hover * PUSH;
       v.disc.position.y = d.disc * DISC_RISE;
-      if (d.disc > 0.02) v.disc.rotateY(dt * 1.4 * d.disc);   // lazy spin while exposed
+      if (d.disc > 0.02) {
+        v.disc.rotateY(dt * 1.4 * Math.min(1, d.disc));
+      }
     });
+    if (
+      insertingIdx >= 0
+      && vinyls[insertingIdx].data.disc < 0.01
+    ){
+      vinyls[insertingIdx].data.disc = 0;
+      vinyls[insertingIdx].disc.position.y = 0;
+      insertingIdx = -1;
+    }
 
     // Jade normal pins = the hover highlight (records stay put until clicked).
     if (hoveredIdx >= 0) getPins(hoveredIdx);
@@ -808,6 +967,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     window.__getCockpitVinylHover = null;
     window.__cockpitVinylSelect = null;
     unregisterCrateActions();
+    unregisterVinylSleeveProbe();
   };
 
   return group;

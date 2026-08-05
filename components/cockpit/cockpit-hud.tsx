@@ -259,7 +259,6 @@ function ControlsLegend(){
 // reacts elegantly on hover, and reveals a sub-menu for Projects.
 // ─────────────────────────────────────────────────────────────
 function SiteHeader(){
-  const [active, setActive] = React.useState('projects');
   const [hovered, setHovered] = React.useState(null);
   const [openSub, setOpenSub] = React.useState(false);
   const closeTimer = React.useRef(null);
@@ -355,11 +354,17 @@ function SiteHeader(){
         gap:24,
       }}>
         {/* LEFT — horizontal logo lockup, expanded with graphic elements */}
-        <div style={{
+        <a
+          aria-current="page"
+          aria-label={`${PROFILE.name} studio — Home`}
+          data-cockpit-home-link
+          href={SITE_ROUTES.home}
+          style={{
           display:'flex', alignItems:'center', gap:14,
           textDecoration:'none',
           color:'var(--cream-warm)',
           position:'relative',
+          cursor:CURSOR_POINTER,
         }}>
           {/* ── Monogram — minimal AX glyph ── */}
           <svg aria-hidden width="28" height="28" viewBox="0 0 38 38" style={{display:'block', flexShrink:0}}>
@@ -391,12 +396,11 @@ function SiteHeader(){
             }}>studio</span>
           </span>
 
-        </div>
+        </a>
 
         {/* RIGHT — primary nav + meta */}
         <nav aria-label="Primary" style={{display:'flex', alignItems:'center', gap:0}}>
           {items.map((it, idx) => {
-            const isActive = active === it.id;
             const isHover  = hovered === it.id;
             const isProjects = it.id === 'projects';
             return (
@@ -426,8 +430,8 @@ function SiteHeader(){
                 <a
                   ref={isProjects ? projectsLinkRef : undefined}
                   data-cockpit-nav-link
+                  data-active="false"
                   href={it.href}
-                  onClick={() => setActive(it.id)}
                   aria-expanded={isProjects ? openSub : undefined}
                   aria-haspopup={isProjects ? 'menu' : undefined}
                   style={{
@@ -435,8 +439,8 @@ function SiteHeader(){
                     cursor:CURSOR_POINTER,
                     fontFamily:'var(--font-mono)',
                     fontSize: 13, letterSpacing:'.26em', textTransform:'uppercase',
-                    fontWeight: isActive ? 700 : 500,
-                    color: isActive ? 'var(--jade-light)' : (isHover ? 'var(--cream-warm)' : 'var(--cream-deep)'),
+                    fontWeight:500,
+                    color:isHover ? 'var(--cream-warm)' : 'var(--cream-deep)',
                     transition:'color .2s ease',
                     position:'relative',
                     display:'flex', alignItems:'center', gap:6,
@@ -445,7 +449,7 @@ function SiteHeader(){
                 >
                   {/* number prefix — editorial ledger feel */}
                   <span aria-hidden style={{
-                    fontSize:10, opacity: isActive ? .85 : .55,
+                    fontSize:10, opacity:.55,
                     color:'currentColor', fontWeight:400,
                     letterSpacing:'.2em',
                   }}>0{idx+1}</span>
@@ -459,11 +463,11 @@ function SiteHeader(){
                     }}>▾</span>
                   )}
 
-                  {/* underline track — animates from center on hover, jade when active */}
+                  {/* underline track — animates from center on hover */}
                   <span aria-hidden style={{
                     position:'absolute', bottom:0, left:0, right:0, height:1,
-                    background:'currentColor', opacity: isActive ? .9 : (isHover ? .35 : 0),
-                    transform: isActive || isHover ? 'scaleX(1)' : 'scaleX(0)',
+                    background:'currentColor', opacity:isHover ? .35 : 0,
+                    transform:isHover ? 'scaleX(1)' : 'scaleX(0)',
                     transformOrigin:'center',
                     transition:'transform .25s ease, opacity .25s ease',
                   }}/>
@@ -506,7 +510,7 @@ function SiteHeader(){
                           key={s.id}
                           data-cockpit-nav-link
                           href={s.href}
-                          onClick={() => { setActive(it.id); setOpenSub(false); }}
+                          onClick={() => setOpenSub(false)}
                           style={{
                             background:'transparent', border:'none',
                             padding:'10px 0', cursor:CURSOR_POINTER, textAlign:'left',

@@ -37,6 +37,24 @@ export function CockpitEntry(): React.ReactElement | null {
   }, [])
 
   React.useEffect(() => {
+    const root = document.documentElement
+    if (capability === 'checking' || (capability === 'available' && !cockpitMounted)) {
+      root.setAttribute('data-cockpit-enhancement', 'pending')
+    } else if (capability === 'available') {
+      root.setAttribute('data-cockpit-enhancement', 'active')
+    } else {
+      root.removeAttribute('data-cockpit-enhancement')
+    }
+  }, [capability, cockpitMounted])
+
+  React.useEffect(
+    () => () => {
+      document.documentElement.removeAttribute('data-cockpit-enhancement')
+    },
+    [],
+  )
+
+  React.useEffect(() => {
     if (capability !== 'lost') return
     runtimeNoticeRef.current?.focus({ preventScroll: true })
   }, [capability])
@@ -69,7 +87,15 @@ export function CockpitEntry(): React.ReactElement | null {
     }
   }, [capability, cockpitMounted])
 
-  if (capability === 'checking') return null
+  if (capability === 'checking') {
+    return (
+      <div
+        aria-hidden="true"
+        className="cockpit-pending-screen"
+        data-hud="cockpit-pending"
+      />
+    )
+  }
 
   if (capability === 'unavailable') {
     return (

@@ -41,9 +41,9 @@ const TWEAK_DEFAULTS = {
   // reads as sitting at the desk, not hovering above it.
   fpvHeight: -2.4, fpvDistance: -0.6,
   // Vinyl crate — hero, left of center, records facing the viewer, angled
-  // slightly toward the desk center. Moved out to -3.7 so the larger
-  // scale can't reach the turntable or the coffee mug.
-  vinylX: -3.7, vinylY: 0.18, vinylZ: 1.15, vinylRX: 0, vinylRY: 0.35, vinylRZ: 0, vinylS: 1.7,
+  // slightly toward the desk center. Owner-corrected scale: 2.0;
+  // position remains unchanged for Kimi's independent composition QA.
+  vinylX: -3.6, vinylY: 0.18, vinylZ: 1.15, vinylRX: 0, vinylRY: 0.35, vinylRZ: 0, vinylS: 1.9,
   // Turntable — hero, center stage, nudged toward the viewer, dead-on.
   ttX: 0.2, ttY: 0.18, ttZ: 0.9, ttRY: 0, ttS: 1.75,
 }
@@ -101,6 +101,8 @@ export function CockpitApp({ onFatal, onMountChange }) {
   // Track the 3D view mode so chrome (theme toggle) can hide while the
   // camera is focused on the PC monitor or the vinyl crate.
   const [viewMode, setViewMode] = useState('cockpit');
+  const recovering =
+    lifecycle.status === 'lost' || lifecycle.status === 'restoring';
   useEffect(() => {
     if (onMountChange) onMountChange(true);
     return () => {
@@ -317,7 +319,13 @@ export function CockpitApp({ onFatal, onMountChange }) {
           transparent hole in the doorway as the panels part). */}
       {(phase === 'cockpit' || phase === 'warp') && (
         <ResponsiveStage label="Cockpit stage" regionId="cockpit-stage-region">
-          <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+          <div
+            aria-hidden={recovering ? true : undefined}
+            className="renderer-scene"
+            data-recovery-hidden={recovering ? 'true' : 'false'}
+            inert={recovering ? true : undefined}
+            style={{ position: 'absolute', inset: 0, zIndex: 1 }}
+          >
             <Cockpit
               key={rebuildKey}
               interactive={interactive}
@@ -331,9 +339,9 @@ export function CockpitApp({ onFatal, onMountChange }) {
           />
         </ResponsiveStage>
       )}
-      <div className="grain" />
-      <div className="vignette" />
-      {phase === 'cockpit' && viewMode === 'cockpit' && (
+      {!recovering && <div className="grain" />}
+      {!recovering && <div className="vignette" />}
+      {phase === 'cockpit' && viewMode === 'cockpit' && !recovering && (
         <ThemeToggle theme={theme} onToggle={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))} />
       )}
     </div>

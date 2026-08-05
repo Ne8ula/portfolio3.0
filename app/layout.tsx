@@ -54,6 +54,9 @@ const PRE_PAINT_PREFERENCES_SCRIPT = `(function () {
       ? storedAppearance
       : (mq('(prefers-color-scheme: dark)') ? 'dark' : 'light');
     root.setAttribute('data-appearance', appearance);
+    if (window.location.pathname === '/') {
+      root.setAttribute('data-cockpit-enhancement', 'pending');
+    }
   } catch (e) {}
 })();`
 
