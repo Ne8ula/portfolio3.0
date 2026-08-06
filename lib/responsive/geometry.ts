@@ -67,6 +67,18 @@ export function contains(outer: Rect, inner: Rect): boolean {
   )
 }
 
+/** Compare every rectangle coordinate with an inclusive absolute tolerance. */
+export function rectsAlmostEqual(a: Rect, b: Rect, epsilon: number): boolean {
+  if (!Number.isFinite(epsilon) || epsilon < 0) return false
+
+  return (
+    Math.abs(a.x - b.x) <= epsilon &&
+    Math.abs(a.y - b.y) <= epsilon &&
+    Math.abs(a.w - b.w) <= epsilon &&
+    Math.abs(a.h - b.h) <= epsilon
+  )
+}
+
 /** Center `size` horizontally on `anchor`, bottom edge `gap` above it. */
 export function placeAbove(anchor: Rect, size: Size, gap: number): Rect {
   return {
