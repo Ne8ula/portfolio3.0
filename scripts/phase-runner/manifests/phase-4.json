@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "phase": 4,
+  "title": "Shared geometry and projection contract",
+  "source": "docs/phase-4-design.md",
+  "sourceSection": "§9",
+  "designAuthorities": [
+    "DESIGN.md",
+    "docs/responsive-system.md",
+    "docs/hud-responsive-layout-plan.md §3, §5, §8 Phase 4, §9.3, and §9.6",
+    "app/layout-contract.ts",
+    "lib/responsive/layout-contract.ts",
+    "docs/phase-4-design.md"
+  ],
+  "requiredGates": [
+    "npm run lint",
+    "npm run typecheck:contracts",
+    "npm run validate:contracts",
+    "npm run test:unit",
+    "npm run test:e2e"
+  ],
+  "maxFixAttempts": 3,
+  "initialStep": "step-1",
+  "initiallyAcceptedThrough": null,
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Pure geometry, solver, and seeded streams",
+      "planItems": [1, 2, 3],
+      "scope": [
+        "Implement the strict-island HUD geometry and spacing-token API, computeSafeFrame, stage-relative projection validity and conversion, and the thin cockpit re-export exactly as §2 and §9 Steps 1–2 specify.",
+        "Implement and unit-test resolveFocusHudLayout with the approved collision precedence, deterministic tie-breaking, compact hysteresis, and no live placement wiring.",
+        "Implement xmur3+sfc32 seeded streams with the textual \\u0000 separator, U+0000 input rejection, memoized named streams, and production null-seed Math.random delegation without patching the global.",
+        "Verify AC-1 through AC-3 and AC-11 without beginning runtime randomness migration, HUD rewiring, camera fitting, or re-anchoring."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 4: shared geometry, solver, and seeded streams",
+        "paths": [
+          "lib/responsive/hud-layout.ts",
+          "lib/responsive/stage-projection.ts",
+          "lib/responsive/geometry.ts",
+          "lib/random/seeded-streams.ts",
+          "components/cockpit/hud-layout.ts",
+          "tests/unit/hud-layout.test.ts",
+          "tests/unit/stage-projection.test.ts",
+          "tests/unit/seeded-streams.test.ts"
+        ]
+      }
+    },
+    {
+      "id": "step-2",
+      "title": "Deterministic randomness, frame lanes, and parity fixtures",
+      "planItems": [4, 5, 6],
+      "scope": [
+        "Migrate all 53 Math.random invocations to the 14 §4.3 named streams, thread RandomSource through construction options, and preserve natural production variation through the null-seed delegation.",
+        "Implement the four-lane frame-times contract from each dispatch invocation's own arguments, capture-only transition snapping, ambient freezing, and mechanical completion snapping with settled-after-snap semantics while preserving window.__cockpitTick byte-for-byte.",
+        "Add only the approved data-hud instrumentation identifiers to the still-unrewired overlays, placing bracket identifiers on content-bounding inner g elements and never on the stage-spanning svg elements.",
+        "Record the AC-4 parity fixtures before any HUD rewiring by using the legacy getters and a 10-consecutive-frame HUD_RECT_EPSILON stability poll; preserve the Phase 6 overlap and do not begin the sampler."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 4: deterministic randomness, frame lanes, and parity fixtures",
+        "paths": [
+          "components/cockpit/boot-screen.tsx",
+          "components/cockpit/coffee.ts",
+          "components/cockpit/glass-mac.ts",
+          "components/cockpit/globe-canvas.tsx",
+          "components/cockpit/incense.ts",
+          "components/cockpit/tea-set.ts",
+          "components/cockpit/vinyl-crate.ts",
+          "components/cockpit/decorations.ts",
+          "components/cockpit/decals.ts",
+          "components/cockpit/highlights.ts",
+          "components/cockpit/turntable.ts",
+          "components/cockpit/frame-times.ts",
+          "components/cockpit/cockpit-hud.tsx",
+          "components/cockpit/test-hooks.ts",
+          "e2e/fixtures/phase4-hud-parity.json",
+          "scripts/perf/record-phase4-hud-parity.ts"
+        ]
+      }
+    },
+    {
+      "id": "step-3",
+      "title": "Focused-HUD sampler, instrumentation, and scorecard harness",
+      "planItems": [7, 8, 9],
+      "scope": [
+        "Implement the production-owned monotonic focused-HUD sampler, epsilon-gated publication, deck-only 350 ms retained-card grace, reportFrame(settled, frameId) mirroring, park-on-loss lastComputedBeforePark behavior, and reset-at-rebuild lifecycle exactly as §3 specifies.",
+        "Rewire all seven overlays to the sampler so cockpit-hud.tsx contains zero requestAnimationFrame occurrences; preserve reference-viewport placement, hide dependent deck controls after grace expiry, retain original sourceFrameId, and pin deck-platter-spin and deck-holo-card.",
+        "Upgrade getHudSnapshot with byte-preserved legacy top-level fields plus nested liveFrame and publishedFrame, and add getHudFrameMeta, getVisualAssetState, the dev-only data-hud-frame handshake, the production-excluded ?hudDebug=1 overlay, and the Phase 4 browser suite.",
+        "Implement only the serial scorecard harness code, golden-metric unit fixtures, error capture, dirty-tree/backend protections, README, and owner-checkpoint template; record no baseline captures in this step and preserve the Phase 6 test.fixme."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 4: focused-HUD sampler, instrumentation, and scorecard harness",
+        "paths": [
+          "components/cockpit/hud-sampler.ts",
+          "components/cockpit/hud-debug-overlay.tsx",
+          "components/cockpit/cockpit-hud.tsx",
+          "components/cockpit/globe-canvas.tsx",
+          "components/cockpit/turntable.ts",
+          "components/cockpit/vinyl-crate.ts",
+          "components/cockpit/glass-mac.ts",
+          "components/cockpit/decals.ts",
+          "components/cockpit/test-hooks.ts",
+          "e2e/phase4-hud.spec.ts",
+          "scripts/perf/visual-scorecard.ts",
+          "tests/unit/hud-sampler.test.ts",
+          "tests/unit/hud-debug-overlay.test.ts",
+          "tests/unit/visual-scorecard.test.ts",
+          "docs/baselines/phase-4-scorecard/"
+        ]
+      }
+    },
+    {
+      "id": "step-4",
+      "title": "SwiftShader baseline and owner checkpoint",
+      "planItems": [10],
+      "scope": [
+        "From a clean checkout of the independently passed Step 3 harness commit, record the SwiftShader baseline for the 24-cell D1 matrix with three strictly serial repeats per cell.",
+        "Require exact font-descriptor loading, the visual-asset barrier, theme pre-seeding and assertion, §9.6.4 error capture with only the EMPTY-START allowlist, a clean Git provenance record, and the unmasked SwiftShader identity rather than software classification alone.",
+        "Prepare but do not run or self-certify the owner hardware capture; after fresh Kimi QA, stop for the explicit AC-20 owner checkpoint and leave the evidence uncommitted for Step 5.",
+        "Do not run the heavy scorecard capture concurrently with the E2E suite, compare hardware with SwiftShader, amend delivery documentation, or claim owner acceptance."
+      ],
+      "ownerGateAfter": true,
+      "commitAfterQa": null
+    },
+    {
+      "id": "step-5",
+      "title": "Scorecard baselines, docs, and delivery",
+      "planItems": [10],
+      "scope": [
+        "Require and verify the owner-run, owner-certified AC-20 hardware evidence accepted after Step 4; never run, replace, or self-certify the hardware capture and never compare it with SwiftShader.",
+        "Complete the §7.3 amendments to responsive-system §3/§10/§11/§12, the responsive plan §2.2/§5/§8, the CLAUDE.md bridge-list correction adding only __getCockpitDeckCardRect, and the compact AGENTS.md current-state note.",
+        "Complete docs/phase-4-implementation.md with per-AC evidence, the §4.3 migration table at final line numbers, fixture parity evidence, the D8 runner-adapted commit record, and AC-22 boundary proof against the authoritative pinned 34-name bridge set.",
+        "Run all five gates and finish AC-19 through AC-24 evidence without Phase 5 camera/input work, the Phase 6 overlap fix, Phase 7 re-anchoring, content changes, new bridge names, or any other out-of-phase work."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 4: record scorecard baselines and delivery",
+        "paths": [
+          "docs/baselines/phase-4-scorecard/",
+          "docs/phase-4-implementation.md",
+          "docs/responsive-system.md",
+          "docs/hud-responsive-layout-plan.md",
+          "CLAUDE.md",
+          "AGENTS.md"
+        ]
+      }
+    }
+  ]
+}
