@@ -26,6 +26,7 @@
 //     Theme applier in globe-canvas swaps color per theme (light theme
 //     uses deep-jade ink, which reads on ivory).
 import * as THREE from "three"
+import { getFrameTimes } from "./frame-times"
 import { PALETTE } from "./materials"
 
 const MIN_RADIUS = 0.14;   // geometry bounding-sphere radius floor (local units)
@@ -78,10 +79,12 @@ export function makeEdgeGlow(){
   // Traces rest at 0 opacity; a hovered target's boost eases its faint
   // outline glow in (~120ms) and back out, with a slow pulse while held.
   const tick = (t, vis) => {
-    const dt = lastT === null ? 0 : Math.min(0.1, Math.max(0, t - lastT));
-    lastT = t;
+    const { tAmbient } = getFrameTimes();
+    const ambientT = typeof tAmbient === 'number' ? tAmbient : t;
+    const dt = lastT === null ? 0 : Math.min(0.1, Math.max(0, ambientT - lastT));
+    lastT = ambientT;
     const k = 1 - Math.exp(-dt * 9);
-    const pulse = 0.5 + 0.5 * Math.sin(t * 2.2);
+    const pulse = 0.5 + 0.5 * Math.sin(ambientT * 2.2);
     targets.forEach(tg => {
       tg.cur += (tg.boost - tg.cur) * k;
       tg.mat.opacity = vis * tg.cur * (0.78 + pulse * 0.18);

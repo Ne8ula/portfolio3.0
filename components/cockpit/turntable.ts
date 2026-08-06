@@ -24,6 +24,7 @@ import { makeDecal, makeTextDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
 import { CURSOR_POINTER } from "./cursors"
+import { getFrameTimes } from "./frame-times"
 import { canBeginLateralVinylFlight } from "./vinyl-motion"
 import {
   registerDeckTetherProbe,
@@ -1092,14 +1093,18 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
 
   // ── Per-frame: spin + playback sequencing ─────────────────────
   group.tick = function(dt, t){
-    elapsed = (typeof t === 'number') ? t : elapsed + dt;
-    spin.rotation.y += dt * 1.6;
+    const { captureActive, dtAmbient, tAmbient } = getFrameTimes();
+    const snapCompleted = (value, target) =>
+      captureActive && Math.abs(target - value) <= 0.02 ? target : value;
+    elapsed = (typeof tAmbient === 'number') ? tAmbient : elapsed + dtAmbient;
+    spin.rotation.y += dtAmbient * 1.6;
     const K = reduceMotion ? 20 : 1;
 
     // Cover: swings open on its rear hinges whenever a record is on
     // deck/inbound — ~103° past vertical, a real dust-cover resting pose.
     const coverTgt = (playing >= 0 || flight || queued) ? 1 : 0;
     coverT += (coverTgt - coverT) * Math.min(1, dt * 2.6 * K);
+    coverT = snapCompleted(coverT, coverTgt);
     coverHinge.rotation.x = -1.8 * easeInOut(coverT);
 
     // Record motion has a collision boundary at the sleeve mouth. Inbound,
@@ -1153,6 +1158,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
 
     // Tonearm: park ↔ play, lifting slightly mid-swing.
     armT += ((landed ? 1 : 0) - armT) * Math.min(1, dt * 2.6 * K);
+    armT = snapCompleted(armT, landed ? 1 : 0);
     const ae = easeInOut(armT);
     armAssembly.rotation.y = ARM_PARK.y + (ARM_PLAY.y - ARM_PARK.y) * ae;
     // negative z lifts the cartridge end (it reaches along -x), so the
@@ -1164,11 +1170,14 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     const cardTgt = (landed && armT > 0.82) ? 1 : 0;
     beamT += (beamTgt - beamT) * Math.min(1, dt * 4.0 * K);
     cardT += (cardTgt - cardT) * Math.min(1, dt * 3.4 * K);
+    beamT = snapCompleted(beamT, beamTgt);
+    cardT = snapCompleted(cardT, cardTgt);
 
     // §9.6.1 settle signal: the deck is transient while the tonearm swing,
     // tether draw, or card fade is still easing — busy alone clears at disc
     // landing, before these finish. Dev-only no-op in production.
     reportDeckTransient(
+      (captureActive && coverT !== coverTgt) ||
       Math.abs((landed ? 1 : 0) - armT) > 0.02 ||
       Math.abs(beamTgt - beamT) > 0.02 ||
       Math.abs(cardTgt - cardT) > 0.02

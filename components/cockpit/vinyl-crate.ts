@@ -23,7 +23,9 @@ import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper.js"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
+import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
 import { CURSOR_POINTER } from "./cursors"
+import { getFrameTimes } from "./frame-times"
 import { PALETTE, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
@@ -36,6 +38,7 @@ import {
 import {
   registerCrateActions,
   registerVinylSleeveProbe,
+  reportCrateTransient,
   unregisterCrateActions,
   unregisterVinylSleeveProbe,
 } from "./test-hooks"
@@ -53,7 +56,7 @@ const CRATE_COLORS = {
   feet:     0x24221F,
 };
 
-function makeCoverTexture(i){
+function makeCoverTexture(i, random: RandomStream){
   const { bg, accent, text, title, category, date, cover } = PROJECTS[i];
   const SIZE = 512;
   const c = document.createElement('canvas');
@@ -62,8 +65,8 @@ function makeCoverTexture(i){
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, SIZE, SIZE);
   for (let k = 0; k < 800; k++){
-    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.04})`;
-    ctx.fillRect(Math.random()*SIZE, Math.random()*SIZE, 1, 1);
+    ctx.fillStyle = `rgba(0,0,0,${random.next()*0.04})`;
+    ctx.fillRect(random.next()*SIZE, random.next()*SIZE, 1, 1);
   }
   ctx.strokeStyle = accent;
   ctx.lineWidth = 3;
@@ -163,7 +166,7 @@ function makeCoverTexture(i){
 }
 
 // Top-edge strip — the sliver you read while digging through the bin.
-function makeTopEdgeTexture(i){
+function makeTopEdgeTexture(i, random: RandomStream){
   const { bg, accent, text, title } = PROJECTS[i];
   const W = 512, H = 64;
   const c = document.createElement('canvas');
@@ -172,8 +175,8 @@ function makeTopEdgeTexture(i){
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
   for (let k = 0; k < 80; k++){
-    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.08})`;
-    ctx.fillRect(Math.random()*W, Math.random()*H, 2 + Math.random()*6, 1);
+    ctx.fillStyle = `rgba(0,0,0,${random.next()*0.08})`;
+    ctx.fillRect(random.next()*W, random.next()*H, 2 + random.next()*6, 1);
   }
   ctx.fillStyle = accent;
   ctx.fillRect(24, H/2 - 1, 40, 2);
@@ -204,7 +207,20 @@ function makeHaloTexture(){
   return new THREE.CanvasTexture(c);
 }
 
-export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {}){
+type VinylCrateBuildOptions = {
+  readonly randomSource: RandomSource
+  readonly restore?: unknown
+}
+
+export function buildVinylCrate(
+  scene,
+  tableGroup,
+  camera,
+  renderer,
+  options: VinylCrateBuildOptions,
+){
+  const coverGrainRandom = options.randomSource.stream('vinyl-crate/cover-grain');
+  const edgeWearRandom = options.randomSource.stream('vinyl-crate/edge-wear');
   const group = new THREE.Group();
   tableGroup.add(group);
 
@@ -429,8 +445,8 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     vinyl.rotation.x = -LEAN;
     vinyl.userData = { i, restY, restZ, hover: 0, disc: 0, tilt: 0 };
 
-    const coverTex = makeCoverTexture(i);
-    const topTex = makeTopEdgeTexture(i);
+    const coverTex = makeCoverTexture(i, coverGrainRandom);
+    const topTex = makeTopEdgeTexture(i, edgeWearRandom);
     const edgeCol = new THREE.MeshLambertMaterial({ color: PROJECTS[i].bg });
     const coverMat = new THREE.MeshLambertMaterial({ map: coverTex });
     const topMat = new THREE.MeshLambertMaterial({
@@ -895,6 +911,13 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
 
   // ── Per-frame animation ───────────────────────────────────────
   group.tick = function(dt){
+    const { captureActive, dtAmbient } = getFrameTimes();
+    let captureTransient = false;
+    const snapCompleted = (value, target) =>
+      captureActive && Math.abs(target - value) <= 0.02 ? target : value;
+    const trackCaptureEasing = (value, target) => {
+      if (captureActive && value !== target) captureTransient = true;
+    };
     const mode = viewMode();
     if (mode !== 'crate') hoveredIdx = -1;
     // Leaving the crate slides any pulled record back — EXCEPT while it's
@@ -920,12 +943,18 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
       d.hover += (liftTarget - d.hover) * Math.min(1, dt * 8);
       const discTarget = d.i === insertingIdx ? 0 : liftTarget;
       d.disc  += (discTarget - d.disc)  * Math.min(1, dt * 5);
+      d.tilt = snapCompleted(d.tilt, tiltTarget);
+      d.hover = snapCompleted(d.hover, liftTarget);
+      d.disc = snapCompleted(d.disc, discTarget);
+      trackCaptureEasing(d.tilt, tiltTarget);
+      trackCaptureEasing(d.hover, liftTarget);
+      trackCaptureEasing(d.disc, discTarget);
       v.group.rotation.x = -LEAN + d.tilt * (LEAN + TILT);
       v.group.position.y = d.restY + d.hover * LIFT;
       v.group.position.z = d.restZ + d.hover * PUSH;
       v.disc.position.y = d.disc * DISC_RISE;
       if (d.disc > 0.02) {
-        v.disc.rotateY(dt * 1.4 * Math.min(1, d.disc));
+        v.disc.rotateY(dtAmbient * 1.4 * Math.min(1, d.disc));
       }
     });
     if (
@@ -942,6 +971,8 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     pinHelpers.forEach((h, i) => {
       const target = i === hoveredIdx ? 0.85 : 0;
       h.material.opacity += (target - h.material.opacity) * Math.min(1, dt * 10);
+      h.material.opacity = snapCompleted(h.material.opacity, target);
+      trackCaptureEasing(h.material.opacity, target);
       h.visible = h.material.opacity > 0.02;
       if (h.visible) h.update();   // track the sleeve while it tilts/lifts
     });
@@ -952,7 +983,10 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
       const lit = v.data.i === selectedIdx;
       const haloTarget = v.data.i === hoveredIdx ? 0.95 : (lit ? 0.4 : 0);
       v.halo.material.opacity += (haloTarget - v.halo.material.opacity) * Math.min(1, dt * 10);
+      v.halo.material.opacity = snapCompleted(v.halo.material.opacity, haloTarget);
+      trackCaptureEasing(v.halo.material.opacity, haloTarget);
     });
+    reportCrateTransient(captureActive && captureTransient);
   };
 
   // Expose a disposer so GlobeCanvas can detach listeners on unmount.
@@ -968,6 +1002,7 @@ export function buildVinylCrate(scene, tableGroup, camera, renderer, options = {
     window.__cockpitVinylSelect = null;
     unregisterCrateActions();
     unregisterVinylSleeveProbe();
+    reportCrateTransient(false);
   };
 
   return group;

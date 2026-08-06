@@ -29,13 +29,15 @@
 //   draining — click the full mug → the coffee sinks back to empty (and the
 //              cup's pool refills), the mug never leaves the desk.
 import * as THREE from "three"
+import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
 import { CURSOR_POINTER } from "./cursors"
+import { getFrameTimes } from "./frame-times"
 import { PALETTE, makeHeroGlass, makeFrost } from "./materials"
 import { makeTextDecal } from "./decals"
 
 // ASCII smoke plume — ~90 glyphs along three winding streamlines that
 // widen, shrink and fade as they rise. Baked once into a canvas texture.
-function makeSmokeTexture(){
+function makeSmokeTexture(random: RandomStream){
   const W = 160, H = 420;
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
@@ -49,12 +51,12 @@ function makeSmokeTexture(){
     const y = H - 16 - t * (H - 32);
     const lane = i % 3;                                       // 3 interleaved streamlines
     const wind = Math.sin(t * Math.PI * 2.6 + lane * 2.1) * (10 + t * 34);
-    const x = W/2 + wind + (Math.random() - 0.5) * 14;
-    const size = Math.max(10, 26 - t * 12 + (Math.random() * 4 - 2));
+    const x = W/2 + wind + (random.next() - 0.5) * 14;
+    const size = Math.max(10, 26 - t * 12 + (random.next() * 4 - 2));
     ctx.font = `600 ${size}px "JetBrains Mono", monospace`;
-    ctx.globalAlpha = Math.max(0.05, (1 - t) * 0.9) * (0.7 + Math.random() * 0.3);
-    ctx.fillStyle = Math.random() < 0.12 ? '#4B6E4F' : '#7A9A7E';
-    ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], x, y);
+    ctx.globalAlpha = Math.max(0.05, (1 - t) * 0.9) * (0.7 + random.next() * 0.3);
+    ctx.fillStyle = random.next() < 0.12 ? '#4B6E4F' : '#7A9A7E';
+    ctx.fillText(glyphs[(random.next() * glyphs.length) | 0], x, y);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.anisotropy = 4;
@@ -87,13 +89,13 @@ function scallopTop(geo, lobes = 11, amp = 0.015){
 
 // Fine speckle noise — bump/roughness map so the cream ceramic and paper
 // read subtly textured (per the reference renders) instead of flat plastic.
-function makeNoiseTexture(repeat = 4){
+function makeNoiseTexture(random: RandomStream, repeat = 4){
   const n = document.createElement('canvas');
   n.width = n.height = 256;
   const ctx = n.getContext('2d');
   const img = ctx.createImageData(256, 256);
   for (let i = 0; i < img.data.length; i += 4){
-    const v = 200 + ((Math.random() * 55) | 0);
+    const v = 200 + ((random.next() * 55) | 0);
     img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
     img.data[i + 3] = 255;
   }
@@ -104,7 +106,13 @@ function makeNoiseTexture(repeat = 4){
   return tex;
 }
 
-export function buildCoffee(scene, tableGroup, camera, renderer){
+type CoffeeBuildOptions = {
+  readonly randomSource: RandomSource
+}
+
+export function buildCoffee(scene, tableGroup, camera, renderer, options: CoffeeBuildOptions){
+  const noiseRandom = options.randomSource.stream('coffee/noise');
+  const steamGlyphRandom = options.randomSource.stream('coffee/steam-glyphs');
   const group = new THREE.Group();
   tableGroup.add(group);
 
@@ -114,10 +122,10 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   const frostG = makeFrost({ color: 0xE7E2D9, transmission: 0.8, roughness: 0.3, thickness: 0.06 });   // cone + cup shells — glassy, never opaque plastic
   const frostC = makeFrost({ color: 0xE7E2D9, transmission: 0.5,  roughness: 0.32, thickness: 0.08 });   // collar — less see-through (frost behind frost shows nothing)
   const frostH = makeFrost({ color: 0xE4DFD6, transmission: 0.5,  roughness: 0.28, thickness: 0.1  });   // tube handles
-  const creamTex = makeNoiseTexture(4);
+  const creamTex = makeNoiseTexture(noiseRandom, 4);
   const cream  = new THREE.MeshStandardMaterial({ color: 0xE9E3D7, roughness: 0.82, metalness: 0,
     roughnessMap: creamTex, bumpMap: creamTex, bumpScale: 0.012 });
-  const paperTex = makeNoiseTexture(6);
+  const paperTex = makeNoiseTexture(noiseRandom, 6);
   const paper  = new THREE.MeshStandardMaterial({ color: 0xEFE8DA, roughness: 0.95, metalness: 0, side: THREE.DoubleSide,
     roughnessMap: paperTex, bumpMap: paperTex, bumpScale: 0.008 });
   const coffee = new THREE.MeshLambertMaterial({ color: 0x2E2016 });   // dark brew
@@ -410,7 +418,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
   let dropClock = Infinity;   // time since the drip phase began
 
   // ── ASCII smoke sprites (three offset copies of the plume) ────
-  const smokeTex = makeSmokeTexture();
+  const smokeTex = makeSmokeTexture(steamGlyphRandom);
   const smokes = [0, 0.37, 0.71].map(phase => {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({
       map: smokeTex, transparent: true, opacity: 0, depthWrite: false, color: 0x7A9A7E,
@@ -488,6 +496,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
 
   // ── Per-frame ─────────────────────────────────────────────────
   group.tick = function(dt, t){
+    const { dtAmbient, tAmbient } = getFrameTimes();
     const surf = () => MUG.y + (0.09 + level * LIQUID_MAX) * mug.scale.y;   // mug liquid surface
 
     if (state === 'pouring'){
@@ -507,9 +516,9 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
         setTilt(TILT0 + (TILT1 - TILT0) * ease(level));
         const top = MUG.y + SPOUT_H - 0.04;
         const s = surf();
-        stream.position.set(MUG.x + Math.sin(t * 19) * 0.006, s, MUG.z);
+        stream.position.set(MUG.x + Math.sin(tAmbient * 19) * 0.006, s, MUG.z);
         stream.scale.y = Math.max(0.01, top - s);
-        stream.scale.x = stream.scale.z = 1 + Math.sin(t * 23) * 0.12;
+        stream.scale.x = stream.scale.z = 1 + Math.sin(tAmbient * 23) * 0.12;
         stream.visible = true;
       } else if (anim < LIFT_T + POUR_T + DRIP_T){
         // stream cuts, body relaxes halfway, trailing drips take over
@@ -549,7 +558,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
 
     // idle brew-drip inside the dripper (cone neck → cup pool, glimpsed
     // through the frosted lower band of the cup)
-    idleT += dt;
+    idleT += dtAmbient;
     const ft = idleT % 2.6;
     if (state === 'idle' && ft < 0.34){
       const q = ft / 0.34;
@@ -564,11 +573,13 @@ export function buildCoffee(scene, tableGroup, camera, renderer){
     pool.scale.y = Math.max(0.03, POOL_H * (1 - 0.75 * level));
 
     const smokeTarget = (state === 'full' || (state === 'draining' && level > 0.5)) ? 1 : 0;
-    smokeVis += (smokeTarget - smokeVis) * Math.min(1, dt * 2.5);
+    // Smoke visibility belongs to the ambient lane, not the mechanical
+    // completion-snap set. Capture freezes this ease at its authored state.
+    smokeVis += (smokeTarget - smokeVis) * Math.min(1, dtAmbient * 2.5);
     smokes.forEach(s => {
-      const p = (t * 0.12 + s.userData.phase) % 1;
+      const p = (tAmbient * 0.12 + s.userData.phase) % 1;
       s.position.set(
-        MUG.x + Math.sin((t + s.userData.phase * 9) * 1.1) * 0.06,
+        MUG.x + Math.sin((tAmbient + s.userData.phase * 9) * 1.1) * 0.06,
         MUG.y + 0.8 + p * 0.9,
         MUG.z
       );

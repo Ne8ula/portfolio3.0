@@ -14,11 +14,13 @@
 // Still the quiet live element of the corner: the thin ASCII glyph plume
 // drifts off the tip and the ember breathes (hot-ash cream, never red).
 import * as THREE from "three"
+import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
+import { getFrameTimes } from "./frame-times"
 import { PALETTE, makeFrost } from "./materials"
 
 // Thin ASCII smoke plume — incense-weight: fewer glyphs and a narrower wind
 // than the coffee mug's steam, so it reads as a single lazy ribbon.
-function makeIncenseTexture(){
+function makeIncenseTexture(random: RandomStream){
   const W = 110, H = 420;
   const c = document.createElement('canvas');
   c.width = W; c.height = H;
@@ -32,12 +34,12 @@ function makeIncenseTexture(){
     const y = H - 14 - t * (H - 28);
     const lane = i % 2;                                       // 2 interleaved streamlines
     const wind = Math.sin(t * Math.PI * 3.1 + lane * 2.4) * (5 + t * 22);
-    const x = W / 2 + wind + (Math.random() - 0.5) * 9;
-    const size = Math.max(9, 21 - t * 10 + (Math.random() * 4 - 2));
+    const x = W / 2 + wind + (random.next() - 0.5) * 9;
+    const size = Math.max(9, 21 - t * 10 + (random.next() * 4 - 2));
     ctx.font = `600 ${size}px "JetBrains Mono", monospace`;
-    ctx.globalAlpha = Math.max(0.05, (1 - t) * 0.85) * (0.7 + Math.random() * 0.3);
-    ctx.fillStyle = Math.random() < 0.12 ? '#4B6E4F' : '#7A9A7E';
-    ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], x, y);
+    ctx.globalAlpha = Math.max(0.05, (1 - t) * 0.85) * (0.7 + random.next() * 0.3);
+    ctx.fillStyle = random.next() < 0.12 ? '#4B6E4F' : '#7A9A7E';
+    ctx.fillText(glyphs[(random.next() * glyphs.length) | 0], x, y);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.anisotropy = 4;
@@ -46,7 +48,7 @@ function makeIncenseTexture(){
 
 // Kraft-paper stick skin — warm tan flecked with darker incense-dust
 // speckles so the rod reads as pressed powder, not painted dowel.
-function makeStickTexture(){
+function makeStickTexture(random: RandomStream){
   const S = 128;
   const c = document.createElement('canvas');
   c.width = c.height = S;
@@ -54,11 +56,11 @@ function makeStickTexture(){
   ctx.fillStyle = '#A8916A';
   ctx.fillRect(0, 0, S, S);
   for (let i = 0; i < 900; i++){
-    const dark = Math.random() < 0.7;
+    const dark = random.next() < 0.7;
     ctx.fillStyle = dark
-      ? `rgba(74,58,38,${0.15 + Math.random() * 0.35})`
-      : `rgba(214,198,168,${0.12 + Math.random() * 0.3})`;
-    ctx.fillRect(Math.random() * S, Math.random() * S, 1, 1 + Math.random() * 2);
+      ? `rgba(74,58,38,${0.15 + random.next() * 0.35})`
+      : `rgba(214,198,168,${0.12 + random.next() * 0.3})`;
+    ctx.fillRect(random.next() * S, random.next() * S, 1, 1 + random.next() * 2);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -66,7 +68,13 @@ function makeStickTexture(){
   return tex;
 }
 
-export function buildIncense(scene, tableGroup){
+type IncenseBuildOptions = {
+  readonly randomSource: RandomSource
+}
+
+export function buildIncense(scene, tableGroup, options: IncenseBuildOptions){
+  const smokeGlyphRandom = options.randomSource.stream('incense/smoke-glyphs');
+  const stickSpeckleRandom = options.randomSource.stream('incense/stick-speckle');
   const group = new THREE.Group();
   group.position.set(-4.5, 0.18, 3.25);   // mug↔crate seam, in front of the tea set (their visual overlap is intentional)
   group.rotation.y = 0.35;
@@ -84,7 +92,7 @@ export function buildIncense(scene, tableGroup){
   // chromatic anchors never transmit)
   const jadeRing  = new THREE.MeshPhysicalMaterial({ color: PALETTE.jade, roughness: 0.38, metalness: 0,
     clearcoat: 0.4, clearcoatRoughness: 0.35 });
-  const stickMat  = new THREE.MeshStandardMaterial({ map: makeStickTexture(), roughness: 0.95, metalness: 0 });
+  const stickMat  = new THREE.MeshStandardMaterial({ map: makeStickTexture(stickSpeckleRandom), roughness: 0.95, metalness: 0 });
   const ashMat    = new THREE.MeshStandardMaterial({ color: 0xC9C6BE, roughness: 0.9, metalness: 0 });
   const edgeMat   = new THREE.LineBasicMaterial({ color: PALETTE.jadeLt, transparent: true, opacity: 0.3, depthWrite: false });
 
@@ -155,7 +163,7 @@ export function buildIncense(scene, tableGroup){
 
   // ── ASCII plume — three phase-offset sprite copies off the tip ───
   const TIP = new THREE.Vector3();          // tip, world (refreshed per frame)
-  const smokeTex = makeIncenseTexture();
+  const smokeTex = makeIncenseTexture(smokeGlyphRandom);
   const smokes = [0, 0.34, 0.68].map(phase => {
     const s = new THREE.Sprite(new THREE.SpriteMaterial({
       map: smokeTex, transparent: true, opacity: 0, depthWrite: false, color: 0x7A9A7E,
@@ -169,17 +177,21 @@ export function buildIncense(scene, tableGroup){
 
   // ── Per-frame — smoke drift + ember breathing (always on) ────────
   group.tick = function(dt, t){
+    const { tAmbient } = getFrameTimes();
     ember.getWorldPosition(TIP);
     smokes.forEach(s => {
-      const p = (t * 0.10 + s.userData.phase) % 1;
+      const p = (tAmbient * 0.10 + s.userData.phase) % 1;
       s.position.set(
-        TIP.x + Math.sin((t + s.userData.phase * 8) * 0.9) * 0.05,
+        TIP.x + Math.sin((tAmbient + s.userData.phase * 8) * 0.9) * 0.05,
         TIP.y + 0.62 + p * 1.05,
         TIP.z
       );
       s.material.opacity = Math.min(1, p * 5) * (1 - p) * 0.8;
     });
-    emberMat.opacity = 0.72 + Math.sin(t * 6.3) * 0.12 + Math.sin(t * 17.7) * 0.08;
+    emberMat.opacity =
+      0.72 +
+      Math.sin(tAmbient * 6.3) * 0.12 +
+      Math.sin(tAmbient * 17.7) * 0.08;
   };
 
   // ── Live dial-in bridge + cleanup ────────────────────────────────

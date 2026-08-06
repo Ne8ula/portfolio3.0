@@ -1,0 +1,722 @@
+{
+  "schemaVersion": 1,
+  "phase": 4,
+  "protocol": "docs/phase-4-design.md AC-4",
+  "provenance": {
+    "sourceCommit": "f3dc4c4e8b4afb550ca60d462b51898633fb2468",
+    "recordedAt": "2026-08-06T17:39:30.306Z",
+    "source": "legacy getters before focused-HUD sampler rewiring"
+  },
+  "viewport": {
+    "w": 1440,
+    "h": 900,
+    "dpr": 1
+  },
+  "capture": {
+    "seed": "ax-cockpit-phase4-v1",
+    "timeMs": 12000,
+    "pauseAmbient": true
+  },
+  "stability": {
+    "epsilonCssPx": 0.25,
+    "consecutiveFrames": 10
+  },
+  "assertions": {
+    "observedHudIdentifiers": [
+      "accessibility-trigger",
+      "browse-arrow-next",
+      "browse-arrow-prev",
+      "browse-hint",
+      "crate-hover-brackets",
+      "deck-project-link",
+      "object-tag",
+      "pc-hover-brackets",
+      "primary-nav",
+      "renderer-status",
+      "return-control",
+      "screen-dialog",
+      "site-header",
+      "skip-link",
+      "theme-toggle",
+      "vinyl-info-card"
+    ],
+    "expectedSceneStreams": [
+      "coffee/noise",
+      "coffee/steam-glyphs",
+      "glass-mac/pad-speckle",
+      "glass-mac/screen-noise",
+      "glass-mac/surface-speckle",
+      "globe-cities",
+      "incense/smoke-glyphs",
+      "incense/stick-speckle",
+      "starfield",
+      "tea-set/etch",
+      "tea-set/glaze",
+      "vinyl-crate/cover-grain",
+      "vinyl-crate/edge-wear"
+    ],
+    "phase6DeckOverlap": true
+  },
+  "fixtures": {
+    "cockpit-pc-hover": {
+      "mode": "cockpit",
+      "state": "pc-hover",
+      "geometry": {
+        "snapshot": {
+          "stage": {
+            "x": 0,
+            "y": 0,
+            "w": 1440,
+            "h": 900
+          },
+          "subject": null,
+          "overlays": {
+            "skip-link": {
+              "x": 14,
+              "y": 14,
+              "w": 234,
+              "h": 44
+            },
+            "primary-nav": {
+              "x": 939.171875,
+              "y": 22.140625,
+              "w": 356.828125,
+              "h": 44
+            },
+            "object-tag": {
+              "x": 1197.2578125,
+              "y": 235.390625,
+              "w": 129.578125,
+              "h": 37.390625
+            },
+            "pc-hover-brackets": {
+              "x": 912.7058715820312,
+              "y": 140.07144165039062,
+              "w": 1386.3837890625,
+              "h": 867.4979248046875
+            },
+            "screen-dialog": {
+              "x": 1116.21875,
+              "y": 363.2349548339844,
+              "w": 328.269287109375,
+              "h": 211.38290405273438
+            },
+            "site-header": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 78
+            },
+            "renderer-status": {
+              "x": -1,
+              "y": -1,
+              "w": 1,
+              "h": 1
+            },
+            "theme-toggle": {
+              "x": 1300.3125,
+              "y": 684,
+              "w": 107.6875,
+              "h": 38
+            },
+            "accessibility-trigger": {
+              "x": 16,
+              "y": 840,
+              "w": 169.796875,
+              "h": 44
+            }
+          },
+          "safeFrame": {
+            "x": 16,
+            "y": 16,
+            "w": 1408,
+            "h": 868
+          }
+        },
+        "legacy": {
+          "pc": {
+            "x": 924.7058639782357,
+            "y": 168.07144738995933,
+            "w": 1362.383807261106,
+            "h": 827.4978864680785
+          },
+          "crate": {
+            "x": -143.1009971544449,
+            "y": 401.9507521263189,
+            "w": 665.6659656740244,
+            "h": 543.3911319743411
+          },
+          "anchors": [
+            {
+              "id": "pc",
+              "x": 1262.0613541124706,
+              "y": 272.7876342324616
+            },
+            {
+              "id": "crate",
+              "x": 262.5240440017831,
+              "y": 444.9169338222421
+            },
+            {
+              "id": "turntable",
+              "x": 744.260088575663,
+              "y": 587.3727515596919
+            },
+            {
+              "id": "coffee",
+              "x": -578.2425778327774,
+              "y": 556.3837667946303
+            }
+          ]
+        },
+        "visualCapture": {
+          "active": true,
+          "seed": "ax-cockpit-phase4-v1",
+          "timeMs": 12000,
+          "streams": [
+            "coffee/noise",
+            "coffee/steam-glyphs",
+            "glass-mac/pad-speckle",
+            "glass-mac/screen-noise",
+            "glass-mac/surface-speckle",
+            "globe-cities",
+            "incense/smoke-glyphs",
+            "incense/stick-speckle",
+            "starfield",
+            "tea-set/etch",
+            "tea-set/glaze",
+            "vinyl-crate/cover-grain",
+            "vinyl-crate/edge-wear"
+          ]
+        }
+      }
+    },
+    "cockpit-crate-hover": {
+      "mode": "cockpit",
+      "state": "crate-hover",
+      "geometry": {
+        "snapshot": {
+          "stage": {
+            "x": 0,
+            "y": 0,
+            "w": 1440,
+            "h": 900
+          },
+          "subject": null,
+          "overlays": {
+            "skip-link": {
+              "x": 14,
+              "y": 14,
+              "w": 234,
+              "h": 44
+            },
+            "primary-nav": {
+              "x": 939.171875,
+              "y": 22.140625,
+              "w": 356.828125,
+              "h": 44
+            },
+            "object-tag": {
+              "x": 168.2109375,
+              "y": 407.515625,
+              "w": 188.609375,
+              "h": 37.390625
+            },
+            "crate-hover-brackets": {
+              "x": -155.1009979248047,
+              "y": 373.95074462890625,
+              "w": 689.6659545898438,
+              "h": 583.39111328125
+            },
+            "screen-dialog": {
+              "x": 1116.21875,
+              "y": 363.2349548339844,
+              "w": 328.269287109375,
+              "h": 211.38290405273438
+            },
+            "site-header": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 78
+            },
+            "renderer-status": {
+              "x": -1,
+              "y": -1,
+              "w": 1,
+              "h": 1
+            },
+            "theme-toggle": {
+              "x": 1300.3125,
+              "y": 684,
+              "w": 107.6875,
+              "h": 38
+            },
+            "accessibility-trigger": {
+              "x": 16,
+              "y": 840,
+              "w": 169.796875,
+              "h": 44
+            }
+          },
+          "safeFrame": {
+            "x": 16,
+            "y": 16,
+            "w": 1408,
+            "h": 868
+          }
+        },
+        "legacy": {
+          "pc": {
+            "x": 924.7058639782357,
+            "y": 168.07144738995933,
+            "w": 1362.383807261106,
+            "h": 827.4978864680785
+          },
+          "crate": {
+            "x": -143.1009971544449,
+            "y": 401.9507521263189,
+            "w": 665.6659656740244,
+            "h": 543.3911319743411
+          },
+          "anchors": [
+            {
+              "id": "pc",
+              "x": 1262.0613541124706,
+              "y": 272.7876342324616
+            },
+            {
+              "id": "crate",
+              "x": 262.5240440017831,
+              "y": 444.9169338222421
+            },
+            {
+              "id": "turntable",
+              "x": 744.260088575663,
+              "y": 587.3727515596919
+            },
+            {
+              "id": "coffee",
+              "x": -578.2425778327774,
+              "y": 556.3837667946303
+            }
+          ]
+        },
+        "visualCapture": {
+          "active": true,
+          "seed": "ax-cockpit-phase4-v1",
+          "timeMs": 12000,
+          "streams": [
+            "coffee/noise",
+            "coffee/steam-glyphs",
+            "glass-mac/pad-speckle",
+            "glass-mac/screen-noise",
+            "glass-mac/surface-speckle",
+            "globe-cities",
+            "incense/smoke-glyphs",
+            "incense/stick-speckle",
+            "starfield",
+            "tea-set/etch",
+            "tea-set/glaze",
+            "vinyl-crate/cover-grain",
+            "vinyl-crate/edge-wear"
+          ]
+        }
+      }
+    },
+    "monitor": {
+      "mode": "monitor",
+      "state": "screen-active",
+      "geometry": {
+        "snapshot": {
+          "stage": {
+            "x": 0,
+            "y": 0,
+            "w": 1440,
+            "h": 900
+          },
+          "subject": {
+            "corners": {
+              "TL": {
+                "x": 251.89211874024684,
+                "y": 97.88605834606166
+              },
+              "TR": {
+                "x": 1188.107881259753,
+                "y": 97.88605834606166
+              },
+              "BL": {
+                "x": 231.24442417991924,
+                "y": 817.6452783580713
+              },
+              "BR": {
+                "x": 1208.7555758200804,
+                "y": 817.6452783580713
+              }
+            },
+            "visible": false
+          },
+          "overlays": {
+            "skip-link": {
+              "x": 14,
+              "y": 14,
+              "w": 234,
+              "h": 44
+            },
+            "primary-nav": {
+              "x": 939.171875,
+              "y": 22.140625,
+              "w": 356.828125,
+              "h": 44
+            },
+            "screen-dialog": {
+              "x": 231.23468017578125,
+              "y": 97.875,
+              "w": 977.4304809570312,
+              "h": 719.6987915039062
+            },
+            "return-control": {
+              "x": 1285.4375,
+              "y": 28,
+              "w": 114.5625,
+              "h": 28.390625
+            },
+            "renderer-status": {
+              "x": -1,
+              "y": -1,
+              "w": 1,
+              "h": 1
+            },
+            "accessibility-trigger": {
+              "x": 16,
+              "y": 840,
+              "w": 169.796875,
+              "h": 44
+            }
+          },
+          "safeFrame": {
+            "x": 16,
+            "y": 16,
+            "w": 1408,
+            "h": 868
+          }
+        },
+        "legacy": {
+          "pc": {
+            "x": -538.0372709685349,
+            "y": -3481.9098397495104,
+            "w": 10773.14642771415,
+            "h": 10342.345502799852
+          },
+          "crate": null,
+          "anchors": [
+            {
+              "id": "pc",
+              "x": 719.9999999999999,
+              "y": -258.45252891174255
+            }
+          ]
+        },
+        "visualCapture": {
+          "active": true,
+          "seed": "ax-cockpit-phase4-v1",
+          "timeMs": 12000,
+          "streams": [
+            "coffee/noise",
+            "coffee/steam-glyphs",
+            "glass-mac/pad-speckle",
+            "glass-mac/screen-noise",
+            "glass-mac/surface-speckle",
+            "globe-cities",
+            "incense/smoke-glyphs",
+            "incense/stick-speckle",
+            "starfield",
+            "tea-set/etch",
+            "tea-set/glaze",
+            "vinyl-crate/cover-grain",
+            "vinyl-crate/edge-wear"
+          ]
+        }
+      }
+    },
+    "crate-record-selected": {
+      "mode": "crate",
+      "state": "record-0-selected",
+      "geometry": {
+        "snapshot": {
+          "stage": {
+            "x": 0,
+            "y": 0,
+            "w": 1440,
+            "h": 900
+          },
+          "subject": {
+            "x": -3226.7697919605075,
+            "y": -1093.5317033193542,
+            "w": 5540.433403322212,
+            "h": 1974.2110384679647,
+            "visible": true
+          },
+          "overlays": {
+            "skip-link": {
+              "x": 14,
+              "y": 14,
+              "w": 234,
+              "h": 44
+            },
+            "primary-nav": {
+              "x": 939.171875,
+              "y": 22.140625,
+              "w": 356.828125,
+              "h": 44
+            },
+            "vinyl-info-card": {
+              "x": 582.9921875,
+              "y": 747.234375,
+              "w": 274.015625,
+              "h": 108.765625
+            },
+            "browse-hint": {
+              "x": 562.4375,
+              "y": 76,
+              "w": 315.125,
+              "h": 32.390625
+            },
+            "browse-arrow-prev": {
+              "x": 36,
+              "y": 422.40625,
+              "w": 41.609375,
+              "h": 55.1875
+            },
+            "browse-arrow-next": {
+              "x": 1362.390625,
+              "y": 422.40625,
+              "w": 41.609375,
+              "h": 55.1875
+            },
+            "return-control": {
+              "x": 1285.4375,
+              "y": 28,
+              "w": 114.5625,
+              "h": 28.390625
+            },
+            "renderer-status": {
+              "x": -1,
+              "y": -1,
+              "w": 1,
+              "h": 1
+            },
+            "accessibility-trigger": {
+              "x": 16,
+              "y": 840,
+              "w": 169.796875,
+              "h": 44
+            }
+          },
+          "safeFrame": {
+            "x": 16,
+            "y": 16,
+            "w": 1408,
+            "h": 868
+          }
+        },
+        "legacy": {
+          "pc": {
+            "x": -38367.383739500576,
+            "y": -1465.0586578736436,
+            "w": 45872.07603416673,
+            "h": 5265.019611713345
+          },
+          "crate": {
+            "x": -3226.7697919605075,
+            "y": -1093.5317033193542,
+            "w": 5540.433403322212,
+            "h": 1974.2110384679647
+          },
+          "anchors": [
+            {
+              "id": "crate",
+              "x": 719.9999999999999,
+              "y": 113.44603370184377
+            },
+            {
+              "id": "turntable",
+              "x": 1903.2751651405017,
+              "y": 682.6999633268783
+            },
+            {
+              "id": "coffee",
+              "x": -586.7659777397762,
+              "y": 354.94574673146616
+            }
+          ]
+        },
+        "visualCapture": {
+          "active": true,
+          "seed": "ax-cockpit-phase4-v1",
+          "timeMs": 12000,
+          "streams": [
+            "coffee/noise",
+            "coffee/steam-glyphs",
+            "glass-mac/pad-speckle",
+            "glass-mac/screen-noise",
+            "glass-mac/surface-speckle",
+            "globe-cities",
+            "incense/smoke-glyphs",
+            "incense/stick-speckle",
+            "starfield",
+            "tea-set/etch",
+            "tea-set/glaze",
+            "vinyl-crate/cover-grain",
+            "vinyl-crate/edge-wear"
+          ]
+        }
+      }
+    },
+    "deck-record-landed": {
+      "mode": "deck",
+      "state": "record-0-landed",
+      "geometry": {
+        "snapshot": {
+          "stage": {
+            "x": 0,
+            "y": 0,
+            "w": 1440,
+            "h": 900
+          },
+          "subject": {
+            "x": 543.8123858234911,
+            "y": 92.50729019926844,
+            "w": 352.37522835301775,
+            "h": 396.2069117220962,
+            "visible": true
+          },
+          "overlays": {
+            "skip-link": {
+              "x": 14,
+              "y": 14,
+              "w": 234,
+              "h": 44
+            },
+            "primary-nav": {
+              "x": 939.171875,
+              "y": 22.140625,
+              "w": 356.828125,
+              "h": 44
+            },
+            "browse-hint": {
+              "x": 590.15625,
+              "y": 76,
+              "w": 259.6875,
+              "h": 32.390625
+            },
+            "browse-arrow-prev": {
+              "x": 483.796875,
+              "y": 263.015625,
+              "w": 41.609375,
+              "h": 55.1875
+            },
+            "browse-arrow-next": {
+              "x": 910.1875,
+              "y": 263.015625,
+              "w": 41.609375,
+              "h": 55.1875
+            },
+            "deck-project-link": {
+              "x": 574.640625,
+              "y": 434.234375,
+              "w": 290.703125,
+              "h": 26.734375
+            },
+            "screen-dialog": {
+              "x": 1278.45556640625,
+              "y": 169.9375,
+              "w": 691.8128662109375,
+              "h": 318.3316345214844
+            },
+            "return-control": {
+              "x": 1285.4375,
+              "y": 28,
+              "w": 114.5625,
+              "h": 28.390625
+            },
+            "renderer-status": {
+              "x": -1,
+              "y": -1,
+              "w": 1,
+              "h": 1
+            },
+            "accessibility-trigger": {
+              "x": 16,
+              "y": 840,
+              "w": 169.796875,
+              "h": 44
+            }
+          },
+          "safeFrame": {
+            "x": 16,
+            "y": 16,
+            "w": 1408,
+            "h": 868
+          }
+        },
+        "legacy": {
+          "pc": {
+            "x": 987.0821967704277,
+            "y": -321.843746114248,
+            "w": 5555.547117124101,
+            "h": 1492.0773504638119
+          },
+          "crate": {
+            "x": -1151.361652359488,
+            "y": 23.18152385459074,
+            "w": 1684.0647666122309,
+            "h": 954.653215969666
+          },
+          "anchors": [
+            {
+              "id": "pc",
+              "x": 1708.781361127571,
+              "y": -16.28078860840292
+            },
+            {
+              "id": "crate",
+              "x": 48.12816546113362,
+              "y": 325.54779976139815
+            },
+            {
+              "id": "turntable",
+              "x": 802.3173077198048,
+              "y": 512.3423910031071
+            },
+            {
+              "id": "coffee",
+              "x": -1473.5425048374582,
+              "y": 630.2898224901824
+            }
+          ]
+        },
+        "visualCapture": {
+          "active": true,
+          "seed": "ax-cockpit-phase4-v1",
+          "timeMs": 12000,
+          "streams": [
+            "coffee/noise",
+            "coffee/steam-glyphs",
+            "glass-mac/pad-speckle",
+            "glass-mac/screen-noise",
+            "glass-mac/surface-speckle",
+            "globe-cities",
+            "incense/smoke-glyphs",
+            "incense/stick-speckle",
+            "starfield",
+            "tea-set/etch",
+            "tea-set/glaze",
+            "vinyl-crate/cover-grain",
+            "vinyl-crate/edge-wear"
+          ]
+        }
+      }
+    }
+  }
+}

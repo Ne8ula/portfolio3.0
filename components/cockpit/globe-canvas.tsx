@@ -6,6 +6,7 @@
 // and the vinyl crate is now attached directly instead of self-polling.
 import React from "react"
 import * as THREE from "three"
+import { createRandomSource } from "@/lib/random/seeded-streams"
 import { buildVinylCrate } from "./vinyl-crate"
 import { buildTurntable } from "./turntable"
 import { buildCoffee } from "./coffee"
@@ -17,10 +18,14 @@ import { makeEdgeGlow } from "./highlights"
 import { CURSOR_POINTER } from "./cursors"
 import {
   clearMainRendererSize,
+  getVisualCaptureFrameState,
+  getVisualCaptureSeed,
   markSceneConstructed,
   reportFrame,
   reportMainRendererSize,
+  reportVisualCaptureStream,
 } from "./test-hooks"
+import { getFrameTimes, setFrameTimes } from "./frame-times"
 import { createRendererSizeSync } from "./renderer-size-sync"
 
 // Globe.jsx — cockpit 3D scene.
@@ -38,6 +43,15 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // Lifecycle cutoff for the §9.6.1 test bridge: visual-capture
     // configuration must precede scene construction.
     markSceneConstructed();
+    const captureFrameState = getVisualCaptureFrameState();
+    const baseRandomSource = createRandomSource(getVisualCaptureSeed());
+    const randomSource = {
+      seeded: baseRandomSource.seeded,
+      stream(name){
+        reportVisualCaptureStream(name);
+        return baseRandomSource.stream(name);
+      },
+    };
     THREE.ColorManagement.enabled = false;
 
     const scene = new THREE.Scene();
@@ -185,10 +199,11 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const starGeo = new THREE.BufferGeometry();
     const starCount = 700;
     const starPos = new Float32Array(starCount*3);
+    const starfieldRandom = randomSource.stream('starfield');
     for (let i=0;i<starCount;i++){
       const r = 800;
-      const t = Math.random()*Math.PI*2;
-      const p = Math.acos(2*Math.random()-1);
+      const t = starfieldRandom.next()*Math.PI*2;
+      const p = Math.acos(2*starfieldRandom.next()-1);
       starPos[i*3]   = r*Math.sin(p)*Math.cos(t);
       starPos[i*3+1] = r*Math.sin(p)*Math.sin(t);
       starPos[i*3+2] = r*Math.cos(p);
@@ -463,7 +478,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // -- GLASS MAC: transparent acrylic all-in-one + keyboard + mouse --
     // Superglass redesign (see components/cockpit/glass-mac.ts). Builds
     // into xray and wires the screen-overlay contract (screenCorners).
-    const glassMac = buildGlassMac(xray);
+    const glassMac = buildGlassMac(xray, { randomSource });
     const keyboard = glassMac.keyboard;
     window.__cockpitKeyboard = keyboard;
     glassMacHandle = glassMac;
@@ -824,9 +839,10 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // Scattered cream "city" points on the surface
     const cityCount = 120;
     const cityPos = new Float32Array(cityCount*3);
+    const globeCitiesRandom = randomSource.stream('globe-cities');
     for (let i=0;i<cityCount;i++){
-      const t = Math.random()*Math.PI*2;
-      const p = Math.acos(2*Math.random()-1);
+      const t = globeCitiesRandom.next()*Math.PI*2;
+      const p = Math.acos(2*globeCitiesRandom.next()-1);
       const r = globeR * 1.01;
       cityPos[i*3]   = r*Math.sin(p)*Math.cos(t);
       cityPos[i*3+1] = r*Math.sin(p)*Math.sin(t);
@@ -964,21 +980,25 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // hover/scroll listeners and a per-frame tick the render loop pumps.
     let crate = null;
     try {
-      crate = buildVinylCrate(scene, tableGroup, camera, renderer, { restore });
+      crate = buildVinylCrate(scene, tableGroup, camera, renderer, {
+        randomSource,
+        restore,
+      });
     } catch (e) { /* crate optional */ }
     let turntable = null;
     try {
       turntable = buildTurntable(scene, tableGroup, camera, renderer, { restore });
     } catch (e) { /* turntable optional */ }
     let coffeeStation = null;
-    try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer); } catch (e) { /* coffee optional */ }
+    try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer, { randomSource }); } catch (e) { /* coffee optional */ }
     let decorations = null;
     try { decorations = buildDecorations(scene, tableGroup, camera, renderer); } catch (e) { /* decorations optional */ }
     let teaSet = null;
-    try { teaSet = buildTeaSet(scene, tableGroup); } catch (e) { /* tea set optional */ }
+    try { teaSet = buildTeaSet(scene, tableGroup, { randomSource }); } catch (e) { /* tea set optional */ }
     let incense = null;
-    try { incense = buildIncense(scene, tableGroup); } catch (e) { /* incense optional */ }
+    try { incense = buildIncense(scene, tableGroup, { randomSource }); } catch (e) { /* incense optional */ }
     window.__cockpitTick = (dt, t) => {
+      setFrameTimes(dt, t, captureFrameState);
       if (crate && crate.tick) crate.tick(dt, t);
       if (turntable && turntable.tick) turntable.tick(dt, t);
       if (coffeeStation && coffeeStation.tick) coffeeStation.tick(dt, t);
@@ -1052,19 +1072,22 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       sizeSync.sync();
       const dt = clock.getDelta();
       const t = clock.elapsedTime;
+      setFrameTimes(dt, t, captureFrameState);
+      const { captureActive, dtAmbient } = getFrameTimes();
 
       // Ease modeT toward target (0 = cockpit, 1 = focused pose)
       const target = FOCUSED(viewMode) ? 1 : 0;
-      modeT += (target - modeT) * Math.min(1, dt * 2.2);
+      if (captureActive) modeT = target;
+      else modeT += (target - modeT) * Math.min(1, dt * 2.2);
 
       // Globe stays hidden
       globeGroup.visible = false;
 
       // Bobblehead removed — no-op
 
-      tBox.rotation.x += dt*.6;
-      tBox.rotation.y += dt*.9;
-      tRing.rotation.z += dt*.3;
+      tBox.rotation.x += dtAmbient*.6;
+      tBox.rotation.y += dtAmbient*.9;
+      tRing.rotation.z += dtAmbient*.3;
 
       // PC sits dead still — no idle oscillation.
       xray.rotation.y = pcYaw;
@@ -1085,9 +1108,14 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       // ease so sweeping the cursor feels like pulling a heavy gimbal.
       const yawTarget = yawRef.current || 0;
       const pitchTarget = pitchRef.current || 0;
-      const smoothK = 1 - Math.exp(-dt * 2.2); // ~0.45s settle time
-      smoothYaw   += (yawTarget   - smoothYaw)   * smoothK;
-      smoothPitch += (pitchTarget - smoothPitch) * smoothK;
+      if (captureActive){
+        smoothYaw = yawTarget;
+        smoothPitch = pitchTarget;
+      } else {
+        const smoothK = 1 - Math.exp(-dt * 2.2); // ~0.45s settle time
+        smoothYaw   += (yawTarget   - smoothYaw)   * smoothK;
+        smoothPitch += (pitchTarget - smoothPitch) * smoothK;
+      }
       window.__cockpitSmoothedYaw = smoothYaw;
       window.__cockpitSmoothedPitch = smoothPitch;
       const yaw = smoothYaw;
@@ -1189,13 +1217,17 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       // Focused-pose switch (crate → deck): blend from the captured pose
       // toward the new focus target so the camera glides instead of snapping.
       if (focusSwitch){
-        focusSwitch.t += dt / focusSwitch.duration;
-        const s = easeInOut(Math.min(1, focusSwitch.t));
-        focusBlendPosition.copy(focusSwitch.pos).lerp(monitorPos, s);
-        focusBlendQuaternion.copy(focusSwitch.quat).slerp(monitorQuat, s);
-        monitorPos = focusBlendPosition;
-        monitorQuat = focusBlendQuaternion;
-        if (focusSwitch.t >= 1) focusSwitch = null;
+        if (captureActive) {
+          focusSwitch = null;
+        } else {
+          focusSwitch.t += dt / focusSwitch.duration;
+          const s = easeInOut(Math.min(1, focusSwitch.t));
+          focusBlendPosition.copy(focusSwitch.pos).lerp(monitorPos, s);
+          focusBlendQuaternion.copy(focusSwitch.quat).slerp(monitorQuat, s);
+          monitorPos = focusBlendPosition;
+          monitorQuat = focusBlendQuaternion;
+          if (focusSwitch.t >= 1) focusSwitch = null;
+        }
       }
 
       // Interpolate

@@ -23,12 +23,21 @@
 // single-frame sampler; until then it reads all rects inside one
 // requestAnimationFrame callback.
 
+import type { FrameTimesCaptureState } from './frame-times'
+
 export type CockpitViewMode = 'cockpit' | 'monitor' | 'crate' | 'deck'
 
 export type VisualCaptureConfig = {
   readonly seed: string
   readonly timeMs: number
   readonly pauseAmbient: true
+}
+
+export type VisualCaptureState = {
+  readonly active: boolean
+  readonly seed: string | null
+  readonly timeMs: number | null
+  readonly streams: readonly string[]
 }
 
 export type HudSnapshotRect = { x: number; y: number; w: number; h: number }
@@ -120,6 +129,7 @@ export type VinylMotionSnapshot = {
 
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
+  getVisualCaptureState(): VisualCaptureState
   skipIntro(): void
   armWarpContextLoss(): void
   getWarpLifecycle(): WarpLifecycleSnapshot
@@ -165,8 +175,10 @@ type Registry = {
   introSkipped: boolean
   sceneConstructed: boolean
   visualCapture: VisualCaptureConfig | null
+  visualCaptureStreams: Set<string>
   settled: boolean
   deckTransient: boolean
+  crateTransient: boolean
   frameId: number
   skipIntroImpl: (() => void) | null
   crateActions: CrateActions | null
@@ -186,8 +198,10 @@ const registry: Registry = {
   introSkipped: false,
   sceneConstructed: false,
   visualCapture: null,
+  visualCaptureStreams: new Set<string>(),
   settled: false,
   deckTransient: false,
+  crateTransient: false,
   frameId: 0,
   skipIntroImpl: null,
   crateActions: null,
@@ -228,6 +242,29 @@ export function markSceneConstructed(): void {
   registry.sceneConstructed = true
 }
 
+/** Read-only construction seam for the named random source. Production
+ *  statically receives null and therefore uses the native random delegate. */
+export function getVisualCaptureSeed(): string | null {
+  if (!testHooksEnabled) return null
+  return registry.visualCapture?.seed ?? null
+}
+
+/** Internal clock seam. The returned shape is deliberately smaller than
+ *  the window-facing capture state and contains no stream diagnostics. */
+export function getVisualCaptureFrameState(): FrameTimesCaptureState {
+  if (!testHooksEnabled || registry.visualCapture === null) return null
+  return {
+    timeMs: registry.visualCapture.timeMs,
+    pauseAmbient: true,
+  }
+}
+
+/** Record which named streams the configured scene actually constructs. */
+export function reportVisualCaptureStream(name: string): void {
+  if (!testHooksEnabled || registry.visualCapture === null) return
+  registry.visualCaptureStreams.add(name)
+}
+
 /** GlobeCanvas reports per-frame settle state from its render loop:
  *  no camera lerp, no focus switch, no deck flight. */
 export function reportFrame(settled: boolean): void {
@@ -242,6 +279,13 @@ export function reportFrame(settled: boolean): void {
 export function reportDeckTransient(active: boolean): void {
   if (!testHooksEnabled) return
   registry.deckTransient = active
+}
+
+/** vinyl-crate reports capture-only asymptotic motion so a settled capture
+ *  is observed only after its exact-target completion snaps have applied. */
+export function reportCrateTransient(active: boolean): void {
+  if (!testHooksEnabled) return
+  registry.crateTransient = active
 }
 
 /** vinyl-crate registers its programmatic record→deck path (the same
@@ -306,6 +350,7 @@ export function clearMainRendererSize(): void {
   if (!testHooksEnabled) return
   registry.mainRenderer = null
   registry.settled = false
+  registry.crateTransient = false
 }
 
 export function reportWarpInitialCoverColor(color: string): void {
@@ -346,7 +391,12 @@ const SETTLE_TIMEOUT_MS = 15000
 
 function isSettledNow(): boolean {
   const deck = window.__cockpitDeck
-  return registry.settled && !(deck && deck.busy) && !registry.deckTransient
+  return (
+    registry.settled &&
+    !(deck && deck.busy) &&
+    !registry.deckTransient &&
+    !registry.crateTransient
+  )
 }
 
 function waitForSettled(): Promise<void> {
@@ -408,9 +458,18 @@ function buildHooks(): CockpitTestHooks {
           'configureVisualCapture() requires { seed: string, timeMs: number, pauseAmbient: true }',
         )
       }
-      // Phase 4 connects this to the named random streams and frozen
-      // capture clock (§9.6.5). Phase 0 reserves the lifecycle.
-      registry.visualCapture = config
+      registry.visualCapture = { ...config }
+      registry.visualCaptureStreams.clear()
+    },
+
+    getVisualCaptureState(): VisualCaptureState {
+      const config = registry.visualCapture
+      return {
+        active: config !== null,
+        seed: config?.seed ?? null,
+        timeMs: config?.timeMs ?? null,
+        streams: [...registry.visualCaptureStreams].sort(),
+      }
     },
 
     skipIntro(): void {

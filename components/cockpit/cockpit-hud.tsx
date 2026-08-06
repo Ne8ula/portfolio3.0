@@ -652,7 +652,7 @@ function ObjectTags(){
         if (!label) return null;
         if (id !== hovered) return null;             // tags are hover-only
         return (
-          <div key={id} style={{
+          <div key={id} data-hud="object-tag" data-tag-id={id} style={{
             position:'absolute', left: x, top: y,
             transform:'translate(-50%, -100%)',
             display:'flex', flexDirection:'column', alignItems:'center',
@@ -717,18 +717,20 @@ function PCHoverHighlight({ hovering }){
       position:'absolute', inset:0, zIndex:14, pointerEvents:'none',
       animation:'softPulse 1.6s ease-in-out infinite'
     }}>
-      {mkBracket(L, T, 1, 1)}
-      {mkBracket(R, T, -1, 1)}
-      {mkBracket(L, B, 1, -1)}
-      {mkBracket(R, B, -1, -1)}
-      {/* center mini-reticle */}
-      <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
-      {/* label */}
-      <text x={L} y={T - 6}
-        fontFamily='"JetBrains Mono", monospace' fontSize={10}
-        letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
-        AX/OS · CLICK TO ENTER
-      </text>
+      <g data-hud="pc-hover-brackets">
+        {mkBracket(L, T, 1, 1)}
+        {mkBracket(R, T, -1, 1)}
+        {mkBracket(L, B, 1, -1)}
+        {mkBracket(R, B, -1, -1)}
+        {/* center mini-reticle */}
+        <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
+        {/* label */}
+        <text x={L} y={T - 6}
+          fontFamily='"JetBrains Mono", monospace' fontSize={10}
+          letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
+          AX/OS · CLICK TO ENTER
+        </text>
+      </g>
     </svg>
   );
 }
@@ -768,16 +770,18 @@ function CrateHoverHighlight({ hovering }){
       position:'absolute', inset:0, zIndex:14, pointerEvents:'none',
       animation:'softPulse 1.6s ease-in-out infinite'
     }}>
-      {mkBracket(L, T, 1, 1)}
-      {mkBracket(R, T, -1, 1)}
-      {mkBracket(L, B, 1, -1)}
-      {mkBracket(R, B, -1, -1)}
-      <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
-      <text x={L} y={T - 6}
-        fontFamily='"JetBrains Mono", monospace' fontSize={10}
-        letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
-        ARCHIVE · CLICK TO BROWSE
-      </text>
+      <g data-hud="crate-hover-brackets">
+        {mkBracket(L, T, 1, 1)}
+        {mkBracket(R, T, -1, 1)}
+        {mkBracket(L, B, 1, -1)}
+        {mkBracket(R, B, -1, -1)}
+        <circle cx={(L+R)/2} cy={(T+B)/2} r={3} fill={jade}/>
+        <text x={L} y={T - 6}
+          fontFamily='"JetBrains Mono", monospace' fontSize={10}
+          letterSpacing=".18em" fill={jade} style={{textTransform:'uppercase'}}>
+          ARCHIVE · CLICK TO BROWSE
+        </text>
+      </g>
     </svg>
   );
 }
@@ -895,6 +899,7 @@ function DeckProjectLink(){
 
   return (
     <a
+      data-hud="deck-project-link"
       className="cockpit-project-link"
       href={`${SITE_ROUTES.projects}/${project.slug}`}
       aria-label={`View more: ${project.title}`}

@@ -4,6 +4,7 @@
 // Ported verbatim from the Cockpit.html prototype (BootScreen.jsx).
 // Phase-driven timeline; calls onDone() when the user confirms.
 import React, { useState, useEffect, useRef } from "react"
+import { createRandomSource } from "@/lib/random/seeded-streams"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 
 // Typewriter hook — reveals `text` char-by-char at `speed` ms/char.
@@ -28,8 +29,9 @@ function useTypewriter(text, { start = 0, speed = 35, ready = true } = {}) {
 
 // Random glitch alphabet
 const GLITCH_CHARS = '!@#$%^&*<>?/|\\=+-_~`ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789█▓▒░◆◇◈';
+const bootGlitchRandom = createRandomSource(null).stream('boot/glitch');
 const garbled = (len) => Array.from({ length: len }, () =>
-  GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+  GLITCH_CHARS[Math.floor(bootGlitchRandom.next() * GLITCH_CHARS.length)]
 ).join('');
 
 // Scrambling text — random garbage for `corruptMs`, then resolves to `text`.
@@ -195,7 +197,7 @@ function BootScreen({ onDone, reduceMotion = false }) {
 
   const jitter = glitchIntensity > 0.05
     ? {
-        transform: `translate(${(Math.random() - 0.5) * 4 * glitchIntensity}px, ${(Math.random() - 0.5) * 3 * glitchIntensity}px)`,
+        transform: `translate(${(bootGlitchRandom.next() - 0.5) * 4 * glitchIntensity}px, ${(bootGlitchRandom.next() - 0.5) * 3 * glitchIntensity}px)`,
         textShadow: glitchIntensity > 0.5
           ? `2px 0 rgba(180,60,60,.7), -2px 0 rgba(75,110,79,.7)`
           : 'none',
@@ -514,7 +516,7 @@ function LogStream({ lines, stall, cursor, corrupt }) {
             return (
               <div key={i} style={{ ...style, color: '#B13A2A' }}>
                 {l.split('').map((c, j) => (
-                  Math.random() < 0.25 ? GLITCH_CHARS[(j * i) % GLITCH_CHARS.length] : c
+                  bootGlitchRandom.next() < 0.25 ? GLITCH_CHARS[(j * i) % GLITCH_CHARS.length] : c
                 )).join('')}
               </div>
             );

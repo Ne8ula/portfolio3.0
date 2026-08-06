@@ -21,10 +21,18 @@
 //   • returns { keyboard (setOffset), applyTheme(theme) }
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import type { RandomSource } from "@/lib/random/seeded-streams"
 import { makeHeroGlass, makeFrost } from "./materials"
 import { makeDecal } from "./decals"
 
-export function buildGlassMac(xray){
+type GlassMacBuildOptions = {
+  readonly randomSource: RandomSource
+}
+
+export function buildGlassMac(xray, options: GlassMacBuildOptions){
+  const padSpeckleRandom = options.randomSource.stream('glass-mac/pad-speckle');
+  const screenNoiseRandom = options.randomSource.stream('glass-mac/screen-noise');
+  const surfaceSpeckleRandom = options.randomSource.stream('glass-mac/surface-speckle');
   const redrawOnFonts = [];   // canvas textures redrawn once webfonts land
 
   // ── Canvas helpers ────────────────────────────────────────────
@@ -36,8 +44,8 @@ export function buildGlassMac(xray){
     ctx.fillStyle = '#E7E2D5';
     ctx.fillRect(0, 0, S, S);
     for (let i = 0; i < 220; i++){
-      ctx.fillStyle = `rgba(${Math.random() < 0.5 ? '255,255,255' : '120,115,100'},${0.015 + Math.random()*0.04})`;
-      ctx.fillRect(0, Math.random()*S, S, 1);
+      ctx.fillStyle = `rgba(${screenNoiseRandom.next() < 0.5 ? '255,255,255' : '120,115,100'},${0.015 + screenNoiseRandom.next()*0.04})`;
+      ctx.fillRect(0, screenNoiseRandom.next()*S, S, 1);
     }
     const tex = new THREE.CanvasTexture(c);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -70,9 +78,9 @@ export function buildGlassMac(xray){
     // paper speckle + soft scanlines
     for (let i = 0; i < 350; i++){
       ctx.fillStyle = light
-        ? `rgba(90,85,72,${0.01 + Math.random()*0.025})`
-        : `rgba(240,235,225,${0.008 + Math.random()*0.015})`;
-      ctx.fillRect(Math.random()*W, Math.random()*H, 1.5, 1.5);
+        ? `rgba(90,85,72,${0.01 + surfaceSpeckleRandom.next()*0.025})`
+        : `rgba(240,235,225,${0.008 + surfaceSpeckleRandom.next()*0.015})`;
+      ctx.fillRect(surfaceSpeckleRandom.next()*W, surfaceSpeckleRandom.next()*H, 1.5, 1.5);
     }
     ctx.fillStyle = light ? 'rgba(0,0,0,0.028)' : 'rgba(255,255,255,0.02)';
     for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
@@ -471,8 +479,8 @@ export function buildGlassMac(xray){
     mctx.fillStyle = '#EBE6DA';
     mctx.fillRect(0, 0, 512, 256);
     for (let i = 0; i < 120; i++){
-      mctx.fillStyle = `rgba(120,115,100,${0.01 + Math.random()*0.02})`;
-      mctx.fillRect(Math.random()*512, Math.random()*256, 1.5, 1.5);
+      mctx.fillStyle = `rgba(120,115,100,${0.01 + padSpeckleRandom.next()*0.02})`;
+      mctx.fillRect(padSpeckleRandom.next()*512, padSpeckleRandom.next()*256, 1.5, 1.5);
     }
     mctx.strokeStyle = 'rgba(150,144,132,0.9)';
     mctx.lineWidth = 2.5;

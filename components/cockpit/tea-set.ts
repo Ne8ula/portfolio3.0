@@ -19,17 +19,18 @@
 // LIT materials.
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
 import { PALETTE } from "./materials"
 
 // Fine speckle noise — bump/roughness map so the porcelain reads subtly
 // textured instead of flat plastic (same trick as the coffee cream).
-function makeSpeckleTexture(repeat = 4){
+function makeSpeckleTexture(random: RandomStream, repeat = 4){
   const n = document.createElement('canvas');
   n.width = n.height = 256;
   const ctx = n.getContext('2d');
   const img = ctx.createImageData(256, 256);
   for (let i = 0; i < img.data.length; i += 4){
-    const v = 200 + ((Math.random() * 55) | 0);
+    const v = 200 + ((random.next() * 55) | 0);
     img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
     img.data[i + 3] = 255;
   }
@@ -44,7 +45,7 @@ function makeSpeckleTexture(repeat = 4){
 // and fine pores (the map doubles as a bump map), so the tea box reads as
 // oiled hardwood rather than flat plastic. Streaks run along canvas V,
 // which lands along world z on box tops — one consistent grain direction.
-function makeWoodTexture(){
+function makeWoodTexture(random: RandomStream){
   const S = 512;
   const c = document.createElement('canvas');
   c.width = c.height = S;
@@ -52,17 +53,17 @@ function makeWoodTexture(){
   ctx.fillStyle = '#1D1712';
   ctx.fillRect(0, 0, S, S);
   for (let i = 0; i < 170; i++){               // long grain streaks
-    const x = Math.random() * S;
-    const w = 1 + Math.random() * 3;
-    const len = S * (0.3 + Math.random() * 0.7);
-    const y = Math.random() * S;
-    const tone = Math.random() < 0.55 ? '8,6,4' : '62,48,36';
-    ctx.fillStyle = `rgba(${tone},${0.07 + Math.random() * 0.15})`;
+    const x = random.next() * S;
+    const w = 1 + random.next() * 3;
+    const len = S * (0.3 + random.next() * 0.7);
+    const y = random.next() * S;
+    const tone = random.next() < 0.55 ? '8,6,4' : '62,48,36';
+    ctx.fillStyle = `rgba(${tone},${0.07 + random.next() * 0.15})`;
     ctx.fillRect(x, y - len / 2, w, len);
   }
   for (let i = 0; i < 520; i++){               // fine open pores
-    ctx.fillStyle = `rgba(10,8,6,${0.05 + Math.random() * 0.12})`;
-    ctx.fillRect(Math.random() * S, Math.random() * S, 1, 2 + Math.random() * 6);
+    ctx.fillStyle = `rgba(10,8,6,${0.05 + random.next() * 0.12})`;
+    ctx.fillRect(random.next() * S, random.next() * S, 1, 2 + random.next() * 6);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -70,7 +71,13 @@ function makeWoodTexture(){
   return tex;
 }
 
-export function buildTeaSet(scene, tableGroup){
+type TeaSetBuildOptions = {
+  readonly randomSource: RandomSource
+}
+
+export function buildTeaSet(scene, tableGroup, options: TeaSetBuildOptions){
+  const etchRandom = options.randomSource.stream('tea-set/etch');
+  const glazeRandom = options.randomSource.stream('tea-set/glaze');
   const group = new THREE.Group();
   group.position.set(-5.9, 0.5, 1.75);   // BEHIND the incense, in the open pocket
                                           // left of the crate and back of the mug
@@ -82,8 +89,8 @@ export function buildTeaSet(scene, tableGroup){
   tableGroup.add(group);
 
   // ── Materials — the glass-mac satin family, zero transmission ──
-  const speckle     = makeSpeckleTexture(5);
-  const speckleFine = makeSpeckleTexture(9);
+  const speckle     = makeSpeckleTexture(glazeRandom, 5);
+  const speckleFine = makeSpeckleTexture(glazeRandom, 9);
   // teapot: cream, stronger frost grain, plus a whisper of glaze sheen
   const potPorcelain = new THREE.MeshPhysicalMaterial({ color: 0xE9E4D7, roughness: 0.58, metalness: 0.02,
     roughnessMap: speckle, bumpMap: speckle, bumpScale: 0.016, clearcoat: 0.22, clearcoatRoughness: 0.5 });
@@ -93,7 +100,7 @@ export function buildTeaSet(scene, tableGroup){
   const cupGlaze = new THREE.MeshPhysicalMaterial({ color: 0xF2EEE4, roughness: 0.32, metalness: 0,
     clearcoat: 0.55, clearcoatRoughness: 0.25, side: THREE.DoubleSide });
   const jade      = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.55, metalness: 0.05 });
-  const woodTex   = makeWoodTexture();
+  const woodTex   = makeWoodTexture(etchRandom);
   const wenge     = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.62, metalness: 0,
     bumpMap: woodTex, bumpScale: 0.01, envMapIntensity: 0.55 });
   const footMat   = new THREE.MeshStandardMaterial({ color: 0x151312, roughness: 0.9 });
