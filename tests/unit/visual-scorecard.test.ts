@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  SCORECARD_DIAGNOSTIC_ALLOWLIST,
   SCORECARD_DPRS,
   SCORECARD_REPEATS,
   SCORECARD_THEMES,
@@ -156,11 +157,104 @@ describe('Phase 4 scorecard evidence protections', () => {
     ).toThrow(/usable unmaskedVendor identity/)
   })
 
-  it('captures every diagnostic class and starts with an empty allowlist', () => {
+  it('allows only the two observed exact warning patterns and fails closed', () => {
+    expect(
+      SCORECARD_DIAGNOSTIC_ALLOWLIST.map(
+        ({ id, reason, reviewDate }) => ({ id, reason, reviewDate }),
+      ),
+    ).toEqual([
+      {
+        id: 'swiftshader-readpixels-stall',
+        reason:
+          'Observed on the 2026-08-07 forced-SwiftShader capture when the scorecard intentionally reads the rendered buffer for measurement.',
+        reviewDate: '2026-08-07',
+      },
+      {
+        id: 'three-clock-deprecated',
+        reason:
+          'Observed on the 2026-08-07 capture from the two existing scene clocks; migrating those clocks is outside the Phase 4 evidence step.',
+        reviewDate: '2026-08-07',
+      },
+      {
+        id: 'vercel-analytics-dev-orb',
+        reason:
+          'Observed on the 2026-08-07 local capture when the development-only Vercel Analytics script was blocked by Chromium ORB after 32 successful repeats.',
+        reviewDate: '2026-08-07',
+      },
+    ])
     expect(summarizeDiagnostics([])).toEqual({
       unexpectedErrors: 0,
-      allowlistMatches: {},
+      allowlistMatches: {
+        'swiftshader-readpixels-stall': 0,
+        'three-clock-deprecated': 0,
+        'vercel-analytics-dev-orb': 0,
+      },
     })
+    expect(
+      summarizeDiagnostics([
+        {
+          kind: 'console.warning',
+          text:
+            '[.WebGL-0x104004cf000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels',
+        },
+        {
+          kind: 'console.warning',
+          text:
+            'THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.',
+        },
+        {
+          kind: 'console.warning',
+          text:
+            'THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.',
+        },
+        {
+          kind: 'requestfailed',
+          text:
+            'net::ERR_BLOCKED_BY_ORB https://va.vercel-scripts.com/v1/script.debug.js',
+        },
+      ]),
+    ).toEqual({
+      unexpectedErrors: 0,
+      allowlistMatches: {
+        'swiftshader-readpixels-stall': 1,
+        'three-clock-deprecated': 2,
+        'vercel-analytics-dev-orb': 1,
+      },
+    })
+
+    expect(() =>
+      summarizeDiagnostics([
+        {
+          kind: 'console.warning',
+          text:
+            '[.WebGL-104004cf000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels',
+        },
+      ]),
+    ).toThrow('console.warning: [.WebGL-104004cf000]')
+    expect(() =>
+      summarizeDiagnostics([
+        {
+          kind: 'console.warning',
+          text:
+            'THREE.Clock: This module has been deprecated. Please use THREE.Timer instead!',
+        },
+      ]),
+    ).toThrow('Please use THREE.Timer instead!')
+    for (const nearMiss of [
+      'net::ERR_BLOCKED_BY_ORB https://va.vercel-scripts.com/v1/script.debug.js?retry=1',
+      'net::ERR_BLOCKED_BY_ORB https://va.vercel-scripts.example.com/v1/script.debug.js',
+      'net::ERR_FAILED https://va.vercel-scripts.com/v1/script.debug.js',
+    ]) {
+      expect(() =>
+        summarizeDiagnostics([
+          {
+            kind: 'requestfailed',
+            text: nearMiss,
+          },
+        ]),
+      ).toThrow(`requestfailed: ${nearMiss}`)
+    }
+
     for (const kind of [
       'console.error',
       'console.warning',

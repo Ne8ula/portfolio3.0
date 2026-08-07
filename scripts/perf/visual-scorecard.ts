@@ -148,7 +148,32 @@ type DiagnosticAllowlistEntry = {
 // entry, a reason, and a review date; disabling a diagnostic class is never
 // allowed.
 export const SCORECARD_DIAGNOSTIC_ALLOWLIST: readonly DiagnosticAllowlistEntry[] =
-  []
+  [
+    {
+      id: 'swiftshader-readpixels-stall',
+      pattern:
+        /^console\.warning: \[\.WebGL-0x[0-9a-f]+\]GL Driver Message \(OpenGL, Performance, GL_CLOSE_PATH_NV, High\): GPU stall due to ReadPixels$/i,
+      reason:
+        'Observed on the 2026-08-07 forced-SwiftShader capture when the scorecard intentionally reads the rendered buffer for measurement.',
+      reviewDate: '2026-08-07',
+    },
+    {
+      id: 'three-clock-deprecated',
+      pattern:
+        /^console\.warning: THREE\.Clock: This module has been deprecated\. Please use THREE\.Timer instead\.$/,
+      reason:
+        'Observed on the 2026-08-07 capture from the two existing scene clocks; migrating those clocks is outside the Phase 4 evidence step.',
+      reviewDate: '2026-08-07',
+    },
+    {
+      id: 'vercel-analytics-dev-orb',
+      pattern:
+        /^requestfailed: net::ERR_BLOCKED_BY_ORB https:\/\/va\.vercel-scripts\.com\/v1\/script\.debug\.js$/,
+      reason:
+        'Observed on the 2026-08-07 local capture when the development-only Vercel Analytics script was blocked by Chromium ORB after 32 successful repeats.',
+      reviewDate: '2026-08-07',
+    },
+  ]
 
 export function summarizeDiagnostics(
   entries: readonly DiagnosticEntry[],
