@@ -36,6 +36,7 @@ import {
   isAtSleeveClearWaypoint,
 } from "./vinyl-motion"
 import {
+  beginVisualAsset,
   registerCrateActions,
   registerVinylSleeveProbe,
   reportCrateTransient,
@@ -135,6 +136,7 @@ function makeCoverTexture(i, random: RandomStream){
   // instantly, then the photo repaints over it — full-bleed cover crop
   // with an ink label strip so the title stays readable on any art.
   if (cover){
+    const finishAsset = beginVisualAsset();
     const img = new Image();
     img.onload = () => {
       const s = Math.max(SIZE / img.width, SIZE / img.height);
@@ -159,7 +161,9 @@ function makeCoverTexture(i, random: RandomStream){
       ctx.lineWidth = 3;
       ctx.strokeRect(6, 6, SIZE - 12, SIZE - 12);
       tex.needsUpdate = true;
+      finishAsset();
     };
+    img.onerror = () => finishAsset(true);
     img.src = cover;
   }
   return tex;
@@ -874,6 +878,42 @@ export function buildVinylCrate(
       title: proj.title.replace('\n', ' '),
       category: proj.category,
       date: proj.date,
+    };
+  };
+  const hudBounds = Array.from({ length: 8 }, () => new THREE.Vector3());
+  group.getSubjectBoundsWorld = function(){
+    const bbox = new THREE.Box3().setFromObject(group);
+    if (bbox.isEmpty()) return null;
+    let index = 0;
+    for (let xi = 0; xi < 2; xi++) {
+      for (let yi = 0; yi < 2; yi++) {
+        for (let zi = 0; zi < 2; zi++) {
+          hudBounds[index++].set(
+            xi ? bbox.max.x : bbox.min.x,
+            yi ? bbox.max.y : bbox.min.y,
+            zi ? bbox.max.z : bbox.min.z,
+          );
+        }
+      }
+    }
+    return hudBounds;
+  };
+  const hudSelectionAnchor = new THREE.Vector3();
+  group.getHudSelection = function(){
+    if (viewMode() !== 'crate' || selectedIdx < 0) return null;
+    const vinyl = vinyls[selectedIdx];
+    vinyl.group.updateWorldMatrix(true, false);
+    hudSelectionAnchor
+      .set(0, SLEEVE_H * 0.62 + DISC_RISE * 0.4, 0)
+      .applyMatrix4(vinyl.group.matrixWorld);
+    const project = PROJECTS[selectedIdx];
+    return {
+      index: selectedIdx,
+      count: N,
+      anchorWorld: hudSelectionAnchor,
+      title: project.title.replace('\n', ' '),
+      category: project.category,
+      date: project.date,
     };
   };
 

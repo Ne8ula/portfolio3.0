@@ -528,5 +528,48 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     edgeInk.color.setHex(light ? 0x8E8A83 : 0x55514B);
   };
 
-  return { keyboard, applyTheme };
+  const hudScreenCorners = {
+    tl: new THREE.Vector3(),
+    tr: new THREE.Vector3(),
+    bl: new THREE.Vector3(),
+    br: new THREE.Vector3(),
+  };
+  const getScreenCornersWorld = () => {
+    const sourceGroup = xray.userData.screenGroup || xray;
+    const sourceCorners = xray.userData.screenCorners;
+    if (!sourceCorners) return null;
+    sourceGroup.updateWorldMatrix(true, false);
+    for (const key of ['tl', 'tr', 'bl', 'br']){
+      hudScreenCorners[key]
+        .copy(sourceCorners[key])
+        .applyMatrix4(sourceGroup.matrixWorld);
+    }
+    return hudScreenCorners;
+  };
+
+  const hudSubjectBounds = Array.from({ length: 8 }, () => new THREE.Vector3());
+  const getSubjectBoundsWorld = () => {
+    const bbox = new THREE.Box3().setFromObject(xray);
+    if (bbox.isEmpty()) return null;
+    let index = 0;
+    for (let xi = 0; xi < 2; xi++) {
+      for (let yi = 0; yi < 2; yi++) {
+        for (let zi = 0; zi < 2; zi++) {
+          hudSubjectBounds[index++].set(
+            xi ? bbox.max.x : bbox.min.x,
+            yi ? bbox.max.y : bbox.min.y,
+            zi ? bbox.max.z : bbox.min.z,
+          );
+        }
+      }
+    }
+    return hudSubjectBounds;
+  };
+
+  return {
+    keyboard,
+    applyTheme,
+    getScreenCornersWorld,
+    getSubjectBoundsWorld,
+  };
 }

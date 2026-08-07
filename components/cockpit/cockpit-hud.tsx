@@ -15,29 +15,120 @@ import { PROFILE } from "@/lib/portfolio/profile"
 import { SITE_NAV } from "@/lib/site/navigation"
 import { SITE_ROUTES } from "@/lib/site/site"
 import { AX_OS_FUTURE_STUB_LABEL } from "@/lib/content/action-parity"
+import { HudDebugOverlay, shouldMountHudDebug } from "./hud-debug-overlay"
+import { useHudFrame } from "./hud-sampler"
+import { testHooksEnabled } from "./test-hooks"
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true, onContextEvent, restore = null }){
   const yawRef = React.useRef(0);
   const pitchRef = React.useRef(0);
   const [viewMode, setViewMode] = React.useState(() => restore?.viewMode ?? 'cockpit');
-  const [hoveringPC, setHoveringPC] = React.useState(false);
-  const [hoveringCrate, setHoveringCrate] = React.useState(false);
+  const hudFrame = useHudFrame();
+  const [hudDebug] = React.useState(() =>
+    process.env.NODE_ENV !== 'production' &&
+    typeof window !== 'undefined' &&
+    shouldMountHudDebug(window.location.search, process.env.NODE_ENV)
+  );
 
   const stageRef = React.useRef(null);
 
-  // Listen for 3D-scene view-mode + hover events
+  React.useLayoutEffect(() => {
+    if (!testHooksEnabled) return;
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (hudFrame) stage.setAttribute('data-hud-frame', String(hudFrame.frameId));
+    else stage.removeAttribute('data-hud-frame');
+    return () => stage.removeAttribute('data-hud-frame');
+  }, [hudFrame]);
+
+  // A recovered scene remounts while its parent is still inert. Observe both
+  // that wrapper and the recovery-panel subtree: React clears the wrapper
+  // first, then removes the sibling panel in a follow-up commit. Focusing only
+  // on the first mutation can therefore race the still-hidden stage.
+  React.useEffect(() => {
+    if (!restore) return;
+    const stage = stageRef.current;
+    const recoveryScene = stage?.closest('[data-recovery-hidden]');
+    if (!stage || !recoveryScene) return;
+
+    let cancelled = false;
+    let focusRetry;
+    let focusRetryCount = 0;
+    const recoveryRoot = recoveryScene.parentElement || recoveryScene;
+    const observer = new MutationObserver(() => restoreStageFocus());
+
+    const scheduleFocusRetry = () => {
+      if (
+        cancelled ||
+        focusRetry !== undefined ||
+        focusRetryCount >= 240
+      ) {
+        return;
+      }
+      focusRetryCount += 1;
+      focusRetry = window.setTimeout(() => {
+        focusRetry = undefined;
+        restoreStageFocus();
+      }, 16);
+    };
+
+    const restoreStageFocus = () => {
+      if (cancelled || !stage.isConnected) return;
+      if (
+        recoveryScene.getAttribute('data-recovery-hidden') !== 'false' ||
+        recoveryScene.hasAttribute('inert')
+      ) {
+        return;
+      }
+      // MutationObserver runs before the style system necessarily reflects
+      // the just-removed recovery selector. Cross that short recalculation
+      // gap with a bounded task retry; the HUD must remain free of its own
+      // animation-frame loop.
+      if (window.getComputedStyle(stage).visibility === 'hidden') {
+        scheduleFocusRetry();
+        return;
+      }
+      stage.focus({ preventScroll: true });
+      if (document.activeElement === stage) {
+        // The lifecycle wrapper becomes visible one commit before the
+        // recovery panel's local `visible` state unmounts it. Keep observing
+        // until both layers are gone: removing that formerly focused panel
+        // can otherwise return focus to the document after this first
+        // successful call.
+        const recoveryUiPresent =
+          recoveryRoot.querySelector('[data-hud="renderer-recovery"]') ||
+          recoveryRoot.querySelector('[data-renderer-recovery-backdrop]');
+        if (!recoveryUiPresent) observer.disconnect();
+        return;
+      }
+      // A visible, non-inert stage can still reject focus until the current
+      // DOM commit finishes. Retry outside that commit without introducing a
+      // second animation-frame loop.
+      scheduleFocusRetry();
+    };
+
+    observer.observe(recoveryRoot, {
+      attributes: true,
+      attributeFilter: ['data-recovery-hidden', 'inert'],
+      childList: true,
+      subtree: true,
+    });
+    restoreStageFocus();
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      if (focusRetry !== undefined) window.clearTimeout(focusRetry);
+    };
+  }, [restore]);
+
+  // View-mode events still drive the surrounding cockpit chrome. Projected
+  // overlays use the sampler's mode/hover semantics atomically.
   React.useEffect(() => {
     const onView = (e) => setViewMode(e.detail.mode);
-    const onHover = (e) => setHoveringPC(e.detail.hovering);
-    const onCrateHover = (e) => setHoveringCrate(e.detail.hovering);
     window.addEventListener('cockpit-view-mode', onView);
-    window.addEventListener('cockpit-hover', onHover);
-    window.addEventListener('cockpit-crate-hover', onCrateHover);
     return () => {
       window.removeEventListener('cockpit-view-mode', onView);
-      window.removeEventListener('cockpit-hover', onHover);
-      window.removeEventListener('cockpit-crate-hover', onCrateHover);
     };
   }, []);
 
@@ -101,14 +192,14 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
         restore={restore}
       />
 
-      {viewMode === 'cockpit' && <ObjectTags/>}
-      {viewMode === 'cockpit' && <PCHoverHighlight hovering={hoveringPC}/>}
-      {viewMode === 'cockpit' && <CrateHoverHighlight hovering={hoveringCrate}/>}
-      {viewMode === 'crate' && <VinylInfoCard/>}
-      {viewMode === 'crate' && <VinylBrowseArrows/>}
-      {viewMode === 'deck' && <DeckBrowseArrows/>}
-      {viewMode === 'deck' && <DeckProjectLink/>}
-      <ScreenDialog interactive={interactive} active={viewMode === 'monitor'}/>
+      {hudFrame?.mode === 'cockpit' && <ObjectTags frame={hudFrame}/>}
+      {hudFrame?.mode === 'cockpit' && <PCHoverHighlight frame={hudFrame}/>}
+      {hudFrame?.mode === 'cockpit' && <CrateHoverHighlight frame={hudFrame}/>}
+      {hudFrame?.mode === 'crate' && <VinylInfoCard frame={hudFrame}/>}
+      {hudFrame?.mode === 'crate' && <VinylBrowseArrows frame={hudFrame}/>}
+      {hudFrame?.mode === 'deck' && <DeckBrowseArrows frame={hudFrame}/>}
+      {hudFrame?.mode === 'deck' && <DeckProjectLink frame={hudFrame}/>}
+      <ScreenDialog frame={hudFrame} interactive={interactive} active={hudFrame?.mode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
         <div data-hud="return-control" style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
           <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:CURSOR_POINTER}}>esc · return</button>
@@ -161,6 +252,9 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
       </div>
 
       </>}
+      {process.env.NODE_ENV !== 'production' && hudDebug
+        ? <HudDebugOverlay frame={hudFrame}/>
+        : null}
     </div>
   );
 }
@@ -619,7 +713,7 @@ function CornerTick({ pos }){
 // interactive heroes (OBJECT · PURPOSE). A tag appears ONLY while
 // its object is hovered (window.__cockpitHoveredTag, set by the
 // scene's hover raycast — crate via its own picking — alongside
-// the edge glow). Anchors come from window.__getCockpitAnchors();
+// the edge glow). Anchors come from the shared focused-HUD snapshot.
 // tags render only in cockpit view. PC/crate show their tag AND
 // their hover brackets together.
 // ─────────────────────────────────────────────────────────────
@@ -630,20 +724,9 @@ const TAG_LABELS = {
   coffee:    { name: 'coffee',       role: 'intermission' },
 };
 
-function ObjectTags(){
-  const [anchors, setAnchors] = React.useState(null);
-  const [hovered, setHovered] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const a = window.__getCockpitAnchors && window.__getCockpitAnchors();
-      setAnchors(a);
-      setHovered(window.__cockpitHoveredTag || null);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+function ObjectTags({ frame }){
+  const anchors = frame?.anchors;
+  const hovered = frame?.hoveredTag;
   if (!anchors) return null;
   return (
     <div style={{position:'absolute', inset:0, zIndex:13, pointerEvents:'none', overflow:'hidden'}}>
@@ -686,19 +769,9 @@ function ObjectTags(){
 // PCHoverHighlight — jade corner brackets that track the PC's
 // screen-space bounding box when the cursor is over it.
 // ─────────────────────────────────────────────────────────────
-function PCHoverHighlight({ hovering }){
-  const [rect, setRect] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const r = window.__getCockpitPCRect && window.__getCockpitPCRect();
-      setRect(r);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-  if (!rect || !hovering) return null;
+function PCHoverHighlight({ frame }){
+  const rect = frame?.pc;
+  if (!rect || frame.hoveredTag !== 'pc') return null;
   const pad = 12;
   const { x, y, w, h } = rect;
   if (w < 10 || h < 10) return null;
@@ -739,19 +812,9 @@ function PCHoverHighlight({ hovering }){
 // CrateHoverHighlight — same bracket treatment as the PC, but
 // tracking the vinyl crate's bounding box ('cockpit-crate-hover').
 // ─────────────────────────────────────────────────────────────
-function CrateHoverHighlight({ hovering }){
-  const [rect, setRect] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const r = window.__getCockpitCrateRect && window.__getCockpitCrateRect();
-      setRect(r);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-  if (!rect || !hovering) return null;
+function CrateHoverHighlight({ frame }){
+  const rect = frame?.crate.rect;
+  if (!rect || frame.hoveredTag !== 'crate') return null;
   const pad = 12;
   const { x, y, w, h } = rect;
   if (w < 10 || h < 10) return null;
@@ -791,18 +854,8 @@ function CrateHoverHighlight({ hovering }){
 // record while browsing the crate. Polls the hover projection
 // exposed by vinyl-crate.ts each frame.
 // ─────────────────────────────────────────────────────────────
-function VinylInfoCard(){
-  const [info, setInfo] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const h = window.__getCockpitVinylHover && window.__getCockpitVinylHover();
-      setInfo(h || null);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+function VinylInfoCard({ frame }){
+  const info = frame?.crate.selection;
   if (!info) return null;
   // Fixed bottom-center placard — under the bin, deliberately OFF the
   // record so the pulled sleeve is never covered by its own caption.
@@ -852,46 +905,42 @@ function VinylInfoCard(){
 // ─────────────────────────────────────────────────────────────
 // BrowseArrows — shared ◄/► record stepper. In crate view they
 // appear while a record is pulled out (info from
-// __getCockpitVinylHover); in deck view while a record plays on
-// the turntable (info from __getCockpitDeckInfo — also disabled
-// mid-flight via info.busy). Both step through
+// the sampler's crate selection); in deck view while a record plays on
+// the turntable (sampler deck info also disables controls mid-flight via
+// info.busy). Both step through
 // window.__cockpitVinylSelect(±1), clamped by index/count.
 // ─────────────────────────────────────────────────────────────
-function VinylBrowseArrows(){
-  const getInfo = React.useCallback(
-    () => window.__getCockpitVinylHover && window.__getCockpitVinylHover(), []);
-  return <BrowseArrows getInfo={getInfo} hint="◄ ► to browse · click away to return"/>;
+function VinylBrowseArrows({ frame }){
+  return (
+    <BrowseArrows
+      frame={frame}
+      info={frame?.crate.selection}
+      hint="◄ ► to browse · click away to return"
+    />
+  );
 }
 
-function DeckBrowseArrows(){
-  const getInfo = React.useCallback(
-    () => window.__getCockpitDeckInfo && window.__getCockpitDeckInfo(), []);
-  const getRect = React.useCallback(
-    () => window.__getCockpitDeckCardRect && window.__getCockpitDeckCardRect(), []);
-  return <BrowseArrows getInfo={getInfo} getRect={getRect} hint="◄ ► to browse · esc to return"/>;
+function DeckBrowseArrows({ frame }){
+  return (
+    <BrowseArrows
+      frame={frame}
+      info={frame?.deck.info}
+      rect={frame?.deck.card}
+      requiresRect
+      hint="◄ ► to browse · esc to return"
+    />
+  );
 }
 
 // The holographic card remains an in-scene texture, but its project action is
 // a real DOM anchor laid over the texture's existing VIEW MORE rectangle.
 // Navigation therefore keeps native link behavior; the legacy event is only
 // additive scene bookkeeping.
-function DeckProjectLink(){
-  const [target, setTarget] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const info = window.__getCockpitDeckInfo && window.__getCockpitDeckInfo();
-      const rect = window.__getCockpitDeckCardRect && window.__getCockpitDeckCardRect();
-      const project = info && PROJECTS[info.index];
-      setTarget(info && !info.busy && rect && project ? { info, rect, project } : null);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-  if (!target) return null;
-
-  const { info, rect, project } = target;
+function DeckProjectLink({ frame }){
+  const info = frame?.deck.info;
+  const rect = frame?.deck.card;
+  const project = info && PROJECTS[info.index];
+  if (!info || info.busy || !rect || !project) return null;
   const left = rect.x + rect.w * (56 / 640);
   const top = rect.y + rect.h * (690 / 800);
   const width = rect.w * (528 / 640);
@@ -913,28 +962,13 @@ function DeckProjectLink(){
   );
 }
 
-function BrowseArrows({ getInfo, getRect, hint }){
-  const [info, setInfo] = React.useState(null);
-  const [rect, setRect] = React.useState(null);
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      setInfo(getInfo() || null);
-      // hold the last rect while the card blinks out mid-swap — the
-      // arrows shouldn't bounce to the viewport edges and back
-      const next = (getRect && getRect()) || null;
-      setRect(prev => next || prev);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [getInfo, getRect]);
+function BrowseArrows({ frame, info, rect = null, requiresRect = false, hint }){
   if (!info) return null;
   const step = (d) => window.__cockpitVinylSelect && window.__cockpitVinylSelect(d);
   // With a tracked rect (deck view: the holo card) the arrows hug its
   // sides; otherwise they park at the viewport edges (crate view).
   const anchor = (side) => rect
-    ? { left: side === 'left' ? Math.max(8, rect.x - 60) : Math.min(window.innerWidth - 56, rect.x + rect.w + 14),
+    ? { left: side === 'left' ? Math.max(8, rect.x - 60) : Math.min(frame.stage.w - 56, rect.x + rect.w + 14),
         top: rect.y + rect.h / 2 }
     : { [side]: 36, top: '50%' };
   const arrow = (side, glyph, delta, disabled) => (
@@ -983,20 +1017,19 @@ function BrowseArrows({ getInfo, getRect, hint }){
           {hint}
         </div>
       </div>
-      {(!getRect || rect) && arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
-      {(!getRect || rect) && arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
+      {(!requiresRect || rect) && arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
+      {(!requiresRect || rect) && arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
     </>
   );
 }
 
 // ─────────────────────────────────────────────────────────────
 // ScreenDialog — HTML overlay that sits exactly over the 3D
-// monitor's screen and renders an interactive chat UI. Uses
-// window.__getCockpitScreenRect() to align every frame.
+// monitor's screen and renders an interactive chat UI. Uses the shared
+// focused-HUD monitor quad from the rendered frame.
 // ─────────────────────────────────────────────────────────────
-function ScreenDialog({ interactive, active }){
+function ScreenDialog({ frame, interactive, active }){
   const wrapRef = React.useRef(null);
-  const [rect, setRect] = React.useState(null);
   const listRef = React.useRef(null);
   // Idle screen follows the cockpit theme: ivory reference panel in light,
   // quiet dark CRT in dark. The woken dialog stays cream (screen is "lit").
@@ -1007,23 +1040,14 @@ function ScreenDialog({ interactive, active }){
     return () => window.removeEventListener('cockpit-theme', onTheme);
   }, []);
 
-  // Project screen rect every animation frame
-  React.useEffect(() => {
-    let raf;
-    const tick = () => {
-      const r = window.__getCockpitScreenRect && window.__getCockpitScreenRect();
-      if (r && r.visible) setRect(r);
-      else setRect(prev => prev ? { ...prev, hidden:true } : null);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  if (!rect) return null;
-  const { corners, hidden } = rect;
-  if (hidden || !corners) return null;
-  const { TL, TR, BL, BR } = corners;
+  const rect = frame?.monitor;
+  if (!rect || !rect.visible) return null;
+  const {
+    tl: TL,
+    tr: TR,
+    bl: BL,
+    br: BR,
+  } = rect.corners;
   // Bounding box in screen space (for pre-transform size)
   const minX = Math.min(TL.x, TR.x, BL.x, BR.x);
   const minY = Math.min(TL.y, TR.y, BL.y, BR.y);

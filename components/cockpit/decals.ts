@@ -9,6 +9,7 @@
 // Both return a plane mesh floated by the caller a few mm off the surface
 // (never coplanar — z-fights flash under the moving cockpit camera).
 import * as THREE from "three"
+import { beginVisualAsset } from "./test-hooks"
 
 const DECAL_DIR = '/micrographics/';
 
@@ -27,6 +28,7 @@ function decalMaterial(tex, opacity){
 // starts 1×1 and is scaled to the requested world width once the sheet's
 // aspect ratio is known.
 export function makeDecal(file, { width = 0.5, tint = '#6F8D75', opacity = 0.9 } = {}){
+  const finishAsset = beginVisualAsset();
   const tex = new THREE.Texture();
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), decalMaterial(tex, opacity));
   mesh.visible = false;   // until the sheet arrives
@@ -55,11 +57,17 @@ export function makeDecal(file, { width = 0.5, tint = '#6F8D75', opacity = 0.9 }
         mesh.scale.set(width, width * (h / w), 1);
         mesh.visible = true;
         URL.revokeObjectURL(url);
+        finishAsset();
       };
-      img.onerror = () => URL.revokeObjectURL(url);
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        finishAsset(true);
+      };
       img.src = url;
     })
-    .catch(() => {});   // decals are cosmetic — a miss just leaves clean surface
+    .catch(() => {
+      finishAsset(true);
+    });   // decals are cosmetic in production; capture records the miss
   return mesh;
 }
 

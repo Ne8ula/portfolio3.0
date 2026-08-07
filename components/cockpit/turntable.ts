@@ -27,6 +27,7 @@ import { CURSOR_POINTER } from "./cursors"
 import { getFrameTimes } from "./frame-times"
 import { canBeginLateralVinylFlight } from "./vinyl-motion"
 import {
+  beginVisualAsset,
   registerDeckTetherProbe,
   registerVinylFlightProbe,
   reportDeckTransient,
@@ -87,6 +88,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   // above the one below — coplanar caps flash while spinning.
   const PLATTER_X = -0.28;
   const spin = new THREE.Group();
+  spin.name = 'deck-platter-spin';
   spin.position.set(PLATTER_X, topY, 0);
   group.add(spin);
 
@@ -412,6 +414,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     if (!PROJECTS[i].cover) return null;
     let img = coverImgs.get(i);
     if (!img){
+      const finishAsset = beginVisualAsset();
       img = new Image();
       img.decoding = 'async';
       img.onload = () => {
@@ -420,11 +423,22 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
           if (playing === i) drawCard(i, btnHover);
         };
         if (typeof img.decode === 'function'){
-          img.decode().then(markDecoded, markDecoded);
+          img.decode().then(
+            () => {
+              markDecoded();
+              finishAsset();
+            },
+            () => {
+              markDecoded();
+              finishAsset(true);
+            },
+          );
         } else {
           markDecoded();
+          finishAsset();
         }
       };
+      img.onerror = () => finishAsset(true);
       img.src = PROJECTS[i].cover;
       coverImgs.set(i, img);
     }
@@ -605,6 +619,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
     depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
   });
   const card = new THREE.Mesh(new THREE.PlaneGeometry(CARD_W, CARD_H), cardMat);
+  card.name = 'deck-holo-card';
   card.position.y = CARD_Y;
   card.renderOrder = 996;
   card.visible = false;
@@ -1011,6 +1026,30 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       if (y < minY) minY = y; if (y > maxY) maxY = y;
     }
     return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+  };
+  group.getHudDeckInfo = () => (vm() === 'deck' && playing >= 0)
+    ? { index: playing, count: PROJECTS.length, busy: !!(flight || queued || pendingEject) }
+    : null;
+  const hudCardCorners = [
+    new THREE.Vector3(),
+    new THREE.Vector3(),
+    new THREE.Vector3(),
+    new THREE.Vector3(),
+  ];
+  group.getCardCornersWorld = function(){
+    // Once eject begins the fading hologram is no longer a live deck-card
+    // anchor. Returning null starts the sampler-owned 350 ms retained-card
+    // grace immediately, while the legacy window getter keeps its historical
+    // visible-mesh semantics.
+    if (vm() !== 'deck' || !landed || !card.visible) return null;
+    card.updateWorldMatrix(true, false);
+    const signs = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+    signs.forEach(([sx, sy], index) => {
+      hudCardCorners[index]
+        .set(sx * CARD_W / 2, sy * CARD_H / 2, 0)
+        .applyMatrix4(card.matrixWorld);
+    });
+    return hudCardCorners;
   };
 
   // ── Camera-focus target for GlobeCanvas ('deck' view mode) ────

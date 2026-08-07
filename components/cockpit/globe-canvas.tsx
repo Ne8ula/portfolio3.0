@@ -26,6 +26,13 @@ import {
   reportVisualCaptureStream,
 } from "./test-hooks"
 import { getFrameTimes, setFrameTimes } from "./frame-times"
+import {
+  computeHudFrame,
+  getCurrentHudFrameId,
+  nextHudFrameId,
+  parkHudSampler,
+  resetHudSampler,
+} from "./hud-sampler"
 import { createRendererSizeSync } from "./renderer-size-sync"
 
 // Globe.jsx — cockpit 3D scene.
@@ -40,6 +47,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
   React.useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    resetHudSampler();
     // Lifecycle cutoff for the §9.6.1 test bridge: visual-capture
     // configuration must precede scene construction.
     markSceneConstructed();
@@ -164,7 +172,8 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       if (raf !== undefined) cancelAnimationFrame(raf);
       raf = undefined;
       sizeSync.dispose();
-      reportFrame(false);
+      parkHudSampler();
+      reportFrame(false, getCurrentHudFrameId());
       onContextEvent?.('lost');
     };
     const onContextRestored = () => {
@@ -184,11 +193,13 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     });
     mount.appendChild(renderer.domElement);
     window.__cockpitRenderer = renderer;
+    let rendererSizeVersion = 0;
     const sizeSync = createRendererSizeSync({
       mount,
       renderer,
       camera,
       onApplied: (target, sizeVersion) => {
+        rendererSizeVersion = sizeVersion;
         reportMainRendererSize(target, sizeVersion);
         if (contextAlive && !disposed) renderer.render(scene, camera);
       },
@@ -1065,6 +1076,146 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       return out;
     };
 
+    // ── Shared focused-HUD sampler inputs ───────────────────────
+    // All world/view/NDC work happens here once, after the frame's camera
+    // pose is final. hud-sampler owns validity, stage conversion, grace,
+    // publication, and React notification.
+    const hudViewPoint = new THREE.Vector3();
+    const hudNdcPoint = new THREE.Vector3();
+    const hudEdgeX = new THREE.Vector3();
+    const hudEdgeY = new THREE.Vector3();
+    const hudNormal = new THREE.Vector3();
+    const hudToCamera = new THREE.Vector3();
+    const toHudSample = (world) => {
+      hudViewPoint.copy(world).applyMatrix4(camera.matrixWorldInverse);
+      hudNdcPoint.copy(world).project(camera);
+      return {
+        ndcX: hudNdcPoint.x,
+        ndcY: hudNdcPoint.y,
+        ndcZ: hudNdcPoint.z,
+        viewZ: hudViewPoint.z,
+      };
+    };
+    const toHudSamples = (worldPoints) =>
+      worldPoints ? worldPoints.map(toHudSample) : null;
+    const monitorSamples = () => {
+      const corners = glassMac.getScreenCornersWorld?.();
+      if (!corners) return null;
+      hudEdgeX.copy(corners.tr).sub(corners.tl);
+      hudEdgeY.copy(corners.bl).sub(corners.tl);
+      hudNormal.copy(hudEdgeX).cross(hudEdgeY).normalize();
+      hudToCamera.copy(camera.position).sub(corners.tl).normalize();
+      if (Math.abs(hudNormal.dot(hudToCamera)) < 0.02) return null;
+      return {
+        tl: toHudSample(corners.tl),
+        tr: toHudSample(corners.tr),
+        bl: toHudSample(corners.bl),
+        br: toHudSample(corners.br),
+      };
+    };
+    const hudAnchorPoints = {
+      pc: new THREE.Vector3(),
+      crate: new THREE.Vector3(),
+      turntable: new THREE.Vector3(),
+      coffee: new THREE.Vector3(),
+    };
+    const collectHudAnchors = () => {
+      if (viewMode !== 'cockpit') return null;
+      const anchors = [];
+      anchors.push({
+        id: 'pc',
+        sample: toHudSample(
+          xray.localToWorld(hudAnchorPoints.pc.set(0, 3.2, 0)),
+        ),
+      });
+      if (crate) {
+        anchors.push({
+          id: 'crate',
+          sample: toHudSample(
+            crate.localToWorld(hudAnchorPoints.crate.set(0, 1.4, 0)),
+          ),
+        });
+      }
+      if (turntable) {
+        anchors.push({
+          id: 'turntable',
+          sample: toHudSample(
+            turntable.localToWorld(hudAnchorPoints.turntable.set(0, 0.85, 0)),
+          ),
+        });
+      }
+      if (coffeeStation?.getAnchorWorld) {
+        anchors.push({
+          id: 'coffee',
+          sample: toHudSample(
+            coffeeStation.getAnchorWorld(hudAnchorPoints.coffee),
+          ),
+        });
+      }
+      return anchors;
+    };
+    const publishHudFrame = (frameId) => {
+      const stage = mount.parentElement;
+      if (!stage) return;
+      const stageRect = stage.getBoundingClientRect();
+      const canvasRect = renderer.domElement.getBoundingClientRect();
+      const hoveredTag =
+        viewMode === 'cockpit' ? (window.__cockpitHoveredTag || null) : null;
+      const deckInfo =
+        viewMode === 'deck' ? turntable?.getHudDeckInfo?.() ?? null : null;
+      const deckCardWorld =
+        viewMode === 'deck' ? turntable?.getCardCornersWorld?.() ?? null : null;
+      const crateSelection =
+        viewMode === 'crate' ? crate?.getHudSelection?.() ?? null : null;
+      const crateBoundsWorld =
+        hoveredTag === 'crate' ? crate?.getSubjectBoundsWorld?.() ?? null : null;
+      const pcBoundsWorld =
+        hoveredTag === 'pc' ? glassMac.getSubjectBoundsWorld?.() ?? null : null;
+
+      computeHudFrame({
+        frameId,
+        sizeVersion: rendererSizeVersion,
+        nowMs: performance.now(),
+        mode: viewMode,
+        stageRect: {
+          x: stageRect.left,
+          y: stageRect.top,
+          w: stageRect.width,
+          h: stageRect.height,
+        },
+        stageClientLeft: stage.clientLeft,
+        stageClientTop: stage.clientTop,
+        canvasRect: {
+          x: canvasRect.left,
+          y: canvasRect.top,
+          w: canvasRect.width,
+          h: canvasRect.height,
+        },
+        cameraNear: camera.near,
+        monitorSamples: monitorSamples(),
+        deck: {
+          info: deckInfo,
+          cardSamples: toHudSamples(deckCardWorld),
+        },
+        crate: {
+          rectSamples: toHudSamples(crateBoundsWorld),
+          selection: crateSelection
+            ? {
+                index: crateSelection.index,
+                count: crateSelection.count,
+                anchorSample: toHudSample(crateSelection.anchorWorld),
+                title: crateSelection.title,
+                category: crateSelection.category,
+                date: crateSelection.date,
+              }
+            : null,
+        },
+        pcSamples: toHudSamples(pcBoundsWorld),
+        anchors: collectHudAnchors(),
+        hoveredTag,
+      });
+    };
+
     const clock = new THREE.Clock();
     let firstFrameReported = false;
     const animate = () => {
@@ -1241,10 +1392,18 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       );
       camera.quaternion.copy(cockpitQuat).slerp(monitorQuat, mt);
 
+      scene.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      camera.updateProjectionMatrix();
+      const frameId = nextHudFrameId();
+      publishHudFrame(frameId);
       renderer.render(scene, camera);
       // §9.6.1 settle signal: camera blend finished and no focused-pose
       // switch in flight (deck busy is layered on in test-hooks).
-      reportFrame((FOCUSED(viewMode) ? modeT > 0.995 : modeT < 0.005) && !focusSwitch);
+      reportFrame(
+        (FOCUSED(viewMode) ? modeT > 0.995 : modeT < 0.005) && !focusSwitch,
+        frameId,
+      );
       if (!firstFrameReported) {
         firstFrameReported = true;
         onContextEvent?.('ready');
@@ -1300,6 +1459,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       window.__getCockpitCubeScreenTarget = null;
       window.__setCockpitViewMode = null;
       clearMainRendererSize();
+      resetHudSampler();
       renderer.dispose();
       try { renderer.forceContextLoss(); } catch {}
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);

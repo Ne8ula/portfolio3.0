@@ -24,6 +24,17 @@
 // requestAnimationFrame callback.
 
 import type { FrameTimesCaptureState } from './frame-times'
+import {
+  getHudFrameForDiagnostics,
+  getHudFrameMeta as getSamplerFrameMeta,
+  getPublishedHudFrame,
+  isHudSamplerParked,
+  waitForNextHudCompute,
+} from './hud-sampler'
+import type {
+  HudFrameMeta,
+  HudFrameSnapshot,
+} from './hud-sampler'
 
 export type CockpitViewMode = 'cockpit' | 'monitor' | 'crate' | 'deck'
 
@@ -48,6 +59,16 @@ export type HudSnapshot = {
   overlays: Record<string, HudSnapshotRect>
   safeFrame: HudSnapshotRect
   frameId: number
+  liveFrame: HudFrameSnapshot
+  publishedFrame: HudFrameSnapshot | null
+  overlaysCommittedFrameId: number | null
+  parked: boolean
+}
+
+export type VisualAssetState = {
+  readonly pending: number
+  readonly failed: number
+  readonly total: number
 }
 
 export type RendererSizeSnapshot = {
@@ -141,6 +162,8 @@ export type CockpitTestHooks = {
    *  only while a record is selected. Synchronous; crate view only. */
   selectRecord(index: number): void
   getHudSnapshot(): Promise<HudSnapshot>
+  getHudFrameMeta(): HudFrameMeta
+  getVisualAssetState(): VisualAssetState
   isSettled(): boolean
   getRendererState(): RendererLifecycleSnapshot
   getDeckTether(): DeckTetherSnapshot
@@ -176,6 +199,7 @@ type Registry = {
   sceneConstructed: boolean
   visualCapture: VisualCaptureConfig | null
   visualCaptureStreams: Set<string>
+  visualAssets: VisualAssetState
   settled: boolean
   deckTransient: boolean
   crateTransient: boolean
@@ -199,6 +223,11 @@ const registry: Registry = {
   sceneConstructed: false,
   visualCapture: null,
   visualCaptureStreams: new Set<string>(),
+  visualAssets: {
+    pending: 0,
+    failed: 0,
+    total: 0,
+  },
   settled: false,
   deckTransient: false,
   crateTransient: false,
@@ -267,10 +296,33 @@ export function reportVisualCaptureStream(name: string): void {
 
 /** GlobeCanvas reports per-frame settle state from its render loop:
  *  no camera lerp, no focus switch, no deck flight. */
-export function reportFrame(settled: boolean): void {
+export function reportFrame(settled: boolean, frameId: number): void {
   if (!testHooksEnabled) return
   registry.settled = settled
-  registry.frameId++
+  registry.frameId = frameId
+}
+
+/**
+ * Register one asynchronous writer whose completion can change the rendered
+ * frame. The returned reporter is idempotent; production gets a static no-op.
+ */
+export function beginVisualAsset(): (failed?: boolean) => void {
+  if (!testHooksEnabled) return () => {}
+  registry.visualAssets = {
+    ...registry.visualAssets,
+    pending: registry.visualAssets.pending + 1,
+    total: registry.visualAssets.total + 1,
+  }
+  let completed = false
+  return (failed = false) => {
+    if (completed) return
+    completed = true
+    registry.visualAssets = {
+      pending: Math.max(0, registry.visualAssets.pending - 1),
+      failed: registry.visualAssets.failed + Number(failed),
+      total: registry.visualAssets.total,
+    }
+  }
 }
 
 /** turntable reports its post-landing transients (tonearm swing, beam
@@ -423,18 +475,19 @@ function waitForSettled(): Promise<void> {
   })
 }
 
-function relativeTo(stage: DOMRect, rect: DOMRect): HudSnapshotRect {
+function relativeTo(
+  stage: DOMRect,
+  rect: DOMRect,
+  clientLeft: number,
+  clientTop: number,
+): HudSnapshotRect {
   return {
-    x: rect.left - stage.left,
-    y: rect.top - stage.top,
+    x: rect.left - (stage.left + clientLeft),
+    y: rect.top - (stage.top + clientTop),
     w: rect.width,
     h: rect.height,
   }
 }
-
-// Stage-edge gutter for the provisional safe frame. Phase 4's hud-layout
-// tokens (HUD_EDGE_GUTTER) supersede this single use.
-const PROVISIONAL_EDGE_GUTTER = 16
 
 function buildHooks(): CockpitTestHooks {
   return {
@@ -460,6 +513,7 @@ function buildHooks(): CockpitTestHooks {
       }
       registry.visualCapture = { ...config }
       registry.visualCaptureStreams.clear()
+      registry.visualAssets = { pending: 0, failed: 0, total: 0 }
     },
 
     getVisualCaptureState(): VisualCaptureState {
@@ -546,59 +600,85 @@ function buildHooks(): CockpitTestHooks {
       }
     },
 
-    getHudSnapshot(): Promise<HudSnapshot> {
-      return new Promise((resolve, reject) => {
-        requestAnimationFrame(() => {
-          const stageEl = document.querySelector('[data-layout-region="cockpit-stage"]')
-          if (!stageEl) {
-            reject(new Error('__COCKPIT_TEST_HOOKS__: cockpit stage not mounted'))
-            return
-          }
-          const stageRect = stageEl.getBoundingClientRect()
-          const stage: HudSnapshotRect = {
-            x: stageRect.left,
-            y: stageRect.top,
-            w: stageRect.width,
-            h: stageRect.height,
-          }
+    async getHudSnapshot(): Promise<HudSnapshot> {
+      const stageEl = document.querySelector<HTMLElement>(
+        '[data-layout-region="cockpit-stage"]',
+      )
+      if (!stageEl) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: cockpit stage not mounted')
+      }
+      const liveFrame = isHudSamplerParked()
+        ? getHudFrameForDiagnostics()
+        : await waitForNextHudCompute(250)
+      if (liveFrame === null) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: HUD sampler has no computed frame')
+      }
 
-          const mode = window.__cockpitViewMode
-          let subjectRaw: HudSnapshotRect | null = null
-          if (mode === 'crate') subjectRaw = window.__getCockpitCrateRect?.() ?? null
-          else if (mode === 'deck') subjectRaw = window.__getCockpitDeckCardRect?.() ?? null
-          else if (mode === 'monitor') subjectRaw = window.__getCockpitScreenRect?.() ?? null
-          const subject = subjectRaw
-            ? {
-                ...subjectRaw,
-                visible:
-                  subjectRaw.x < stage.w &&
-                  subjectRaw.y < stage.h &&
-                  subjectRaw.x + subjectRaw.w > 0 &&
-                  subjectRaw.y + subjectRaw.h > 0,
-              }
-            : null
+      if (!stageEl.isConnected) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: cockpit stage not mounted')
+      }
+      const stageRect = stageEl.getBoundingClientRect()
+      const stage: HudSnapshotRect = {
+        x: stageRect.left,
+        y: stageRect.top,
+        w: stageRect.width,
+        h: stageRect.height,
+      }
 
-          const overlays: Record<string, HudSnapshotRect> = {}
-          for (const el of Array.from(document.querySelectorAll('[data-hud]'))) {
-            const name = el.getAttribute('data-hud')
-            if (!name) continue
-            overlays[name] = relativeTo(stageRect, el.getBoundingClientRect())
+      // Compatibility adapter: preserve the pre-Phase-4 top-level subject
+      // derivation exactly, including monitor's legacy {visible:false}
+      // result caused by applying rect visibility math to its quad shape.
+      const mode = window.__cockpitViewMode
+      let subjectRaw: Record<string, unknown> | null = null
+      if (mode === 'crate') subjectRaw = window.__getCockpitCrateRect?.() ?? null
+      else if (mode === 'deck') subjectRaw = window.__getCockpitDeckCardRect?.() ?? null
+      else if (mode === 'monitor') subjectRaw = window.__getCockpitScreenRect?.() ?? null
+      const rawRect = subjectRaw as HudSnapshotRect | null
+      const subject = (subjectRaw
+        ? {
+            ...subjectRaw,
+            visible:
+              rawRect!.x < stage.w &&
+              rawRect!.y < stage.h &&
+              rawRect!.x + rawRect!.w > 0 &&
+              rawRect!.y + rawRect!.h > 0,
           }
+        : null) as (HudSnapshotRect & { visible: boolean }) | null
 
-          resolve({
-            stage,
-            subject,
-            overlays,
-            safeFrame: {
-              x: PROVISIONAL_EDGE_GUTTER,
-              y: PROVISIONAL_EDGE_GUTTER,
-              w: Math.max(0, stage.w - 2 * PROVISIONAL_EDGE_GUTTER),
-              h: Math.max(0, stage.h - 2 * PROVISIONAL_EDGE_GUTTER),
-            },
-            frameId: registry.frameId,
-          })
-        })
-      })
+      const overlays: Record<string, HudSnapshotRect> = {}
+      for (const el of Array.from(document.querySelectorAll('[data-hud]'))) {
+        const name = el.getAttribute('data-hud')
+        if (!name) continue
+        overlays[name] = relativeTo(
+          stageRect,
+          el.getBoundingClientRect(),
+          stageEl.clientLeft,
+          stageEl.clientTop,
+        )
+      }
+
+      const committedRaw = stageEl.getAttribute('data-hud-frame')
+      const committed = committedRaw === null ? null : Number(committedRaw)
+      return {
+        stage,
+        subject,
+        overlays,
+        safeFrame: { ...liveFrame.safeFrame },
+        frameId: registry.frameId,
+        liveFrame,
+        publishedFrame: getPublishedHudFrame(),
+        overlaysCommittedFrameId:
+          committed !== null && Number.isFinite(committed) ? committed : null,
+        parked: isHudSamplerParked(),
+      }
+    },
+
+    getHudFrameMeta(): HudFrameMeta {
+      return getSamplerFrameMeta()
+    },
+
+    getVisualAssetState(): VisualAssetState {
+      return { ...registry.visualAssets }
     },
 
     isSettled(): boolean {
