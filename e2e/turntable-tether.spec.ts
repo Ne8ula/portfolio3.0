@@ -1,13 +1,20 @@
 import { expect, test, type Page } from '@playwright/test'
 
+import { resolveE2eTiming } from '../scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
+
 async function enterCockpit(page: Page, theme: 'dark' | 'light' = 'dark'): Promise<void> {
   await page.addInitScript((initialTheme) => {
     window.localStorage.setItem('cockpit-theme', initialTheme)
   }, theme)
   await page.goto('/')
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
-    timeout: 30_000,
+    timeout: timing.transition,
   })
+  await page.evaluate((timeoutMs) => {
+    window.__COCKPIT_TEST_HOOKS__!.configureSettleTimeout(timeoutMs)
+  }, timing.settle)
   await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.skipIntro())
   await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible()
   await expect
@@ -16,7 +23,7 @@ async function enterCockpit(page: Page, theme: 'dark' | 'light' = 'dark'): Promi
         page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status,
         ),
-      { timeout: 30_000 },
+      { timeout: timing.transition },
     )
     .toBe('ready')
   await page.waitForFunction(
@@ -24,7 +31,7 @@ async function enterCockpit(page: Page, theme: 'dark' | 'light' = 'dark'): Promi
       Boolean(window.__setCockpitViewMode) &&
       window.__COCKPIT_TEST_HOOKS__!.isSettled(),
     undefined,
-    { timeout: 30_000 },
+    { timeout: timing.transition },
   )
 }
 
@@ -32,7 +39,7 @@ async function playFirstRecord(page: Page): Promise<void> {
   await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
   await expect
     .poll(() => page.evaluate(() => window.__cockpitViewMode), {
-      timeout: 30_000,
+      timeout: timing.transition,
     })
     .toBe('deck')
 }

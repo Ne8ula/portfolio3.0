@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
+import { resolveE2eTiming } from './scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
+
 // Phase 0 browser harness (§8): Chromium only; Firefox/WebKit and the full
 // geometry/accessibility matrix expand in Phase 8.
 //
@@ -14,8 +18,8 @@ export default defineConfig({
   // 90s budget compiling the dev route and settling its first frames. Keep
   // local feedback tight, but give CI enough total test budget for the
   // existing bounded action/expect timeouts to complete.
-  timeout: process.env.CI ? 180_000 : 90_000,
-  expect: { timeout: 15_000 },
+  timeout: timing.test,
+  expect: { timeout: timing.expect },
   fullyParallel: false,
   // `fullyParallel: false` serializes tests within a file, not across files.
   // Running the Phase 0 cockpit smoke and Phase 1 foundation files together

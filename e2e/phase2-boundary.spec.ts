@@ -4,16 +4,23 @@
 
 import { expect, test, type Page } from '@playwright/test'
 
+import { ciTimeout, resolveE2eTiming } from '../scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
+
 async function enterCockpitDirect(page: Page): Promise<void> {
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
-    timeout: 30_000,
+    timeout: timing.transition,
   })
+  await page.evaluate((timeoutMs) => {
+    window.__COCKPIT_TEST_HOOKS__!.configureSettleTimeout(timeoutMs)
+  }, timing.settle)
   await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.skipIntro())
   await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible()
   await page.waitForFunction(
     () => Boolean(window.__setCockpitViewMode) && window.__COCKPIT_TEST_HOOKS__!.isSettled(),
     undefined,
-    { timeout: 30_000 },
+    { timeout: timing.transition },
   )
 }
 
@@ -63,7 +70,7 @@ test.describe('Phase 2 root boundary', () => {
     // A software-WebGL frame can take several seconds on GitHub's two-core
     // runner. This test deliberately crosses several DOM/3D seams, so give
     // only that CI path enough budget while preserving local feedback speed.
-    test.setTimeout(process.env.CI ? 360_000 : 180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.goto('/')
     await enterCockpitDirect(page)
@@ -137,12 +144,12 @@ test.describe('Phase 2 root boundary', () => {
   test('completed intro does not replay after project navigation and browser Back', async ({
     page,
   }) => {
-    test.setTimeout(process.env.CI ? 360_000 : 90_000)
+    test.setTimeout(ciTimeout(90_000, 600_000))
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await page.getByRole('button', { name: /enter the room/i }).click()
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
-      timeout: 30_000,
+      timeout: timing.transition,
     })
     // Use one browser-side predicate with one timeout. An expect.poll wrapper
     // can expire while its in-flight page.evaluate is still queued behind a
@@ -150,7 +157,7 @@ test.describe('Phase 2 root boundary', () => {
     await page.waitForFunction(
       () => sessionStorage.getItem('cockpit-intro-complete-v1') === 'true',
       undefined,
-      { timeout: process.env.CI ? 60_000 : 15_000 },
+      { timeout: timing.expect },
     )
 
     await page
@@ -164,7 +171,7 @@ test.describe('Phase 2 root boundary', () => {
     await expect(page.locator('[data-layout-region="boot"]')).toHaveCount(0)
     await expect(page.locator('[data-screen-label="00b Warp"]')).toHaveCount(0)
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
-      timeout: 30_000,
+      timeout: timing.transition,
     })
     const cockpitHeader = page.locator('[data-hud="site-header"]')
     await expect(cockpitHeader.getByRole('link', { name: /home/i })).toHaveAttribute(

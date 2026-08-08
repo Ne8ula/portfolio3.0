@@ -1,10 +1,14 @@
 import { expect, test, type Page } from '@playwright/test'
 
+import { ciTimeout, resolveE2eTiming } from '../scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
+
 type RendererStatus = 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
 
 async function waitForHooks(page: Page): Promise<void> {
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
-    timeout: 30_000,
+    timeout: timing.transition,
   })
 }
 
@@ -17,7 +21,7 @@ async function rendererStatus(page: Page): Promise<RendererStatus> {
 async function waitForRendererStatus(
   page: Page,
   status: RendererStatus,
-  timeout = 30_000,
+  timeout = timing.transition,
 ): Promise<void> {
   await expect.poll(() => rendererStatus(page), { timeout }).toBe(status)
 }
@@ -25,13 +29,16 @@ async function waitForRendererStatus(
 async function enterCockpitDirect(page: Page): Promise<void> {
   await page.goto('/')
   await waitForHooks(page)
+  await page.evaluate((timeoutMs) => {
+    window.__COCKPIT_TEST_HOOKS__!.configureSettleTimeout(timeoutMs)
+  }, timing.settle)
   await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.skipIntro())
   await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible()
   await waitForRendererStatus(page, 'ready')
   await page.waitForFunction(
     () => Boolean(window.__setCockpitViewMode) && window.__COCKPIT_TEST_HOOKS__!.isSettled(),
     undefined,
-    { timeout: 30_000 },
+    { timeout: timing.transition },
   )
 }
 
@@ -125,7 +132,7 @@ async function loseMainContext(page: Page): Promise<number> {
     return runtime.__phase3ContextProbes.length - 1
   })
   await expect
-    .poll(() => rendererStatus(page), { timeout: 15_000 })
+    .poll(() => rendererStatus(page), { timeout: timing.expect })
     .toMatch(/lost|terminal/)
   return probeIndex
 }
@@ -178,13 +185,13 @@ async function completeRestore(
         page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().rebuildCount,
         ),
-      { timeout: 30_000 },
+      { timeout: timing.transition },
     )
     .toBe(expectedRebuildCount)
   await expect(page.locator('[data-layout-region="cockpit-stage"] canvas')).toHaveCount(1)
   await expect
     .poll(async () => (await readContextProbe(page, probeIndex)).contextLost, {
-      timeout: 15_000,
+      timeout: timing.expect,
     })
     .toBe(true)
 }
@@ -227,7 +234,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
   test('AC-11/12/16: loss parks the loop and accessible recovery remounts one renderer', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
     await enterCockpitDirect(page)
     await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
@@ -310,7 +317,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
   test('AC-13: durable deck and monitor state restore at rest without contained scroll drift', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpitDirect(page)
     const root = page.locator('html')
     if ((await root.getAttribute('data-theme')) !== 'light') {
@@ -426,7 +433,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
   test('AC-14: loss during record flight restores the destination deck at rest', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpitDirect(page)
     await page.evaluate(() => {
       void window.__COCKPIT_TEST_HOOKS__!.playRecord(1)
@@ -452,7 +459,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
   test('AC-15/19/20/21: two-cycle soak releases contexts, then terminal fallback restarts', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpitDirect(page)
     await page.waitForTimeout(2_000)
     const memoryBaseline = await page.evaluate(() => {
@@ -534,7 +541,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
   test('AC-17: losing the disposable warp context completes immediately', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await page.setViewportSize({ width: 640, height: 480 })
     await page.goto('/')
     await waitForHooks(page)
@@ -544,7 +551,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
       window.__COCKPIT_TEST_HOOKS__!.armWarpContextLoss()
     })
     const enter = page.getByRole('button', { name: /enter the room/i })
-    await expect(enter).toBeVisible({ timeout: 45_000 })
+    await expect(enter).toBeVisible({ timeout: ciTimeout(45_000, 90_000) })
     await enter.click()
     const warp = page.locator('[data-screen-label="00b Warp"]')
     await expect
@@ -552,14 +559,14 @@ test.describe('Phase 3 renderer lifecycle', () => {
         page.evaluate(() =>
           window.__COCKPIT_TEST_HOOKS__!.getWarpLifecycle(),
         ),
-        { timeout: 60_000 },
+        { timeout: ciTimeout(60_000, 90_000) },
       )
       .toEqual({
         initialCoverColor: 'rgb(232, 228, 220)',
         contextLossTriggered: true,
         contextLossHandled: true,
       })
-    await expect(warp).toHaveCount(0, { timeout: 45_000 })
+    await expect(warp).toHaveCount(0, { timeout: ciTimeout(45_000, 90_000) })
     await waitForRendererStatus(page, 'ready')
     await expect(page.locator('[data-hud="renderer-recovery"]')).toHaveCount(0)
     await expect(page.locator('[data-hud="cockpit-runtime-notice"]')).toHaveCount(0)

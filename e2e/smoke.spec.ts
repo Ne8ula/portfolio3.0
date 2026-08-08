@@ -13,6 +13,9 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { DPR_CAP } from '../lib/responsive/render-policy'
+import { ciTimeout, resolveE2eTiming } from '../scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
 
 type MainRendererSnapshot = {
   stageWidth: number
@@ -41,19 +44,22 @@ function collectErrors(page: Page): string[] {
 
 async function waitForTestHooks(page: Page): Promise<void> {
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
-    timeout: 30_000,
+    timeout: timing.transition,
   })
 }
 
 /** skipIntro + wait for the scene to mount and settle at cockpit rest. */
 async function enterCockpitDirect(page: Page): Promise<void> {
   await waitForTestHooks(page)
+  await page.evaluate((timeoutMs) => {
+    window.__COCKPIT_TEST_HOOKS__!.configureSettleTimeout(timeoutMs)
+  }, timing.settle)
   await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.skipIntro())
   await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible()
   await page.waitForFunction(
     () => Boolean(window.__setCockpitViewMode) && window.__COCKPIT_TEST_HOOKS__!.isSettled(),
     undefined,
-    { timeout: 30_000 },
+    { timeout: timing.transition },
   )
   // Let decal/texture rasterization land a few frames before pixel checks.
   await page.waitForTimeout(1_500)
@@ -105,7 +111,7 @@ function mainRendererMatches(snapshot: MainRendererSnapshot | null): boolean {
 async function expectMainRendererSized(page: Page): Promise<MainRendererSnapshot> {
   await expect
     .poll(async () => mainRendererMatches(await getMainRendererSnapshot(page)), {
-      timeout: 15_000,
+      timeout: timing.expect,
     })
     .toBe(true)
 
@@ -337,7 +343,7 @@ function warpRendererMatches(snapshot: WarpRendererSnapshot | null): boolean {
 async function expectWarpRendererSized(page: Page): Promise<WarpRendererSnapshot> {
   await expect
     .poll(async () => warpRendererMatches(await getWarpRendererSnapshot(page)), {
-      timeout: 15_000,
+      timeout: timing.expect,
     })
     .toBe(true)
   const snapshot = await getWarpRendererSnapshot(page)
@@ -373,7 +379,7 @@ test.describe('phase 0 smoke', () => {
     await page.getByRole('button', { name: /enter the room/i }).click({ timeout: 45_000 })
 
     const stage = page.locator('[data-layout-region="cockpit-stage"]')
-    await expect(stage).toBeVisible({ timeout: 30_000 })
+    await expect(stage).toBeVisible({ timeout: timing.transition })
     // data-layout-contract must resolve to a registry contract id (§A.7);
     // unit tests hold the registry itself to validateLayoutContracts.
     await expect(stage).toHaveAttribute('data-layout-contract', 'cockpit-v1')
@@ -443,7 +449,7 @@ test.describe('phase 0 smoke', () => {
 
       await expect
         .poll(async () => (await getMainRendererSnapshot(page))?.rendererPixelRatio, {
-          timeout: 15_000,
+          timeout: timing.expect,
         })
         .toBe(2)
 
@@ -601,7 +607,7 @@ test.describe('phase 0 smoke', () => {
   })
 
   test('warp renderer follows its host box and live viewport changes', async ({ page }) => {
-    test.setTimeout(120_000)
+    test.setTimeout(ciTimeout(120_000, 600_000))
     await enterWarpViaBoot(page, 100)
 
     const initial = await expectWarpRendererSized(page)
@@ -631,7 +637,7 @@ test.describe('phase 0 smoke', () => {
   })
 
   test('warp catch path removes the size controller resize listener', async ({ page }) => {
-    test.setTimeout(120_000)
+    test.setTimeout(ciTimeout(120_000, 600_000))
     await page.goto('/')
     const enter = page.getByRole('button', { name: /enter the room/i })
     await expect(enter).toBeVisible({ timeout: 45_000 })
@@ -738,7 +744,7 @@ test.describe('phase 0 smoke', () => {
           }
         ).__phase3WarpCatchProbe?.read().thrown === true,
       undefined,
-      { timeout: 15_000 },
+      { timeout: timing.expect },
     )
 
     const probe = await page.evaluate(() => {
@@ -765,13 +771,13 @@ test.describe('phase 0 smoke', () => {
       candidateRemoved: true,
     })
     await expect(page.locator('[data-screen-label="00b Warp"]')).toHaveCount(0, {
-      timeout: 15_000,
+      timeout: timing.expect,
     })
     await expect(page.locator('[data-layout-region="cockpit-stage"] canvas')).toBeVisible()
   })
 
   test('Phase −1: entrance animation never moves the positioning anchor', async ({ page }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await page.goto('/')
     await enterCockpitDirect(page)
 
@@ -805,7 +811,7 @@ test.describe('phase 0 smoke', () => {
     await page.waitForFunction(
       (hudNames) => hudNames.every((name) => document.querySelector(`[data-hud="${name}"]`)),
       names,
-      { timeout: 60_000 },
+      { timeout: ciTimeout(60_000, 90_000) },
     )
 
     const sampled = await page.evaluate(

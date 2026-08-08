@@ -19,7 +19,9 @@
 // Phase 0 scope: full lifecycle guard for configureVisualCapture (Phase 4
 // wires it to the named random streams and frozen clock), working
 // skipIntro/enterView/playRecord/getHudSnapshot/isSettled built on the
-// existing runtime signals. Phase 4 upgrades getHudSnapshot to the §5.3
+// existing runtime signals. configureSettleTimeout only adjusts the bounded
+// development-harness wait; it never changes production animation timing.
+// Phase 4 upgrades getHudSnapshot to the §5.3
 // single-frame sampler; until then it reads all rects inside one
 // requestAnimationFrame callback.
 
@@ -150,6 +152,7 @@ export type VinylMotionSnapshot = {
 
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
+  configureSettleTimeout(timeoutMs: number): void
   getVisualCaptureState(): VisualCaptureState
   skipIntro(): void
   armWarpContextLoss(): void
@@ -185,6 +188,9 @@ declare global {
 
 export const testHooksEnabled = process.env.NODE_ENV !== 'production'
 
+const DEFAULT_SETTLE_TIMEOUT_MS = 15_000
+const MAX_SETTLE_TIMEOUT_MS = 120_000
+
 type CrateActions = {
   playRecord: (index: number) => boolean
   selectRecord: (index: number) => boolean
@@ -200,6 +206,7 @@ type Registry = {
   visualCapture: VisualCaptureConfig | null
   visualCaptureStreams: Set<string>
   visualAssets: VisualAssetState
+  settleTimeoutMs: number
   settled: boolean
   deckTransient: boolean
   crateTransient: boolean
@@ -228,6 +235,7 @@ const registry: Registry = {
     failed: 0,
     total: 0,
   },
+  settleTimeoutMs: DEFAULT_SETTLE_TIMEOUT_MS,
   settled: false,
   deckTransient: false,
   crateTransient: false,
@@ -439,7 +447,6 @@ export function reportWarpContextLossHandled(): void {
 
 const VIEW_MODES: readonly CockpitViewMode[] = ['cockpit', 'monitor', 'crate', 'deck']
 const SETTLE_CONSECUTIVE_FRAMES = 3
-const SETTLE_TIMEOUT_MS = 15000
 
 function isSettledNow(): boolean {
   const deck = window.__cockpitDeck
@@ -454,6 +461,7 @@ function isSettledNow(): boolean {
 function waitForSettled(): Promise<void> {
   return new Promise((resolve, reject) => {
     const startedAt = performance.now()
+    const timeoutMs = registry.settleTimeoutMs
     let consecutive = 0
     const tick = () => {
       if (isSettledNow()) {
@@ -465,7 +473,7 @@ function waitForSettled(): Promise<void> {
       } else {
         consecutive = 0
       }
-      if (performance.now() - startedAt > SETTLE_TIMEOUT_MS) {
+      if (performance.now() - startedAt > timeoutMs) {
         reject(new Error('__COCKPIT_TEST_HOOKS__: settle timeout'))
         return
       }
@@ -514,6 +522,19 @@ function buildHooks(): CockpitTestHooks {
       registry.visualCapture = { ...config }
       registry.visualCaptureStreams.clear()
       registry.visualAssets = { pending: 0, failed: 0, total: 0 }
+    },
+
+    configureSettleTimeout(timeoutMs: number): void {
+      if (
+        !Number.isInteger(timeoutMs) ||
+        timeoutMs <= 0 ||
+        timeoutMs > MAX_SETTLE_TIMEOUT_MS
+      ) {
+        throw new Error(
+          `configureSettleTimeout() requires an integer from 1 to ${MAX_SETTLE_TIMEOUT_MS}`,
+        )
+      }
+      registry.settleTimeoutMs = timeoutMs
     },
 
     getVisualCaptureState(): VisualCaptureState {

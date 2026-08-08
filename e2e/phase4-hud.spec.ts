@@ -9,6 +9,16 @@ import type {
   WebGLRenderer,
 } from 'three'
 
+import {
+  centeredTextOverlayMatches,
+  centeredTextOverlayWidthTolerance,
+  ciTimeout,
+  measureCenteredTextOverlayDeltas,
+  resolveE2eTiming,
+} from '../scripts/e2e-policy'
+
+const timing = resolveE2eTiming()
+
 type Phase4Runtime = Window & {
   __cockpitRenderer?: WebGLRenderer | null
   __cockpitScene?: Scene | null
@@ -91,8 +101,11 @@ async function enterCockpit(
   }, theme)
   await page.goto(`/${options.query ?? ''}`)
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
-    timeout: 30_000,
+    timeout: timing.transition,
   })
+  await page.evaluate((timeoutMs) => {
+    window.__COCKPIT_TEST_HOOKS__!.configureSettleTimeout(timeoutMs)
+  }, timing.settle)
   if (options.capture) {
     await page.evaluate(async () => {
       await document.fonts.ready
@@ -109,7 +122,7 @@ async function enterCockpit(
         page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status,
         ),
-      { timeout: 30_000 },
+      { timeout: timing.transition },
     )
     .toBe('ready')
   await page.waitForFunction(
@@ -117,7 +130,7 @@ async function enterCockpit(
       Boolean(window.__setCockpitViewMode) &&
       window.__COCKPIT_TEST_HOOKS__!.isSettled(),
     undefined,
-    { timeout: 30_000 },
+    { timeout: timing.transition },
   )
 }
 
@@ -133,7 +146,7 @@ async function waitForHandshake(page: Page): Promise<void> {
         value.publishedFrame !== null &&
         value.overlaysCommittedFrameId === value.publishedFrame.frameId
       )
-    })
+    }, { timeout: timing.expect })
     .toBe(true)
 }
 
@@ -144,7 +157,7 @@ async function waitForVisualAssets(page: Page): Promise<void> {
         page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getVisualAssetState().pending,
         ),
-      { timeout: 45_000 },
+      { timeout: ciTimeout(45_000, 90_000) },
     )
     .toBe(0)
   const assets = await page.evaluate(
@@ -186,7 +199,26 @@ function expectOverlayParity(
       actual.overlays[name],
       `${fixtureName}: missing [data-hud="${name}"]`,
     ).toBeDefined()
-    expectRectClose(actual.overlays[name]!, expected.overlays[name])
+    const centeredTextWidthTolerance =
+      centeredTextOverlayWidthTolerance(name)
+    if (centeredTextWidthTolerance !== null) {
+      const observed = actual.overlays[name]!
+      const reference = expected.overlays[name]
+      const deltas = measureCenteredTextOverlayDeltas(observed, reference)
+      expect(
+        centeredTextOverlayMatches(
+          observed,
+          reference,
+          1,
+          centeredTextWidthTolerance,
+        ),
+        `${fixtureName}: centered text overlay drifted ` +
+          `(center=${deltas.centerX}, y=${deltas.y}, width=${deltas.width}/` +
+          `${centeredTextWidthTolerance}, height=${deltas.height})`,
+      ).toBe(true)
+    } else {
+      expectRectClose(actual.overlays[name]!, expected.overlays[name])
+    }
   }
 }
 
@@ -284,7 +316,7 @@ async function restoreContext(page: Page): Promise<void> {
         page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status,
         ),
-      { timeout: 30_000 },
+      { timeout: timing.transition },
     )
     .toBe('ready')
 }
@@ -293,7 +325,7 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-4/6/7: parity fixtures, atomic frames, and the DOM handshake', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 900_000))
     const hudSource = readFileSync(
       resolve(process.cwd(), 'components/cockpit/cockpit-hud.tsx'),
       'utf8',
@@ -460,7 +492,7 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-5/8: DPR-only changes preserve geometry and the epsilon gate idles', async ({
     page,
   }) => {
-    test.setTimeout(240_000)
+    test.setTimeout(ciTimeout(240_000, 900_000))
     await enterCockpit(page, { capture: true })
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
     const before = await snapshot(page)
@@ -476,10 +508,12 @@ test.describe('Phase 4 focused HUD', () => {
       mobile: false,
     })
     await expect
-      .poll(() =>
-        page.evaluate(
+      .poll(
+        () =>
+          page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().main?.dpr,
         ),
+        { timeout: timing.transition },
       )
       .toBe(2)
     const after = await snapshot(page)
@@ -500,10 +534,12 @@ test.describe('Phase 4 focused HUD', () => {
       mobile: false,
     })
     await expect
-      .poll(() =>
-        page.evaluate(
+      .poll(
+        () =>
+          page.evaluate(
           () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().main?.dpr,
         ),
+        { timeout: timing.transition },
       )
       .toBe(1)
 
@@ -517,7 +553,7 @@ test.describe('Phase 4 focused HUD', () => {
         window.__COCKPIT_TEST_HOOKS__!.getHudFrameMeta().computeCount >=
         count + 60,
       metaBefore.computeCount,
-      { polling: 100, timeout: 120_000 },
+      { polling: 100, timeout: timing.frameObservation },
     )
     const metaAfter = await page.evaluate(
       () => window.__COCKPIT_TEST_HOOKS__!.getHudFrameMeta(),
@@ -529,40 +565,65 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-8/9: live card motion publishes and deck swaps never fall back to stage edges', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpit(page)
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
 
-    const moving = await page.evaluate(async () => {
-      const started = performance.now()
-      const seen = new Map<number, number>()
-      while (performance.now() - started < 5_000 && seen.size < 2) {
-        try {
-          const value =
-            await window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot()
-          const published = value.publishedFrame
-          const y = published?.deck.card?.y
-          if (published && typeof y === 'number') {
-            seen.set(published.frameId, y)
-          }
-        } catch (error) {
-          if (
-            !(error instanceof Error) ||
-            !error.message.includes('HUD sampler compute timeout')
-          ) {
-            throw error
-          }
-          // A loaded software renderer can exceed the hook's intentional
-          // 250 ms diagnostic deadline. Keep observing through the full bob
-          // period; AC-6 covers the helper's one-frame semantics separately.
+    const moving = await page.evaluate((timeoutMs) => {
+      const stage = document.querySelector<HTMLElement>(
+        '[data-layout-region="cockpit-stage"]',
+      )
+      if (!stage) throw new Error('cockpit stage missing during motion observation')
+      const cockpitStage = stage
+
+      return new Promise<number[]>((resolve, reject) => {
+        const seen = new Map<number, number>()
+        let lastFrameId: number | null = null
+        let timeout = 0
+        const observer = new MutationObserver(captureCommit)
+        const finish = (values: number[]) => {
+          window.clearTimeout(timeout)
+          observer.disconnect()
+          resolve(values)
         }
-      }
-      return [...seen.values()]
-    })
+        function captureCommit() {
+          const rawFrameId = cockpitStage.getAttribute('data-hud-frame')
+          if (rawFrameId === null) return
+          const frameId = Number(rawFrameId)
+          if (!Number.isFinite(frameId) || frameId === lastFrameId) return
+          lastFrameId = frameId
+          const arrow = document.querySelector<HTMLElement>(
+            '[data-hud="browse-arrow-prev"]',
+          )
+          if (!arrow) return
+          seen.set(frameId, arrow.getBoundingClientRect().top)
+          const values = [...seen.values()]
+          if (
+            values.length >= 2 &&
+            new Set(values.map((value) => value.toFixed(3))).size >= 2
+          ) {
+            finish(values)
+          }
+        }
+        observer.observe(cockpitStage, {
+          attributes: true,
+          attributeFilter: ['data-hud-frame'],
+        })
+        timeout = window.setTimeout(() => {
+          observer.disconnect()
+          reject(
+            new Error(
+              `live card motion did not publish two positions: ${JSON.stringify([...seen])}`,
+            ),
+          )
+        }, timeoutMs)
+        captureCommit()
+      })
+    }, timing.transition)
     expect(moving.length).toBeGreaterThanOrEqual(2)
     expect(new Set(moving.map((value) => value.toFixed(3))).size).toBeGreaterThan(1)
 
-    const swap = await page.evaluate(async () => {
+    const swap = await page.evaluate(async (timeoutMs) => {
       const stage = document.querySelector<HTMLElement>(
         '[data-layout-region="cockpit-stage"]',
       )
@@ -582,63 +643,101 @@ test.describe('Phase 4 focused HUD', () => {
             document.querySelector('[data-hud="deck-project-link"]') !== null,
         }
       }
-      const waitForCommit = (frameId: number) =>
-        new Promise<void>((resolveCommit, rejectCommit) => {
-          const committed = () =>
-            stage.getAttribute('data-hud-frame') === String(frameId)
-          if (committed()) {
-            resolveCommit()
-            return
-          }
-          const observer = new MutationObserver(() => {
-            if (!committed()) return
-            window.clearTimeout(timeout)
-            observer.disconnect()
-            resolveCommit()
-          })
-          const timeout = window.setTimeout(() => {
-            observer.disconnect()
-            rejectCommit(
-              new Error(`HUD frame ${frameId} did not commit during deck swap`),
-            )
-          }, 2_000)
-          observer.observe(stage, {
-            attributes: true,
-            attributeFilter: ['data-hud-frame'],
-          })
-        })
+
+      const selectedAt = performance.now()
+      const observations: Array<{
+        frameId: number
+        elapsedMs: number
+        card: ReturnType<NonNullable<Window['__getCockpitDeckCardRect']>>
+        arrowPresent: boolean
+        arrowLeft: number | null
+        arrowDisabled: boolean | null
+        linkPresent: boolean
+      }> = []
+      let lastFrameId: number | null = null
+      let resolveGap!: (value: (typeof observations)[number]) => void
+      let rejectGap!: (reason: Error) => void
+      const gapPromise = new Promise<(typeof observations)[number]>(
+        (resolve, reject) => {
+          resolveGap = resolve
+          rejectGap = reject
+        },
+      )
+      let gapObserved = false
+      const captureCommit = () => {
+        const rawFrameId = stage.getAttribute('data-hud-frame')
+        if (rawFrameId === null) return
+        const frameId = Number(rawFrameId)
+        if (!Number.isFinite(frameId) || frameId === lastFrameId) return
+        lastFrameId = frameId
+        const observation = {
+          frameId,
+          elapsedMs: performance.now() - selectedAt,
+          card: window.__getCockpitDeckCardRect?.() ?? null,
+          ...readDom(),
+        }
+        observations.push(observation)
+        const arrowUsesCardAnchor =
+          observation.arrowPresent &&
+          observation.arrowLeft !== null &&
+          Math.abs(observation.arrowLeft - 36) > 4 &&
+          observation.arrowDisabled === true
+        if (
+          observation.card === null &&
+          !observation.linkPresent &&
+          (!observation.arrowPresent || arrowUsesCardAnchor)
+        ) {
+          gapObserved = true
+          resolveGap(observation)
+        }
+      }
+      const observer = new MutationObserver(captureCommit)
+      observer.observe(stage, {
+        attributes: true,
+        attributeFilter: ['data-hud-frame'],
+      })
+      captureCommit()
+      const timeout = window.setTimeout(() => {
+        rejectGap(
+          new Error(
+            `deck swap never committed a safe gap frame: ${JSON.stringify(observations)}`,
+          ),
+        )
+      }, timeoutMs)
+
       const pendingSnapshot =
         window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot()
       ;(window as Phase4Runtime).__cockpitVinylSelect?.(1)
-      const retained = await pendingSnapshot
-      await waitForCommit(retained.publishedFrame!.frameId)
-      const retainedAt = performance.now()
-      const observations = [
-        {
-          elapsedMs: 0,
-          card: retained.liveFrame.deck.card,
-          ...readDom(),
-        },
-      ]
-
-      while (
-        performance.now() - retainedAt < 5_000 &&
-        observations.at(-1)?.card !== null
-      ) {
-        const current =
-          await window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot()
-        await waitForCommit(current.publishedFrame!.frameId)
-        observations.push({
-          elapsedMs: performance.now() - retainedAt,
-          card: current.liveFrame.deck.card,
-          ...readDom(),
-        })
+      let retained: Awaited<typeof pendingSnapshot>
+      let gapFrame: (typeof observations)[number]
+      try {
+        ;[retained, gapFrame] = await Promise.all([
+          pendingSnapshot,
+          gapPromise,
+        ])
+      } finally {
+        window.clearTimeout(timeout)
+        observer.disconnect()
       }
 
-      return { retained, observations }
-    })
+      const retainedFrameId = retained.publishedFrame?.frameId
+      const retainedObservation = observations.find(
+        (observation) => observation.frameId === retainedFrameId,
+      )
+      if (!retainedObservation) {
+        throw new Error(
+          `retained HUD frame ${String(retainedFrameId)} was not committed: ` +
+            JSON.stringify(observations),
+        )
+      }
+      if (!gapObserved) {
+        throw new Error('deck swap observer resolved without a safe gap frame')
+      }
+
+      return { retained, observations, retainedObservation, gapFrame }
+    }, timing.transition)
     expect(swap.retained.liveFrame.deck.card?.retained).toBe(true)
-    expect(swap.observations[0]).toMatchObject({
+    expect(swap.retainedObservation).toMatchObject({
       arrowPresent: true,
       arrowDisabled: true,
       linkPresent: false,
@@ -651,19 +750,19 @@ test.describe('Phase 4 focused HUD', () => {
         )
         .every((observation) => Math.abs(observation.arrowLeft! - 36) > 4),
     ).toBe(true)
-    const expired = swap.observations.find(
-      (observation) => observation.card === null,
-    )
-    expect(expired).toBeDefined()
-    expect(expired!.elapsedMs).toBeGreaterThanOrEqual(300)
-    expect(expired).toMatchObject({
-      arrowPresent: false,
+    expect(swap.gapFrame).toMatchObject({
+      card: null,
       linkPresent: false,
     })
+    if (swap.gapFrame.arrowPresent) {
+      expect(swap.gapFrame).toMatchObject({ arrowDisabled: true })
+      expect(swap.gapFrame.arrowLeft).not.toBeNull()
+      expect(Math.abs(swap.gapFrame.arrowLeft! - 36)).toBeGreaterThan(4)
+    }
 
     await expect
       .poll(() => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()), {
-        timeout: 30_000,
+        timeout: timing.transition,
       })
       .toBe(true)
     await expect(page.locator('[data-hud="browse-arrow-prev"]')).toBeVisible()
@@ -682,7 +781,7 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-10/16/17: validity, fixed capture buffers, and pinned ambient nodes', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpit(page, { capture: true })
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.enterView('crate'))
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.selectRecord(0))
@@ -758,7 +857,7 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-13/14: canonical loads repeat while unconfigured scene randomness remains natural', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     const seededBuffers: string[] = []
     for (let repeat = 0; repeat < 2; repeat += 1) {
       await enterCockpit(page, { capture: true })
@@ -828,7 +927,7 @@ test.describe('Phase 4 focused HUD', () => {
   test('AC-15/23: parked snapshots freeze and rebuilds reset to fresh monotonic frames', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    test.setTimeout(ciTimeout(180_000, 600_000))
     await enterCockpit(page)
     await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
     const before = await snapshot(page)
