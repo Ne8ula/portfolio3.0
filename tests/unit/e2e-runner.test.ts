@@ -1,9 +1,16 @@
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { describe, expect, it } from 'vitest'
 
 import {
+  discoverE2eSpecFiles,
   planE2eRuns,
   shouldIsolateE2eFiles,
 } from '../../scripts/run-e2e.mjs'
+
+const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
 describe('E2E runner support', () => {
   it('isolates the argument-free CI gate by default', () => {
@@ -75,5 +82,18 @@ describe('E2E runner support', () => {
         args: ['e2e/smoke.spec.ts'],
       },
     ])
+  })
+
+  it('keeps the CI browser matrix in exact sync with discovered spec files', () => {
+    const workflow = readFileSync(
+      resolve(repositoryRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    )
+    const matrixSpecs = [...workflow.matchAll(/^\s+spec:\s+(e2e\/[^\s]+\.spec\.ts)\s*$/gmu)]
+      .map((match) => match[1])
+      .sort()
+
+    expect(matrixSpecs).toEqual(discoverE2eSpecFiles(repositoryRoot))
+    expect(new Set(matrixSpecs).size).toBe(matrixSpecs.length)
   })
 })

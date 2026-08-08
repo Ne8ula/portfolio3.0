@@ -27,7 +27,10 @@ export default defineConfig({
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'retain-on-failure',
+    // Continuous trace screencasts compete with SwiftShader on GitHub's
+    // two-core runners. Keep the normal CI attempt representative and retain
+    // full diagnostics on the first retry; local failures still retain traces.
+    trace: process.env.CI ? 'on-first-retry' : 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
   projects: [

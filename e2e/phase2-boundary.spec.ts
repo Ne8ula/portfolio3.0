@@ -60,7 +60,10 @@ test.describe('Phase 2 root boundary', () => {
   test('full cockpit preserves shared links, honest stub labelling, and native project navigation', async ({
     page,
   }) => {
-    test.setTimeout(180_000)
+    // A software-WebGL frame can take several seconds on GitHub's two-core
+    // runner. This test deliberately crosses several DOM/3D seams, so give
+    // only that CI path enough budget while preserving local feedback speed.
+    test.setTimeout(process.env.CI ? 360_000 : 180_000)
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.goto('/')
     await enterCockpitDirect(page)
@@ -134,19 +137,21 @@ test.describe('Phase 2 root boundary', () => {
   test('completed intro does not replay after project navigation and browser Back', async ({
     page,
   }) => {
+    test.setTimeout(process.env.CI ? 360_000 : 90_000)
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await page.getByRole('button', { name: /enter the room/i }).click()
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeVisible({
       timeout: 30_000,
     })
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => sessionStorage.getItem('cockpit-intro-complete-v1'),
-        ),
-      )
-      .toBe('true')
+    // Use one browser-side predicate with one timeout. An expect.poll wrapper
+    // can expire while its in-flight page.evaluate is still queued behind a
+    // slow SwiftShader frame, producing a false timeout after the click ran.
+    await page.waitForFunction(
+      () => sessionStorage.getItem('cockpit-intro-complete-v1') === 'true',
+      undefined,
+      { timeout: process.env.CI ? 60_000 : 15_000 },
+    )
 
     await page
       .locator('[data-hud="site-header"]')
