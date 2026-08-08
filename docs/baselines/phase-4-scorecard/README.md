@@ -6,6 +6,11 @@ measures color entropy, edge density, luminance contrast, and dominant-color
 share. It is a collapse detector, not a pixel-diff system or a substitute for
 human visual review.
 
+The `ac24/` subdirectory holds the six 1440×900 connected-browser visual
+review attachments referenced by `docs/phase-4-implementation.md`. They are
+human-review evidence only: the scorecard harness does not read them, and
+they are never compared, merged, or substituted across renderer backends.
+
 No baseline capture belongs in the Phase 4 step-3 harness commit. Captures
 must be recorded later from a clean checkout of that commit so the artifact
 can truthfully record `git.dirty: false`.

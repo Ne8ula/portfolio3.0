@@ -156,6 +156,57 @@ Restoration preserves meaning while resetting mechanics:
 | Coffee liquid, steam/smoke, platter accumulation | transient | reset to authored idle |
 | Screen-dialog attachment | derived | re-derived from the rebuilt projection getter |
 
+### 3.2 Projection and focused-HUD sampling
+
+Phase 4 promotes stage coordinates from terminology to an executable
+projection contract. The origin is the cockpit stage's **padding-box**
+top-left (`stageRect.left + clientLeft`, `stageRect.top + clientTop`), axes
+are `+x` right / `+y` down, and every value is an unrounded CSS-pixel float.
+The stage and canvas rectangles are sampled in the same frame. NDC conversion
+therefore includes the canvas-to-stage offset:
+
+```text
+x = canvasRect.left - stageOriginX + (ndcX * 0.5 + 0.5) * canvasRect.width
+y = canvasRect.top  - stageOriginY + (-ndcY * 0.5 + 0.5) * canvasRect.height
+```
+
+[stage-projection.ts](../lib/responsive/stage-projection.ts) is the
+three-free implementation. A projection is `null` when its measurements are
+zero/non-finite, any defining point is on or behind the caller's actual near
+plane (`viewZ >= -camera.near`), any point is beyond the far plane
+(`ndcZ > 1`), any output is non-finite, or its bounds are degenerate. Valid
+off-stage geometry stays raw and unclamped with `visible: false`. Published
+rects/quads carry the production sampler frame that produced them as
+`sourceFrameId`; the only permitted mismatch with the enclosing `frameId` is
+a deck card marked `retained: true` during its bounded swap grace.
+
+[hud-sampler.ts](../components/cockpit/hud-sampler.ts) owns one monotonic
+frame counter and one mode-aware snapshot computed after renderer sizing,
+simulation, and final camera matrices, but before the render. Its live frame
+is recomputed every executed frame; React subscribers receive a stable
+`useSyncExternalStore` reference only when semantic state changes, the
+renderer `sizeVersion` changes, or spatial geometry moves more than
+`HUD_RECT_EPSILON`. Context loss parks the last diagnostic frame without
+advancing the counter; rebuild clears all pre-loss geometry without resetting
+the counter.
+
+The shared policy tokens live only in
+[hud-layout.ts](../lib/responsive/hud-layout.ts):
+
+| Token | Value | Contract |
+|---|---:|---|
+| `HUD_EDGE_GUTTER` | 16 px | edge-gutter-only Phase 4 safe frame |
+| `HUD_SUBJECT_GAP` | 14 px | subject-to-satellite clearance |
+| `HUD_COLLISION_GAP` | 8 px | HUD-to-HUD clearance |
+| `HUD_MIN_HIT_SIZE` | 44 px | preferred interactive control floor |
+| `HUD_RECT_EPSILON` | 0.25 px | spatial publication equality |
+| `HUD_RECT_GRACE_MS` | 350 ms | deck-swap-only last-valid retention |
+| `HUD_COMPACT_HYSTERESIS` | 8 px | compact-layout exit slack |
+
+All seven focused overlays consume this sampler; none owns a projection rAF
+loop. The pure `resolveFocusHudLayout()` solver is implemented and tested but
+does not drive live placement until the scheduled Phase 6/7 re-anchoring.
+
 ## 4. Layout law
 
 The single placement rule (plan §3):
@@ -380,7 +431,20 @@ DOM identifier scheme (used by diagnostics and browser tests):
 | `data-layout-region` | `cockpit-stage` (the WebGL stage), `cockpit-shell` (client overlay root), `boot` (boot region), `app-shell` |
 | `data-layout-contract` | the registered contract id (e.g. `cockpit-v1`) on the region root |
 | `data-content-contract` | the content-contract id (e.g. `content-home-v1`) |
-| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog`, `renderer-status`, `renderer-recovery`, `renderer-restart`, `cockpit-runtime-notice` |
+| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog`, `renderer-status`, `renderer-recovery`, `renderer-restart`, `cockpit-runtime-notice`, `object-tag`, `pc-hover-brackets`, `crate-hover-brackets`, `deck-project-link` |
+
+`object-tag` repeats once per rendered subject and is disambiguated by
+`data-tag-id="pc|crate|turntable|coffee"`. The two bracket identifiers live
+on content-bounding inner `<g>` elements, never on their stage-spanning SVG
+wrappers, so occupied-rectangle consumers measure the brackets rather than
+the whole stage.
+
+Phase 4 also reserves two **development-only, non-contract instrumentation**
+attributes. `data-hud-frame` stamps the published frame committed by React on
+the cockpit stage; `data-hud-debug-overlay` identifies the `?hudDebug=1`
+diagnostic overlay. Static `NODE_ENV` guards exclude both mechanisms from
+production. Neither is a new HUD record, layout region, or accessibility
+surface.
 
 Phase 2 route roots additionally expose `projects-index-v1`,
 `project-detail-v1`, and `about-v1` with matching
@@ -419,11 +483,37 @@ is the deterministic development-only test bridge (plan §9.6.1). Shape:
 type CockpitTestHooks = {
   configureVisualCapture(config: { seed: string; timeMs: number; pauseAmbient: true }): void
     // throws after skipIntro()/scene construction; Phase 4 wires seed + frozen clock
+  getVisualCaptureState(): {
+    active: boolean
+    seed: string | null
+    timeMs: number | null
+    streams: readonly string[]
+  }
   skipIntro(): void                          // mount cockpit directly, no boot/warp
   enterView(mode: 'cockpit' | 'monitor' | 'crate' | 'deck'): Promise<void>  // resolves settled
   playRecord(index: number): Promise<void>   // resolves on landed, busy === false
   selectRecord(index: number): void          // Phase 0 addition — see note below
-  getHudSnapshot(): Promise<HudSnapshot>     // one atomic read inside a single rAF
+  getHudSnapshot(): Promise<{
+    // byte-compatible legacy top-level fields:
+    stage: Rect
+    subject: (Rect & { visible: boolean }) | null
+    overlays: Record<string, Rect>
+    safeFrame: Rect
+    frameId: number
+    // Phase 4 atomic sampler evidence:
+    liveFrame: HudFrameSnapshot
+    publishedFrame: HudFrameSnapshot | null
+    overlaysCommittedFrameId: number | null
+    parked: boolean
+  }>
+  getHudFrameMeta(): {
+    frameId: number
+    computeCount: number
+    publishCount: number
+    sizeVersion: number
+    graceRemainingMs: number | null
+  }
+  getVisualAssetState(): { pending: number; failed: number; total: number }
   isSettled(): boolean                       // settle gate; promises never sleep through timeouts
   getRendererState(): {
     status: 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
@@ -449,6 +539,16 @@ CSS size, capped DPR, drawing-buffer dimensions, and the idempotent
 `sizeVersion`. It is protected by the same `testHooksEnabled` production
 guard as the rest of the bridge and introduces no new live
 `window.__cockpit*` global.
+
+Phase 4's upgraded `getHudSnapshot()` waits for one production sampler
+compute (or returns the frozen parked diagnostic frame), then reads the DOM
+overlay registry. Geometry-to-DOM assertions use `publishedFrame` only when
+`overlaysCommittedFrameId === publishedFrame.frameId`; `liveFrame` is the
+fresh same-frame projection record. The legacy top-level fields and their
+shapes remain compatible with the pre-rewire bridge. `getHudFrameMeta()`
+exposes the epsilon gate and deck-grace counters, while
+`getVisualAssetState()` is the decode/repaint barrier used by deterministic
+capture. These members remain additive and development-only.
 
 `selectRecord` is a Phase 0 addition beyond the §9.6.1 minimum shape: it
 puts the crate into its deterministic selection state (the legacy pull-out —
@@ -476,7 +576,9 @@ Two settled Phase 0 decisions, recorded here as the durable rule:
 Blank-canvas verification (§9.6.2) is a precondition for every geometry
 assertion: a blank frame invalidates every other result at that viewport.
 Scorecard baselines (§9.6.3) require the §9.6.5 deterministic scene state
-and are NOT recorded before Phase 4.
+and the first backend-separated records now live in
+[`docs/baselines/phase-4-scorecard/`](baselines/phase-4-scorecard/). Hardware
+and SwiftShader identities are never compared or substituted.
 
 **Delivered in Phase 2:** the §A.4.1 import-boundary lint rule rejects
 `three`, `components/cockpit/project-textures`, and every cockpit runtime
@@ -495,8 +597,8 @@ build-time boundary.
 | 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
 | 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; commit `809607c`) |
 | 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered in code** (2026-07-30; independent QA/merge pending, so no commit hash exists yet) |
-| 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered in the reviewable worktree** (2026-08-03; independent QA and controller commit pending) |
-| 4 | Projection bridge, hud-layout solver, seedable random streams, deterministic capture, first scorecard baselines | Pending |
+| 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered** (2026-08-04; delivery `d9756de`) |
+| 4 | Stage-relative projection contract, focused-HUD sampler, hud-layout solver, 14 seedable random streams, deterministic capture, and first backend-separated scorecard baselines | **Implemented with owner-certified hardware evidence** (2026-08-07; implementation `f3dc4c4`, `50ca962`, `8987589`, capture allowlist `9fab531`; final delivery boundary requires independent QA) |
 | 5 | 3D fit solver + input normalization wiring | Pending |
 | 6 / 7 | Re-anchor deck HUD / crate HUD (the known deck overlap is fixed HERE, not by an interim constant) | Pending |
 | 8 | Full browser/viewport matrix, accessibility scans, production gate, enforcement skill, CI expansion | Pending |
@@ -511,10 +613,16 @@ Hard rules that survive every phase:
 
 ## 13. New-code rules
 
-- **Randomness**: new scene code takes a **seedable named stream argument**
-  (per-subsystem streams — starfield, textures, steam, prop jitter; plan
-  §9.6.5). Never monkey-patch global `Math.random`; production keeps its
-  natural variation, determinism is a test-build behavior.
+- **Randomness (delivered in Phase 4)**: new scene code takes a **seedable
+  named stream argument**. The registry is `starfield`, `globe-cities`,
+  `glass-mac/screen-noise`, `glass-mac/surface-speckle`,
+  `glass-mac/pad-speckle`, `vinyl-crate/cover-grain`,
+  `vinyl-crate/edge-wear`, `tea-set/glaze`, `tea-set/etch`,
+  `coffee/steam-glyphs`, `coffee/noise`, `incense/smoke-glyphs`,
+  `incense/stick-speckle`, and `boot/glitch`. Never monkey-patch global
+  `Math.random`; the null-seed source delegates each draw to it so production
+  keeps natural variation while configured development capture is
+  deterministic.
 - **New UI** composes the shared primitives once they exist
   (`ResponsivePage`, `ResponsiveStage`, `SafeFrame`, `ProjectedHud`,
   `AccessibleExperienceLink`, shared tokens) — no parallel breakpoint,

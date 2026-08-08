@@ -1177,6 +1177,15 @@ the hint position is not, so their separation has no invariant.
 
 ### 2.2 Focused HUD audit
 
+**Phase 4 implementation note.** The projection and sampling portion of this
+audit is now implemented by the stage-relative
+`lib/responsive/stage-projection.ts` contract and the single production
+`components/cockpit/hud-sampler.ts` snapshot. The seven focused overlays no
+longer run independent projection rAF loops, and `ScreenDialog` consumes the
+same-frame monitor quad. The placement requirements in the table are
+deliberately preserved: Phase 4 keeps reference-viewport placement parity;
+deck and crate collision-solver re-anchoring remain Phase 6 and Phase 7.
+
 | Element | Current behavior | Required behavior |
 |---|---|---|
 | Deck hint | Fixed `top: 76` | Anchor to the deck card; avoid the return control |
@@ -1408,6 +1417,14 @@ not share live renderer state.
 ---
 
 ## 5. Projection bridge contract
+
+**Implemented in Phase 4.** `stage-projection.ts` owns the pure conversion and
+validity rules; `hud-sampler.ts` owns the monotonic production frame id,
+same-frame mode-aware snapshot, epsilon-gated publication, and deck-only
+350 ms retained-card grace. Existing `window.__getCockpit*` getters remain
+the preserved legacy tuning bridge, not the live HUD data path. The normative
+contract below remains the review baseline for later camera and re-anchoring
+phases.
 
 All projection getters used by DOM overlays must return stage-local CSS
 coordinates:
@@ -2045,6 +2062,13 @@ the context-loss test path in §10.1 recovers to a rendering state; the
 `DPR_CAP` value is justified by recorded measurements rather than assumed.
 
 ### Phase 4 — shared geometry and projection contract
+
+**Implementation status (2026-08-07):** the code is recorded in `f3dc4c4`,
+`50ca962`, and `8987589`; the capture-only diagnostic allowlist follow-up is
+`9fab531`. The SwiftShader and owner-certified hardware baselines are recorded
+under `docs/baselines/phase-4-scorecard/`. Final delivery remains gated on
+fresh independent QA; the AC-24 visual attachments are recorded in
+`docs/phase-4-implementation.md`, and all five required gates are green.
 
 - Add `hud-layout.ts` with pure geometry functions.
 - Migrate the 53 `Math.random()` call sites to named seeded streams per

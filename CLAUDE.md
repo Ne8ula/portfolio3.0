@@ -86,7 +86,8 @@ Deck: `__cockpitDeck.play/eject/busy/index`; crate orchestrates it.
 
 rAF/HUD getters: `__getCockpitScreenRect`, `__getCockpitPCRect`,
 `__getCockpitCrateRect`, `__getCockpitAnchors`, `__cockpitHoveredTag`,
-`__getCockpitVinylHover`, `__getCockpitDeckInfo`;
+`__getCockpitVinylHover`, `__getCockpitDeckInfo`,
+`__getCockpitDeckCardRect`;
 `__cockpitVinylSelect(±1)` steps crate/deck.
 
 Screen contract: AX-01 sets `xray.userData.screenGroup` and

@@ -109,6 +109,13 @@ CI, not an agent's judgment, is the final enforcement authority.
   returns the visitor to canonical document routes. `getRendererState()` is
   development-only test instrumentation; the live `window.__cockpit*` bridge
   remains unchanged.
+- Phase 4 adds one production-owned, monotonic, stage-coordinate focused-HUD
+  sampler with epsilon-gated publication and deck-only bounded grace. The 53
+  former cockpit `Math.random()` calls use 14 seedable named streams while
+  null-seed production draws remain natural. The backend-separated capture
+  protocol and immutable evidence live in
+  `docs/baselines/phase-4-scorecard/`; hardware capture/certification remains
+  owner-only and must never be compared with SwiftShader.
 
 ## Design system hard rules
 

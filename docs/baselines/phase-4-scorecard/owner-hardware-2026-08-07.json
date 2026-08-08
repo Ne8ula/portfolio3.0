@@ -1,0 +1,1667 @@
+{
+  "schemaVersion": 1,
+  "environmentId": "owner-hardware-2026-08-07",
+  "capturedAt": "2026-08-07T19:55:37.646Z",
+  "git": {
+    "commit": "9fab531a5aef694e68d71ec37ca18b419d0c615c",
+    "dirty": false
+  },
+  "renderer": {
+    "unmaskedVendor": "Google Inc. (Apple)",
+    "unmaskedRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+    "classification": "hardware"
+  },
+  "browser": "chrome 151.0.7922.108",
+  "os": "darwin 25.5.0 arm64",
+  "buildMode": "development",
+  "capture": {
+    "seed": "ax-cockpit-phase4-v1",
+    "timeMs": 12000,
+    "pauseAmbient": true,
+    "sampleGrid": 256,
+    "quantBits": 4,
+    "sobelThreshold": 24,
+    "metricsVersion": 1
+  },
+  "cells": [
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "cockpit",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 3.097377,
+          "edgeDensity": 0.135697,
+          "luminanceContrast": 0.228197,
+          "dominantShare": 0.550963,
+          "distinctColors": 122,
+          "nonBackgroundFraction": 0.449037
+        },
+        {
+          "entropy": 3.214568,
+          "edgeDensity": 0.14248,
+          "luminanceContrast": 0.232496,
+          "dominantShare": 0.529926,
+          "distinctColors": 132,
+          "nonBackgroundFraction": 0.470074
+        },
+        {
+          "entropy": 3.277585,
+          "edgeDensity": 0.145118,
+          "luminanceContrast": 0.231826,
+          "dominantShare": 0.513241,
+          "distinctColors": 133,
+          "nonBackgroundFraction": 0.486759
+        }
+      ],
+      "median": {
+        "entropy": 3.214568,
+        "edgeDensity": 0.14248,
+        "luminanceContrast": 0.231826,
+        "dominantShare": 0.529926
+      },
+      "band": {
+        "entropy": [
+          2.864568,
+          3.564568
+        ],
+        "edgeDensity": [
+          0.113984,
+          0.170976
+        ],
+        "luminanceContrast": [
+          0.197052,
+          0.2666
+        ],
+        "dominantShare": [
+          0.469926,
+          0.589926
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 0
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "cockpit",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 2.563507,
+          "edgeDensity": 0.112258,
+          "luminanceContrast": 0.133949,
+          "dominantShare": 0.650833,
+          "distinctColors": 127,
+          "nonBackgroundFraction": 0.349167
+        },
+        {
+          "entropy": 2.563507,
+          "edgeDensity": 0.112258,
+          "luminanceContrast": 0.133949,
+          "dominantShare": 0.650833,
+          "distinctColors": 127,
+          "nonBackgroundFraction": 0.349167
+        },
+        {
+          "entropy": 2.563507,
+          "edgeDensity": 0.112258,
+          "luminanceContrast": 0.133949,
+          "dominantShare": 0.650833,
+          "distinctColors": 127,
+          "nonBackgroundFraction": 0.349167
+        }
+      ],
+      "median": {
+        "entropy": 2.563507,
+        "edgeDensity": 0.112258,
+        "luminanceContrast": 0.133949,
+        "dominantShare": 0.650833
+      },
+      "band": {
+        "entropy": [
+          2.213507,
+          2.913507
+        ],
+        "edgeDensity": [
+          0.089807,
+          0.13471
+        ],
+        "luminanceContrast": [
+          0.113856,
+          0.154041
+        ],
+        "dominantShare": [
+          0.590833,
+          0.710833
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 0
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "cockpit",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 3.144632,
+          "edgeDensity": 0.140766,
+          "luminanceContrast": 0.24073,
+          "dominantShare": 0.549611,
+          "distinctColors": 134,
+          "nonBackgroundFraction": 0.450389
+        },
+        {
+          "entropy": 3.144632,
+          "edgeDensity": 0.140766,
+          "luminanceContrast": 0.24073,
+          "dominantShare": 0.549611,
+          "distinctColors": 134,
+          "nonBackgroundFraction": 0.450389
+        },
+        {
+          "entropy": 3.144632,
+          "edgeDensity": 0.140766,
+          "luminanceContrast": 0.24073,
+          "dominantShare": 0.549611,
+          "distinctColors": 134,
+          "nonBackgroundFraction": 0.450389
+        }
+      ],
+      "median": {
+        "entropy": 3.144632,
+        "edgeDensity": 0.140766,
+        "luminanceContrast": 0.24073,
+        "dominantShare": 0.549611
+      },
+      "band": {
+        "entropy": [
+          2.794632,
+          3.494632
+        ],
+        "edgeDensity": [
+          0.112613,
+          0.168919
+        ],
+        "luminanceContrast": [
+          0.20462,
+          0.276839
+        ],
+        "dominantShare": [
+          0.489611,
+          0.609611
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 0
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "cockpit",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 2.543994,
+          "edgeDensity": 0.115725,
+          "luminanceContrast": 0.135419,
+          "dominantShare": 0.654296,
+          "distinctColors": 132,
+          "nonBackgroundFraction": 0.345704
+        },
+        {
+          "entropy": 2.54395,
+          "edgeDensity": 0.115725,
+          "luminanceContrast": 0.135433,
+          "dominantShare": 0.654296,
+          "distinctColors": 132,
+          "nonBackgroundFraction": 0.345704
+        },
+        {
+          "entropy": 2.543994,
+          "edgeDensity": 0.115725,
+          "luminanceContrast": 0.135419,
+          "dominantShare": 0.654296,
+          "distinctColors": 132,
+          "nonBackgroundFraction": 0.345704
+        }
+      ],
+      "median": {
+        "entropy": 2.543994,
+        "edgeDensity": 0.115725,
+        "luminanceContrast": 0.135419,
+        "dominantShare": 0.654296
+      },
+      "band": {
+        "entropy": [
+          2.193994,
+          2.893994
+        ],
+        "edgeDensity": [
+          0.09258,
+          0.13887
+        ],
+        "luminanceContrast": [
+          0.115106,
+          0.155732
+        ],
+        "dominantShare": [
+          0.594296,
+          0.714296
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 0
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "crate",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.331926,
+          "edgeDensity": 0.188058,
+          "luminanceContrast": 0.202153,
+          "dominantShare": 0.269,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.731
+        },
+        {
+          "entropy": 4.331926,
+          "edgeDensity": 0.188058,
+          "luminanceContrast": 0.202153,
+          "dominantShare": 0.269,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.731
+        },
+        {
+          "entropy": 4.331926,
+          "edgeDensity": 0.188058,
+          "luminanceContrast": 0.202153,
+          "dominantShare": 0.269,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.731
+        }
+      ],
+      "median": {
+        "entropy": 4.331926,
+        "edgeDensity": 0.188058,
+        "luminanceContrast": 0.202153,
+        "dominantShare": 0.269
+      },
+      "band": {
+        "entropy": [
+          3.981926,
+          4.681926
+        ],
+        "edgeDensity": [
+          0.150447,
+          0.22567
+        ],
+        "luminanceContrast": [
+          0.17183,
+          0.232476
+        ],
+        "dominantShare": [
+          0.209,
+          0.329
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 0
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "crate",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 3.624459,
+          "edgeDensity": 0.161906,
+          "luminanceContrast": 0.189999,
+          "dominantShare": 0.473037,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.526963
+        },
+        {
+          "entropy": 3.624459,
+          "edgeDensity": 0.161906,
+          "luminanceContrast": 0.189999,
+          "dominantShare": 0.473037,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.526963
+        },
+        {
+          "entropy": 3.624459,
+          "edgeDensity": 0.161906,
+          "luminanceContrast": 0.189999,
+          "dominantShare": 0.473037,
+          "distinctColors": 166,
+          "nonBackgroundFraction": 0.526963
+        }
+      ],
+      "median": {
+        "entropy": 3.624459,
+        "edgeDensity": 0.161906,
+        "luminanceContrast": 0.189999,
+        "dominantShare": 0.473037
+      },
+      "band": {
+        "entropy": [
+          3.274459,
+          3.974459
+        ],
+        "edgeDensity": [
+          0.129525,
+          0.194287
+        ],
+        "luminanceContrast": [
+          0.1615,
+          0.218499
+        ],
+        "dominantShare": [
+          0.413037,
+          0.533037
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 2
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "crate",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.292446,
+          "edgeDensity": 0.187493,
+          "luminanceContrast": 0.202681,
+          "dominantShare": 0.274444,
+          "distinctColors": 168,
+          "nonBackgroundFraction": 0.725556
+        },
+        {
+          "entropy": 4.292446,
+          "edgeDensity": 0.187493,
+          "luminanceContrast": 0.202681,
+          "dominantShare": 0.274444,
+          "distinctColors": 168,
+          "nonBackgroundFraction": 0.725556
+        },
+        {
+          "entropy": 4.292446,
+          "edgeDensity": 0.187493,
+          "luminanceContrast": 0.202681,
+          "dominantShare": 0.274444,
+          "distinctColors": 168,
+          "nonBackgroundFraction": 0.725556
+        }
+      ],
+      "median": {
+        "entropy": 4.292446,
+        "edgeDensity": 0.187493,
+        "luminanceContrast": 0.202681,
+        "dominantShare": 0.274444
+      },
+      "band": {
+        "entropy": [
+          3.942446,
+          4.642446
+        ],
+        "edgeDensity": [
+          0.149994,
+          0.224992
+        ],
+        "luminanceContrast": [
+          0.172279,
+          0.233083
+        ],
+        "dominantShare": [
+          0.214444,
+          0.334444
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "crate",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 3.567292,
+          "edgeDensity": 0.164921,
+          "luminanceContrast": 0.191629,
+          "dominantShare": 0.482648,
+          "distinctColors": 167,
+          "nonBackgroundFraction": 0.517352
+        },
+        {
+          "entropy": 3.567292,
+          "edgeDensity": 0.164921,
+          "luminanceContrast": 0.191629,
+          "dominantShare": 0.482648,
+          "distinctColors": 167,
+          "nonBackgroundFraction": 0.517352
+        },
+        {
+          "entropy": 3.567292,
+          "edgeDensity": 0.164921,
+          "luminanceContrast": 0.191629,
+          "dominantShare": 0.482648,
+          "distinctColors": 167,
+          "nonBackgroundFraction": 0.517352
+        }
+      ],
+      "median": {
+        "entropy": 3.567292,
+        "edgeDensity": 0.164921,
+        "luminanceContrast": 0.191629,
+        "dominantShare": 0.482648
+      },
+      "band": {
+        "entropy": [
+          3.217292,
+          3.917292
+        ],
+        "edgeDensity": [
+          0.131937,
+          0.197905
+        ],
+        "luminanceContrast": [
+          0.162885,
+          0.220373
+        ],
+        "dominantShare": [
+          0.422648,
+          0.542648
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "deck",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.793608,
+          "edgeDensity": 0.219241,
+          "luminanceContrast": 0.250949,
+          "dominantShare": 0.250148,
+          "distinctColors": 302,
+          "nonBackgroundFraction": 0.749852
+        },
+        {
+          "entropy": 4.792966,
+          "edgeDensity": 0.218638,
+          "luminanceContrast": 0.251038,
+          "dominantShare": 0.250463,
+          "distinctColors": 306,
+          "nonBackgroundFraction": 0.749537
+        },
+        {
+          "entropy": 4.793608,
+          "edgeDensity": 0.219241,
+          "luminanceContrast": 0.250949,
+          "dominantShare": 0.250148,
+          "distinctColors": 302,
+          "nonBackgroundFraction": 0.749852
+        }
+      ],
+      "median": {
+        "entropy": 4.793608,
+        "edgeDensity": 0.219241,
+        "luminanceContrast": 0.250949,
+        "dominantShare": 0.250148
+      },
+      "band": {
+        "entropy": [
+          4.443608,
+          5.143608
+        ],
+        "edgeDensity": [
+          0.175393,
+          0.263089
+        ],
+        "luminanceContrast": [
+          0.213306,
+          0.288591
+        ],
+        "dominantShare": [
+          0.190148,
+          0.310148
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "deck",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 4.134324,
+          "edgeDensity": 0.179335,
+          "luminanceContrast": 0.203155,
+          "dominantShare": 0.385185,
+          "distinctColors": 296,
+          "nonBackgroundFraction": 0.614815
+        },
+        {
+          "entropy": 4.134324,
+          "edgeDensity": 0.179335,
+          "luminanceContrast": 0.203155,
+          "dominantShare": 0.385185,
+          "distinctColors": 296,
+          "nonBackgroundFraction": 0.614815
+        },
+        {
+          "entropy": 4.134324,
+          "edgeDensity": 0.179335,
+          "luminanceContrast": 0.203155,
+          "dominantShare": 0.385185,
+          "distinctColors": 296,
+          "nonBackgroundFraction": 0.614815
+        }
+      ],
+      "median": {
+        "entropy": 4.134324,
+        "edgeDensity": 0.179335,
+        "luminanceContrast": 0.203155,
+        "dominantShare": 0.385185
+      },
+      "band": {
+        "entropy": [
+          3.784324,
+          4.484324
+        ],
+        "edgeDensity": [
+          0.143468,
+          0.215201
+        ],
+        "luminanceContrast": [
+          0.172681,
+          0.233628
+        ],
+        "dominantShare": [
+          0.325185,
+          0.445185
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "deck",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.778123,
+          "edgeDensity": 0.219637,
+          "luminanceContrast": 0.252272,
+          "dominantShare": 0.250852,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.749148
+        },
+        {
+          "entropy": 4.778123,
+          "edgeDensity": 0.219637,
+          "luminanceContrast": 0.252272,
+          "dominantShare": 0.250852,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.749148
+        },
+        {
+          "entropy": 4.778123,
+          "edgeDensity": 0.219637,
+          "luminanceContrast": 0.252272,
+          "dominantShare": 0.250852,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.749148
+        }
+      ],
+      "median": {
+        "entropy": 4.778123,
+        "edgeDensity": 0.219637,
+        "luminanceContrast": 0.252272,
+        "dominantShare": 0.250852
+      },
+      "band": {
+        "entropy": [
+          4.428123,
+          5.128123
+        ],
+        "edgeDensity": [
+          0.175709,
+          0.263564
+        ],
+        "luminanceContrast": [
+          0.214431,
+          0.290113
+        ],
+        "dominantShare": [
+          0.190852,
+          0.310852
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "reference-normal",
+        "w": 1440,
+        "h": 900
+      },
+      "view": "deck",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 4.130311,
+          "edgeDensity": 0.183725,
+          "luminanceContrast": 0.205236,
+          "dominantShare": 0.384778,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.615222
+        },
+        {
+          "entropy": 4.130311,
+          "edgeDensity": 0.183725,
+          "luminanceContrast": 0.205236,
+          "dominantShare": 0.384778,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.615222
+        },
+        {
+          "entropy": 4.130311,
+          "edgeDensity": 0.183725,
+          "luminanceContrast": 0.205236,
+          "dominantShare": 0.384778,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.615222
+        }
+      ],
+      "median": {
+        "entropy": 4.130311,
+        "edgeDensity": 0.183725,
+        "luminanceContrast": 0.205236,
+        "dominantShare": 0.384778
+      },
+      "band": {
+        "entropy": [
+          3.780311,
+          4.480311
+        ],
+        "edgeDensity": [
+          0.14698,
+          0.22047
+        ],
+        "luminanceContrast": [
+          0.174451,
+          0.236021
+        ],
+        "dominantShare": [
+          0.324778,
+          0.444778
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "cockpit",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 3.137519,
+          "edgeDensity": 0.134426,
+          "luminanceContrast": 0.240103,
+          "dominantShare": 0.550152,
+          "distinctColors": 140,
+          "nonBackgroundFraction": 0.449848
+        },
+        {
+          "entropy": 3.137395,
+          "edgeDensity": 0.134443,
+          "luminanceContrast": 0.240103,
+          "dominantShare": 0.550152,
+          "distinctColors": 140,
+          "nonBackgroundFraction": 0.449848
+        },
+        {
+          "entropy": 3.137519,
+          "edgeDensity": 0.134426,
+          "luminanceContrast": 0.240103,
+          "dominantShare": 0.550152,
+          "distinctColors": 140,
+          "nonBackgroundFraction": 0.449848
+        }
+      ],
+      "median": {
+        "entropy": 3.137519,
+        "edgeDensity": 0.134426,
+        "luminanceContrast": 0.240103,
+        "dominantShare": 0.550152
+      },
+      "band": {
+        "entropy": [
+          2.787519,
+          3.487519
+        ],
+        "edgeDensity": [
+          0.107541,
+          0.161311
+        ],
+        "luminanceContrast": [
+          0.204088,
+          0.276119
+        ],
+        "dominantShare": [
+          0.490152,
+          0.610152
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "cockpit",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 2.544802,
+          "edgeDensity": 0.107738,
+          "luminanceContrast": 0.135082,
+          "dominantShare": 0.655246,
+          "distinctColors": 133,
+          "nonBackgroundFraction": 0.344754
+        },
+        {
+          "entropy": 2.544802,
+          "edgeDensity": 0.107738,
+          "luminanceContrast": 0.135082,
+          "dominantShare": 0.655246,
+          "distinctColors": 133,
+          "nonBackgroundFraction": 0.344754
+        },
+        {
+          "entropy": 2.544802,
+          "edgeDensity": 0.107738,
+          "luminanceContrast": 0.135082,
+          "dominantShare": 0.655246,
+          "distinctColors": 133,
+          "nonBackgroundFraction": 0.344754
+        }
+      ],
+      "median": {
+        "entropy": 2.544802,
+        "edgeDensity": 0.107738,
+        "luminanceContrast": 0.135082,
+        "dominantShare": 0.655246
+      },
+      "band": {
+        "entropy": [
+          2.194802,
+          2.894802
+        ],
+        "edgeDensity": [
+          0.08619,
+          0.129285
+        ],
+        "luminanceContrast": [
+          0.114819,
+          0.155344
+        ],
+        "dominantShare": [
+          0.595246,
+          0.715246
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "cockpit",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 3.120888,
+          "edgeDensity": 0.133934,
+          "luminanceContrast": 0.240861,
+          "dominantShare": 0.551249,
+          "distinctColors": 143,
+          "nonBackgroundFraction": 0.448751
+        },
+        {
+          "entropy": 3.120888,
+          "edgeDensity": 0.133934,
+          "luminanceContrast": 0.240861,
+          "dominantShare": 0.551249,
+          "distinctColors": 143,
+          "nonBackgroundFraction": 0.448751
+        },
+        {
+          "entropy": 3.120888,
+          "edgeDensity": 0.133934,
+          "luminanceContrast": 0.240861,
+          "dominantShare": 0.551249,
+          "distinctColors": 143,
+          "nonBackgroundFraction": 0.448751
+        }
+      ],
+      "median": {
+        "entropy": 3.120888,
+        "edgeDensity": 0.133934,
+        "luminanceContrast": 0.240861,
+        "dominantShare": 0.551249
+      },
+      "band": {
+        "entropy": [
+          2.770888,
+          3.470888
+        ],
+        "edgeDensity": [
+          0.107148,
+          0.160721
+        ],
+        "luminanceContrast": [
+          0.204731,
+          0.27699
+        ],
+        "dominantShare": [
+          0.491249,
+          0.611249
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "cockpit",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 2.524912,
+          "edgeDensity": 0.111475,
+          "luminanceContrast": 0.136342,
+          "dominantShare": 0.658585,
+          "distinctColors": 137,
+          "nonBackgroundFraction": 0.341415
+        },
+        {
+          "entropy": 2.524912,
+          "edgeDensity": 0.111475,
+          "luminanceContrast": 0.136342,
+          "dominantShare": 0.658585,
+          "distinctColors": 137,
+          "nonBackgroundFraction": 0.341415
+        },
+        {
+          "entropy": 2.524912,
+          "edgeDensity": 0.111475,
+          "luminanceContrast": 0.136342,
+          "dominantShare": 0.658585,
+          "distinctColors": 137,
+          "nonBackgroundFraction": 0.341415
+        }
+      ],
+      "median": {
+        "entropy": 2.524912,
+        "edgeDensity": 0.111475,
+        "luminanceContrast": 0.136342,
+        "dominantShare": 0.658585
+      },
+      "band": {
+        "entropy": [
+          2.174912,
+          2.874912
+        ],
+        "edgeDensity": [
+          0.08918,
+          0.13377
+        ],
+        "luminanceContrast": [
+          0.11589,
+          0.156793
+        ],
+        "dominantShare": [
+          0.598585,
+          0.718585
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "crate",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.328309,
+          "edgeDensity": 0.184984,
+          "luminanceContrast": 0.201634,
+          "dominantShare": 0.265647,
+          "distinctColors": 169,
+          "nonBackgroundFraction": 0.734353
+        },
+        {
+          "entropy": 4.328309,
+          "edgeDensity": 0.184984,
+          "luminanceContrast": 0.201634,
+          "dominantShare": 0.265647,
+          "distinctColors": 169,
+          "nonBackgroundFraction": 0.734353
+        },
+        {
+          "entropy": 4.328309,
+          "edgeDensity": 0.184984,
+          "luminanceContrast": 0.201634,
+          "dominantShare": 0.265647,
+          "distinctColors": 169,
+          "nonBackgroundFraction": 0.734353
+        }
+      ],
+      "median": {
+        "entropy": 4.328309,
+        "edgeDensity": 0.184984,
+        "luminanceContrast": 0.201634,
+        "dominantShare": 0.265647
+      },
+      "band": {
+        "entropy": [
+          3.978309,
+          4.678309
+        ],
+        "edgeDensity": [
+          0.147987,
+          0.22198
+        ],
+        "luminanceContrast": [
+          0.171389,
+          0.231879
+        ],
+        "dominantShare": [
+          0.205647,
+          0.325647
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "crate",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 3.623088,
+          "edgeDensity": 0.161836,
+          "luminanceContrast": 0.193642,
+          "dominantShare": 0.471658,
+          "distinctColors": 170,
+          "nonBackgroundFraction": 0.528342
+        },
+        {
+          "entropy": 3.623088,
+          "edgeDensity": 0.161836,
+          "luminanceContrast": 0.193642,
+          "dominantShare": 0.471658,
+          "distinctColors": 170,
+          "nonBackgroundFraction": 0.528342
+        },
+        {
+          "entropy": 3.623088,
+          "edgeDensity": 0.161836,
+          "luminanceContrast": 0.193642,
+          "dominantShare": 0.471658,
+          "distinctColors": 170,
+          "nonBackgroundFraction": 0.528342
+        }
+      ],
+      "median": {
+        "entropy": 3.623088,
+        "edgeDensity": 0.161836,
+        "luminanceContrast": 0.193642,
+        "dominantShare": 0.471658
+      },
+      "band": {
+        "entropy": [
+          3.273088,
+          3.973088
+        ],
+        "edgeDensity": [
+          0.129469,
+          0.194203
+        ],
+        "luminanceContrast": [
+          0.164596,
+          0.222689
+        ],
+        "dominantShare": [
+          0.411658,
+          0.531658
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "crate",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.305109,
+          "edgeDensity": 0.18659,
+          "luminanceContrast": 0.202254,
+          "dominantShare": 0.271148,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.728852
+        },
+        {
+          "entropy": 4.305109,
+          "edgeDensity": 0.18659,
+          "luminanceContrast": 0.202254,
+          "dominantShare": 0.271148,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.728852
+        },
+        {
+          "entropy": 4.305109,
+          "edgeDensity": 0.18659,
+          "luminanceContrast": 0.202254,
+          "dominantShare": 0.271148,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.728852
+        }
+      ],
+      "median": {
+        "entropy": 4.305109,
+        "edgeDensity": 0.18659,
+        "luminanceContrast": 0.202254,
+        "dominantShare": 0.271148
+      },
+      "band": {
+        "entropy": [
+          3.955109,
+          4.655109
+        ],
+        "edgeDensity": [
+          0.149272,
+          0.223908
+        ],
+        "luminanceContrast": [
+          0.171916,
+          0.232592
+        ],
+        "dominantShare": [
+          0.211148,
+          0.331148
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "crate",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 3.583415,
+          "edgeDensity": 0.165902,
+          "luminanceContrast": 0.195197,
+          "dominantShare": 0.481207,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.518793
+        },
+        {
+          "entropy": 3.583415,
+          "edgeDensity": 0.165902,
+          "luminanceContrast": 0.195197,
+          "dominantShare": 0.481207,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.518793
+        },
+        {
+          "entropy": 3.583415,
+          "edgeDensity": 0.165902,
+          "luminanceContrast": 0.195197,
+          "dominantShare": 0.481207,
+          "distinctColors": 174,
+          "nonBackgroundFraction": 0.518793
+        }
+      ],
+      "median": {
+        "entropy": 3.583415,
+        "edgeDensity": 0.165902,
+        "luminanceContrast": 0.195197,
+        "dominantShare": 0.481207
+      },
+      "band": {
+        "entropy": [
+          3.233415,
+          3.933415
+        ],
+        "edgeDensity": [
+          0.132721,
+          0.199082
+        ],
+        "luminanceContrast": [
+          0.165918,
+          0.224477
+        ],
+        "dominantShare": [
+          0.421207,
+          0.541207
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "deck",
+      "dpr": 1,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.736479,
+          "edgeDensity": 0.208738,
+          "luminanceContrast": 0.250208,
+          "dominantShare": 0.253646,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.746354
+        },
+        {
+          "entropy": 4.736479,
+          "edgeDensity": 0.208738,
+          "luminanceContrast": 0.250208,
+          "dominantShare": 0.253646,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.746354
+        },
+        {
+          "entropy": 4.736479,
+          "edgeDensity": 0.208738,
+          "luminanceContrast": 0.250208,
+          "dominantShare": 0.253646,
+          "distinctColors": 310,
+          "nonBackgroundFraction": 0.746354
+        }
+      ],
+      "median": {
+        "entropy": 4.736479,
+        "edgeDensity": 0.208738,
+        "luminanceContrast": 0.250208,
+        "dominantShare": 0.253646
+      },
+      "band": {
+        "entropy": [
+          4.386479,
+          5.086479
+        ],
+        "edgeDensity": [
+          0.16699,
+          0.250485
+        ],
+        "luminanceContrast": [
+          0.212677,
+          0.287739
+        ],
+        "dominantShare": [
+          0.193646,
+          0.313646
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "deck",
+      "dpr": 1,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 4.086217,
+          "edgeDensity": 0.170311,
+          "luminanceContrast": 0.202154,
+          "dominantShare": 0.387663,
+          "distinctColors": 299,
+          "nonBackgroundFraction": 0.612337
+        },
+        {
+          "entropy": 4.085162,
+          "edgeDensity": 0.16759,
+          "luminanceContrast": 0.202041,
+          "dominantShare": 0.389147,
+          "distinctColors": 313,
+          "nonBackgroundFraction": 0.610853
+        },
+        {
+          "entropy": 4.08551,
+          "edgeDensity": 0.167459,
+          "luminanceContrast": 0.202232,
+          "dominantShare": 0.388744,
+          "distinctColors": 309,
+          "nonBackgroundFraction": 0.611256
+        }
+      ],
+      "median": {
+        "entropy": 4.08551,
+        "edgeDensity": 0.16759,
+        "luminanceContrast": 0.202154,
+        "dominantShare": 0.388744
+      },
+      "band": {
+        "entropy": [
+          3.73551,
+          4.43551
+        ],
+        "edgeDensity": [
+          0.134072,
+          0.201108
+        ],
+        "luminanceContrast": [
+          0.171831,
+          0.232477
+        ],
+        "dominantShare": [
+          0.328744,
+          0.448744
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "deck",
+      "dpr": 2,
+      "theme": "dark",
+      "repeats": [
+        {
+          "entropy": 4.727142,
+          "edgeDensity": 0.20723,
+          "luminanceContrast": 0.251521,
+          "dominantShare": 0.255049,
+          "distinctColors": 339,
+          "nonBackgroundFraction": 0.744951
+        },
+        {
+          "entropy": 4.727142,
+          "edgeDensity": 0.20723,
+          "luminanceContrast": 0.251521,
+          "dominantShare": 0.255049,
+          "distinctColors": 339,
+          "nonBackgroundFraction": 0.744951
+        },
+        {
+          "entropy": 4.727142,
+          "edgeDensity": 0.20723,
+          "luminanceContrast": 0.251521,
+          "dominantShare": 0.255049,
+          "distinctColors": 339,
+          "nonBackgroundFraction": 0.744951
+        }
+      ],
+      "median": {
+        "entropy": 4.727142,
+        "edgeDensity": 0.20723,
+        "luminanceContrast": 0.251521,
+        "dominantShare": 0.255049
+      },
+      "band": {
+        "entropy": [
+          4.377142,
+          5.077142
+        ],
+        "edgeDensity": [
+          0.165784,
+          0.248675
+        ],
+        "luminanceContrast": [
+          0.213793,
+          0.289249
+        ],
+        "dominantShare": [
+          0.195049,
+          0.315049
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "owner-laptop",
+        "w": 1512,
+        "h": 982
+      },
+      "view": "deck",
+      "dpr": 2,
+      "theme": "light",
+      "repeats": [
+        {
+          "entropy": 4.076614,
+          "edgeDensity": 0.174033,
+          "luminanceContrast": 0.20432,
+          "dominantShare": 0.390631,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.609369
+        },
+        {
+          "entropy": 4.076614,
+          "edgeDensity": 0.174033,
+          "luminanceContrast": 0.20432,
+          "dominantShare": 0.390631,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.609369
+        },
+        {
+          "entropy": 4.076614,
+          "edgeDensity": 0.174033,
+          "luminanceContrast": 0.20432,
+          "dominantShare": 0.390631,
+          "distinctColors": 321,
+          "nonBackgroundFraction": 0.609369
+        }
+      ],
+      "median": {
+        "entropy": 4.076614,
+        "edgeDensity": 0.174033,
+        "luminanceContrast": 0.20432,
+        "dominantShare": 0.390631
+      },
+      "band": {
+        "entropy": [
+          3.726614,
+          4.426614
+        ],
+        "edgeDensity": [
+          0.139226,
+          0.208839
+        ],
+        "luminanceContrast": [
+          0.173672,
+          0.234967
+        ],
+        "dominantShare": [
+          0.330631,
+          0.450631
+        ]
+      },
+      "diagnostics": {
+        "unexpectedErrors": 0,
+        "allowlistMatches": {
+          "swiftshader-readpixels-stall": 0,
+          "three-clock-deprecated": 6,
+          "vercel-analytics-dev-orb": 3
+        }
+      }
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-08-07T19:55:37.646Z",
+      "commit": "9fab531a5aef694e68d71ec37ca18b419d0c615c",
+      "reason": "initial baseline"
+    }
+  ]
+}
