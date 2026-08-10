@@ -2098,8 +2098,11 @@ first backend-specific §9.6.3 baselines are recorded.
 - Scope zoom/narrow panning to the cockpit container without trapping the
   outer page.
 
-**Exit**: every focused subject fits its safe frame and §9.4 input tests pass
-across the supported matrix.
+**Exit**: every focused subject fits its safe frame; the full Chromium
+FIT-MATRIX plus HOVER-TRIO/PAN-SET automated evidence passes; and the owner
+certifies the Phase 5 macOS precision-trackpad and owner-host detented-wheel
+checkpoints. The deferred manual and browser rows named under Phase 8 remain
+plan-final exit obligations.
 
 ### Phase 6 — re-anchor deck HUD
 
@@ -2137,6 +2140,12 @@ pass.
   the same neutral contract.
 - Review screenshots for composition rather than pixel-perfect shader output.
 - Add CI gates and the manual branded-browser/release checklist.
+- Complete the deferred input-normalization exit obligations: re-run the
+  Phase 5 automated traces in the expanded browser matrix; verify a Windows
+  precision trackpad, a detented wheel mouse on Windows or Linux, and a
+  ChromeOS touchpad; and verify Safari and Firefox wheel behavior through the
+  Phase 8 browser projects. These obligations gate the plan-final
+  input-normalization claim, not the Phase 5 implementation exit.
 - Mark phases complete in this file.
 
 **Production-gate the development surface.** Before the release build, assert
@@ -2263,7 +2272,14 @@ In zoom/narrow mode:
 
 ### 9.4 Input normalization checks
 
-Run the same logical input traces at `1440×900`, `1024×600`, and `512×300`:
+Run the same logical **hover** input traces at `1440×900`, `1024×600`,
+and `512×300`. Run accumulated-pan browser traces at the four declared
+contained cases: `800×450`, `683×325`, `512×300`, and `320×568`.
+Verify the `sizeRatio` curve at the original trio (`1.0` / `≈0.667` /
+`0.45`) as pure unit evidence over `sizeRatioFor()`. For the browser pan
+traces, accumulated movement at each contained case is inversely
+proportional to its `sizeRatio`: `800×450` requires ≈2× the reference
+input; `683×325`, `512×300`, and `320×568` require ≈2.2× at the floor.
 
 - **hover free-look reaches full bounded yaw and pitch at the stage edge on
   every supported viewport** — this is the primary regression guard against
@@ -2292,17 +2308,21 @@ Record any change in the shared input policy so future scenes inherit it.
 Tuning `responseExponent` must never be used to reduce reachable hover
 range.
 
-Manual input coverage must include:
+Phase 5 manual input coverage must include:
 
 - a macOS precision trackpad;
-- a Windows precision trackpad;
-- a detented wheel mouse on Windows or Linux;
-- a ChromeOS touchpad;
-- Safari, Firefox, and Chromium-family wheel event behavior.
+- a detented wheel mouse on the owner's host.
 
-At `1024×600`, reaching the same logical pan should require approximately
-`1.5×` the accumulated movement of the `1440×900` reference trace. At
-`512×300`, it should require approximately `2.2×`, while still being
+Phase 8 manual input coverage must include the deferred plan-final
+obligations: a Windows precision trackpad; a detented wheel mouse on Windows
+or Linux; a ChromeOS touchpad; and Safari and Firefox wheel behavior through
+the expanded browser projects. Chromium automated traces, full fit evidence,
+and the Phase 5 owner checkpoints remain required for the Phase 5 exit.
+
+As pure unit evidence, the `sizeRatio` curve keeps the original reference
+expectations: `1024×600` requires approximately `1.5×` the accumulated
+movement of `1440×900`, while `512×300` requires approximately `2.2×`.
+At the contained browser cases, the full allowed pan range must still be
 reachable in a few deliberate drag or trackpad gestures.
 
 ### 9.5 Accessibility and action-parity checks

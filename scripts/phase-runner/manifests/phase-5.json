@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "phase": 5,
+  "title": "3D fit and input normalization",
+  "source": "docs/phase-5-design.md",
+  "sourceSection": "§11.2",
+  "designAuthorities": [
+    "DESIGN.md",
+    "docs/responsive-system.md",
+    "docs/hud-responsive-layout-plan.md §6, §8 Phase 5, §9.1, §9.4, §10, and §A.5–§A.6",
+    "app/layout-contract.ts",
+    "lib/responsive/layout-contract.ts",
+    "docs/phase-5-design.md"
+  ],
+  "requiredGates": [
+    "npm run lint",
+    "npm run typecheck:contracts",
+    "npm run validate:contracts",
+    "npm run test:unit",
+    "npm run test:e2e"
+  ],
+  "maxFixAttempts": 3,
+  "initialStep": "step-1",
+  "initiallyAcceptedThrough": null,
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Pure policy and solver",
+      "planItems": [1],
+      "scope": [
+        "Add lib/responsive/camera-fit.ts, including the §4.3 optical-center invariant, and add the §7.B policy exports to lib/responsive/input-policy.ts plus the FOCUS_CAMERA_RESERVATIONS, bounds, and fallback-distance tokens to lib/responsive/hud-layout.ts.",
+        "Write tests/unit/camera-fit.test.ts, tests/unit/camera-fit-oracle.test.ts (§4.8), and the input-policy extensions first; existing input-policy tests must pass unmodified.",
+        "Verify AC-1, AC-4, AC-8, and the unit parts of AC-12, AC-14, and AC-15 without beginning authored framing points or runtime integration."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-2",
+      "title": "Authored framing points",
+      "planItems": [2],
+      "scope": [
+        "Add the authored constants using the §2.2 octagon rule and the unified getFocusTarget() contract, including verticalBias, world-space scratch, and null fail-safe behavior, to turntable.ts, vinyl-crate.ts, and glass-mac.ts.",
+        "Keep the legacy scalar fields temporarily so the tree stays green.",
+        "Add unit fixtures and world-space, camera-free sweep property tests for AC-2 without integrating the fit solver into the live camera."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-3",
+      "title": "Fit integration",
+      "planItems": [3],
+      "scope": [
+        "Wire the solver, the §5 cache with the tombstone and generation laws, focus-fit-store, and the §4.5 failure rule into globe-canvas.tsx and the hint overlays.",
+        "Preserve the full capture-branch guard wasFocused && focusKind !== m && modeT > 0.3, implement the §4.7 refit transition with REFIT_BLEND_S = 0.6 and REFIT_MAX_FRAME_STEP_S = 1/30, retire the scalar formulas and legacy fitHeight/fitDepth/fitWidth fields, and add the dev-only getFocusFit() hook.",
+        "Add e2e/phase5-fit.spec.ts and verify AC-3, AC-5, AC-6, AC-7, and the AC-25 degraded path with all five required gates."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-4",
+      "title": "Free-look rewire",
+      "planItems": [4],
+      "scope": [
+        "Replace the cockpit-hud.tsx free-look handler with the §7.A policy-driven mapping through hoverAngle() and responseExponentFor(), using the live visible-box origin, reduced-motion gating, and pointer-exit decay.",
+        "Add the dev-only getFreeLookState() hook and the hover coverage in e2e/phase5-input.spec.ts.",
+        "Verify AC-9, AC-10, AC-13, and the hover half of AC-18 without introducing contained-stage pan or changing the live window.__cockpit* bridge."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-5",
+      "title": "Gesture arbitration",
+      "planItems": [5],
+      "scope": [
+        "Implement components/cockpit/pointer-activation.ts as the single canvas-level pointer arbiter with crate, deck, coffee, decorations, and PC priority order.",
+        "Migrate all five §1.5 handler sites, including the deck and crate click-away exits, to sub-slop pointerup click semantics; pointerdown must never be propagation-stopped, and slop uses maximum Euclidean displacement from the down position.",
+        "Verify AC-17 without beginning the contained-pan controller."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-6",
+      "title": "Contained pan",
+      "planItems": [6],
+      "scope": [
+        "Implement components/responsive/use-contained-pan.ts and the §7.B accumulator over native scroll, sizeRatio gain, wheel modifier and normalization laws, pointer drag and capture, drag-release-only inertia, keyboard paths, reset, lifecycle cancellation, and the §7.B position law.",
+        "Add the fully specified §7.D instructions and RESET bar to ResponsiveStage with its stable every-mode wrapper, exact copy, theme and accessibility behavior, and no cockpit remount across tier transitions; add the dev-only getPanState() hook.",
+        "Verify AC-11, AC-12, AC-14, AC-15, AC-16, AC-18, AC-19, AC-21, and AC-29 with all five required gates."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-7",
+      "title": "Suite registration and hygiene",
+      "planItems": [7],
+      "scope": [
+        "Register e2e/phase5-fit.spec.ts and e2e/phase5-input.spec.ts in .github/workflows/ci.yml for AC-26.",
+        "Run the AC-22, AC-23, and AC-24 bridge, production-exclusion, and phase-boundary greps, preserving the byte-identical 34-name window.__cockpit* bridge and the Phase 6 test.fixme.",
+        "Complete the AC-25 context-recovery test and run all five required gates."
+      ],
+      "ownerGateAfter": false
+    },
+    {
+      "id": "step-8",
+      "title": "Docs, amendments, and delivery",
+      "planItems": [8],
+      "scope": [
+        "Apply amendment A3 and the Phase 5 current-state updates to docs/responsive-system.md, update CLAUDE.md current-flow notes without changing the bridge, and write docs/phase-5-implementation.md in the Phase 4 report format.",
+        "Prepare the unfilled docs/baselines/phase-5-input/OWNER-CHECKPOINT.template.md with AC-27, AC-28, and decision-history sections; never create or edit the dated owner checkpoint.",
+        "Capture the 12 AC-28 images into docs/baselines/phase-5-input/ac28/, run all five required gates, and stop at the owner gate with no commit."
+      ],
+      "ownerGateAfter": true
+    },
+    {
+      "id": "step-9",
+      "title": "Owner acceptance and delivery",
+      "planItems": [9],
+      "scope": [
+        "After the owner authors and signs the dated checkpoint, verify only and never edit owner evidence: require exactly one dated file, complete AC-27 and AC-28 evidence referencing the step-8 captures, and a latest decision-history entry of approved with no later unresolved changes-requested.",
+        "Rerun all five required gates fresh and hand the complete live diff to independent Kimi QA.",
+        "Do not stage or commit; after independent QA PASS the controller owns the single implementation commit covering all Phase 5 production code, tests, documentation, and the complete docs/baselines/phase-5-input/ evidence tree."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 5: implement 3D fit and input normalization",
+        "paths": [
+          "lib/responsive/camera-fit.ts",
+          "tests/unit/camera-fit.test.ts",
+          "tests/unit/camera-fit-oracle.test.ts",
+          "components/cockpit/focus-fit-store.ts",
+          "components/cockpit/pointer-activation.ts",
+          "components/responsive/use-contained-pan.ts",
+          "e2e/phase5-fit.spec.ts",
+          "e2e/phase5-input.spec.ts",
+          "docs/phase-5-implementation.md",
+          "docs/baselines/phase-5-input/",
+          "lib/responsive/input-policy.ts",
+          "lib/responsive/hud-layout.ts",
+          "components/cockpit/globe-canvas.tsx",
+          "components/cockpit/cockpit-hud.tsx",
+          "components/cockpit/turntable.ts",
+          "components/cockpit/vinyl-crate.ts",
+          "components/cockpit/glass-mac.ts",
+          "components/cockpit/coffee.ts",
+          "components/cockpit/decorations.ts",
+          "components/cockpit/test-hooks.ts",
+          "components/responsive/responsive-stage.tsx",
+          ".github/workflows/ci.yml",
+          "tests/unit/input-policy.test.ts",
+          "docs/responsive-system.md",
+          "docs/hud-responsive-layout-plan.md",
+          "CLAUDE.md"
+        ]
+      }
+    }
+  ]
+}
