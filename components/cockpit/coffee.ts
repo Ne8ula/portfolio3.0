@@ -34,6 +34,7 @@ import { CURSOR_POINTER } from "./cursors"
 import { getFrameTimes } from "./frame-times"
 import { PALETTE, makeHeroGlass, makeFrost } from "./materials"
 import { makeTextDecal } from "./decals"
+import { registerPointerActivation } from "./pointer-activation"
 
 // ASCII smoke plume — ~90 glyphs along three winding streamlines that
 // widen, shrink and fade as they rise. Baked once into a canvas texture.
@@ -463,6 +464,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
   // ── Picking (cockpit view only) ───────────────────────────────
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
+  const projectedPickPoint = new THREE.Vector3();
   let overCoffee = false;
   const viewMode = () => window.__cockpitViewMode || 'cockpit';
   const pick = (e) => {
@@ -484,15 +486,45 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
       if (!window.__cockpitHoverPC) renderer.domElement.style.cursor = '';
     }
   };
-  const onPointerDown = (e) => {
-    if (e.button !== 0 || viewMode() !== 'cockpit') return;
-    const hit = pick(e);
-    if (hit === 'dripper' && state === 'idle'){ state = 'pouring'; anim = 0; dropClock = Infinity; e.stopPropagation(); }
-    else if (hit === 'mug' && state === 'full'){ state = 'draining'; e.stopPropagation(); }
-    else if (hit) e.stopPropagation();
-  };
+  const unregisterCoffeeActivation = registerPointerActivation(
+    renderer.domElement,
+    {
+      owner: 'coffee',
+      hitTest: (point) => {
+        if (viewMode() !== 'cockpit') return null;
+        const hit = pick(point);
+        if (hit === 'dripper' && state === 'idle') return { key: 'coffee-dripper' };
+        if (hit === 'mug' && state === 'full') return { key: 'coffee-mug' };
+        return hit ? { key: 'coffee-blocked' } : null;
+      },
+      testPoint: (key) => {
+        const object = key === 'coffee-dripper' && state === 'idle'
+          ? stationPick
+          : key === 'coffee-mug' && state === 'full'
+            ? mugPick
+            : null;
+        if (!object) return null;
+        object.updateWorldMatrix(true, false);
+        camera.updateMatrixWorld(true);
+        const r = renderer.domElement.getBoundingClientRect();
+        object.getWorldPosition(projectedPickPoint).project(camera);
+        return {
+          x: r.left + (projectedPickPoint.x + 1) * r.width / 2,
+          y: r.top + (1 - projectedPickPoint.y) * r.height / 2,
+        };
+      },
+      action: (hit) => {
+        if (hit.key === 'coffee-dripper') {
+          state = 'pouring';
+          anim = 0;
+          dropClock = Infinity;
+        } else if (hit.key === 'coffee-mug') {
+          state = 'draining';
+        }
+      },
+    },
+  );
   renderer.domElement.addEventListener('pointermove', onPointerMove);
-  renderer.domElement.addEventListener('pointerdown', onPointerDown, true);
 
   // ── Per-frame ─────────────────────────────────────────────────
   group.tick = function(dt, t){
@@ -610,7 +642,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
   };
   group.dispose = function(){
     renderer.domElement.removeEventListener('pointermove', onPointerMove);
-    renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
+    unregisterCoffeeActivation();
     window.__cockpitCoffee = null;
   };
 

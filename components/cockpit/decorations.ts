@@ -20,6 +20,7 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 import { PALETTE, makeFrost, makeHeroGlass } from "./materials"
 import { makeTextDecal } from "./decals"
 import { CURSOR_POINTER } from "./cursors"
+import { registerPointerActivation } from "./pointer-activation"
 
 const MONO = '"JetBrains Mono", Consolas, monospace';
 
@@ -654,6 +655,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   let drawT  = -1;   // <0 idle, else seconds into the stylus scribble
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
+  const projectedPickPoint = new THREE.Vector3();
   let overClickable = false;
   const viewMode = () => window.__cockpitViewMode || 'cockpit';
   const pickShaker = (e) => {
@@ -707,19 +709,43 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
       if (!window.__cockpitHoverPC) renderer.domElement.style.cursor = '';
     }
   };
-  const onPointerDown = (e) => {
-    if (e.button !== 0 || viewMode() !== 'cockpit') return;
-    if (pickShaker(e)){
-      if (shakeT < 0) shakeT = 0;
-      e.stopPropagation();
-    } else if (pickTablet(e)){
-      if (drawT < 0) drawT = 0;
-      e.stopPropagation();
-    }
-  };
+  const unregisterDecorationActivation = renderer
+    ? registerPointerActivation(renderer.domElement, {
+        owner: 'decorations',
+        hitTest: (point) => {
+          if (viewMode() !== 'cockpit') return null;
+          if (pickShaker(point)) {
+            return { key: shakeT < 0 ? 'shaker' : 'decorations-blocked' };
+          }
+          if (pickTablet(point)) {
+            return { key: drawT < 0 ? 'tablet' : 'decorations-blocked' };
+          }
+          return null;
+        },
+        testPoint: (key) => {
+          const object = key === 'tablet' && drawT < 0
+            ? tabletPick
+            : key === 'shaker' && shakeT < 0
+              ? shakerPick
+              : null;
+          if (!object) return null;
+          object.updateWorldMatrix(true, false);
+          camera.updateMatrixWorld(true);
+          const r = renderer.domElement.getBoundingClientRect();
+          object.getWorldPosition(projectedPickPoint).project(camera);
+          return {
+            x: r.left + (projectedPickPoint.x + 1) * r.width / 2,
+            y: r.top + (1 - projectedPickPoint.y) * r.height / 2,
+          };
+        },
+        action: (hit) => {
+          if (hit.key === 'shaker') shakeT = 0;
+          else if (hit.key === 'tablet') drawT = 0;
+        },
+      })
+    : () => {};
   if (renderer){
     renderer.domElement.addEventListener('pointermove', onPointerMove);
-    renderer.domElement.addEventListener('pointerdown', onPointerDown, true);
   }
 
   const tickShake = (dt) => {
@@ -810,8 +836,8 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   root.dispose = function(){
     if (renderer){
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
-      renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
     }
+    unregisterDecorationActivation();
     window.__cockpitDecor = null;
   };
 

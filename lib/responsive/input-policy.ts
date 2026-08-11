@@ -29,6 +29,8 @@ export const INPUT_REFERENCE: ViewportSize = { w: 1440, h: 900 }
 
 export const MAX_YAW_RAD = (22 * Math.PI) / 180
 export const MAX_PITCH_RAD = (15 * Math.PI) / 180
+export const PARALLAX_YAW_SCALE = 0.25
+export const PARALLAX_PITCH_SCALE = 0.15
 
 /** Exponent bounds: 1.0 at the reference size (linear response) rising
  *  toward 1.7 at the smallest supported ratio. Starting curve per §A.5 —
@@ -83,6 +85,14 @@ export function hoverAngle(
 // ── Contained-stage panning ───────────────────────────────────────────────
 
 export const SIZE_RATIO_FLOOR = 0.45
+export const POINTER_ACTIVATION_SLOP_PX = 6
+export const PAN_KEY_STEP_PX = 48
+export const PAN_SMOOTHING_TAU_MS = 90
+export const PAN_INERTIA_HALFLIFE_MS = 120
+export const PAN_INERTIA_MAX_MS = 600
+export const PAN_INERTIA_MIN_SPEED_PX_S = 30
+export const PAN_POSITION_EPSILON_PX = 0.25
+export const PAN_FALLBACK_LINE_HEIGHT_PX = 16
 
 /**
  * Accumulated-pan gain (§A.5): applied ONLY to drag/trackpad/wheel/keyboard
@@ -95,6 +105,32 @@ export function sizeRatioFor(viewport: ViewportSize): number {
     SIZE_RATIO_FLOOR,
     1,
   )
+}
+
+/** Clamp one native-scroll accumulator axis to its reachable range. */
+export function clampPanOffset(offset: number, maxOffset: number): number {
+  if (!Number.isFinite(offset) || !Number.isFinite(maxOffset) || maxOffset <= 0) {
+    return 0
+  }
+  return clamp(offset, 0, maxOffset)
+}
+
+/** Apply the contained-stage gain to one accumulated input delta. */
+export function panStep(delta: number, sizeRatio: number): number {
+  if (!Number.isFinite(delta) || !Number.isFinite(sizeRatio) || sizeRatio <= 0) {
+    return 0
+  }
+  return delta * sizeRatio
+}
+
+/**
+ * Frame-rate-independent drag-release velocity decay. The caller owns time
+ * and termination; this strict-island helper never reads a clock.
+ */
+export function inertiaDecay(speed: number, dtMs: number): number {
+  if (!Number.isFinite(speed)) return 0
+  if (!Number.isFinite(dtMs) || dtMs <= 0) return speed
+  return speed * Math.pow(0.5, dtMs / PAN_INERTIA_HALFLIFE_MS)
 }
 
 // ── Wheel normalization ───────────────────────────────────────────────────

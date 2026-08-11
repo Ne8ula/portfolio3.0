@@ -15,11 +15,22 @@ import {
   MAX_PITCH_RAD,
   MAX_WHEEL_STEP_PX,
   MAX_YAW_RAD,
+  PAN_INERTIA_HALFLIFE_MS,
+  PAN_INERTIA_MAX_MS,
+  PAN_INERTIA_MIN_SPEED_PX_S,
+  PAN_FALLBACK_LINE_HEIGHT_PX,
+  PAN_KEY_STEP_PX,
+  PAN_POSITION_EPSILON_PX,
+  PAN_SMOOTHING_TAU_MS,
+  POINTER_ACTIVATION_SLOP_PX,
   RESPONSE_EXPONENT_MAX,
   RESPONSE_EXPONENT_MIN,
   SIZE_RATIO_FLOOR,
+  clampPanOffset,
   hoverAngle,
+  inertiaDecay,
   normalizeWheelDelta,
+  panStep,
   responseExponentFor,
   shapeHoverResponse,
   sizeRatioFor,
@@ -217,5 +228,51 @@ describe('normalizeWheelDelta', () => {
   it('treats unknown delta modes as pixels', () => {
     expect(normalizeWheelDelta(100, 42, ctx)).toBe(100)
     expect(normalizeWheelDelta(-7, 3, ctx)).toBe(-7)
+  })
+})
+
+describe('Phase 5 contained-pan policy', () => {
+  it('pins every §7 tuning value in the shared policy module', () => {
+    expect(POINTER_ACTIVATION_SLOP_PX).toBe(6)
+    expect(PAN_KEY_STEP_PX).toBe(48)
+    expect(PAN_SMOOTHING_TAU_MS).toBe(90)
+    expect(PAN_INERTIA_HALFLIFE_MS).toBe(120)
+    expect(PAN_INERTIA_MAX_MS).toBe(600)
+    expect(PAN_INERTIA_MIN_SPEED_PX_S).toBe(30)
+    expect(PAN_POSITION_EPSILON_PX).toBe(0.25)
+    expect(PAN_FALLBACK_LINE_HEIGHT_PX).toBe(16)
+  })
+
+  it('clamps accumulated offsets to the native scroll range', () => {
+    expect(clampPanOffset(-1, 500)).toBe(0)
+    expect(clampPanOffset(125, 500)).toBe(125)
+    expect(clampPanOffset(501, 500)).toBe(500)
+    expect(clampPanOffset(10, 0)).toBe(0)
+    expect(clampPanOffset(Number.NaN, 500)).toBe(0)
+  })
+
+  it('applies sizeRatio only as the accumulated-pan gain', () => {
+    expect(panStep(100, 1)).toBe(100)
+    expect(panStep(100, 0.5)).toBe(50)
+    expect(panStep(-100, SIZE_RATIO_FLOOR)).toBe(-45)
+    expect(panStep(Number.NaN, 0.5)).toBe(0)
+  })
+
+  it('decays drag-release velocity by the authored half-life', () => {
+    expect(inertiaDecay(800, 0)).toBe(800)
+    expect(inertiaDecay(800, PAN_INERTIA_HALFLIFE_MS)).toBeCloseTo(400, 12)
+    expect(inertiaDecay(-800, PAN_INERTIA_HALFLIFE_MS * 2)).toBeCloseTo(-200, 12)
+    expect(inertiaDecay(Number.NaN, 16)).toBe(0)
+  })
+
+  it('keeps wheel-mode equivalence, spike clamping, and fine deltas explicit', () => {
+    const context = { lineHeightPx: 20, pageSizePx: 500 }
+    expect(normalizeWheelDelta(100, DELTA_PIXEL, context)).toBe(100)
+    expect(normalizeWheelDelta(5, DELTA_LINE, context)).toBe(100)
+    expect(normalizeWheelDelta(0.2, DELTA_PAGE, context)).toBe(100)
+    expect(normalizeWheelDelta(5000, DELTA_PIXEL, context)).toBe(
+      MAX_WHEEL_STEP_PX,
+    )
+    expect(normalizeWheelDelta(2, DELTA_PIXEL, context)).toBe(2)
   })
 })

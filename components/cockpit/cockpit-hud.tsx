@@ -8,8 +8,18 @@
 // 2026-07-28: no geolocation prompt, no third-party weather fetch.)
 import React from "react"
 import { GlobeCanvas } from "./globe-canvas"
+import { consumePointerActivationClick } from "./pointer-activation"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
+import { useAccessibility } from "@/components/responsive/accessibility-provider"
 import { COCKPIT_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
+import {
+  MAX_PITCH_RAD,
+  MAX_YAW_RAD,
+  PARALLAX_PITCH_SCALE,
+  PARALLAX_YAW_SCALE,
+  hoverAngle,
+  responseExponentFor,
+} from "@/lib/responsive/input-policy"
 import { PROJECTS } from "@/lib/projects/catalog"
 import { PROFILE } from "@/lib/portfolio/profile"
 import { SITE_NAV } from "@/lib/site/navigation"
@@ -17,12 +27,46 @@ import { SITE_ROUTES } from "@/lib/site/site"
 import { AX_OS_FUTURE_STUB_LABEL } from "@/lib/content/action-parity"
 import { HudDebugOverlay, shouldMountHudDebug } from "./hud-debug-overlay"
 import { useHudFrame } from "./hud-sampler"
-import { testHooksEnabled } from "./test-hooks"
+import {
+  registerFreeLookProbe,
+  testHooksEnabled,
+  unregisterFreeLookProbe,
+} from "./test-hooks"
+import {
+  completeFocusMeasurement,
+  invalidateFocusMeasurements,
+  useFocusFitStore,
+} from "./focus-fit-store"
+
+function getVisibleFreeLookBox(stage){
+  const container = stage?.closest('.responsive-stage');
+  const visibleBox = container?.getAttribute('data-stage-mode') === 'contained'
+    ? container
+    : stage;
+  if (!visibleBox) return null;
+  const rect = visibleBox.getBoundingClientRect();
+  if (visibleBox === stage) {
+    return {
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+  }
+  return {
+    left: rect.left + visibleBox.clientLeft,
+    top: rect.top + visibleBox.clientTop,
+    width: visibleBox.clientWidth,
+    height: visibleBox.clientHeight,
+  };
+}
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
 function Cockpit({ interactive = true, onContextEvent, restore = null }){
   const yawRef = React.useRef(0);
   const pitchRef = React.useRef(0);
+  const { resolved } = useAccessibility();
+  const reducedMotion = resolved.reducedMotion;
   const [viewMode, setViewMode] = React.useState(() => restore?.viewMode ?? 'cockpit');
   const hudFrame = useHudFrame();
   const [hudDebug] = React.useState(() =>
@@ -32,6 +76,23 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
   );
 
   const stageRef = React.useRef(null);
+
+  React.useEffect(() => {
+    registerFreeLookProbe(() => {
+      const box = getVisibleFreeLookBox(stageRef.current);
+      const valid = box && box.width > 0 && box.height > 0;
+      return {
+        yawTarget: yawRef.current,
+        pitchTarget: pitchRef.current,
+        exponent: valid
+          ? responseExponentFor({ w: box.width, h: box.height })
+          : 1,
+        boxW: valid ? box.width : 0,
+        boxH: valid ? box.height : 0,
+      };
+    });
+    return () => unregisterFreeLookProbe();
+  }, []);
 
   React.useLayoutEffect(() => {
     if (!testHooksEnabled) return;
@@ -132,40 +193,88 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
     };
   }, []);
 
+  // Large text/control changes invalidate real overlay metrics. The store
+  // double-buffers the active kind so the camera holds its old pose until the
+  // replacement measurement commits atomically.
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const observer = new MutationObserver((records) => {
+      if (records.some((record) =>
+        record.attributeName === 'data-a11y-text' ||
+        record.attributeName === 'data-a11y-controls'
+      )) invalidateFocusMeasurements();
+    });
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-a11y-text', 'data-a11y-controls'],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const exitGlobe = React.useCallback(() => {
     if (window.__setCockpitViewMode) window.__setCockpitViewMode('cockpit');
   }, []);
 
-  // While non-interactive (loader still playing), force view to center and
-  // ignore all cursor input. Re-enabled once the parent flips `interactive`.
-  React.useEffect(() => {
-    if (!interactive){
+  // While non-interactive or reduced-motion is resolved, force the transient
+  // targets to center. GlobeCanvas reads the same resolved root state and
+  // snaps its smoothing accumulator, so enabling reduced motion leaves no
+  // residual drift animation.
+  React.useLayoutEffect(() => {
+    if (!interactive || reducedMotion){
       yawRef.current = 0;
       pitchRef.current = 0;
     }
-  }, [interactive]);
+  }, [interactive, reducedMotion]);
 
-  // FREE mode — mouse position → yaw/pitch. Works in iframes.
+  // FREE mode — live visible-box pointer position → bounded, shaped targets.
+  // In contained mode the pointer can reach only the ResponsiveStage
+  // container, not the pinned 1024×600 surface, so the container owns the
+  // mapping origin. Camera fitting intentionally continues to use the
+  // surface size.
   React.useEffect(() => {
-    if (!interactive) return;
+    if (!interactive || reducedMotion) return;
     const el = stageRef.current;
     if (!el) return;
     const onMove = (e) => {
-      const r = el.getBoundingClientRect();
-      const nx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
-      const ny = ((e.clientY - r.top)  / r.height - 0.5) * 2;
-      // In monitor/crate mode, cursor input is used only for gentle
-      // parallax (scaled down in Globe.jsx), not full free-look.
-      // Free-look: tight range so the camera can never leave the desk —
-      // max ±22° yaw, ±15° pitch. Smoothed in Globe.jsx for butter feel.
-      const yawScale = viewMode !== 'cockpit' ? 0.25 : (Math.PI * 22/180);
-      const pitchScale = viewMode !== 'cockpit' ? 0.15 : (Math.PI * 15/180);
-      yawRef.current   = -nx * yawScale;
-      pitchRef.current = -ny * pitchScale;
+      const box = getVisibleFreeLookBox(el);
+      if (!box || !(box.width > 0) || !(box.height > 0)) {
+        yawRef.current = 0;
+        pitchRef.current = 0;
+        return;
+      }
+      const exponent = responseExponentFor({ w: box.width, h: box.height });
+      const focused = viewMode !== 'cockpit';
+      yawRef.current = hoverAngle(
+        e.clientX,
+        box.left + box.width / 2,
+        box.width / 2,
+        focused ? PARALLAX_YAW_SCALE : MAX_YAW_RAD,
+        exponent,
+      );
+      pitchRef.current = hoverAngle(
+        e.clientY,
+        box.top + box.height / 2,
+        box.height / 2,
+        focused ? PARALLAX_PITCH_SCALE : MAX_PITCH_RAD,
+        exponent,
+      );
     };
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, [interactive, viewMode]);
+    const onExit = () => {
+      yawRef.current = 0;
+      pitchRef.current = 0;
+    };
+    window.addEventListener('pointermove', onMove);
+    document.documentElement.addEventListener('pointerleave', onExit);
+    document.documentElement.addEventListener('mouseleave', onExit);
+    window.addEventListener('blur', onExit);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      document.documentElement.removeEventListener('pointerleave', onExit);
+      document.documentElement.removeEventListener('mouseleave', onExit);
+      window.removeEventListener('blur', onExit);
+      onExit();
+    };
+  }, [interactive, reducedMotion, viewMode]);
 
   React.useEffect(() => {
     const onKeyDown = (event) => {
@@ -191,6 +300,7 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
         onContextEvent={onContextEvent}
         restore={restore}
       />
+      <FocusFitMeasurement/>
 
       {hudFrame?.mode === 'cockpit' && <ObjectTags frame={hudFrame}/>}
       {hudFrame?.mode === 'cockpit' && <PCHoverHighlight frame={hudFrame}/>}
@@ -949,13 +1059,25 @@ function DeckProjectLink({ frame }){
   return (
     <a
       data-hud="deck-project-link"
+      data-pointer-activation-proxy="deck-view-more"
+      data-pointer-activation-owner="deck"
+      data-pointer-activation-index={info.index}
       className="cockpit-project-link"
       href={`${SITE_ROUTES.projects}/${project.slug}`}
       aria-label={`View more: ${project.title}`}
-      onClick={() => {
-        window.dispatchEvent(
-          new CustomEvent('cockpit-project-view', { detail: { index: info.index } }),
-        );
+      draggable={false}
+      onClick={(event) => {
+        if (!consumePointerActivationClick(event.currentTarget, event.detail)) {
+          event.preventDefault();
+          return;
+        }
+        // Pointer bookkeeping is emitted by the arbiter action. Keyboard and
+        // programmatic activation still emit it from the semantic anchor.
+        if (event.detail === 0) {
+          window.dispatchEvent(
+            new CustomEvent('cockpit-project-view', { detail: { index: info.index } }),
+          );
+        }
       }}
       style={{position:'absolute',left,top,width,height,zIndex:19}}
     />
@@ -963,6 +1085,11 @@ function DeckProjectLink({ frame }){
 }
 
 function BrowseArrows({ frame, info, rect = null, requiresRect = false, hint }){
+  const fitStore = useFocusFitStore();
+  const fitKind = frame?.mode === 'deck' || frame?.mode === 'crate'
+    ? frame.mode
+    : null;
+  const degraded = fitKind ? fitStore.status[fitKind].degraded : false;
   if (!info) return null;
   const step = (d) => window.__cockpitVinylSelect && window.__cockpitVinylSelect(d);
   // With a tracked rect (deck view: the holo card) the arrows hug its
@@ -1000,7 +1127,7 @@ function BrowseArrows({ frame, info, rect = null, requiresRect = false, hint }){
   return (
     <>
       {/* one-time hint, floated above the bin — NOT inside the info card */}
-      <div data-hud="browse-hint" style={{
+      {!degraded && <div data-hud="browse-hint" style={{
         position:'absolute', top:76, left:'50%', transform:'translateX(-50%)',
         zIndex:17, pointerEvents:'none',
       }}>
@@ -1016,10 +1143,122 @@ function BrowseArrows({ frame, info, rect = null, requiresRect = false, hint }){
         }}>
           {hint}
         </div>
-      </div>
+      </div>}
       {(!requiresRect || rect) && arrow('left',  '◄', -1, !!info.busy || info.index <= 0)}
       {(!requiresRect || rect) && arrow('right', '►', +1, !!info.busy || info.index >= info.count - 1)}
     </>
+  );
+}
+
+const LONGEST_PROJECT = PROJECTS.reduce((longest, project) => ({
+  title: project.title.length > longest.title.length ? project.title : longest.title,
+  category: project.category.length > longest.category.length
+    ? project.category
+    : longest.category,
+  date: project.date.length > longest.date.length ? project.date : longest.date,
+}), { title: '', category: '', date: '' });
+
+// Hidden, font-stable maximum-content measurement. It is constrained to the
+// 1024 px fit floor so the committed maxima remain conservative at every
+// wider supported stage. It never participates in live HUD placement.
+function FocusFitMeasurement(){
+  const store = useFocusFitStore();
+  const kind = store.activeKind;
+  const pending = kind ? store.pending[kind] : null;
+  const returnRef = React.useRef(null);
+  const arrowRef = React.useRef(null);
+  const hintRef = React.useRef(null);
+  const infoRef = React.useRef(null);
+
+  React.useLayoutEffect(() => {
+    if (!kind || !pending) return;
+    let cancelled = false;
+    let completed = false;
+    let deadline;
+    let fontCeiling;
+    let fontsStable = document.fonts?.status === 'loaded';
+
+    const readSize = (node) => {
+      if (!node) return undefined;
+      const rect = node.getBoundingClientRect();
+      return { w: rect.width, h: rect.height };
+    };
+    const commit = () => {
+      if (cancelled || completed) return;
+      const metrics = {
+        returnControl: readSize(returnRef.current),
+        arrow: kind === 'monitor' ? undefined : readSize(arrowRef.current),
+        hint: kind === 'monitor' ? undefined : readSize(hintRef.current),
+        info: kind === 'crate' ? readSize(infoRef.current) : undefined,
+      };
+      if (
+        !metrics.returnControl ||
+        (kind !== 'monitor' && (!metrics.arrow || !metrics.hint)) ||
+        (kind === 'crate' && !metrics.info)
+      ) return;
+      completed = completeFocusMeasurement(kind, pending.generation, metrics);
+    };
+    const finishAfterFonts = () => {
+      if (cancelled || completed) return;
+      fontsStable = true;
+      window.clearTimeout(fontCeiling);
+      // Let ResizeObserver publish the post-font box first; the deadline is
+      // the design's bounded fallback for environments without a report.
+      deadline = window.setTimeout(commit, 150);
+    };
+    const finishAtFontCeiling = () => {
+      if (cancelled || completed) return;
+      fontsStable = true;
+      commit();
+    };
+    const observer = new ResizeObserver(() => {
+      if (fontsStable) commit();
+    });
+    for (const node of [returnRef.current, arrowRef.current, hintRef.current, infoRef.current]) {
+      if (node) observer.observe(node);
+    }
+
+    if (fontsStable) {
+      deadline = window.setTimeout(commit, 150);
+    } else {
+      fontCeiling = window.setTimeout(finishAtFontCeiling, 1000);
+      document.fonts?.ready.then(finishAfterFonts, finishAfterFonts);
+    }
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      window.clearTimeout(deadline);
+      window.clearTimeout(fontCeiling);
+    };
+  }, [kind, pending?.generation]);
+
+  if (!kind || !pending) return null;
+  const textScale = document.documentElement.getAttribute('data-a11y-text') === 'large'
+    ? 1.25
+    : 1;
+  const controlScale = document.documentElement.getAttribute('data-a11y-controls') === 'large'
+    ? 1.25
+    : 1;
+  const hint = kind === 'crate'
+    ? '◄ ► to browse · click away to return'
+    : kind === 'deck'
+      ? '◄ ► to browse · esc to return'
+      : 'esc · return';
+
+  return (
+    <div aria-hidden="true" style={{
+      position:'absolute',left:-10000,top:0,width:1024,visibility:'hidden',
+      pointerEvents:'none',zIndex:-1,
+    }}>
+      <div ref={returnRef} style={{display:'inline-flex',fontFamily:'var(--font-mono)',fontSize:9 * textScale,letterSpacing:'.22em',padding:`${6 * controlScale}px ${12 * controlScale}px`,border:'1px solid transparent'}}>esc · return</div>
+      {kind !== 'monitor' && <button ref={arrowRef} tabIndex={-1} style={{display:'block',fontSize:16 * textScale,lineHeight:1,padding:`${13 * controlScale}px ${15 * controlScale}px`,border:'1px solid transparent'}}>◄</button>}
+      {kind !== 'monitor' && <div ref={hintRef} style={{display:'inline-block',fontFamily:'var(--font-mono)',fontSize:9 * textScale,fontWeight:600,letterSpacing:'.28em',textTransform:'uppercase',padding:'8px 14px',border:'1px solid transparent'}}>{hint}</div>}
+      {kind === 'crate' && <div ref={infoRef} style={{display:'inline-block',fontFamily:'var(--font-serif)',fontSize:24 * textScale,lineHeight:1.05,padding:'12px 18px 13px',minWidth:180,maxWidth:300,border:'1px solid transparent'}}>
+        <div style={{fontFamily:'var(--font-mono)',fontSize:9 * textScale,letterSpacing:'.26em'}}>{LONGEST_PROJECT.category} · {LONGEST_PROJECT.date}</div>
+        <div>{LONGEST_PROJECT.title}</div>
+      </div>}
+    </div>
   );
 }
 

@@ -27,6 +27,10 @@
 
 import type { FrameTimesCaptureState } from './frame-times'
 import {
+  getContainedPanSnapshotForTests,
+  type ContainedPanSnapshot,
+} from '../responsive/use-contained-pan'
+import {
   getHudFrameForDiagnostics,
   getHudFrameMeta as getSamplerFrameMeta,
   getPublishedHudFrame,
@@ -150,6 +154,48 @@ export type VinylMotionSnapshot = {
   readonly flight: VinylFlightSnapshot
 }
 
+export type FocusFitSnapshot = {
+  readonly kind: 'monitor' | 'deck' | 'crate'
+  readonly status: 'fit' | 'degraded'
+  readonly reason: string | null
+  readonly distance: number
+  readonly solveCount: number
+  readonly lastSolveCause: string
+  readonly safeFrame: HudSnapshotRect
+  readonly points: readonly { readonly x: number; readonly y: number }[]
+}
+
+export type FreeLookSnapshot = {
+  readonly yawTarget: number
+  readonly pitchTarget: number
+  readonly exponent: number
+  readonly boxW: number
+  readonly boxH: number
+}
+
+export type PanSnapshot = ContainedPanSnapshot
+
+export type PointerActivationOwner =
+  | 'crate'
+  | 'deck'
+  | 'coffee'
+  | 'decorations'
+  | 'pc'
+
+export type PointerActivationCandidate = {
+  readonly owner: PointerActivationOwner
+  readonly key: string
+}
+
+export type PointerActivationSnapshot = {
+  readonly pendingCount: number
+  readonly pendingActivation: PointerActivationCandidate | null
+  readonly activationCount: number
+  readonly lastActivation: (PointerActivationCandidate & {
+    readonly count: number
+  }) | null
+}
+
 export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
   configureSettleTimeout(timeoutMs: number): void
@@ -171,6 +217,15 @@ export type CockpitTestHooks = {
   getRendererState(): RendererLifecycleSnapshot
   getDeckTether(): DeckTetherSnapshot
   getVinylMotion(): VinylMotionSnapshot
+  getFocusFit(): FocusFitSnapshot | null
+  getFreeLookState(): FreeLookSnapshot
+  getPanState(): PanSnapshot | null
+  getPointerActivationState(): PointerActivationSnapshot
+  getPointerActivationCandidate(point: {
+    readonly x: number
+    readonly y: number
+  }): PointerActivationCandidate | null
+  getPointerActivationPoint(key: string): { readonly x: number; readonly y: number } | null
 }
 
 declare global {
@@ -199,6 +254,16 @@ type CrateActions = {
 type DeckTetherProbe = () => DeckTetherSnapshot
 type VinylSleeveProbe = () => VinylSleeveSnapshot
 type VinylFlightProbe = () => VinylFlightSnapshot
+type FocusFitProbe = () => FocusFitSnapshot | null
+type FreeLookProbe = () => FreeLookSnapshot
+type PointerActivationProbe = {
+  readonly snapshot: () => PointerActivationSnapshot
+  readonly candidateAt: (point: {
+    readonly clientX: number
+    readonly clientY: number
+  }) => PointerActivationCandidate | null
+  readonly pointFor: (key: string) => { readonly x: number; readonly y: number } | null
+}
 
 type Registry = {
   introSkipped: boolean
@@ -223,6 +288,9 @@ type Registry = {
   deckTetherProbe: DeckTetherProbe | null
   vinylSleeveProbe: VinylSleeveProbe | null
   vinylFlightProbe: VinylFlightProbe | null
+  focusFitProbe: FocusFitProbe | null
+  freeLookProbe: FreeLookProbe | null
+  pointerActivationProbe: PointerActivationProbe | null
 }
 
 const registry: Registry = {
@@ -256,6 +324,9 @@ const registry: Registry = {
   deckTetherProbe: null,
   vinylSleeveProbe: null,
   vinylFlightProbe: null,
+  focusFitProbe: null,
+  freeLookProbe: null,
+  pointerActivationProbe: null,
 }
 
 // ── Reporting API for cockpit modules (no-ops in production) ─────────────
@@ -388,6 +459,38 @@ export function registerVinylFlightProbe(probe: VinylFlightProbe): void {
 export function unregisterVinylFlightProbe(): void {
   if (!testHooksEnabled) return
   registry.vinylFlightProbe = null
+}
+
+export function registerFocusFitProbe(probe: FocusFitProbe): void {
+  if (!testHooksEnabled) return
+  registry.focusFitProbe = probe
+}
+
+export function unregisterFocusFitProbe(): void {
+  if (!testHooksEnabled) return
+  registry.focusFitProbe = null
+}
+
+export function registerFreeLookProbe(probe: FreeLookProbe): void {
+  if (!testHooksEnabled) return
+  registry.freeLookProbe = probe
+}
+
+export function unregisterFreeLookProbe(): void {
+  if (!testHooksEnabled) return
+  registry.freeLookProbe = null
+}
+
+export function registerPointerActivationProbe(
+  probe: PointerActivationProbe,
+): void {
+  if (!testHooksEnabled) return
+  registry.pointerActivationProbe = probe
+}
+
+export function unregisterPointerActivationProbe(): void {
+  if (!testHooksEnabled) return
+  registry.pointerActivationProbe = null
 }
 
 export function reportRendererLifecycle(
@@ -728,6 +831,45 @@ function buildHooks(): CockpitTestHooks {
         sleeve: registry.vinylSleeveProbe(),
         flight: registry.vinylFlightProbe(),
       }
+    },
+
+    getFocusFit(): FocusFitSnapshot | null {
+      return registry.focusFitProbe?.() ?? null
+    },
+
+    getFreeLookState(): FreeLookSnapshot {
+      if (!registry.freeLookProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: free-look state is not ready')
+      }
+      return registry.freeLookProbe()
+    },
+
+    getPanState(): PanSnapshot | null {
+      return getContainedPanSnapshotForTests()
+    },
+
+    getPointerActivationState(): PointerActivationSnapshot {
+      if (!registry.pointerActivationProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: pointer activation is not ready')
+      }
+      return registry.pointerActivationProbe.snapshot()
+    },
+
+    getPointerActivationCandidate(point): PointerActivationCandidate | null {
+      if (!registry.pointerActivationProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: pointer activation is not ready')
+      }
+      return registry.pointerActivationProbe.candidateAt({
+        clientX: point.x,
+        clientY: point.y,
+      })
+    },
+
+    getPointerActivationPoint(key): { readonly x: number; readonly y: number } | null {
+      if (!registry.pointerActivationProbe) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: pointer activation is not ready')
+      }
+      return registry.pointerActivationProbe.pointFor(key)
     },
   }
 }

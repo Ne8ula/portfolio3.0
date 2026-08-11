@@ -34,9 +34,106 @@ import {
   unregisterDeckTetherProbe,
   unregisterVinylFlightProbe,
 } from "./test-hooks"
+import { registerPointerActivation } from "./pointer-activation"
 
 const SAGE = '#6F8D75';
 const MONO = '"JetBrains Mono", Consolas, monospace';
+
+const OCTAGON_VERTEX_SCALE = 1 / Math.cos(Math.PI / 8);
+const horizontalOctagon = (centerX, y, centerZ, radius) =>
+  Array.from({ length: 8 }, (_, index) => {
+    const angle = Math.PI / 8 + index * Math.PI / 4;
+    const vertexRadius = radius * OCTAGON_VERTEX_SCALE;
+    return {
+      x: centerX + Math.cos(angle) * vertexRadius,
+      y,
+      z: centerZ + Math.sin(angle) * vertexRadius,
+    };
+  });
+
+export const TURNTABLE_FOCUS_AUTHORING = {
+  base: { width: 1.9, depth: 1.45, height: 0.22, topY: 0.25 },
+  platter: { centerX: -0.28, centerZ: 0, radius: 0.53, y: 0.342 },
+  card: {
+    width: 0.94,
+    height: 1.175,
+    centerY: 1.5375,
+    bottomY: 0.938,
+    topY: 2.20,
+    sweptRadius: 0.47,
+  },
+  center: { x: -0.28, y: 1.10, z: 0 },
+  verticalBias: 0.42,
+} as const;
+
+const deckPlinthPoints = [
+  {
+    x: -TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: TURNTABLE_FOCUS_AUTHORING.base.topY,
+    z: -TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+  {
+    x: TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: TURNTABLE_FOCUS_AUTHORING.base.topY,
+    z: -TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+  {
+    x: -TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: TURNTABLE_FOCUS_AUTHORING.base.topY,
+    z: TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+  {
+    x: TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: TURNTABLE_FOCUS_AUTHORING.base.topY,
+    z: TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+  {
+    x: -TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: 0,
+    z: TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+  {
+    x: TURNTABLE_FOCUS_AUTHORING.base.width / 2,
+    y: 0,
+    z: TURNTABLE_FOCUS_AUTHORING.base.depth / 2,
+  },
+];
+
+const deckPlatterPoints = horizontalOctagon(
+  TURNTABLE_FOCUS_AUTHORING.platter.centerX,
+  TURNTABLE_FOCUS_AUTHORING.platter.y,
+  TURNTABLE_FOCUS_AUTHORING.platter.centerZ,
+  TURNTABLE_FOCUS_AUTHORING.platter.radius,
+);
+const deckCardBottomPoints = horizontalOctagon(
+  TURNTABLE_FOCUS_AUTHORING.platter.centerX,
+  TURNTABLE_FOCUS_AUTHORING.card.bottomY,
+  TURNTABLE_FOCUS_AUTHORING.platter.centerZ,
+  TURNTABLE_FOCUS_AUTHORING.card.sweptRadius,
+);
+const deckCardTopPoints = horizontalOctagon(
+  TURNTABLE_FOCUS_AUTHORING.platter.centerX,
+  TURNTABLE_FOCUS_AUTHORING.card.topY,
+  TURNTABLE_FOCUS_AUTHORING.platter.centerZ,
+  TURNTABLE_FOCUS_AUTHORING.card.sweptRadius,
+);
+
+export const TURNTABLE_FOCUS_POINTS_LOCAL = [
+  ...deckPlinthPoints,
+  ...deckPlatterPoints,
+  ...deckCardBottomPoints,
+  ...deckCardTopPoints,
+] as const;
+
+const finiteVector = (vector) =>
+  Number.isFinite(vector.x) &&
+  Number.isFinite(vector.y) &&
+  Number.isFinite(vector.z);
+const hasFrameableScale = (scale) =>
+  finiteVector(scale) &&
+  scale.x !== 0 &&
+  scale.y !== 0 &&
+  scale.z !== 0;
 
 export function buildTurntable(scene, tableGroup, camera, renderer, options = {}){
   const group = new THREE.Group();
@@ -69,11 +166,13 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const sageKnob   = new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.5 });
 
   // ── Base ──────────────────────────────────────────────────────
-  const BASE_W = 1.9, BASE_D = 1.45, BASE_H = 0.22;
+  const BASE_W = TURNTABLE_FOCUS_AUTHORING.base.width;
+  const BASE_D = TURNTABLE_FOCUS_AUTHORING.base.depth;
+  const BASE_H = TURNTABLE_FOCUS_AUTHORING.base.height;
   const base = new THREE.Mesh(new RoundedBoxGeometry(BASE_W, BASE_H, BASE_D, 3, 0.045), baseMat);
   base.position.y = 0.03 + BASE_H / 2;
   group.add(base);
-  const topY = 0.03 + BASE_H;   // deck surface
+  const topY = TURNTABLE_FOCUS_AUTHORING.base.topY;   // deck surface
 
   // Feet — small dark pads; the base floats on them (soft shadow gap).
   [-1, 1].forEach(sx => [-1, 1].forEach(sz => {
@@ -86,13 +185,18 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   // Centered slightly left, like the top view. Everything in the spin
   // group rotates; the spindle stays put. Each layer floats a few mm
   // above the one below — coplanar caps flash while spinning.
-  const PLATTER_X = -0.28;
+  const PLATTER_X = TURNTABLE_FOCUS_AUTHORING.platter.centerX;
   const spin = new THREE.Group();
   spin.name = 'deck-platter-spin';
   spin.position.set(PLATTER_X, topY, 0);
   group.add(spin);
 
-  const glassDisc = new THREE.Mesh(new THREE.CylinderGeometry(0.53, 0.53, 0.028, 56), greenGlass);
+  const glassDisc = new THREE.Mesh(new THREE.CylinderGeometry(
+    TURNTABLE_FOCUS_AUTHORING.platter.radius,
+    TURNTABLE_FOCUS_AUTHORING.platter.radius,
+    0.028,
+    56,
+  ), greenGlass);
   glassDisc.position.y = 0.018;
   spin.add(glassDisc);
 
@@ -157,10 +261,12 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   armPivot.add(armAssembly);
   // live-tune bridge (window.__cockpitTurntable.setArmPose) — bake back here
   group.setArmPose = ({ parkY, parkZ, playY, playZ } = {}) => {
-    if (typeof parkY === 'number') ARM_PARK.y = parkY;
-    if (typeof parkZ === 'number') ARM_PARK.z = parkZ;
-    if (typeof playY === 'number') ARM_PLAY.y = playY;
-    if (typeof playZ === 'number') ARM_PLAY.z = playZ;
+    let changed = false;
+    if (typeof parkY === 'number' && parkY !== ARM_PARK.y) { ARM_PARK.y = parkY; changed = true; }
+    if (typeof parkZ === 'number' && parkZ !== ARM_PARK.z) { ARM_PARK.z = parkZ; changed = true; }
+    if (typeof playY === 'number' && playY !== ARM_PLAY.y) { ARM_PLAY.y = playY; changed = true; }
+    if (typeof playZ === 'number' && playZ !== ARM_PLAY.z) { ARM_PLAY.z = playZ; changed = true; }
+    return changed;
   };
   const armTube = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.88, 12), silver);
   armTube.rotation.z = Math.PI / 2;
@@ -452,9 +558,10 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   group.add(holo);
 
   const CARD_PX_W = 640, CARD_PX_H = 800;
-  const CARD_W = 0.94, CARD_H = 1.175;
-  const BEAM_BOT = topY + 0.09, CARD_BOT = 0.95;
-  const CARD_Y = CARD_BOT + CARD_H / 2;
+  const CARD_W = TURNTABLE_FOCUS_AUTHORING.card.width;
+  const CARD_H = TURNTABLE_FOCUS_AUTHORING.card.height;
+  const BEAM_BOT = topY + 0.09;
+  const CARD_Y = TURNTABLE_FOCUS_AUTHORING.card.centerY;
   const LATTICE_X = 0.155;
   const CARD_FRAME_INSET_PX = 10;
   const CARD_RULE_LOCAL_Y =
@@ -1056,21 +1163,46 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const deckFocusCenter = new THREE.Vector3();
   const deckFocusQuaternion = new THREE.Quaternion();
   const deckFocusOutward = new THREE.Vector3();
+  const deckFocusWorldScale = new THREE.Vector3();
+  const deckFocusPoints = TURNTABLE_FOCUS_POINTS_LOCAL.map(
+    () => new THREE.Vector3(),
+  );
   const deckFocusTarget = {
     center: deckFocusCenter,
     outward: deckFocusOutward,
-    fitHeight: 0,
+    verticalBias: TURNTABLE_FOCUS_AUTHORING.verticalBias,
+    framingPoints: deckFocusPoints,
   };
   group.getFocusTarget = function(){
-    group.updateMatrixWorld(true);
-    const ws = WS();
-    deckFocusCenter.set(PLATTER_X, 1.08, 0).applyMatrix4(group.matrixWorld);
+    group.updateWorldMatrix(true, false);
+    deckFocusCenter
+      .set(
+        TURNTABLE_FOCUS_AUTHORING.center.x,
+        TURNTABLE_FOCUS_AUTHORING.center.y,
+        TURNTABLE_FOCUS_AUTHORING.center.z,
+      )
+      .applyMatrix4(group.matrixWorld);
     group.getWorldQuaternion(deckFocusQuaternion);
     deckFocusOutward
       .set(0, 0, 1)
       .applyQuaternion(deckFocusQuaternion)
       .normalize();
-    deckFocusTarget.fitHeight = 2.5 * ws;
+    for (let index = 0; index < TURNTABLE_FOCUS_POINTS_LOCAL.length; index += 1){
+      const local = TURNTABLE_FOCUS_POINTS_LOCAL[index];
+      deckFocusPoints[index]
+        .set(local.x, local.y, local.z)
+        .applyMatrix4(group.matrixWorld);
+      if (!finiteVector(deckFocusPoints[index])) return null;
+    }
+    group.getWorldScale(deckFocusWorldScale);
+    if (
+      !finiteVector(deckFocusCenter) ||
+      !finiteVector(deckFocusOutward) ||
+      !hasFrameableScale(deckFocusWorldScale) ||
+      deckFocusOutward.lengthSq() === 0 ||
+      deckFocusPoints.length === 0 ||
+      !Number.isFinite(deckFocusTarget.verticalBias)
+    ) return null;
     return deckFocusTarget;
   };
 
@@ -1104,23 +1236,31 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
       renderer.domElement.style.cursor = over ? CURSOR_POINTER : '';
     }
   };
-  const onDeckDown = (e) => {
-    if (vm() !== 'deck' || e.button !== 0) return;
-    const hit = card.visible ? pickCard(e) : null;
-    if (hit){
-      if (inButton(hit) && playing >= 0){
-        // Future record click-through — for now announce the intent.
-        window.dispatchEvent(new CustomEvent('cockpit-project-view', { detail: { index: playing } }));
-      }
-      e.stopPropagation();
-    } else {
-      if (window.__setCockpitViewMode) window.__setCockpitViewMode('cockpit');
-      e.stopPropagation();
-    }
-  };
+  const unregisterDeckActivation = renderer
+    ? registerPointerActivation(renderer.domElement, {
+        owner: 'deck',
+        hitTest: (point) => {
+          if (vm() !== 'deck') return null;
+          const hit = card.visible ? pickCard(point) : null;
+          if (!hit) return { key: 'deck-click-away' };
+          return inButton(hit) && playing >= 0
+            ? { key: 'deck-view-more', index: playing }
+            : { key: 'deck-card' };
+        },
+        action: (hit) => {
+          if (hit.key === 'deck-view-more') {
+            // Future record click-through — for now announce the intent.
+            window.dispatchEvent(new CustomEvent('cockpit-project-view', {
+              detail: { index: hit.index },
+            }));
+          } else if (hit.key === 'deck-click-away') {
+            window.__setCockpitViewMode?.('cockpit');
+          }
+        },
+      })
+    : () => {};
   if (renderer){
     renderer.domElement.addEventListener('pointermove', onDeckMove);
-    renderer.domElement.addEventListener('pointerdown', onDeckDown, true);
   }
 
   const onTheme = () => {
@@ -1284,8 +1424,8 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   group.disposeDeck = function(){
     if (renderer){
       renderer.domElement.removeEventListener('pointermove', onDeckMove);
-      renderer.domElement.removeEventListener('pointerdown', onDeckDown, true);
     }
+    unregisterDeckActivation();
     window.removeEventListener('cockpit-theme', onTheme);
     accessibilityObserver.disconnect();
     forcedColorsQuery?.removeEventListener('change', applyTetherPresentation);

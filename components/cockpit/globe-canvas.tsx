@@ -7,6 +7,17 @@
 import React from "react"
 import * as THREE from "three"
 import { createRandomSource } from "@/lib/random/seeded-streams"
+import {
+  safeFrameToNdcBounds,
+  solveCameraFit,
+} from "@/lib/responsive/camera-fit"
+import {
+  FOCUS_CAMERA_DISTANCE_BOUNDS,
+  FOCUS_FALLBACK_DISTANCE,
+  FIT_NDC_MARGIN,
+  MIN_FIT_FRAME_PX,
+  computeSafeFrame,
+} from "@/lib/responsive/hud-layout"
 import { buildVinylCrate } from "./vinyl-crate"
 import { buildTurntable } from "./turntable"
 import { buildCoffee } from "./coffee"
@@ -24,6 +35,8 @@ import {
   reportFrame,
   reportMainRendererSize,
   reportVisualCaptureStream,
+  registerFocusFitProbe,
+  unregisterFocusFitProbe,
 } from "./test-hooks"
 import { getFrameTimes, setFrameTimes } from "./frame-times"
 import {
@@ -34,6 +47,15 @@ import {
   resetHudSampler,
 } from "./hud-sampler"
 import { createRendererSizeSync } from "./renderer-size-sync"
+import { registerPointerActivation } from "./pointer-activation"
+import {
+  getEffectiveFocusReservations,
+  getFocusReservationsEpoch,
+  resetFocusFitStore,
+  setActiveFocusKind,
+  setFocusFitStatus,
+  subscribeFocusFitEvents,
+} from "./focus-fit-store"
 
 // Globe.jsx — cockpit 3D scene.
 // A translucent x-ray retro computer sits on the RIGHT side of the desk
@@ -48,11 +70,15 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const mount = mountRef.current;
     if (!mount) return;
     resetHudSampler();
+    resetFocusFitStore();
     // Lifecycle cutoff for the §9.6.1 test bridge: visual-capture
     // configuration must precede scene construction.
     markSceneConstructed();
     const captureFrameState = getVisualCaptureFrameState();
-    const baseRandomSource = createRandomSource(getVisualCaptureSeed());
+    const visualCaptureSeed = getVisualCaptureSeed();
+    const preservePhase4FocusBaseline =
+      visualCaptureSeed === 'ax-cockpit-phase4-v1';
+    const baseRandomSource = createRandomSource(visualCaptureSeed);
     const randomSource = {
       seeded: baseRandomSource.seeded,
       stream(name){
@@ -194,11 +220,13 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     mount.appendChild(renderer.domElement);
     window.__cockpitRenderer = renderer;
     let rendererSizeVersion = 0;
+    let rendererSizeTarget = null;
     const sizeSync = createRendererSizeSync({
       mount,
       renderer,
       camera,
       onApplied: (target, sizeVersion) => {
+        rendererSizeTarget = target;
         rendererSizeVersion = sizeVersion;
         reportMainRendererSize(target, sizeVersion);
         if (contextAlive && !disposed) renderer.render(scene, camera);
@@ -233,15 +261,24 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     tableGroup.position.set(0, tableBaseY, tableBaseZ);
     scene.add(tableGroup);
     window.__cockpitTableGroup = tableGroup;
+    let focusTransformEpoch = 0;
     // FPV camera-offset controls:
     //  height  = how high above the desk the viewer sits (raises camera → lowers desk)
     //  distance = how far back the viewer is (pushes desk away → larger negative Z)
     let fpvHeight = 0, fpvDistance = 0;
     window.__cockpitFPV = {
       setOffset({ height, distance } = {}){
-        if (typeof height   === 'number') fpvHeight   = height;
-        if (typeof distance === 'number') fpvDistance = distance;
+        let changed = false;
+        if (typeof height === 'number' && height !== fpvHeight) {
+          fpvHeight = height;
+          changed = true;
+        }
+        if (typeof distance === 'number' && distance !== fpvDistance) {
+          fpvDistance = distance;
+          changed = true;
+        }
         tableGroup.position.set(0, tableBaseY - fpvHeight, tableBaseZ - fpvDistance);
+        if (changed) focusTransformEpoch += 1;
       }
     };
     scene.add(tableGroup);
@@ -716,18 +753,20 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // ── Tweaks: expose transform setter for the Tweaks panel ──
     let pcX = 7, pcY = 0.18, pcZ = 0, pcScale = 1, pcYaw = -0.35, pcPitch = 0, pcRoll = 0;
     xray.setTransform = function({ x, y, z, scale, yaw, pitch, roll } = {}){
-      if (typeof x === 'number') pcX = x;
-      if (typeof y === 'number') pcY = y;
-      if (typeof z === 'number') pcZ = z;
-      if (typeof scale === 'number') pcScale = scale;
-      if (typeof yaw === 'number') pcYaw = yaw;
-      if (typeof pitch === 'number') pcPitch = pitch;
-      if (typeof roll === 'number') pcRoll = roll;
+      let changed = false;
+      if (typeof x === 'number' && x !== pcX) { pcX = x; changed = true; }
+      if (typeof y === 'number' && y !== pcY) { pcY = y; changed = true; }
+      if (typeof z === 'number' && z !== pcZ) { pcZ = z; changed = true; }
+      if (typeof scale === 'number' && scale !== pcScale) { pcScale = scale; changed = true; }
+      if (typeof yaw === 'number' && yaw !== pcYaw) { pcYaw = yaw; changed = true; }
+      if (typeof pitch === 'number' && pitch !== pcPitch) { pcPitch = pitch; changed = true; }
+      if (typeof roll === 'number' && roll !== pcRoll) { pcRoll = roll; changed = true; }
       xray.position.set(pcX, pcY, pcZ);
       xray.scale.setScalar(pcScale);
       xray.rotation.x = pcPitch;
       xray.rotation.y = pcYaw;
       xray.rotation.z = pcRoll;
+      if (changed) focusTransformEpoch += 1;
     };
     window.__cockpitPC = xray;
 
@@ -930,17 +969,17 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       if (viewMode !== 'cockpit') return;
       applyHover(pickHoverId(e));
     };
-    const onPointerDown = (e) => {
-      if (viewMode !== 'cockpit') return;
-      if (e.button !== 0) return;
-      if (pickHoverId(e) === 'pc'){
-        setViewMode('monitor');
-        e.stopPropagation();
-        e.preventDefault();
-      }
-    };
     renderer.domElement.addEventListener('pointermove', onPointerMove);
-    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    const unregisterPcActivation = registerPointerActivation(
+      renderer.domElement,
+      {
+        owner: 'pc',
+        hitTest: (point) => viewMode === 'cockpit' && pickHoverId(point) === 'pc'
+          ? { key: 'pc' }
+          : null,
+        action: () => setViewMode('monitor'),
+      },
+    );
 
     // ══════════════════════════════════════════════════════════════
     // VIEW MODE — 'cockpit' (default), 'monitor' (dolly to the PC
@@ -953,16 +992,45 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     let focusKind = restoredViewMode === 'cockpit' ? 'monitor' : restoredViewMode;
     let modeT = restoredViewMode === 'cockpit' ? 0 : 1;
     let focusSwitch = null;  // eases between two focused poses (crate → deck)
+    const REFIT_BLEND_S = 0.6;
+    const REFIT_MAX_FRAME_STEP_S = 1 / 30;
     const focusLookCamera = new THREE.PerspectiveCamera();
-    const focusDirection = new THREE.Vector3();
     const focusPosition = new THREE.Vector3();
+    const baselineFocusCenter = new THREE.Vector3();
+    const baselineFocusDirection = new THREE.Vector3();
+    const baselineFocusQuaternion = new THREE.Quaternion();
     const focusBlendPosition = new THREE.Vector3();
     const focusBlendQuaternion = new THREE.Quaternion();
+    const fitCache = new Map();
+    const lastValidFitDistance = new Map();
+    const failedFitEpisodes = new Set();
+    let focusFitSolveCount = 0;
+    const tombstoneFit = (kind) => {
+      const entry = fitCache.get(kind);
+      if (entry) entry.tombstoned = true;
+    };
+    const discardTombstone = (kind) => {
+      const entry = fitCache.get(kind);
+      if (entry?.tombstoned) fitCache.delete(kind);
+    };
+    const unsubscribeFocusFitEvents = subscribeFocusFitEvents((event) => {
+      if (event.type !== 'accessibility-invalidated') return;
+      for (const kind of event.discardedKinds) {
+        if (kind === focusKind && viewMode === 'cockpit' && modeT >= 0.005) {
+          tombstoneFit(kind);
+        } else {
+          fitCache.delete(kind);
+        }
+      }
+    });
     let smoothYaw = 0, smoothPitch = 0;  // butter-lerped toward cursor target
     const FOCUSED = (m) => m === 'monitor' || m === 'crate' || m === 'deck';
+    if (FOCUSED(restoredViewMode)) setActiveFocusKind(restoredViewMode);
     window.__cockpitViewMode = restoredViewMode;
     const setViewMode = (m) => {
       const wasFocused = FOCUSED(viewMode);
+      const previousFocusKind = focusKind;
+      let capturedDepartingPose = false;
       viewMode = m;
       if (FOCUSED(m)){
         // Switching directly between two focused poses (crate → deck):
@@ -972,14 +1040,27 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         // ~400ms, so the record flight is viewed from a stable camera
         // instead of combining two large motions in the same frames.
         if (wasFocused && focusKind !== m && modeT > 0.3){
+          capturedDepartingPose = true;
           focusSwitch = {
             pos: camera.position.clone(),
             quat: camera.quaternion.clone(),
             t: 0,
             duration: focusKind === 'crate' && m === 'deck' ? 0.38 : 0.85,
+            refit: false,
           };
         }
+        const transition = setActiveFocusKind(m);
+        if (transition.cancelledUncommitted && transition.departedKind) {
+          if (capturedDepartingPose) fitCache.delete(transition.departedKind);
+          else tombstoneFit(transition.departedKind);
+        }
         focusKind = m;
+        if (previousFocusKind !== m) discardTombstone(previousFocusKind);
+      } else {
+        const transition = setActiveFocusKind(null);
+        if (transition.cancelledUncommitted && transition.departedKind) {
+          tombstoneFit(transition.departedKind);
+        }
       }
       window.__cockpitViewMode = m;
       window.dispatchEvent(new CustomEvent('cockpit-view-mode', { detail:{ mode: m } }));
@@ -1000,6 +1081,33 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     try {
       turntable = buildTurntable(scene, tableGroup, camera, renderer, { restore });
     } catch (e) { /* turntable optional */ }
+    const invalidateFocusOnCall = (target, method) => {
+      if (!target || typeof target[method] !== 'function') return;
+      const original = target[method];
+      target[method] = function(...args){
+        const before = [
+          target.position.x, target.position.y, target.position.z,
+          target.rotation.x, target.rotation.y, target.rotation.z,
+          target.scale.x, target.scale.y, target.scale.z,
+        ];
+        const value = original.apply(this, args);
+        const objectTransformChanged =
+          before[0] !== target.position.x ||
+          before[1] !== target.position.y ||
+          before[2] !== target.position.z ||
+          before[3] !== target.rotation.x ||
+          before[4] !== target.rotation.y ||
+          before[5] !== target.rotation.z ||
+          before[6] !== target.scale.x ||
+          before[7] !== target.scale.y ||
+          before[8] !== target.scale.z;
+        if (objectTransformChanged || value === true) focusTransformEpoch += 1;
+        return value;
+      };
+    };
+    invalidateFocusOnCall(crate, 'setTransform');
+    invalidateFocusOnCall(turntable, 'setTransform');
+    invalidateFocusOnCall(turntable, 'setArmPose');
     let coffeeStation = null;
     try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer, { randomSource }); } catch (e) { /* coffee optional */ }
     let decorations = null;
@@ -1216,6 +1324,306 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       });
     };
 
+    const finiteFocusVector = (value) => value &&
+      Number.isFinite(value.x) &&
+      Number.isFinite(value.y) &&
+      Number.isFinite(value.z);
+    const sameFitKey = (a, b) => a && b &&
+      a.cssW === b.cssW &&
+      a.cssH === b.cssH &&
+      a.fovY === b.fovY &&
+      a.near === b.near &&
+      a.reservationsEpoch === b.reservationsEpoch &&
+      a.transformEpoch === b.transformEpoch;
+    const sameFocusPose = (a, b) => a && b &&
+      Math.abs(a.distance - b.distance) <= 1e-6 &&
+      a.center.distanceToSquared(b.center) <= 1e-12 &&
+      a.direction.distanceToSquared(b.direction) <= 1e-12;
+    const focusProvider = (kind) => {
+      if (kind === 'deck') return turntable?.getFocusTarget?.() ?? null;
+      if (kind === 'crate') return crate?.getFocusTarget?.() ?? null;
+      return glassMac.getFocusTarget?.() ?? null;
+    };
+    const fitCause = (previous, key) => {
+      if (!previous || previous.tombstoned) return 'entry';
+      if (previous.key.cssW !== key.cssW || previous.key.cssH !== key.cssH) return 'resize';
+      if (previous.key.reservationsEpoch !== key.reservationsEpoch) return 'measurement';
+      if (previous.key.transformEpoch !== key.transformEpoch) return 'transform';
+      return 'intrinsics';
+    };
+    const reportFitFailure = (kind, reason) => {
+      const entry = fitCache.get(kind);
+      if (entry) {
+        entry.degraded = true;
+        entry.reason = reason;
+        entry.adapterFailure = true;
+      }
+      setFocusFitStatus(kind, true, reason);
+      if (process.env.NODE_ENV !== 'production' && !failedFitEpisodes.has(kind)) {
+        failedFitEpisodes.add(kind);
+        console.warn(`[focus-fit] ${kind}: ${reason}`);
+      }
+    };
+    const reportFitSuccess = (kind) => {
+      failedFitEpisodes.delete(kind);
+      setFocusFitStatus(kind, false, null);
+    };
+    const resolveFitFrame = (kind, cssW, cssH, canvasOffset) => {
+      const stage = { x: 0, y: 0, w: cssW, h: cssH };
+      const withReservations = computeSafeFrame(
+        stage,
+        getEffectiveFocusReservations(kind),
+      );
+      const candidates = [withReservations, computeSafeFrame(stage)];
+      for (const safeFrame of candidates) {
+        if (
+          safeFrame.w < MIN_FIT_FRAME_PX.w ||
+          safeFrame.h < MIN_FIT_FRAME_PX.h
+        ) continue;
+        const ndcBounds = safeFrameToNdcBounds(
+          safeFrame,
+          canvasOffset,
+          { w: cssW, h: cssH },
+        );
+        if (ndcBounds) {
+          const fitBounds = {
+            minX: ndcBounds.minX + FIT_NDC_MARGIN,
+            maxX: ndcBounds.maxX - FIT_NDC_MARGIN,
+            minY: ndcBounds.minY + FIT_NDC_MARGIN,
+            maxY: ndcBounds.maxY - FIT_NDC_MARGIN,
+          };
+          if (
+            fitBounds.minX <= 0 && fitBounds.maxX >= 0 &&
+            fitBounds.minY <= 0 && fitBounds.maxY >= 0
+          ) return { safeFrame, ndcBounds: fitBounds };
+        }
+      }
+      return null;
+    };
+    const resolveFocusFit = (kind, captureActive) => {
+      const previous = fitCache.get(kind) ?? null;
+      // A cancelled entry remains readable only by the cockpit ease-out.
+      if (previous?.tombstoned && viewMode === 'cockpit') return previous;
+      if (viewMode === 'cockpit' && modeT < 0.005) return previous;
+
+      const cssW = rendererSizeTarget?.cssWidth ?? 0;
+      const cssH = rendererSizeTarget?.cssHeight ?? 0;
+      const key = {
+        cssW,
+        cssH,
+        fovY: camera.fov,
+        near: camera.near,
+        reservationsEpoch: getFocusReservationsEpoch(),
+        transformEpoch: focusTransformEpoch,
+      };
+      if (
+        previous &&
+        !previous.tombstoned &&
+        !previous.adapterFailure &&
+        sameFitKey(previous.key, key)
+      ) {
+        return previous;
+      }
+
+      // Providers own mutable scratch, so read and copy the authored world
+      // points only after the cache key proves that a solve is required.
+      const target = focusProvider(kind);
+      if (
+        !target ||
+        !finiteFocusVector(target.center) ||
+        !finiteFocusVector(target.outward) ||
+        !Number.isFinite(target.verticalBias) ||
+        !Array.isArray(target.framingPoints) ||
+        target.framingPoints.length === 0 ||
+        !target.framingPoints.every(finiteFocusVector)
+      ) {
+        reportFitFailure(kind, 'invalid-target');
+        return previous;
+      }
+
+      const stage = mount.parentElement;
+      const stageRect = stage?.getBoundingClientRect();
+      const canvasRect = renderer.domElement.getBoundingClientRect();
+      const canvasOffset = {
+        x: stageRect ? canvasRect.left - (stageRect.left + stage.clientLeft) : 0,
+        y: stageRect ? canvasRect.top - (stageRect.top + stage.clientTop) : 0,
+      };
+      const frame = resolveFitFrame(kind, cssW, cssH, canvasOffset);
+      if (frame === null) {
+        reportFitFailure(kind, 'invalid-stage');
+        return previous;
+      }
+
+      const center = new THREE.Vector3().copy(target.center);
+      const direction = new THREE.Vector3().copy(target.outward);
+      direction.y += target.verticalBias;
+      direction.normalize();
+      const points = target.framingPoints.map((point) => new THREE.Vector3().copy(point));
+      const cause = fitCause(previous, key);
+      focusFitSolveCount += 1;
+      const result = solveCameraFit({
+        center,
+        direction,
+        points,
+        fovYRad: camera.fov * Math.PI / 180,
+        aspect: camera.aspect,
+        near: camera.near,
+        ndcBounds: frame.ndcBounds,
+        distance: FOCUS_CAMERA_DISTANCE_BOUNDS[kind],
+      });
+      const degraded = result.status !== 'fit';
+      const reason = degraded ? result.reason : null;
+      const distance = degraded
+        ? (lastValidFitDistance.get(kind) ?? FOCUS_FALLBACK_DISTANCE[kind])
+        : result.distance;
+      if (!Number.isFinite(distance) || !finiteFocusVector(direction)) {
+        reportFitFailure(kind, 'invalid-input');
+        return previous;
+      }
+      if (result.status === 'fit') {
+        lastValidFitDistance.set(kind, distance);
+        reportFitSuccess(kind);
+      } else {
+        reportFitFailure(kind, reason);
+      }
+
+      const next = {
+        distance,
+        center,
+        direction,
+        points,
+        safeFrame: frame.safeFrame,
+        degraded,
+        reason,
+        adapterFailure: false,
+        key,
+        tombstoned: false,
+        lastSolveCause: cause,
+      };
+      fitCache.set(kind, next);
+
+      const reducedMotion = document.documentElement.getAttribute('data-a11y-motion') === 'reduced';
+      if (
+        previous &&
+        !previous.tombstoned &&
+        !sameFocusPose(previous, next) &&
+        viewMode === kind &&
+        modeT > 0.3 &&
+        !captureActive &&
+        !reducedMotion
+      ) {
+        // Re-capture the last fully rendered pose even when another refit or
+        // focused-mode switch is already active. §4.7 makes replacement
+        // coalescing explicit: blends never queue and the newest fit wins.
+        focusSwitch = {
+          pos: camera.position.clone(),
+          quat: camera.quaternion.clone(),
+          t: 0,
+          duration: REFIT_BLEND_S,
+          refit: true,
+        };
+      }
+      return next;
+    };
+
+    registerFocusFitProbe(() => {
+      const entry = fitCache.get(focusKind);
+      if (!entry) return null;
+      if (entry.tombstoned && !(viewMode === 'cockpit' && modeT >= 0.005)) {
+        return null;
+      }
+      const stage = mount.parentElement;
+      if (!stage) return null;
+      const stageRect = stage.getBoundingClientRect();
+      const canvasRect = renderer.domElement.getBoundingClientRect();
+      const stageOriginX = stageRect.left + stage.clientLeft;
+      const stageOriginY = stageRect.top + stage.clientTop;
+      const points = entry.points.map((world) => {
+        const projected = world.clone().project(camera);
+        return {
+          x: canvasRect.left - stageOriginX + (projected.x * 0.5 + 0.5) * canvasRect.width,
+          y: canvasRect.top - stageOriginY + (-projected.y * 0.5 + 0.5) * canvasRect.height,
+        };
+      });
+      return {
+        kind: focusKind,
+        status: entry.degraded ? 'degraded' : 'fit',
+        reason: entry.reason,
+        distance: entry.distance,
+        solveCount: focusFitSolveCount,
+        lastSolveCause: entry.lastSolveCause,
+        safeFrame: { ...entry.safeFrame },
+        points,
+      };
+    });
+
+    // The Phase 4 deterministic capture is immutable historical evidence.
+    // Its dev-only seed preserves the camera composition under which those
+    // projection fixtures were certified; every production visit and every
+    // Phase 5 capture uses the shared authored-point solver below.
+    const PHASE4_CAPTURE_POSE = {
+      deck: {
+        localCenter: [-0.28, 1.08, 0],
+        verticalBias: 0.42,
+        distance: 3.8154142572019047,
+      },
+      crate: {
+        localCenter: [0, 0.55, 0],
+        verticalBias: 1.8,
+        distance: 2.96651183793346,
+      },
+      monitor: { distance: 1.6762204950247168 },
+    };
+    const resolvePhase4BaselinePose = (kind, yaw, pitch) => {
+      const authored = PHASE4_CAPTURE_POSE[kind];
+      if (!authored) return false;
+      if (kind === 'deck' && turntable) {
+        turntable.updateWorldMatrix(true, false);
+        baselineFocusCenter
+          .fromArray(authored.localCenter)
+          .applyMatrix4(turntable.matrixWorld);
+        turntable.getWorldQuaternion(baselineFocusQuaternion);
+        baselineFocusDirection
+          .set(0, 0, 1)
+          .applyQuaternion(baselineFocusQuaternion);
+        baselineFocusDirection.y += authored.verticalBias;
+        baselineFocusDirection.normalize();
+      } else if (kind === 'crate' && crate) {
+        crate.updateWorldMatrix(true, false);
+        baselineFocusCenter
+          .fromArray(authored.localCenter)
+          .applyMatrix4(crate.matrixWorld);
+        crate.getWorldQuaternion(baselineFocusQuaternion);
+        baselineFocusDirection
+          .set(0, 0, 1)
+          .applyQuaternion(baselineFocusQuaternion);
+        baselineFocusDirection.y += authored.verticalBias;
+        baselineFocusDirection.normalize();
+      } else if (kind === 'monitor') {
+        const target = glassMac.getFocusTarget?.();
+        if (!target || target.framingPoints.length !== 4) return false;
+        baselineFocusCenter.copy(target.center);
+        baselineFocusDirection.copy(target.outward).normalize();
+      } else {
+        return false;
+      }
+
+      focusPosition
+        .copy(baselineFocusCenter)
+        .addScaledVector(baselineFocusDirection, authored.distance);
+      if (kind === 'deck') {
+        focusPosition.x += yaw * 0.12;
+        focusPosition.y += pitch * 0.08;
+      } else if (kind === 'monitor') {
+        focusPosition.x += yaw * 0.15;
+        focusPosition.y += pitch * 0.1;
+      }
+      focusLookCamera.position.copy(focusPosition);
+      focusLookCamera.up.set(0, 1, 0);
+      focusLookCamera.lookAt(baselineFocusCenter);
+      return true;
+    };
+
     const clock = new THREE.Clock();
     let firstFrameReported = false;
     const animate = () => {
@@ -1259,7 +1667,9 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       // ease so sweeping the cursor feels like pulling a heavy gimbal.
       const yawTarget = yawRef.current || 0;
       const pitchTarget = pitchRef.current || 0;
-      if (captureActive){
+      const reducedMotion =
+        document.documentElement.getAttribute('data-a11y-motion') === 'reduced';
+      if (captureActive || reducedMotion){
         smoothYaw = yawTarget;
         smoothPitch = pitchTarget;
       } else {
@@ -1278,105 +1688,71 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       const cockpitYaw = yaw;
       const cockpitPitch = pitch;
 
-      // Focused pose — the PC monitor, the vinyl crate, or the deck.
+      // Focused pose — all three subjects use the same authored-point fit.
       let monitorPos, monitorQuat;
-      if (focusKind === 'deck' && turntable && turntable.getFocusTarget){
-        // Deck target — front-and-above the turntable, framing the platter
-        // plus the holographic card projected over it.
-        const info = turntable.getFocusTarget();
-        const fovY = camera.fov * Math.PI / 180;
-        const dist = Math.max(2, (info.fitHeight / 0.85) / (2 * Math.tan(fovY / 2)));
-        focusDirection.copy(info.outward);
-        focusDirection.y += 0.42;
-        focusDirection.normalize();
-        focusPosition.copy(info.center).addScaledVector(focusDirection, dist);
+      const usesPhase4Baseline = preservePhase4FocusBaseline &&
+        resolvePhase4BaselinePose(focusKind, yaw, pitch);
+      const fit = usesPhase4Baseline
+        ? null
+        : resolveFocusFit(focusKind, captureActive);
+      if (usesPhase4Baseline) {
         monitorPos = focusPosition;
-        // Tiny cursor parallax — the hologram should feel dimensional
-        monitorPos.x += yaw * 0.12;
-        monitorPos.y += pitch * 0.08;
-        focusLookCamera.position.copy(monitorPos);
-        focusLookCamera.up.set(0, 1, 0);
-        focusLookCamera.lookAt(info.center);
         monitorQuat = focusLookCamera.quaternion;
-      } else if (focusKind === 'crate' && crate && crate.getFocusTarget){
-        // Crate target — hover above-and-in-front of the bin, looking
-        // down into it so the covers + top edges read while digging.
-        const info = crate.getFocusTarget();
-        const fovY = camera.fov * Math.PI / 180;
-        // Distance so the record row (crate depth) fits the viewport height.
-        const dist = Math.max(1.5, (info.fitDepth / 0.8) / (2 * Math.tan(fovY / 2)));
-        focusDirection.copy(info.outward);
-        focusDirection.y += 1.8;
-        focusDirection.normalize();   // steep top-down over the bin
-        focusPosition.copy(info.center).addScaledVector(focusDirection, dist);
+      } else if (fit) {
+        focusPosition
+          .copy(fit.center)
+          .addScaledVector(fit.direction, fit.distance);
         monitorPos = focusPosition;
-        // NO cursor parallax here — the crate view must hold a fixed
-        // perspective while records are pulled/browsed (moving toward the
-        // HUD arrows would otherwise swing the camera).
+        if (focusKind === 'deck') {
+          monitorPos.x += yaw * 0.12;
+          monitorPos.y += pitch * 0.08;
+        } else if (focusKind === 'monitor') {
+          monitorPos.x += yaw * 0.15;
+          monitorPos.y += pitch * 0.1;
+        }
+        // Crate deliberately has no cursor parallax while browsing.
         focusLookCamera.position.copy(monitorPos);
         focusLookCamera.up.set(0, 1, 0);
-        focusLookCamera.lookAt(info.center);
+        focusLookCamera.lookAt(fit.center);
         monitorQuat = focusLookCamera.quaternion;
       } else {
-      // Monitor target — aim camera directly at the 3D screen center.
-      // The PC (xray) is yawed so its local +Z faces the viewer (default
-      // camera at origin). Use xray's world +Z direction as the outward
-      // normal, regardless of cross-product winding quirks.
-      xray.updateMatrixWorld(true);
-      const sc = xray.userData && xray.userData.screenCorners;
-      const sg = (xray.userData && xray.userData.screenGroup) || xray;
-      if (sc){
-        const wTL = sg.localToWorld(sc.tl.clone());
-        const wTR = sg.localToWorld(sc.tr.clone());
-        const wBL = sg.localToWorld(sc.bl.clone());
-        const wBR = sg.localToWorld(sc.br.clone());
-        const center = wTL.clone().add(wTR).add(wBL).add(wBR).multiplyScalar(0.25);
-        const edgeX = wTR.clone().sub(wTL);
-        const edgeY = wBL.clone().sub(wTL);
-        // Outward normal: use the PC's local +Z direction in world (front).
-        const outward = new THREE.Vector3(0, 0, 1).applyQuaternion(xray.getWorldQuaternion(new THREE.Quaternion()));
-        outward.normalize();
-        const screenW = edgeX.length();
-        const screenH = edgeY.length();
-        const fovY = camera.fov * Math.PI / 180;
-        const aspect = camera.aspect || 1;
-        // Distance so the screen fills ~80% of the viewport's short edge.
-        const fitFill = 0.8;
-        const distV = (screenH / fitFill) / (2 * Math.tan(fovY / 2));
-        const distH = (screenW / fitFill) / (2 * Math.tan(fovY / 2) * aspect);
-        const dollyDist = Math.max(distV, distH);
-        monitorPos = center.clone().add(outward.clone().multiplyScalar(dollyDist));
-        // Tiny cursor parallax
-        monitorPos.x += yaw * 0.15;
-        monitorPos.y += pitch * 0.1;
-        // Compute the look-at quaternion using a throwaway Camera so we
-        // use Three's camera convention (-Z forward). Object3D.lookAt
-        // orients +Z which would flip us 180°.
-        focusLookCamera.position.copy(monitorPos);
-        focusLookCamera.up.set(0, 1, 0);
-        focusLookCamera.lookAt(center);
-        monitorQuat = focusLookCamera.quaternion;
-      } else {
-        // Fallback
+        // Provider-null cold-start terminal fallback: retain a finite pose.
         const pcWorld = new THREE.Vector3();
         xray.getWorldPosition(pcWorld);
         monitorPos = new THREE.Vector3(pcWorld.x, pcWorld.y + 1.2, pcWorld.z + 2.4);
         monitorQuat = new THREE.Quaternion();
       }
-      }
 
       // Focused-pose switch (crate → deck): blend from the captured pose
       // toward the new focus target so the camera glides instead of snapping.
+      let activeRefitBlend = null;
       if (focusSwitch){
-        if (captureActive) {
+        const reducedRefit = focusSwitch.refit &&
+          document.documentElement.getAttribute('data-a11y-motion') === 'reduced';
+        if (captureActive || reducedRefit) {
           focusSwitch = null;
         } else {
-          focusSwitch.t += dt / focusSwitch.duration;
+          const blendStep = focusSwitch.refit
+            ? Math.min(dt, REFIT_MAX_FRAME_STEP_S)
+            : dt;
+          focusSwitch.t += blendStep / focusSwitch.duration;
           const s = easeInOut(Math.min(1, focusSwitch.t));
-          focusBlendPosition.copy(focusSwitch.pos).lerp(monitorPos, s);
-          focusBlendQuaternion.copy(focusSwitch.quat).slerp(monitorQuat, s);
-          monitorPos = focusBlendPosition;
-          monitorQuat = focusBlendQuaternion;
+          if (focusSwitch.refit) {
+            // A refit may begin while modeT is still easing. Blend the final
+            // camera pose after the cockpit↔focus interpolation so modeT is
+            // not applied to the captured camera position a second time.
+            activeRefitBlend = {
+              pos: focusSwitch.pos,
+              quat: focusSwitch.quat,
+              s,
+            };
+          } else {
+            // Preserve the pre-Phase-5 focused-mode switch path verbatim.
+            focusBlendPosition.copy(focusSwitch.pos).lerp(monitorPos, s);
+            focusBlendQuaternion.copy(focusSwitch.quat).slerp(monitorQuat, s);
+            monitorPos = focusBlendPosition;
+            monitorQuat = focusBlendQuaternion;
+          }
           if (focusSwitch.t >= 1) focusSwitch = null;
         }
       }
@@ -1391,6 +1767,16 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         new THREE.Euler(cockpitPitch, cockpitYaw, 0, 'YXZ')
       );
       camera.quaternion.copy(cockpitQuat).slerp(monitorQuat, mt);
+      if (activeRefitBlend) {
+        focusBlendPosition
+          .copy(activeRefitBlend.pos)
+          .lerp(camera.position, activeRefitBlend.s);
+        focusBlendQuaternion
+          .copy(activeRefitBlend.quat)
+          .slerp(camera.quaternion, activeRefitBlend.s);
+        camera.position.copy(focusBlendPosition);
+        camera.quaternion.copy(focusBlendQuaternion);
+      }
 
       scene.updateMatrixWorld(true);
       camera.updateMatrixWorld(true);
@@ -1404,6 +1790,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         (FOCUSED(viewMode) ? modeT > 0.995 : modeT < 0.005) && !focusSwitch,
         frameId,
       );
+      if (viewMode === 'cockpit' && modeT < 0.005) discardTombstone(focusKind);
       if (!firstFrameReported) {
         firstFrameReported = true;
         onContextEvent?.('ready');
@@ -1415,12 +1802,14 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     return () => {
       disposed = true;
       contextAlive = false;
+      unsubscribeFocusFitEvents();
+      unregisterFocusFitProbe();
       if (raf !== undefined) cancelAnimationFrame(raf);
       renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
       renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
       window.removeEventListener('cockpit-theme', onTheme);
       renderer.domElement.removeEventListener('pointermove', onPointerMove);
-      renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+      unregisterPcActivation();
       window.removeEventListener('cockpit-crate-hover', onCrateHoverGlow);
       sizeSync.dispose();
       if (crate && crate.disposeCrate) crate.disposeCrate();
@@ -1460,6 +1849,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       window.__setCockpitViewMode = null;
       clearMainRendererSize();
       resetHudSampler();
+      resetFocusFitStore();
       renderer.dispose();
       try { renderer.forceContextLoss(); } catch {}
       if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement);

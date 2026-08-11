@@ -29,6 +29,45 @@ type GlassMacBuildOptions = {
   readonly randomSource: RandomSource
 }
 
+export const GLASS_MAC_FOCUS_AUTHORING = {
+  screen: { width: 1.78, height: 1.34, centerY: 0.10, z: 0.108 },
+  verticalBias: 0,
+} as const
+
+export const GLASS_MAC_FOCUS_POINTS_LOCAL = [
+  {
+    x: -GLASS_MAC_FOCUS_AUTHORING.screen.width / 2,
+    y: GLASS_MAC_FOCUS_AUTHORING.screen.height / 2,
+    z: 0,
+  },
+  {
+    x: GLASS_MAC_FOCUS_AUTHORING.screen.width / 2,
+    y: GLASS_MAC_FOCUS_AUTHORING.screen.height / 2,
+    z: 0,
+  },
+  {
+    x: -GLASS_MAC_FOCUS_AUTHORING.screen.width / 2,
+    y: -GLASS_MAC_FOCUS_AUTHORING.screen.height / 2,
+    z: 0,
+  },
+  {
+    x: GLASS_MAC_FOCUS_AUTHORING.screen.width / 2,
+    y: -GLASS_MAC_FOCUS_AUTHORING.screen.height / 2,
+    z: 0,
+  },
+] as const
+
+const SCREEN_CORNER_KEYS = ['tl', 'tr', 'bl', 'br'] as const
+const finiteFocusVector = (vector) =>
+  Number.isFinite(vector.x) &&
+  Number.isFinite(vector.y) &&
+  Number.isFinite(vector.z)
+const hasFrameableScale = (scale) =>
+  finiteFocusVector(scale) &&
+  scale.x !== 0 &&
+  scale.y !== 0 &&
+  scale.z !== 0
+
 export function buildGlassMac(xray, options: GlassMacBuildOptions){
   const padSpeckleRandom = options.randomSource.stream('glass-mac/pad-speckle');
   const screenNoiseRandom = options.randomSource.stream('glass-mac/screen-noise');
@@ -389,7 +428,9 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
   edge(bezel, edgeMat);
 
   // screen: shadow reveal → ivory wallpaper → raised inner frame
-  const SCREEN_W = 1.78, SCREEN_H = 1.34, SCREEN_CY = 0.10;
+  const SCREEN_W = GLASS_MAC_FOCUS_AUTHORING.screen.width;
+  const SCREEN_H = GLASS_MAC_FOCUS_AUTHORING.screen.height;
+  const SCREEN_CY = GLASS_MAC_FOCUS_AUTHORING.screen.centerY;
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.46), shadowMat);
   shadow.position.set(0, SCREEN_CY, 0.101);
   monitor.add(shadow);
@@ -404,15 +445,19 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
   const screenTexDark  = makeScreenTexture('dark');
   const screenMat = new THREE.MeshBasicMaterial({ map: screenTexDark, toneMapped: false });
   const screenGroup = new THREE.Group();
-  screenGroup.position.set(0, SCREEN_CY, 0.108);
+  screenGroup.position.set(0, SCREEN_CY, GLASS_MAC_FOCUS_AUTHORING.screen.z);
   monitor.add(screenGroup);
   screenGroup.add(new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_W, SCREEN_H), screenMat));
   xray.userData.screenGroup = screenGroup;
+  const [screenTl, screenTr, screenBl, screenBr] =
+    GLASS_MAC_FOCUS_POINTS_LOCAL.map(
+      (point) => new THREE.Vector3(point.x, point.y, point.z),
+    );
   xray.userData.screenCorners = {
-    tl: new THREE.Vector3(-SCREEN_W/2,  SCREEN_H/2, 0),
-    tr: new THREE.Vector3( SCREEN_W/2,  SCREEN_H/2, 0),
-    bl: new THREE.Vector3(-SCREEN_W/2, -SCREEN_H/2, 0),
-    br: new THREE.Vector3( SCREEN_W/2, -SCREEN_H/2, 0),
+    tl: screenTl,
+    tr: screenTr,
+    bl: screenBl,
+    br: screenBr,
   };
 
   // bezel rails: registration baseline + micrographic sheet each side
@@ -547,6 +592,52 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     return hudScreenCorners;
   };
 
+  const focusCenter = new THREE.Vector3();
+  const focusQuaternion = new THREE.Quaternion();
+  const focusOutward = new THREE.Vector3();
+  const focusWorldScale = new THREE.Vector3();
+  const focusFramingPoints = GLASS_MAC_FOCUS_POINTS_LOCAL.map(
+    () => new THREE.Vector3(),
+  );
+  const focusTarget = {
+    center: focusCenter,
+    outward: focusOutward,
+    verticalBias: GLASS_MAC_FOCUS_AUTHORING.verticalBias,
+    framingPoints: focusFramingPoints,
+  };
+  const getFocusTarget = () => {
+    const sourceGroup = xray.userData.screenGroup || xray;
+    const sourceCorners = xray.userData.screenCorners;
+    if (!sourceCorners) return null;
+    sourceGroup.updateWorldMatrix(true, false);
+    focusCenter.set(0, 0, 0);
+    for (let index = 0; index < SCREEN_CORNER_KEYS.length; index += 1){
+      const source = sourceCorners[SCREEN_CORNER_KEYS[index]];
+      if (!source || !finiteFocusVector(source)) return null;
+      focusFramingPoints[index]
+        .copy(source)
+        .applyMatrix4(sourceGroup.matrixWorld);
+      if (!finiteFocusVector(focusFramingPoints[index])) return null;
+      focusCenter.add(focusFramingPoints[index]);
+    }
+    focusCenter.multiplyScalar(1 / focusFramingPoints.length);
+    xray.getWorldQuaternion(focusQuaternion);
+    focusOutward
+      .set(0, 0, 1)
+      .applyQuaternion(focusQuaternion)
+      .normalize();
+    xray.getWorldScale(focusWorldScale);
+    if (
+      !finiteFocusVector(focusCenter) ||
+      !finiteFocusVector(focusOutward) ||
+      !hasFrameableScale(focusWorldScale) ||
+      focusOutward.lengthSq() === 0 ||
+      focusFramingPoints.length === 0 ||
+      !Number.isFinite(focusTarget.verticalBias)
+    ) return null;
+    return focusTarget;
+  };
+
   const hudSubjectBounds = Array.from({ length: 8 }, () => new THREE.Vector3());
   const getSubjectBoundsWorld = () => {
     const bbox = new THREE.Box3().setFromObject(xray);
@@ -569,6 +660,7 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
   return {
     keyboard,
     applyTheme,
+    getFocusTarget,
     getScreenCornersWorld,
     getSubjectBoundsWorld,
   };

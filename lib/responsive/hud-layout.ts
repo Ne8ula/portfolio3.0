@@ -32,6 +32,37 @@ export const HUD_RECT_EPSILON = 0.25
 export const HUD_RECT_GRACE_MS = 350
 export const HUD_COMPACT_HYSTERESIS = 8
 
+/** Minimum valid camera-fit safe frame in stage CSS pixels. */
+export const MIN_FIT_FRAME_PX = { w: 160, h: 120 } as const satisfies Size
+
+/** Focused-parallax allowance applied symmetrically inside solver NDC bounds. */
+export const FIT_NDC_MARGIN = 0.04
+
+export type FocusKind = 'monitor' | 'deck' | 'crate'
+
+/** Camera-fit reservations in stage CSS px, applied after HUD_EDGE_GUTTER. */
+export const FOCUS_CAMERA_RESERVATIONS = {
+  monitor: { top: 56, right: 44, bottom: 16, left: 16 },
+  deck: { top: 56, right: 60, bottom: 72, left: 60 },
+  crate: { top: 56, right: 60, bottom: 148, left: 60 },
+} as const satisfies Readonly<Record<FocusKind, Insets>>
+
+/** Per-kind binary-search brackets in world units. */
+export const FOCUS_CAMERA_DISTANCE_BOUNDS = {
+  monitor: { min: 1, max: 40 },
+  deck: { min: 2, max: 60 },
+  crate: { min: 1.5, max: 60 },
+} as const satisfies Readonly<
+  Record<FocusKind, { readonly min: number; readonly max: number }>
+>
+
+/** Cold-start distance used only until a kind has produced a valid solve. */
+export const FOCUS_FALLBACK_DISTANCE = {
+  monitor: 1.7,
+  deck: 3.8,
+  crate: 3,
+} as const satisfies Readonly<Record<FocusKind, number>>
+
 export const ZERO_INSETS = {
   top: 0,
   right: 0,

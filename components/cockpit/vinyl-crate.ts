@@ -43,6 +43,7 @@ import {
   unregisterCrateActions,
   unregisterVinylSleeveProbe,
 } from "./test-hooks"
+import { registerPointerActivation } from "./pointer-activation"
 
 // ── Reference material palette (brief: warm off-white base, milky
 // frost, muted sage accents only — never bright neon green) ─────────
@@ -56,6 +57,174 @@ const CRATE_COLORS = {
   graphite: 0x6E6E68,   // small labels where green is too loud
   feet:     0x24221F,
 };
+
+const CRATE_OCTAGON_VERTEX_SCALE = 1 / Math.cos(Math.PI / 8);
+
+const CRATE_RECORD_COUNT = PROJECTS.length;
+const CRATE_SLEEVE_W = 0.95;
+const CRATE_SLEEVE_H = 0.98;
+const CRATE_SLEEVE_T = 0.045;
+const CRATE_SPACING = 0.072;
+const CRATE_PAD_FRONT = 0.10;
+const CRATE_PAD_BACK = 0.18;
+const CRATE_WALL_T = 0.075;
+const CRATE_TALL_H = 1.02;
+const CRATE_BACK_TAB_Y_OFFSET = 0.018;
+const CRATE_BACK_TAB_HEIGHT = 0.05;
+const CRATE_PLATE_Z_OFFSET = 0.013;
+const CRATE_PLATE_FACE_Z_OFFSET = 0.013;
+const CRATE_BASE_HEIGHT = 0.13;
+const CRATE_BASE_Y = 0.03;
+const CRATE_FLOOR_TOP = CRATE_BASE_Y + CRATE_BASE_HEIGHT + 0.008;
+const CRATE_RECORDS_GROUP_Y = CRATE_FLOOR_TOP + 0.002;
+const CRATE_DEPTH =
+  (CRATE_RECORD_COUNT - 1) * CRATE_SPACING +
+  CRATE_SLEEVE_T +
+  CRATE_PAD_FRONT +
+  CRATE_PAD_BACK;
+const CRATE_WIDTH = CRATE_SLEEVE_W + 0.16;
+const CRATE_OUTER_WIDTH = CRATE_WIDTH + CRATE_WALL_T * 2;
+const CRATE_PLATE_FACE_Z =
+  CRATE_DEPTH / 2 +
+  CRATE_WALL_T +
+  CRATE_PLATE_Z_OFFSET +
+  CRATE_PLATE_FACE_Z_OFFSET;
+const CRATE_LEAN = 0.10;
+const CRATE_LIFT = 0.34;
+const CRATE_PUSH = 0.04;
+const CRATE_TILT = 0.14;
+const CRATE_DISC_RADIUS = CRATE_SLEEVE_H * 0.46;
+const CRATE_DISC_RISE = 0.52;
+const CRATE_DISC_PADDING = 0.010;
+const CRATE_DISC_CLEARANCE = 0.025;
+const CRATE_DISC_CLEAR_RISE = computeSleeveClearRise({
+  sleeveHeight: CRATE_SLEEVE_H,
+  discRadius: CRATE_DISC_RADIUS,
+  clearance: CRATE_DISC_CLEARANCE,
+});
+const CRATE_FRONT_RECORD_Z =
+  CRATE_DEPTH / 2 - CRATE_PAD_FRONT - CRATE_SLEEVE_T / 2;
+const CRATE_PULLED_BASE_Y =
+  CRATE_RECORDS_GROUP_Y + CRATE_SLEEVE_H / 2 + CRATE_LIFT;
+const CRATE_PULLED_BASE_Z = CRATE_FRONT_RECORD_Z + CRATE_PUSH;
+
+export const VINYL_CRATE_FOCUS_AUTHORING = {
+  recordCount: CRATE_RECORD_COUNT,
+  sleeve: {
+    width: CRATE_SLEEVE_W,
+    height: CRATE_SLEEVE_H,
+    thickness: CRATE_SLEEVE_T,
+    spacing: CRATE_SPACING,
+    lean: CRATE_LEAN,
+    lift: CRATE_LIFT,
+    push: CRATE_PUSH,
+    tilt: CRATE_TILT,
+  },
+  shell: {
+    interiorDepth: CRATE_DEPTH,
+    interiorWidth: CRATE_WIDTH,
+    wallThickness: CRATE_WALL_T,
+    outerWidth: CRATE_OUTER_WIDTH,
+    halfWidth: CRATE_OUTER_WIDTH / 2,
+    halfDepth: CRATE_PLATE_FACE_Z,
+    topY: CRATE_TALL_H + CRATE_BACK_TAB_Y_OFFSET + CRATE_BACK_TAB_HEIGHT / 2,
+  },
+  pulledSleeve: {
+    topY: 1.54,
+    topZ: 0.26,
+    mouthY: 1.00,
+    mouthZ: 0.30,
+    baseY: CRATE_PULLED_BASE_Y,
+    baseZ: CRATE_PULLED_BASE_Z,
+  },
+  disc: {
+    radius: CRATE_DISC_RADIUS,
+    padding: CRATE_DISC_PADDING,
+    previewRise: CRATE_DISC_RISE,
+    clearRise: CRATE_DISC_CLEAR_RISE,
+    clearance: CRATE_DISC_CLEARANCE,
+    minTilt: -CRATE_LEAN,
+    maxTilt: CRATE_TILT,
+  },
+  center: { x: 0, y: 0.985, z: 0 },
+  verticalBias: 1.8,
+} as const;
+
+const tiltedDiscOctagon = (tilt) => {
+  const radius =
+    (VINYL_CRATE_FOCUS_AUTHORING.disc.radius +
+      VINYL_CRATE_FOCUS_AUTHORING.disc.padding) *
+    CRATE_OCTAGON_VERTEX_SCALE;
+  const cosTilt = Math.cos(tilt);
+  const sinTilt = Math.sin(tilt);
+  return Array.from({ length: 8 }, (_, index) => {
+    const angle = Math.PI / 8 + index * Math.PI / 4;
+    const planeY =
+      VINYL_CRATE_FOCUS_AUTHORING.disc.previewRise +
+      Math.sin(angle) * radius;
+    return {
+      x: Math.cos(angle) * radius,
+      y: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.baseY + cosTilt * planeY,
+      z: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.baseZ + sinTilt * planeY,
+    };
+  });
+};
+
+const crateShellPoints = [
+  ...[-1, 1].flatMap((xSign) =>
+    [-1, 1].map((zSign) => ({
+      x: xSign * VINYL_CRATE_FOCUS_AUTHORING.shell.halfWidth,
+      y: VINYL_CRATE_FOCUS_AUTHORING.shell.topY,
+      z: zSign * VINYL_CRATE_FOCUS_AUTHORING.shell.halfDepth,
+    })),
+  ),
+  ...[-1, 1].flatMap((xSign) =>
+    [-1, 1].map((zSign) => ({
+      x: xSign * VINYL_CRATE_FOCUS_AUTHORING.shell.halfWidth,
+      y: 0,
+      z: zSign * VINYL_CRATE_FOCUS_AUTHORING.shell.halfDepth,
+    })),
+  ),
+];
+const crateSleevePoints = [
+  {
+    x: -CRATE_SLEEVE_W / 2,
+    y: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.topY,
+    z: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.topZ,
+  },
+  {
+    x: CRATE_SLEEVE_W / 2,
+    y: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.topY,
+    z: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.topZ,
+  },
+  {
+    x: -CRATE_SLEEVE_W / 2,
+    y: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.mouthY,
+    z: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.mouthZ,
+  },
+  {
+    x: CRATE_SLEEVE_W / 2,
+    y: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.mouthY,
+    z: VINYL_CRATE_FOCUS_AUTHORING.pulledSleeve.mouthZ,
+  },
+];
+
+export const VINYL_CRATE_FOCUS_POINTS_LOCAL = [
+  ...crateShellPoints,
+  ...crateSleevePoints,
+  ...tiltedDiscOctagon(VINYL_CRATE_FOCUS_AUTHORING.disc.minTilt),
+  ...tiltedDiscOctagon(VINYL_CRATE_FOCUS_AUTHORING.disc.maxTilt),
+] as const;
+
+const finiteFocusVector = (vector) =>
+  Number.isFinite(vector.x) &&
+  Number.isFinite(vector.y) &&
+  Number.isFinite(vector.z);
+const hasFrameableScale = (scale) =>
+  finiteFocusVector(scale) &&
+  scale.x !== 0 &&
+  scale.y !== 0 &&
+  scale.z !== 0;
 
 function makeCoverTexture(i, random: RandomStream){
   const { bg, accent, text, title, category, date, cover } = PROJECTS[i];
@@ -234,47 +403,42 @@ export function buildVinylCrate(
   // wall heights follow the reference renders: tall back + sides, a
   // stepped-down section over the front opening, thin full-height
   // corner posts at the very front, all on an off-white base band.
-  const N = PROJECTS.length;
+  const N = VINYL_CRATE_FOCUS_AUTHORING.recordCount;
   const restore = options.restore;
   const restoredIndex = Number.isInteger(restore?.recordIndex)
     && restore.recordIndex >= 0
     && restore.recordIndex < N
     ? restore.recordIndex
     : -1;
-  const SLEEVE_W = 0.95;   // cover width  (X)
-  const SLEEVE_H = 0.98;   // cover height (Y)
-  const SLEEVE_T = 0.045;  // sleeve thickness (Z) — real-LP proportion
-  const SPACING  = 0.072;  // Z stride between sleeves — packed like a real bin
-  const LEAN     = 0.10;   // uniform backward lean (rad)
+  const SLEEVE_W = VINYL_CRATE_FOCUS_AUTHORING.sleeve.width;
+  const SLEEVE_H = VINYL_CRATE_FOCUS_AUTHORING.sleeve.height;
+  const SLEEVE_T = VINYL_CRATE_FOCUS_AUTHORING.sleeve.thickness;
+  const SPACING = VINYL_CRATE_FOCUS_AUTHORING.sleeve.spacing;
+  const LEAN = VINYL_CRATE_FOCUS_AUTHORING.sleeve.lean;
 
-  const PAD_FRONT = 0.10;
-  const PAD_BACK  = 0.18;  // extra room for the lean
-  const CRATE_D = (N - 1) * SPACING + SLEEVE_T + PAD_FRONT + PAD_BACK; // interior depth (Z)
-  const CRATE_W = SLEEVE_W + 0.16;                                     // interior width (X)
-  const WALL_T  = 0.075;   // thick molded acrylic
+  const PAD_FRONT = CRATE_PAD_FRONT;
+  const CRATE_D = VINYL_CRATE_FOCUS_AUTHORING.shell.interiorDepth;
+  const CRATE_W = VINYL_CRATE_FOCUS_AUTHORING.shell.interiorWidth;
+  const WALL_T = VINYL_CRATE_FOCUS_AUTHORING.shell.wallThickness;
 
-  const BASE_H    = 0.13;  // off-white base band height
-  const BASE_Y0   = 0.03;  // band floats on the feet
+  const BASE_H = CRATE_BASE_HEIGHT;  // off-white base band height
+  const BASE_Y0 = CRATE_BASE_Y;  // band floats on the feet
   const WALL_Y0   = BASE_Y0 + BASE_H - 0.01;  // walls sink 10mm into the band (no gap, no coplanar seam)
-  const TALL_H    = 1.02;  // back + rear-side wall top (from crate bottom)
+  const TALL_H = CRATE_TALL_H;  // back + rear-side wall top (from crate bottom)
   const FRONT_TOP = 0.60;  // front wall + stepped side section top
   const NOTCH_D   = 0.34;  // depth of the stepped-down side section, from the front face
-  const FLOOR_TOP = BASE_Y0 + BASE_H + 0.008; // interior tray plate top
+  const FLOOR_TOP = CRATE_FLOOR_TOP; // interior tray plate top
 
   // Pull-out motion targets. Mostly RISE, little tilt: under the steep
   // top-down crate camera, a record tipping toward the lens picks up ugly
   // wide-angle foreshortening (worst for the front rows) — rising reads clean.
-  const LIFT      = 0.34;  // sleeve rise
-  const PUSH      = 0.04;  // sleeve toward viewer
-  const TILT      = 0.14;  // sleeve tips toward viewer (rad, from vertical)
-  const DISC_RADIUS = SLEEVE_H * 0.46;
-  const DISC_RISE = 0.52;  // selected preview: disc remains partly jacketed
-  const DISC_CLEARANCE = 0.025;
-  const DISC_CLEAR_RISE = computeSleeveClearRise({
-    sleeveHeight: SLEEVE_H,
-    discRadius: DISC_RADIUS,
-    clearance: DISC_CLEARANCE,
-  });
+  const LIFT = VINYL_CRATE_FOCUS_AUTHORING.sleeve.lift;
+  const PUSH = VINYL_CRATE_FOCUS_AUTHORING.sleeve.push;
+  const TILT = VINYL_CRATE_FOCUS_AUTHORING.sleeve.tilt;
+  const DISC_RADIUS = VINYL_CRATE_FOCUS_AUTHORING.disc.radius;
+  const DISC_RISE = VINYL_CRATE_FOCUS_AUTHORING.disc.previewRise;
+  const DISC_CLEARANCE = VINYL_CRATE_FOCUS_AUTHORING.disc.clearance;
+  const DISC_CLEAR_RISE = VINYL_CRATE_FOCUS_AUTHORING.disc.clearRise;
   const DISC_CLEAR_PROGRESS = DISC_CLEAR_RISE / DISC_RISE;
 
   const baseX = -3.2, baseY = 0.18, baseZ = 1.15;
@@ -345,8 +509,13 @@ export function buildVinylCrate(
         0, (WALL_Y0 + TALL_H)/2, -(CRATE_D/2 + WALL_T/2));
 
   // Small molded tab on the back rim center (top-view reference).
-  shell(new RoundedBoxGeometry(0.16, 0.05, WALL_T + 0.006, 2, 0.012), wallMat,
-        0, TALL_H + 0.018, -(CRATE_D/2 + WALL_T/2));
+  shell(new RoundedBoxGeometry(
+    0.16,
+    CRATE_BACK_TAB_HEIGHT,
+    WALL_T + 0.006,
+    2,
+    0.012,
+  ), wallMat, 0, TALL_H + CRATE_BACK_TAB_Y_OFFSET, -(CRATE_D/2 + WALL_T/2));
 
   // Front wall — low, records peek over it.
   shell(new RoundedBoxGeometry(wallW, FRONT_TOP - WALL_Y0, WALL_T, 2, wallR), wallMat,
@@ -370,7 +539,7 @@ export function buildVinylCrate(
   // Slightly-proud clear label plate across the lower front — carries the
   // 007/ARCHIVE and DEVICE silkscreen blocks in the reference.
   const PLATE_H = 0.33;
-  const plateZ = CRATE_D/2 + WALL_T + 0.013;
+  const plateZ = CRATE_D/2 + WALL_T + CRATE_PLATE_Z_OFFSET;
   const plate = shell(new RoundedBoxGeometry(CRATE_W * 0.96, PLATE_H, 0.022, 2, 0.012), plateMat,
         0, WALL_Y0 + 0.035 + PLATE_H/2, plateZ);
 
@@ -384,7 +553,7 @@ export function buildVinylCrate(
     decals.push(d);
     return d;
   };
-  const plateFaceZ = plateZ + 0.013;
+  const plateFaceZ = plateZ + CRATE_PLATE_FACE_Z_OFFSET;
   const plateMidY = plate.position.y - 0.03;
   // Front: 007 / ARCHIVE — DECODING // ACCESS GRANTED block, lower-left.
   addDecal('Micrographics Vol.1 - Editable 57.svg', { width: 0.36, tint: '#6F8D75', opacity: 0.9 },
@@ -425,7 +594,7 @@ export function buildVinylCrate(
 
   // ── Records ───────────────────────────────────────────────────
   const recordsGroup = new THREE.Group();
-  recordsGroup.position.set(0, FLOOR_TOP + 0.002, 0);
+  recordsGroup.position.set(0, CRATE_RECORDS_GROUP_Y, 0);
   recordsGroup.userData.noGlow = true;   // edge-glow traces the shell only — 15 outlined sleeves read as noise
   group.add(recordsGroup);
 
@@ -782,51 +951,93 @@ export function buildVinylCrate(
     hoveredIdx = -1;
     if (hoverCrate){ hoverCrate = false; window.dispatchEvent(new CustomEvent('cockpit-crate-hover', { detail:{ hovering:false } })); }
   };
-  const onPointerDown = (e) => {
-    if (e.button !== 0) return;
-    const mode = viewMode();
-    if (mode === 'cockpit'){
-      if (pickCrate(e) && window.__setCockpitViewMode){
-        window.__setCockpitViewMode('crate');
-        e.stopPropagation();
-      }
-    } else if (mode === 'crate'){
-      const idx = pickVinyl(e);
-      if (idx >= 0){
-        // Click sends the record to the turntable: the sleeve tips out,
-        // the disc rises and flies to the platter (deck view). Falls back
-        // to the old pull-out toggle if the deck isn't available.
-        if (deck() && !deck().busy){
-          if (sendToDeck(idx) && window.__setCockpitViewMode) window.__setCockpitViewMode('deck');
-        } else if (!deck()){
-          selectedIdx = (selectedIdx === idx) ? -1 : idx;
+  const unregisterCrateActivation = registerPointerActivation(
+    renderer.domElement,
+    {
+      owner: 'crate',
+      hitTest: (point) => {
+        const mode = viewMode();
+        if (mode === 'cockpit') {
+          return pickCrate(point) ? { key: 'crate-entry' } : null;
         }
-        // stopImmediatePropagation: the deck's own pointerdown listener is
-        // on the same canvas — after the mode flip above it would read this
-        // SAME click as a deck-view click-away and bounce straight back.
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-      } else if (!pickCrate(e)){
-        // Empty space: first click puts a pulled record back; with
-        // nothing pulled, it returns to the cockpit.
+        if (mode !== 'crate') return null;
+        const index = pickVinyl(point);
+        if (index >= 0) return { key: 'crate-sleeve', index };
+        return pickCrate(point) ? null : { key: 'crate-click-away' };
+      },
+      action: (hit) => {
+        if (hit.key === 'crate-entry') {
+          window.__setCockpitViewMode?.('crate');
+          return;
+        }
+        if (hit.key === 'crate-sleeve') {
+          const idx = hit.index;
+          // Click sends the record to the turntable: the sleeve tips out,
+          // the disc rises and flies to the platter (deck view). Falls back
+          // to the old pull-out toggle if the deck isn't available.
+          if (deck() && !deck().busy){
+            if (sendToDeck(idx) && window.__setCockpitViewMode) window.__setCockpitViewMode('deck');
+          } else if (!deck()){
+            selectedIdx = (selectedIdx === idx) ? -1 : idx;
+          }
+          return;
+        }
+        // Empty space: first click puts a pulled record back; with nothing
+        // pulled, it returns to the cockpit.
         if (selectedIdx >= 0) selectedIdx = -1;
-        else if (window.__setCockpitViewMode) window.__setCockpitViewMode('cockpit');
-      }
-    }
-  };
+        else window.__setCockpitViewMode?.('cockpit');
+      },
+    },
+  );
 
   renderer.domElement.addEventListener('pointermove', onPointerMove);
   renderer.domElement.addEventListener('pointerleave', onPointerLeave);
-  renderer.domElement.addEventListener('pointerdown', onPointerDown, true);
 
   // ── Camera-focus target for GlobeCanvas ('crate' view mode) ───
+  const crateFocusCenter = new THREE.Vector3();
+  const crateFocusQuaternion = new THREE.Quaternion();
+  const crateFocusOutward = new THREE.Vector3();
+  const crateFocusWorldScale = new THREE.Vector3();
+  const crateFocusPoints = VINYL_CRATE_FOCUS_POINTS_LOCAL.map(
+    () => new THREE.Vector3(),
+  );
+  const crateFocusTarget = {
+    center: crateFocusCenter,
+    outward: crateFocusOutward,
+    verticalBias: VINYL_CRATE_FOCUS_AUTHORING.verticalBias,
+    framingPoints: crateFocusPoints,
+  };
   group.getFocusTarget = function(){
-    group.updateMatrixWorld(true);
-    const center = group.localToWorld(new THREE.Vector3(0, 0.55, 0));
-    const q = group.getWorldQuaternion(new THREE.Quaternion());
-    const outward = new THREE.Vector3(0, 0, 1).applyQuaternion(q).normalize();
-    const ws = group.getWorldScale(new THREE.Vector3()).x || 1;
-    return { center, outward, fitDepth: (CRATE_D + 1.0) * ws, fitWidth: (CRATE_W + 0.8) * ws };
+    group.updateWorldMatrix(true, false);
+    crateFocusCenter
+      .set(
+        VINYL_CRATE_FOCUS_AUTHORING.center.x,
+        VINYL_CRATE_FOCUS_AUTHORING.center.y,
+        VINYL_CRATE_FOCUS_AUTHORING.center.z,
+      )
+      .applyMatrix4(group.matrixWorld);
+    group.getWorldQuaternion(crateFocusQuaternion);
+    crateFocusOutward
+      .set(0, 0, 1)
+      .applyQuaternion(crateFocusQuaternion)
+      .normalize();
+    for (let index = 0; index < VINYL_CRATE_FOCUS_POINTS_LOCAL.length; index += 1){
+      const local = VINYL_CRATE_FOCUS_POINTS_LOCAL[index];
+      crateFocusPoints[index]
+        .set(local.x, local.y, local.z)
+        .applyMatrix4(group.matrixWorld);
+      if (!finiteFocusVector(crateFocusPoints[index])) return null;
+    }
+    group.getWorldScale(crateFocusWorldScale);
+    if (
+      !finiteFocusVector(crateFocusCenter) ||
+      !finiteFocusVector(crateFocusOutward) ||
+      !hasFrameableScale(crateFocusWorldScale) ||
+      crateFocusOutward.lengthSq() === 0 ||
+      crateFocusPoints.length === 0 ||
+      !Number.isFinite(crateFocusTarget.verticalBias)
+    ) return null;
+    return crateFocusTarget;
   };
 
   // ── Screen-space projections for the DOM HUD ──────────────────
@@ -1035,7 +1246,7 @@ export function buildVinylCrate(
     pinHelpers.clear();
     renderer.domElement.removeEventListener('pointermove', onPointerMove);
     renderer.domElement.removeEventListener('pointerleave', onPointerLeave);
-    renderer.domElement.removeEventListener('pointerdown', onPointerDown, true);
+    unregisterCrateActivation();
     window.removeEventListener('cockpit-view-mode', onViewModeChange);
     window.__getCockpitCrateRect = null;
     window.__getCockpitVinylHover = null;

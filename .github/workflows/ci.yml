@@ -55,6 +55,10 @@ jobs:
             spec: e2e/phase3-renderer.spec.ts
           - id: phase4-hud
             spec: e2e/phase4-hud.spec.ts
+          - id: phase5-fit
+            spec: e2e/phase5-fit.spec.ts
+          - id: phase5-input
+            spec: e2e/phase5-input.spec.ts
           - id: smoke
             spec: e2e/smoke.spec.ts
           - id: turntable-tether
