@@ -190,8 +190,12 @@ function createArbiter(canvas){
     },
     pointFor(key){
       for (const entry of orderedEntries()) {
-        const point = entry.testPoint?.(key)
-        if (point) return point
+        const proposed = entry.testPoint?.(key)
+        const points = Array.isArray(proposed) ? proposed : proposed ? [proposed] : []
+        for (const point of points) {
+          const resolved = resolveOwner({ clientX: point.x, clientY: point.y })
+          if (resolved?.hit.key === key) return point
+        }
       }
       return null
     },

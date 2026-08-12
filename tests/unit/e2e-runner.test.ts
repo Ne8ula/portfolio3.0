@@ -115,7 +115,7 @@ describe('E2E runner support', () => {
     )
     expect(workflow).toContain('ac17-decoration:')
     expect(workflow).toContain(
-      '--grep "AC-17 arbitrates the wide-fit decoration targets"',
+      '--grep "AC-17 arbitrates wide-fit decorations where each target is reachable"',
     )
   })
 })

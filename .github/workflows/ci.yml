@@ -143,7 +143,7 @@ jobs:
       - name: Focused AC-17 decoration test (Chromium)
         run: >-
           npm run test:e2e -- e2e/phase5-input.spec.ts
-          --grep "AC-17 arbitrates the wide-fit decoration targets"
+          --grep "AC-17 arbitrates wide-fit decorations where each target is reachable"
         env:
           CI: 'true'
 

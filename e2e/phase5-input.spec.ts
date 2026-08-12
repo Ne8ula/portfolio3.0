@@ -236,7 +236,6 @@ async function findActivationPoint(
   key: string,
 ): Promise<ActivationPoint | null> {
   const wideDecoration = key === 'tablet' || key === 'shaker'
-  const deadline = Date.now() + 15_000
   const contained = await page.locator('.responsive-stage').getAttribute('data-stage-mode') === 'contained'
   // Fit stages cannot scroll. Repeating the same CPU-heavy raycast search at
   // nine identical scroll positions made wide-fit discovery appear hung on
@@ -258,36 +257,9 @@ async function findActivationPoint(
       }))
 
       if (wideDecoration) {
-        const projection = await page.evaluate((targetKey) =>
+        const point = await page.evaluate((targetKey) =>
           window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint(targetKey), key)
-        if (!projection) continue
-        const offsets: ActivationPoint[] = [{ x: 0, y: 0 }]
-        for (const radius of [18, 36, 54, 72, 108, 144, 180]) {
-          for (const [x, y] of [
-            [0, -radius], [radius, 0], [0, radius], [-radius, 0],
-            [radius, -radius], [radius, radius], [-radius, radius], [-radius, -radius],
-          ] as const) offsets.push({ x, y })
-        }
-        for (let start = 0; start < offsets.length && Date.now() < deadline; start += 8) {
-          const point = await page.evaluate(({ targetKey, projected, batch }) => {
-            const hooks = window.__COCKPIT_TEST_HOOKS__!
-            const canvas = document.querySelector<HTMLCanvasElement>(
-              '[data-layout-region="cockpit-stage"] canvas',
-            )
-            if (!canvas) return null
-            for (const offset of batch) {
-              const point = { x: projected.x + offset.x, y: projected.y + offset.y }
-              if (
-                document.elementFromPoint(point.x, point.y) === canvas &&
-                hooks.getPointerActivationCandidate(point)?.key === targetKey
-              ) return point
-            }
-            return null
-          }, { targetKey: key, projected: projection, batch: offsets.slice(start, start + 8) })
-          if (point) return point
-          // Yield to rendering and camera smoothing between tiny raycast batches.
-          await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
-        }
+        if (point) return point
         continue
       }
 
@@ -1255,7 +1227,7 @@ test.describe('Phase 5 gesture arbitration', () => {
     expect(pointerDowns?.defaultPrevented).toBe(0)
   })
 
-  test('AC-17 arbitrates the wide-fit decoration targets at 1920×900', async ({ page }) => {
+  test('AC-17 arbitrates wide-fit decorations where each target is reachable', async ({ page }) => {
     test.setTimeout(ciTimeout(180_000, 600_000))
     await page.setViewportSize({ width: 1920, height: 900 })
     await enterCockpit(page)
@@ -1270,6 +1242,19 @@ test.describe('Phase 5 gesture arbitration', () => {
         if (event.defaultPrevented) runtime.__phase5PointerDowns!.defaultPrevented += 1
       })
     })
+
+    await test.step('record tablet as unreachable at fully settled 1920×900 poses', async () => {
+      await expect(discoverActivationPoint(page, 'tablet')).rejects.toThrow(
+        /No reachable pointer-activation target found/u,
+      )
+    })
+    await page.setViewportSize({ width: 1920, height: 1080 })
+    await expect(page.locator('.responsive-stage')).toHaveAttribute('data-stage-mode', 'fit')
+    await page.waitForFunction(
+      () => window.__COCKPIT_TEST_HOOKS__!.isSettled(),
+      undefined,
+      { timeout: timing.transition },
+    )
 
     await test.step('tablet: discover, drag-cancel, and activate', async () => {
       await expectDragThenSubSlopClick(page, 'tablet')
