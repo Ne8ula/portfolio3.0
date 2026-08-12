@@ -269,6 +269,7 @@ describe('phase runner', () => {
     expect(canonicalStepId('Step-4: enforcement')).toBe('step-4')
     expect(canonicalStepId('Step 1 — sizing policy')).toBe('step-1')
     expect(canonicalStepId('step-30 catalogue routes')).toBe('step-30')
+    expect(canonicalStepId('6 — Contained pan only')).toBe('step-6')
   })
 
   it('accepts a descriptive Codex step label and isolates a host-recoverable e2e failure', () => {
