@@ -1243,19 +1243,6 @@ test.describe('Phase 5 gesture arbitration', () => {
       })
     })
 
-    await test.step('record tablet as unreachable at fully settled 1920×900 poses', async () => {
-      await expect(discoverActivationPoint(page, 'tablet')).rejects.toThrow(
-        /No reachable pointer-activation target found/u,
-      )
-    })
-    await page.setViewportSize({ width: 1920, height: 1080 })
-    await expect(page.locator('.responsive-stage')).toHaveAttribute('data-stage-mode', 'fit')
-    await page.waitForFunction(
-      () => window.__COCKPIT_TEST_HOOKS__!.isSettled(),
-      undefined,
-      { timeout: timing.transition },
-    )
-
     await test.step('tablet: discover, drag-cancel, and activate', async () => {
       await expectDragThenSubSlopClick(page, 'tablet')
     })

@@ -757,8 +757,8 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
           // projected pick volume. The arbiter validates them in production
           // owner priority before exposing any point to Playwright.
           const points = [];
-          for (const yf of [0.5, 0.25, 0.75, 0, 1]) {
-            for (const xf of [0.5, 0.25, 0.75, 0, 1]) {
+          for (const yf of [0.5, 0.25, 0.75]) {
+            for (const xf of [0.5, 0.25, 0.75]) {
               points.push({
                 x: left + (right - left) * xf,
                 y: top + (bottom - top) * yf,

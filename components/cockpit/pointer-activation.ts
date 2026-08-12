@@ -39,6 +39,7 @@ function createArbiter(canvas){
   const interactionSurface = canvas.closest('[data-layout-region="cockpit-stage"]') || canvas
   const entries = new Map()
   const pending = new Map()
+  const testPoints = new Map()
   let activationCount = 0
   let lastActivation = null
 
@@ -189,12 +190,21 @@ function createArbiter(canvas){
         : { owner: resolved.entry.owner, key: resolved.hit.key }
     },
     pointFor(key){
+      const cached = testPoints.get(key)
+      if (cached) {
+        const resolved = resolveOwner({ clientX: cached.x, clientY: cached.y })
+        if (resolved?.hit.key === key) return cached
+        testPoints.delete(key)
+      }
       for (const entry of orderedEntries()) {
         const proposed = entry.testPoint?.(key)
         const points = Array.isArray(proposed) ? proposed : proposed ? [proposed] : []
         for (const point of points) {
           const resolved = resolveOwner({ clientX: point.x, clientY: point.y })
-          if (resolved?.hit.key === key) return point
+          if (resolved?.hit.key === key) {
+            testPoints.set(key, point)
+            return point
+          }
         }
       }
       return null
