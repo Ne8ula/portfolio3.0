@@ -277,10 +277,17 @@ async function findActivationPoint(
             hooks.getPointerActivationCandidate({ x, y })?.key === targetKey
         }
         const projected = hooks.getPointerActivationPoint(targetKey)
+        let raycastCount = 0
+        const maxLocalRaycasts = 512
+        const boundedCandidate = (x: number, y: number) => {
+          if (raycastCount >= maxLocalRaycasts) return false
+          raycastCount += 1
+          return isCandidate(x, y)
+        }
         if (projected) {
           const localRadius = targetKey === 'tablet' || targetKey === 'shaker' ? 180 : 48
           const localStep = targetKey === 'tablet' || targetKey === 'shaker' ? 18 : 3
-          if (isCandidate(projected.x, projected.y)) return projected
+          if (boundedCandidate(projected.x, projected.y)) return projected
           // Search outward from the authored projection and stop at the first
           // hit. The former full-square scan collected every matching pixel
           // before returning, forcing thousands of synchronous three.js
@@ -294,14 +301,25 @@ async function findActivationPoint(
                 { x: projected.x + radius, y: projected.y + offset },
               ]
               for (const candidate of candidates) {
-                if (isCandidate(candidate.x, candidate.y)) return candidate
+                if (boundedCandidate(candidate.x, candidate.y)) return candidate
               }
             }
           }
         }
-        const steps = targetKey === 'tablet' || targetKey === 'shaker'
-          ? [24, 12]
-          : [12, 6]
+        // Wide-fit decoration projections have a deliberately bounded local
+        // search. A full 1920×900 fallback performs thousands of synchronous
+        // three.js raycasts and can starve SwiftShader's render loop.
+        if (targetKey === 'tablet' || targetKey === 'shaker') {
+          console.info('[phase5][activation-search]', {
+            targetKey,
+            projected,
+            raycastCount,
+            maxLocalRaycasts,
+            bounds: { left, top, right, bottom },
+          })
+          return null
+        }
+        const steps = [12, 6]
         for (const step of steps) {
           for (let y = top + step / 2; y < bottom; y += step) {
             for (let x = left + step / 2; x < right; x += step) {
@@ -346,7 +364,16 @@ async function discoverActivationPoint(
     const discovered = await findActivationPoint(page, key)
     if (discovered) return discovered
   }
-  throw new Error(`No reachable pointer-activation target found for ${key}`)
+  const diagnostic = await page.evaluate((targetKey) => ({
+    targetKey,
+    projected: window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint(targetKey),
+    freeLook: window.__COCKPIT_TEST_HOOKS__!.getFreeLookState(),
+    activation: window.__COCKPIT_TEST_HOOKS__!.getPointerActivationState(),
+    stageMode: document.querySelector<HTMLElement>('.responsive-stage')?.dataset.stageMode,
+  }), key)
+  throw new Error(
+    `No reachable pointer-activation target found: ${JSON.stringify(diagnostic)}`,
+  )
 }
 
 async function armActivationTarget(
@@ -593,10 +620,19 @@ test.describe('Phase 5 contained pan', () => {
   }) => {
     test.setTimeout(ciTimeout(240_000, 900_000))
 
-    for (const viewport of PAN_CASES) {
-      await page.setViewportSize(viewport)
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await enterCockpit(page)
+    await page.setViewportSize(PAN_CASES[0])
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await enterCockpit(page)
+
+    for (const [index, viewport] of PAN_CASES.entries()) {
+      if (index > 0) {
+        await page.setViewportSize(viewport)
+        await expect(page.locator('.responsive-stage')).toHaveAttribute(
+          'data-stage-mode',
+          'contained',
+        )
+        await page.locator('[data-hud="pan-reset"]').click()
+      }
 
       const initial = await panState(page)
       const expectedRatio = sizeRatioFor({ w: viewport.width, h: viewport.height })
@@ -675,10 +711,20 @@ test.describe('Phase 5 contained pan', () => {
     test.setTimeout(ciTimeout(180_000, 720_000))
     const dragDisplacements: number[] = []
 
-    for (const viewport of [PAN_CASES[0], PAN_CASES[2]]) {
-      await page.setViewportSize(viewport)
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await enterCockpit(page)
+    const pointerViewports = [PAN_CASES[0], PAN_CASES[2]] as const
+    await page.setViewportSize(pointerViewports[0])
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await enterCockpit(page)
+
+    for (const [index, viewport] of pointerViewports.entries()) {
+      if (index > 0) {
+        await page.setViewportSize(viewport)
+        await expect(page.locator('.responsive-stage')).toHaveAttribute(
+          'data-stage-mode',
+          'contained',
+        )
+        await page.locator('[data-hud="pan-reset"]').click()
+      }
       const region = page.locator('.responsive-stage')
       const box = await region.boundingBox()
       if (!box) throw new Error('responsive stage has no box')
@@ -1177,11 +1223,15 @@ test.describe('Phase 5 gesture arbitration', () => {
       })
     })
 
-    await expectDragThenSubSlopClick(page, 'tablet')
+    await test.step('tablet: discover, drag-cancel, and activate', async () => {
+      await expectDragThenSubSlopClick(page, 'tablet')
+    })
     expect(await page.evaluate(
       () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('tablet'),
     )).toBeNull()
-    await expectDragThenSubSlopClick(page, 'shaker')
+    await test.step('shaker: discover, drag-cancel, and activate', async () => {
+      await expectDragThenSubSlopClick(page, 'shaker')
+    })
     expect(await page.evaluate(
       () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('shaker'),
     )).toBeNull()

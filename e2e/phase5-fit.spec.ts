@@ -35,7 +35,6 @@ async function enterCockpit(page: Page, capture = true): Promise<void> {
 
 async function enterView(page: Page, kind: 'monitor' | 'deck' | 'crate') {
   await page.evaluate((mode) => window.__COCKPIT_TEST_HOOKS__!.enterView(mode), kind)
-  await page.waitForTimeout(200)
   await expect.poll(
     () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
     { timeout: timing.settle },
@@ -251,7 +250,9 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       })
 
       for (const kind of ['monitor', 'crate', 'deck'] as const) {
-        const fit = await enterView(page, kind)
+        const fit = await test.step(`${viewport.id}: ${kind} fit`, () =>
+          enterView(page, kind),
+        )
         if (kind === 'crate' && !cratePreviewPrimed) {
           await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.selectRecord(1))
           await expect.poll(
