@@ -914,12 +914,16 @@ test.describe('Phase 5 contained pan', () => {
       })
       expect(boxes.chromeRect.left).toBeGreaterThanOrEqual(boxes.wrapperRect.left + 11)
       expect(boxes.chromeRect.right).toBeLessThanOrEqual(boxes.wrapperRect.right - 11)
-      expect(boxes.buttonRect.width).toBeGreaterThanOrEqual(
-        attributes['data-a11y-controls'] === 'large' ? 56 : 44,
-      )
-      expect(boxes.buttonRect.height).toBeGreaterThanOrEqual(
-        attributes['data-a11y-controls'] === 'large' ? 56 : 44,
-      )
+      const expectedControlSize =
+        attributes['data-a11y-controls'] === 'large' ? 56 : 44
+      await expect.poll(
+        () => reset.evaluate((element) => element.getBoundingClientRect().width),
+        { timeout: timing.expect },
+      ).toBeGreaterThanOrEqual(expectedControlSize)
+      await expect.poll(
+        () => reset.evaluate((element) => element.getBoundingClientRect().height),
+        { timeout: timing.expect },
+      ).toBeGreaterThanOrEqual(expectedControlSize)
     }
     const largeCaptionSize = await bar.locator('.pan-instructions-caption').evaluate(
       (element) => Number.parseFloat(getComputedStyle(element).fontSize),

@@ -71,6 +71,7 @@ type PanController = {
 
 const INERTIA_DECAY_PER_SECOND =
   Math.log(2) / (PAN_INERTIA_HALFLIFE_MS / 1000)
+const NATIVE_SCROLL_QUANTIZATION_PX = 0.5
 
 function createPanController(
   containerRef: ElementRef<HTMLDivElement>,
@@ -89,7 +90,7 @@ function createPanController(
   let inertiaActive = false
   let frameId = 0
   let lastFrameTime: number | null = null
-  let awaitingControllerScroll = false
+  let centerOnRangeReady = false
   let lastWrittenX = 0
   let lastWrittenY = 0
   let detachListeners: (() => void) | null = null
@@ -118,11 +119,23 @@ function createPanController(
     if (!element) return
     const nextX = clampPanOffset(x, maxX)
     const nextY = clampPanOffset(y, maxY)
-    awaitingControllerScroll = true
-    lastWrittenX = nextX
-    lastWrittenY = nextY
     element.scrollLeft = nextX
     element.scrollTop = nextY
+    // Browsers may quantize native scroll positions to whole CSS pixels.
+    // Attribute the event to the value the element actually committed while
+    // retaining the exact accumulator target (which may be a half pixel).
+    lastWrittenX = element.scrollLeft
+    lastWrittenY = element.scrollTop
+  }
+
+  const centerCommittedRange = (): boolean => {
+    readRange()
+    if (!centerOnRangeReady || (maxX === 0 && maxY === 0)) return false
+    targetX = maxX / 2
+    targetY = maxY / 2
+    centerOnRangeReady = false
+    writeScroll(targetX, targetY)
+    return true
   }
 
   const cancelFrame = (): void => {
@@ -213,8 +226,8 @@ function createPanController(
     if (reducedMotion) {
       writeScroll(targetX, targetY)
     } else if (
-      Math.abs(deltaX) <= PAN_POSITION_EPSILON_PX &&
-      Math.abs(deltaY) <= PAN_POSITION_EPSILON_PX
+      Math.abs(deltaX) <= NATIVE_SCROLL_QUANTIZATION_PX &&
+      Math.abs(deltaY) <= NATIVE_SCROLL_QUANTIZATION_PX
     ) {
       writeScroll(targetX, targetY)
     } else if (dtMs > 0) {
@@ -226,8 +239,8 @@ function createPanController(
     }
 
     const unsettled =
-      Math.abs(targetX - element.scrollLeft) > PAN_POSITION_EPSILON_PX ||
-      Math.abs(targetY - element.scrollTop) > PAN_POSITION_EPSILON_PX
+      Math.abs(targetX - element.scrollLeft) > NATIVE_SCROLL_QUANTIZATION_PX ||
+      Math.abs(targetY - element.scrollTop) > NATIVE_SCROLL_QUANTIZATION_PX
     if (inertiaActive || unsettled) frameId = requestAnimationFrame(frame)
     else lastFrameTime = null
   }
@@ -266,10 +279,10 @@ function createPanController(
     stopForLifecycle()
     mode = nextMode
     if (mode === 'contained') {
-      readRange()
-      targetX = maxX / 2
-      targetY = maxY / 2
-      writeScroll(targetX, targetY)
+      centerOnRangeReady = true
+      centerCommittedRange()
+    } else {
+      centerOnRangeReady = false
     }
   }
 
@@ -287,16 +300,18 @@ function createPanController(
     const surface = surfaceRef.current
     if (!element || !surface || mode !== 'contained') return () => {}
 
+    // Try the committed range at listener attachment. If layout has not
+    // exposed overflow yet, centerOnRangeReady stays armed and the first
+    // ResizeObserver report completes initial/re-entry centering.
+    centerCommittedRange()
+
     const onScroll = (): void => {
       if (
-        awaitingControllerScroll &&
         Math.abs(element.scrollLeft - lastWrittenX) <= PAN_POSITION_EPSILON_PX &&
         Math.abs(element.scrollTop - lastWrittenY) <= PAN_POSITION_EPSILON_PX
       ) {
-        awaitingControllerScroll = false
         return
       }
-      awaitingControllerScroll = false
       cancelInertia()
       cancelFrame()
       resyncToNative()
@@ -335,7 +350,13 @@ function createPanController(
       const gain = ratio()
       const deltaX = panStep(-(event.clientX - active.lastX), gain)
       const deltaY = panStep(-(event.clientY - active.lastY), gain)
-      const dtSeconds = Math.max(0, event.timeStamp - active.lastTime) / 1000
+      // Bound the sampling window to one inertia half-life so a stalled
+      // render/main thread does not turn a real drag into an artificial
+      // zero-velocity release.
+      const dtSeconds = Math.min(
+        Math.max(0, event.timeStamp - active.lastTime),
+        PAN_INERTIA_HALFLIFE_MS,
+      ) / 1000
       applyTargetDelta(deltaX, deltaY)
       if (dtSeconds > 0) {
         active.velocityX = deltaX / dtSeconds
@@ -350,9 +371,8 @@ function createPanController(
       const active = drag
       if (!active || active.pointerId !== event.pointerId) return
       const claimed = active.claimed
-      const releaseDelayMs = Math.max(0, event.timeStamp - active.lastTime)
-      const velocityX = inertiaDecay(active.velocityX, releaseDelayMs)
-      const velocityY = inertiaDecay(active.velocityY, releaseDelayMs)
+      const velocityX = active.velocityX
+      const velocityY = active.velocityY
       releaseDrag()
       if (!claimed) return
       event.preventDefault()
@@ -466,9 +486,11 @@ function createPanController(
     }
 
     const onResize = (): void => {
+      cancelInertia()
       const priorTargetX = targetX
       const priorTargetY = targetY
       readRange()
+      if (centerCommittedRange()) return
       targetX = clampPanOffset(targetX, maxX)
       targetY = clampPanOffset(targetY, maxY)
       if (targetX === priorTargetX && targetY === priorTargetY) return
