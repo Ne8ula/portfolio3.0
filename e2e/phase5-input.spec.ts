@@ -217,7 +217,11 @@ async function findActivationPoint(
   page: Page,
   key: string,
 ): Promise<ActivationPoint | null> {
-  const scrollFractions = [0.5, 0, 1] as const
+  const contained = await page.locator('.responsive-stage').getAttribute('data-stage-mode') === 'contained'
+  // Fit stages cannot scroll. Repeating the same CPU-heavy raycast search at
+  // nine identical scroll positions made wide-fit discovery appear hung on
+  // software-rendered Chromium.
+  const scrollFractions = contained ? [0.5, 0, 1] as const : [0.5] as const
   for (const yFraction of scrollFractions) {
     for (const xFraction of scrollFractions) {
       await page.evaluate(({ x, y }) => {
@@ -275,37 +279,29 @@ async function findActivationPoint(
         const projected = hooks.getPointerActivationPoint(targetKey)
         if (projected) {
           const localRadius = targetKey === 'tablet' || targetKey === 'shaker' ? 180 : 48
-          const localStep = targetKey === 'tablet' || targetKey === 'shaker' ? 6 : 3
-          const localMatches: Array<{ x: number; y: number }> = []
-          for (
-            let y = projected.y - localRadius;
-            y <= projected.y + localRadius;
-            y += localStep
-          ) {
-            for (
-              let x = projected.x - localRadius;
-              x <= projected.x + localRadius;
-              x += localStep
-            ) {
-              if (isCandidate(x, y)) localMatches.push({ x, y })
+          const localStep = targetKey === 'tablet' || targetKey === 'shaker' ? 18 : 3
+          if (isCandidate(projected.x, projected.y)) return projected
+          // Search outward from the authored projection and stop at the first
+          // hit. The former full-square scan collected every matching pixel
+          // before returning, forcing thousands of synchronous three.js
+          // raycasts even when the projection itself was already usable.
+          for (let radius = localStep; radius <= localRadius; radius += localStep) {
+            for (let offset = -radius; offset <= radius; offset += localStep) {
+              const candidates = [
+                { x: projected.x + offset, y: projected.y - radius },
+                { x: projected.x + offset, y: projected.y + radius },
+                { x: projected.x - radius, y: projected.y + offset },
+                { x: projected.x + radius, y: projected.y + offset },
+              ]
+              for (const candidate of candidates) {
+                if (isCandidate(candidate.x, candidate.y)) return candidate
+              }
             }
           }
-          if (localMatches.length > 0) {
-            const center = localMatches.reduce(
-              (sum, match) => ({ x: sum.x + match.x, y: sum.y + match.y }),
-              { x: 0, y: 0 },
-            )
-            center.x /= localMatches.length
-            center.y /= localMatches.length
-            return localMatches.reduce((best, match) => (
-              Math.hypot(match.x - center.x, match.y - center.y) <
-              Math.hypot(best.x - center.x, best.y - center.y)
-                ? match
-                : best
-            ))
-          }
         }
-        const steps = [12, 6]
+        const steps = targetKey === 'tablet' || targetKey === 'shaker'
+          ? [24, 12]
+          : [12, 6]
         for (const step of steps) {
           for (let y = top + step / 2; y < bottom; y += step) {
             for (let x = left + step / 2; x < right; x += step) {
