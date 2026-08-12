@@ -31,6 +31,15 @@ describe('E2E harness policy', () => {
     })
     expect(ciTimeout(180_000, 600_000, '')).toBe(180_000)
     expect(ciTimeout(180_000, 600_000, 'true')).toBe(600_000)
+    expect(ciTimeout(180_000, 600_000, 'true', '1.5')).toBe(900_000)
+    expect(resolveE2eTiming('true', '1.5')).toEqual({
+      expect: 90_000,
+      transition: 180_000,
+      settle: 180_000,
+      frameObservation: 630_000,
+      test: 900_000,
+    })
+    expect(resolveE2eTiming('true', 'invalid')).toBe(CI_E2E_TIMING)
   })
 
   it('accepts the observed Linux text width while pinning its authored center', () => {

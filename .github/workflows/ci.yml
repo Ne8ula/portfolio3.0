@@ -40,29 +40,50 @@ jobs:
     name: E2E (${{ matrix.id }})
     needs: checks
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Keep the normal shards at 45 minutes. Software WebGL can make the three
+    # renderer-heavy suites exceed that job budget even though their bounded
+    # Playwright retries are still progressing.
+    timeout-minutes: ${{ matrix.timeout }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - id: foundation
             spec: e2e/foundation.spec.ts
+            timeout: 45
+            timing_scale: 1
           - id: phase2-boundary
             spec: e2e/phase2-boundary.spec.ts
+            timeout: 45
+            timing_scale: 1
           - id: phase2-completion
             spec: e2e/phase2-completion.spec.ts
+            timeout: 45
+            timing_scale: 1
           - id: phase3-renderer
             spec: e2e/phase3-renderer.spec.ts
+            timeout: 75
+            timing_scale: 1.5
           - id: phase4-hud
             spec: e2e/phase4-hud.spec.ts
+            timeout: 45
+            timing_scale: 1
           - id: phase5-fit
             spec: e2e/phase5-fit.spec.ts
+            timeout: 90
+            timing_scale: 1.5
           - id: phase5-input
             spec: e2e/phase5-input.spec.ts
+            timeout: 90
+            timing_scale: 1
           - id: smoke
             spec: e2e/smoke.spec.ts
+            timeout: 45
+            timing_scale: 1
           - id: turntable-tether
             spec: e2e/turntable-tether.spec.ts
+            timeout: 45
+            timing_scale: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -86,12 +107,51 @@ jobs:
         run: npm run test:e2e -- ${{ matrix.spec }}
         env:
           CI: 'true'
+          CI_E2E_TIMING_SCALE: ${{ matrix.timing_scale }}
 
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.id }}
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  ac17-decoration:
+    name: E2E (AC-17 wide-fit decorations)
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Keep the complete phase5-input shard above. This additional blocking
+      # job gives the repaired wide-fit discovery helper an isolated result
+      # before that larger shard consumes its software-WebGL budget.
+      - name: Focused AC-17 decoration test (Chromium)
+        run: >-
+          npm run test:e2e -- e2e/phase5-input.spec.ts
+          --grep "AC-17 arbitrates the wide-fit decoration targets"
+        env:
+          CI: 'true'
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-ac17-decoration
           path: playwright-report/
           if-no-files-found: ignore
           retention-days: 14

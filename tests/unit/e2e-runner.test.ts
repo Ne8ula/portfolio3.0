@@ -96,4 +96,26 @@ describe('E2E runner support', () => {
     expect(matrixSpecs).toEqual(discoverE2eSpecFiles(repositoryRoot))
     expect(new Set(matrixSpecs).size).toBe(matrixSpecs.length)
   })
+
+  it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {
+    const workflow = readFileSync(
+      resolve(repositoryRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    )
+
+    expect(workflow).toContain('timeout-minutes: ${{ matrix.timeout }}')
+    expect(workflow).toMatch(
+      /id: phase3-renderer\n\s+spec: e2e\/phase3-renderer\.spec\.ts\n\s+timeout: 75\n\s+timing_scale: 1\.5/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-fit\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-input\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90/u,
+    )
+    expect(workflow).toContain('ac17-decoration:')
+    expect(workflow).toContain(
+      '--grep "AC-17 arbitrates the wide-fit decoration targets"',
+    )
+  })
 })
