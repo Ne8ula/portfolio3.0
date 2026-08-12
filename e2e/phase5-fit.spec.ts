@@ -9,6 +9,7 @@ const CAPTURE = {
   timeMs: 12_000,
   pauseAmbient: true as const,
 }
+let pendingFontSequence = 0
 
 async function enterCockpit(page: Page, capture = true): Promise<void> {
   await page.addInitScript(() => {
@@ -91,16 +92,17 @@ async function observeFrames(page: Page, count: number): Promise<void> {
 }
 
 async function armPendingMeasurementFont(page: Page): Promise<void> {
-  await page.evaluate(() => {
+  pendingFontSequence += 1
+  await page.evaluate((sequence) => {
     const runtime = window as unknown as { __phase5PendingFont?: FontFace }
     const face = new FontFace(
-      'Phase5 Pending Measurement',
-      'url(/phase5-pending-measurement.woff2)',
+      `Phase5 Pending Measurement ${sequence}`,
+      `url(/phase5-pending-measurement.woff2?generation=${sequence})`,
     )
     runtime.__phase5PendingFont = face
     document.fonts.add(face)
     void face.load().catch(() => {})
-  })
+  }, pendingFontSequence)
   await expect.poll(
     () => page.evaluate(() => document.fonts.status),
     { timeout: timing.expect },
@@ -220,14 +222,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       await route.abort('timedout').catch(() => {})
     })
   })
-  test('AC-3: every authored point fits the safe frame across FIT-MATRIX', async ({ page }) => {
-    test.setTimeout(ciTimeout(300_000, 1_200_000))
-    await enterCockpit(page, true)
-    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
-    let cratePreviewPrimed = false
-
-    for (const viewport of REQUIRED_VIEWPORT_CASES) {
+  for (const [viewportIndex, viewport] of REQUIRED_VIEWPORT_CASES.entries()) {
+    test(`AC-3: every authored point fits ${viewport.id}`, async ({ page }) => {
+      test.setTimeout(ciTimeout(180_000, 600_000))
       await page.setViewportSize({ width: viewport.w, height: viewport.h })
+      await enterCockpit(page, true)
+      await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
       const stage = page.locator('[data-layout-region="cockpit-stage"]')
       const box = await stage.boundingBox()
       expect(box, viewport.id).not.toBeNull()
@@ -237,8 +237,7 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       )
       // In contained cases the pinned 1024×600 surface extends beyond the
       // physically visible container. Exercise the authored maximum-parallax
-      // corner for both the current mousemove producer and Phase 5 step 4's
-      // pointermove producer without changing either production path.
+      // corner through both production input paths.
       await page.evaluate(() => {
         const stageNode = document.querySelector<HTMLElement>(
           '[data-layout-region="cockpit-stage"]',
@@ -253,13 +252,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
         const fit = await test.step(`${viewport.id}: ${kind} fit`, () =>
           enterView(page, kind),
         )
-        if (kind === 'crate' && !cratePreviewPrimed) {
+        if (kind === 'crate' && viewportIndex === 0) {
           await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.selectRecord(1))
           await expect.poll(
             () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
             { timeout: timing.settle },
           ).toBe(true)
-          cratePreviewPrimed = true
           const previewFit = await page.evaluate(
             () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
           )
@@ -269,8 +267,8 @@ test.describe('Phase 5 focus-camera fit integration', () => {
         expect(fit.kind).toBe(kind)
         expectPointsInside(fit)
       }
-    }
-  })
+    })
+  }
 
   test('AC-5/6: DPR invariance and cache invalidation counts are exact', async ({ page }) => {
     test.setTimeout(ciTimeout(240_000, 900_000))
@@ -385,7 +383,11 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       // focused-to-cockpit handoff without racing that capture-frame snap.
       return window.__COCKPIT_TEST_HOOKS__!.getFocusFit()
     })
-    expect(easingSnapshot?.solveCount).toBe(completedEntry.solveCount)
+    expect(easingSnapshot).toMatchObject({
+      kind: 'deck',
+      solveCount: completedEntry.solveCount,
+      lastSolveCause: completedEntry.lastSolveCause,
+    })
     await releasePendingMeasurementFont(page)
     await expect.poll(
       () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
