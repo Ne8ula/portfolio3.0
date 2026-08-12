@@ -67,6 +67,18 @@ function createArbiter(canvas){
     return { entry, hit }
   }
 
+  const resolveTestPoint = (point) => {
+    // A raycast hit hidden behind ordinary HUD cannot receive the real
+    // pointerdown. Keep dev-only point discovery on the same delivery path.
+    const target = document.elementFromPoint(point.x, point.y)
+    if (!(target instanceof Element)) return null
+    const nativeTarget = target.closest('[data-pointer-activation-proxy]')
+    if (target !== canvas && nativeTarget === null) return null
+    return nativeTarget
+      ? resolveProxy(nativeTarget)
+      : resolveOwner({ clientX: point.x, clientY: point.y })
+  }
+
   const onPointerDown = (event) => {
     if (event.button !== 0) return
     const nativeTarget = event.target instanceof Element
@@ -192,7 +204,7 @@ function createArbiter(canvas){
     pointFor(key){
       const cached = testPoints.get(key)
       if (cached) {
-        const resolved = resolveOwner({ clientX: cached.x, clientY: cached.y })
+        const resolved = resolveTestPoint(cached)
         if (resolved?.hit.key === key) return cached
         testPoints.delete(key)
       }
@@ -200,7 +212,7 @@ function createArbiter(canvas){
         const proposed = entry.testPoint?.(key)
         const points = Array.isArray(proposed) ? proposed : proposed ? [proposed] : []
         for (const point of points) {
-          const resolved = resolveOwner({ clientX: point.x, clientY: point.y })
+          const resolved = resolveTestPoint(point)
           if (resolved?.hit.key === key) {
             testPoints.set(key, point)
             return point
