@@ -35,11 +35,17 @@ describe('E2E harness policy', () => {
     expect(resolveE2eTiming('true', '1.5')).toEqual({
       expect: 90_000,
       transition: 180_000,
-      settle: 180_000,
+      settle: 120_000,
       frameObservation: 630_000,
       test: 900_000,
     })
     expect(resolveE2eTiming('true', 'invalid')).toBe(CI_E2E_TIMING)
+
+    // Every accepted scale can be passed directly to the dev-only
+    // configureSettleTimeout() hook, whose enforced maximum is 120 seconds.
+    for (const scale of ['1', '1.25', '1.5', '1.75', '2']) {
+      expect(resolveE2eTiming('true', scale).settle).toBeLessThanOrEqual(120_000)
+    }
   })
 
   it('accepts the observed Linux text width while pinning its authored center', () => {

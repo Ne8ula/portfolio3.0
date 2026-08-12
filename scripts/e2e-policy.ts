@@ -34,12 +34,16 @@ export function resolveE2eTiming(
   if (!ci) return LOCAL_E2E_TIMING
   const multiplier = ciTimingScale(scale)
   if (multiplier === 1) return CI_E2E_TIMING
-  return Object.fromEntries(
-    Object.entries(CI_E2E_TIMING).map(([key, value]) => [
-      key,
-      Math.round(value * multiplier),
-    ]),
-  ) as E2eTimingPolicy
+  return {
+    expect: Math.round(CI_E2E_TIMING.expect * multiplier),
+    transition: Math.round(CI_E2E_TIMING.transition * multiplier),
+    // configureSettleTimeout() intentionally enforces a 120s ceiling. This
+    // inner runtime deadline must remain within that contract; only outer
+    // Playwright observation and test budgets scale on slow CI hosts.
+    settle: CI_E2E_TIMING.settle,
+    frameObservation: Math.round(CI_E2E_TIMING.frameObservation * multiplier),
+    test: Math.round(CI_E2E_TIMING.test * multiplier),
+  }
 }
 
 export function ciTimeout(
