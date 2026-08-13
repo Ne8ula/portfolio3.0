@@ -9,8 +9,6 @@ const CAPTURE = {
   timeMs: 12_000,
   pauseAmbient: true as const,
 }
-let pendingFontSequence = 0
-
 async function enterCockpit(
   page: Page,
   capture = true,
@@ -99,32 +97,6 @@ async function observeFrames(page: Page, count: number): Promise<void> {
     { initial: start, frames: count },
     { polling: 50, timeout: timing.frameObservation },
   )
-}
-
-async function armPendingMeasurementFont(page: Page): Promise<void> {
-  pendingFontSequence += 1
-  await page.evaluate((sequence) => {
-    const runtime = window as unknown as { __phase5PendingFont?: FontFace }
-    const face = new FontFace(
-      `Phase5 Pending Measurement ${sequence}`,
-      `url(/phase5-pending-measurement.woff2?generation=${sequence})`,
-    )
-    runtime.__phase5PendingFont = face
-    document.fonts.add(face)
-    void face.load().catch(() => {})
-  }, pendingFontSequence)
-  await expect.poll(
-    () => page.evaluate(() => document.fonts.status),
-    { timeout: timing.expect },
-  ).toBe('loading')
-}
-
-async function releasePendingMeasurementFont(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const runtime = window as unknown as { __phase5PendingFont?: FontFace }
-    if (runtime.__phase5PendingFont) document.fonts.delete(runtime.__phase5PendingFont)
-    runtime.__phase5PendingFont = undefined
-  })
 }
 
 async function sampleModeSwitch(
@@ -226,12 +198,6 @@ function expectModeSwitchUnchanged(
 }
 
 test.describe('Phase 5 focus-camera fit integration', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.route('**/phase5-pending-measurement.woff2', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 5_000))
-      await route.abort('timedout').catch(() => {})
-    })
-  })
   for (const [viewportIndex, viewport] of REQUIRED_VIEWPORT_CASES.entries()) {
     test(`AC-3: every authored point fits ${viewport.id}`, async ({ page }) => {
       test.setTimeout(ciTimeout(180_000, 600_000))
@@ -381,18 +347,11 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     test.setTimeout(ciTimeout(240_000, 900_000))
 
     // Completed focus→cockpit exit: the ease-out reads the tombstone without
-    // solving, then the next entry treats it as absent and performs solve #1.
+    // solving, then the next entry treats it as absent and performs a new solve.
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('deck'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('deck')
-    const completedEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const completedEntry = await enterView(page, 'deck')
     const easingSnapshot = await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       // Capture mode intentionally snaps modeT on the next animation frame.
       // Read in the transition task itself to pin the tombstone's permitted
@@ -404,7 +363,6 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       solveCount: completedEntry.solveCount,
       lastSolveCause: completedEntry.lastSolveCause,
     })
-    await releasePendingMeasurementFont(page)
     await expect.poll(
       () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
       { timeout: timing.settle },
@@ -416,20 +374,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     // Interrupted exit → different kind above the 0.3 threshold exercises
     // the reassignment branch (wasFocused is false; no pose capture).
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('crate'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('crate')
-    const interruptedEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const interruptedEntry = await enterView(page, 'crate')
     await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       window.__setCockpitViewMode!('monitor')
     })
-    await releasePendingMeasurementFont(page)
     const reassigned = await enterView(page, 'monitor')
     expect(reassigned.solveCount).toBeGreaterThan(interruptedEntry.solveCount)
     const interruptedReturn = await enterView(page, 'crate')
@@ -439,20 +389,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     // Same-kind interrupted re-entry replaces the non-reusable tombstone
     // atomically; the superseded generation cannot commit later.
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('monitor'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('monitor')
-    const sameKindEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const sameKindEntry = await enterView(page, 'monitor')
     await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       window.__setCockpitViewMode!('monitor')
     })
-    await releasePendingMeasurementFont(page)
     const sameKindReentry = await enterView(page, 'monitor')
     expect(sameKindReentry.solveCount).toBeGreaterThanOrEqual(sameKindEntry.solveCount + 1)
     expect(sameKindReentry.solveCount).toBeLessThanOrEqual(sameKindEntry.solveCount + 2)
@@ -554,10 +496,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     expect(maxStep).toBeLessThanOrEqual(0.5)
     expect(maxSpeed).toBeLessThanOrEqual(12)
 
-    // CockpitApp deliberately reasserts authored tweak defaults for its first
-    // 180 frames after mount. Wait past that startup guard before exercising
-    // the same live setter as an independent transform invalidation.
-    await observeFrames(page, 190)
+    // Complete CockpitApp's authored-default startup guard through dev-only
+    // instrumentation. Counting 180 fully rendered SwiftShader frames tests
+    // host throughput, not the independent transform invalidation below.
+    await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.completeAuthoredTweakGuard()
+    })
     const beforeTransform = await page.evaluate(
       () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!.solveCount,
     )

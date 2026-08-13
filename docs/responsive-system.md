@@ -489,6 +489,8 @@ type CockpitTestHooks = {
     timeMs: number | null
     streams: readonly string[]
   }
+  completeAuthoredTweakGuard(): void         // finish the 180-frame startup guard
+  armFocusMeasurementReplacement(): void    // arm the production replacement generation
   skipIntro(): void                          // mount cockpit directly, no boot/warp
   enterView(mode: 'cockpit' | 'monitor' | 'crate' | 'deck'): Promise<void>  // resolves settled
   playRecord(index: number): Promise<void>   // resolves on landed, busy === false
@@ -539,6 +541,15 @@ CSS size, capped DPR, drawing-buffer dimensions, and the idempotent
 `sizeVersion`. It is protected by the same `testHooksEnabled` production
 guard as the rest of the bridge and introduces no new live
 `window.__cockpit*` global.
+
+`completeAuthoredTweakGuard()` and `armFocusMeasurementReplacement()` are
+bounded Phase 5 harness actions. The former applies the authored defaults once
+and cancels only CockpitApp's startup reassertion loop, so transform-refit tests
+do not need 180 software-rendered frames. The latter calls the same production
+focus-store invalidation used by large-text/control changes, allowing a test to
+cancel that generation in the same task before the measurement component's
+one-second font fallback can legitimately commit it. Neither member exists in
+production or changes the preserved `window.__cockpit*` bridge.
 
 Phase 4's upgraded `getHudSnapshot()` waits for one production sampler
 compute (or returns the frozen parked diagnostic frame), then reads the DOM

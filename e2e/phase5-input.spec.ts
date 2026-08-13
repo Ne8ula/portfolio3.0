@@ -471,6 +471,30 @@ async function armActivationTarget(
   let point = await discoverActivationPoint(page, key)
   for (let attempt = 0; attempt < 4; attempt += 1) {
     await page.mouse.move(point.x, point.y)
+    if (key.startsWith('coffee-')) {
+      // Coffee sits at the wide frame's free-look edge. On a slow software
+      // renderer the camera can finish smoothing between Playwright's move
+      // and down commands, invalidating a point discovered at the prior pose.
+      // Reacquire after the pointer-defined camera pose is fully settled.
+      const target = await freeLook(page)
+      await expectSmoothed(
+        page,
+        target.yawTarget,
+        target.pitchTarget,
+        PARALLAX_YAW_SCALE * 0.005,
+        PARALLAX_PITCH_SCALE * 0.005,
+      )
+      const settledPoint = await findActivationPoint(page, key)
+      if (!settledPoint) {
+        point = await discoverActivationPoint(page, key)
+        continue
+      }
+      if (Math.hypot(settledPoint.x - point.x, settledPoint.y - point.y) > 0.5) {
+        point = settledPoint
+        continue
+      }
+      point = settledPoint
+    }
     await page.mouse.down()
     const state = await pointerActivationState(page)
     if (
