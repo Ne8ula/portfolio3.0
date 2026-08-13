@@ -121,4 +121,16 @@ describe('E2E runner support', () => {
       '--grep "AC-17 arbitrates wide-fit decorations where each target is reachable"',
     )
   })
+
+  it('uses Node 24-native GitHub actions', () => {
+    const workflow = readFileSync(
+      resolve(repositoryRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    )
+
+    expect(workflow).toContain('actions/checkout@v6')
+    expect(workflow).toContain('actions/setup-node@v6')
+    expect(workflow).toContain('actions/upload-artifact@v6')
+    expect(workflow).not.toMatch(/actions\/(?:checkout|setup-node|upload-artifact)@v4/u)
+  })
 })
