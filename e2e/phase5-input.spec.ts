@@ -1246,15 +1246,17 @@ test.describe('Phase 5 gesture arbitration', () => {
     await test.step('tablet: discover, drag-cancel, and activate', async () => {
       await expectDragThenSubSlopClick(page, 'tablet')
     })
-    expect(await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('tablet'),
-    )).toBeNull()
+    expect(await pointerActivationState(page)).toMatchObject({
+      activationCount: 1,
+      lastActivation: { key: 'tablet', count: 1 },
+    })
     await test.step('shaker: discover, drag-cancel, and activate', async () => {
       await expectDragThenSubSlopClick(page, 'shaker')
     })
-    expect(await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('shaker'),
-    )).toBeNull()
+    expect(await pointerActivationState(page)).toMatchObject({
+      activationCount: 2,
+      lastActivation: { key: 'shaker', count: 2 },
+    })
 
     expect((await pointerActivationState(page)).activationCount).toBe(2)
     const pointerDowns = await page.evaluate(() => {
