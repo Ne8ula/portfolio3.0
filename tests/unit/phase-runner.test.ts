@@ -392,6 +392,36 @@ describe('phase runner', () => {
     ).toBe(true)
   })
 
+  it('recognizes a denied Playwright server bind from a saved Codex result', () => {
+    const result = parseCodexResult(
+      {
+        phase: 3,
+        step: 'step-2',
+        outcome: 'blocked',
+        summary: 'Only the sandboxed browser gate is blocked.',
+        filesChanged: ['components/cockpit/globe-canvas.tsx'],
+        gates: requiredGates.map((gate) =>
+          gate.command === 'npm run test:e2e'
+            ? {
+                ...gate,
+                status: 'fail',
+                details:
+                  'No tests executed because the sandbox denied the Playwright server bind to 0.0.0.0:3000 with EPERM.',
+              }
+            : gate,
+        ),
+        unresolvedRisks: ['Browser verification requires the host controller.'],
+        handoff: 'Handoff: Step 2 awaits host E2E.',
+      },
+      phase3Manifest,
+      getStep(phase3Manifest, 'step-2'),
+    )
+
+    expect(
+      isHostRecoverableE2eFailure(result, phase3Manifest.requiredGates),
+    ).toBe(true)
+  })
+
   it('rejects PASS when a required gate is red', () => {
     const result = {
       ...kimiResult('step-3', 'pass'),
