@@ -94,9 +94,9 @@ describe('E2E runner support', () => {
       .sort()
 
     expect([...new Set(matrixSpecs)].sort()).toEqual(discoverE2eSpecFiles(repositoryRoot))
-    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-fit.spec.ts')).toHaveLength(2)
-    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-input.spec.ts')).toHaveLength(2)
-    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 2)
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-fit.spec.ts')).toHaveLength(4)
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-input.spec.ts')).toHaveLength(3)
+    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 5)
   })
 
   it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {
@@ -110,16 +110,16 @@ describe('E2E runner support', () => {
       /id: phase3-renderer\n\s+spec: e2e\/phase3-renderer\.spec\.ts\n\s+timeout: 75\n\s+timing_scale: 1\.5/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-fit-1\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=1\/2/u,
+      /id: phase5-fit-1\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=1\/4/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-fit-2\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=2\/2/u,
+      /id: phase5-fit-4\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=4\/4/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input-1\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=1\/2/u,
+      /id: phase5-input-1\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=1\/3/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input-2\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=2\/2/u,
+      /id: phase5-input-3\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=3\/3/u,
     )
     expect(workflow).toContain(
       'npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}',

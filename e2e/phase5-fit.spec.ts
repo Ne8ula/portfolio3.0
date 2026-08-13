@@ -11,11 +11,21 @@ const CAPTURE = {
 }
 let pendingFontSequence = 0
 
-async function enterCockpit(page: Page, capture = true): Promise<void> {
-  await page.addInitScript(() => {
+async function enterCockpit(
+  page: Page,
+  capture = true,
+  renderDpr: number | null = null,
+): Promise<void> {
+  await page.addInitScript((testDpr) => {
     window.sessionStorage.removeItem('cockpit-intro-complete-v1')
     window.localStorage.setItem('cockpit-theme', 'dark')
-  })
+    if (testDpr !== null) {
+      Object.defineProperty(window, 'devicePixelRatio', {
+        configurable: true,
+        get: () => testDpr,
+      })
+    }
+  }, renderDpr)
   await page.goto('/')
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
     timeout: timing.transition,
@@ -226,7 +236,13 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     test(`AC-3: every authored point fits ${viewport.id}`, async ({ page }) => {
       test.setTimeout(ciTimeout(180_000, 600_000))
       await page.setViewportSize({ width: viewport.w, height: viewport.h })
-      await enterCockpit(page, true)
+      // CSS geometry and camera aspect are the AC-3 subjects. At ultrawide
+      // and 4K sizes, lower only the E2E drawing-buffer density so GitHub's
+      // software WebGL host does not spend the settle budget rasterizing
+      // five-to-eight million pixels per frame. DPR behavior has its own
+      // dedicated AC-5/6 case below.
+      const renderDpr = viewport.w * viewport.h > 4_000_000 ? 0.5 : null
+      await enterCockpit(page, true, renderDpr)
       await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
       const stage = page.locator('[data-layout-region="cockpit-stage"]')
       const box = await stage.boundingBox()

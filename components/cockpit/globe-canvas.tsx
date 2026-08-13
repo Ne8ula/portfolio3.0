@@ -930,6 +930,9 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     // ══════════════════════════════════════════════════════════════
     const raycaster = new THREE.Raycaster();
     const mouseNDC = new THREE.Vector2();
+    const projectedPcPoint = new THREE.Vector3();
+    const projectedPcTop = new THREE.Vector3();
+    const projectedPcBottom = new THREE.Vector3();
     let hoverId = null;   // 'pc' | 'turntable' | 'coffee' | null
     // Pickable meshes per hover target. PC is built already; turntable and
     // coffee register into this map after they're constructed below.
@@ -977,6 +980,35 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         hitTest: (point) => viewMode === 'cockpit' && pickHoverId(point) === 'pc'
           ? { key: 'pc' }
           : null,
+        testPoint: (key) => {
+          if (key !== 'pc' || viewMode !== 'cockpit') return null;
+          const screenCorners = xray.userData.screenCorners;
+          const screenGroup = xray.userData.screenGroup || xray;
+          if (!screenCorners || !screenGroup) return null;
+          scene.updateMatrixWorld(true);
+          camera.updateMatrixWorld(true);
+          camera.updateProjectionMatrix();
+          const r = renderer.domElement.getBoundingClientRect();
+          if (!r.width || !r.height) return null;
+          const points = [];
+          // Prefer the authored CRT face over a coarse whole-PC bounding box.
+          // The arbiter validates every proposal through DOM delivery, owner
+          // priority, and the live PC raycast before exposing it to Playwright.
+          for (const yf of [0.5, 0.35, 0.65]) {
+            for (const xf of [0.5, 0.35, 0.65]) {
+              projectedPcTop.copy(screenCorners.tl).lerp(screenCorners.tr, xf);
+              projectedPcBottom.copy(screenCorners.bl).lerp(screenCorners.br, xf);
+              projectedPcPoint.copy(projectedPcTop).lerp(projectedPcBottom, yf);
+              screenGroup.localToWorld(projectedPcPoint);
+              projectedPcPoint.project(camera);
+              points.push({
+                x: r.left + (projectedPcPoint.x + 1) * r.width / 2,
+                y: r.top + (1 - projectedPcPoint.y) * r.height / 2,
+              });
+            }
+          }
+          return points;
+        },
         action: () => setViewMode('monitor'),
       },
     );

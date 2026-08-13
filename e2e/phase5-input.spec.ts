@@ -843,30 +843,23 @@ test.describe('Phase 5 contained pan', () => {
     await expect.poll(() => panState(page), { timeout: timing.expect }).toMatchObject({
       reducedMotion: false,
     })
-    const released = await region.evaluate(async (element) => {
-      const rect = element.getBoundingClientRect()
-      const pointerId = 41
-      const emit = (type: string, offsetX: number) => element.dispatchEvent(
-        new PointerEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          button: 0,
-          buttons: type === 'pointerup' ? 0 : 1,
-          pointerId,
-          clientX: rect.x + rect.width / 2 - offsetX,
-          clientY: rect.y + rect.height / 2,
-        }),
-      )
-      emit('pointerdown', 0)
-      await new Promise((resolve) => setTimeout(resolve, 40))
-      emit('pointermove', 20)
-      await new Promise((resolve) => setTimeout(resolve, 40))
-      emit('pointermove', 40)
-      await new Promise((resolve) => setTimeout(resolve, 40))
-      emit('pointermove', 60)
-      emit('pointerup', 60)
-      return window.__COCKPIT_TEST_HOOKS__!.getPanState()
-    })
+    // Use a trusted browser pointer trace. A synthetic PointerEvent does not
+    // create an active platform pointer, so the production controller's
+    // setPointerCapture() correctly throws NotFoundError when that synthetic
+    // trace first exceeds drag slop.
+    const center = {
+      x: box.x + box.width / 2,
+      y: box.y + box.height / 2,
+    }
+    await page.mouse.move(center.x, center.y)
+    await page.mouse.down()
+    await page.waitForTimeout(40)
+    for (const offsetX of [20, 40, 60]) {
+      await page.mouse.move(center.x - offsetX, center.y)
+      await page.waitForTimeout(40)
+    }
+    await page.mouse.up()
+    const released = await panState(page)
     expect(released).toMatchObject({ inertiaActive: true })
 
     await page.locator('[data-hud="accessibility-trigger"]').click()
