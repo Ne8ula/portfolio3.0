@@ -68,14 +68,26 @@ jobs:
             spec: e2e/phase4-hud.spec.ts
             timeout: 45
             timing_scale: 1
-          - id: phase5-fit
+          - id: phase5-fit-1
             spec: e2e/phase5-fit.spec.ts
             timeout: 90
             timing_scale: 1.5
-          - id: phase5-input
+            extra_args: --fully-parallel --shard=1/2
+          - id: phase5-fit-2
+            spec: e2e/phase5-fit.spec.ts
+            timeout: 90
+            timing_scale: 1.5
+            extra_args: --fully-parallel --shard=2/2
+          - id: phase5-input-1
             spec: e2e/phase5-input.spec.ts
             timeout: 90
             timing_scale: 2
+            extra_args: --fully-parallel --shard=1/2
+          - id: phase5-input-2
+            spec: e2e/phase5-input.spec.ts
+            timeout: 90
+            timing_scale: 2
+            extra_args: --fully-parallel --shard=2/2
           - id: smoke
             spec: e2e/smoke.spec.ts
             timeout: 45
@@ -104,7 +116,7 @@ jobs:
       # docs/responsive-system.md. Phase 8 adds the production-build gate
       # asserting the bridge is absent from the shipped artifact.
       - name: Browser test (Chromium)
-        run: npm run test:e2e -- ${{ matrix.spec }}
+        run: npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}
         env:
           CI: 'true'
           CI_E2E_TIMING_SCALE: ${{ matrix.timing_scale }}

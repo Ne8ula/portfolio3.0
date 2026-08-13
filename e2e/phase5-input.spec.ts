@@ -175,6 +175,87 @@ async function dispatchWheelBatch(
   }, traces)
 }
 
+async function measureContainedPanGain(page: Page): Promise<{
+  initial: PanSnapshot
+  wheel: { defaultPrevented: boolean; state: PanSnapshot }
+  modeDisplacements: number[]
+  spikeDisplacement: number
+  fineDisplacement: number
+  atMaximum: PanSnapshot
+  atMinimum: PanSnapshot
+}> {
+  return page.locator('.responsive-stage').evaluate((element) => {
+    const reset = document.querySelector<HTMLElement>('[data-hud="pan-reset"]')
+    if (!reset) throw new Error('contained-pan reset control is not mounted')
+    const snapshot = () => {
+      const state = window.__COCKPIT_TEST_HOOKS__!.getPanState()
+      if (!state) throw new Error('contained-pan state is not ready')
+      return state
+    }
+    const dispatch = (init: WheelTraceInit) => {
+      const event = new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        ...init,
+      })
+      element.dispatchEvent(event)
+      return { defaultPrevented: event.defaultPrevented, state: snapshot() }
+    }
+    const dispatchBatch = (traces: readonly WheelTraceInit[]) => {
+      for (const init of traces) dispatch(init)
+      return snapshot()
+    }
+    const resetPan = () => reset.click()
+
+    const initial = snapshot()
+    const wheel = dispatch({ deltaY: 20, deltaMode: 0 })
+    resetPan()
+
+    const parsedLineHeight = Number.parseFloat(getComputedStyle(element).lineHeight)
+    const lineHeight = Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
+      ? parsedLineHeight
+      : 16
+    const equivalentDeltas = [
+      { deltaY: 20, deltaMode: 0 },
+      { deltaY: 20 / lineHeight, deltaMode: 1 },
+      { deltaY: 20 / element.clientHeight, deltaMode: 2 },
+    ] as const
+    const modeDisplacements = equivalentDeltas.map((init) => {
+      resetPan()
+      const before = snapshot()
+      const result = dispatch(init)
+      return result.state.y - before.y
+    })
+
+    resetPan()
+    const beforeSpike = snapshot()
+    const spike = dispatch({ deltaY: 5000, deltaMode: 0 })
+    resetPan()
+    const beforeFine = snapshot()
+    const fine = dispatch({ deltaY: 2, deltaMode: 0 })
+
+    const positiveBounds = Array.from({ length: 10 }, () => [
+      { shiftKey: true, deltaY: 5000, deltaMode: 0 },
+      { deltaY: 5000, deltaMode: 0 },
+    ]).flat()
+    const atMaximum = dispatchBatch(positiveBounds)
+    const negativeBounds = Array.from({ length: 10 }, () => [
+      { shiftKey: true, deltaY: -5000, deltaMode: 0 },
+      { deltaY: -5000, deltaMode: 0 },
+    ]).flat()
+
+    return {
+      initial,
+      wheel,
+      modeDisplacements,
+      spikeDisplacement: spike.state.y - beforeSpike.y,
+      fineDisplacement: fine.state.y - beforeFine.y,
+      atMaximum,
+      atMinimum: dispatchBatch(negativeBounds),
+    }
+  })
+}
+
 async function windowScrollState(page: Page): Promise<number> {
   return page.evaluate(() => window.scrollY)
 }
@@ -640,7 +721,8 @@ test.describe('Phase 5 contained pan', () => {
         await page.locator('[data-hud="pan-reset"]').click()
       }
 
-      const initial = await panState(page)
+      const trace = await measureContainedPanGain(page)
+      const initial = trace.initial
       const expectedRatio = sizeRatioFor({ w: viewport.width, h: viewport.height })
       expect(initial).toMatchObject({
         mode: 'contained',
@@ -651,63 +733,20 @@ test.describe('Phase 5 contained pan', () => {
       expect(initial.x).toBeCloseTo(initial.maxX / 2, 1)
       expect(initial.y).toBeCloseTo(initial.maxY / 2, 1)
 
-      const wheel = await dispatchWheel(page, { deltaY: 20, deltaMode: 0 })
-      expect(wheel.defaultPrevented).toBe(true)
-      expect(wheel.state.y - initial.y).toBeCloseTo(20 * expectedRatio, 5)
-
-      await page.locator('[data-hud="pan-reset"]').click()
-      const lineHeight = await page.locator('.responsive-stage').evaluate((element) => {
-        const parsed = Number.parseFloat(getComputedStyle(element).lineHeight)
-        return Number.isFinite(parsed) && parsed > 0 ? parsed : 16
-      })
-      const pageSize = await page.locator('.responsive-stage').evaluate(
-        (element) => element.clientHeight,
-      )
-      const equivalentDeltas = [
-        { deltaY: 20, deltaMode: 0 },
-        { deltaY: 20 / lineHeight, deltaMode: 1 },
-        { deltaY: 20 / pageSize, deltaMode: 2 },
-      ] as const
-      const modeDisplacements: number[] = []
-      for (const init of equivalentDeltas) {
-        await page.locator('[data-hud="pan-reset"]').click()
-        const before = await panState(page)
-        const result = await dispatchWheel(page, {
-          deltaY: init.deltaY,
-          deltaMode: init.deltaMode,
-        })
-        modeDisplacements.push(result.state.y - before.y)
-      }
-      for (const displacement of modeDisplacements) {
+      expect(trace.wheel.defaultPrevented).toBe(true)
+      expect(trace.wheel.state.y - initial.y).toBeCloseTo(20 * expectedRatio, 5)
+      for (const displacement of trace.modeDisplacements) {
         expect(displacement).toBeCloseTo(20 * expectedRatio, 4)
       }
 
-      await page.locator('[data-hud="pan-reset"]').click()
-      const beforeSpike = await panState(page)
-      const spike = await dispatchWheel(page, { deltaY: 5000, deltaMode: 0 })
-      expect(spike.state.y - beforeSpike.y).toBeLessThanOrEqual(
+      expect(trace.spikeDisplacement).toBeLessThanOrEqual(
         MAX_WHEEL_STEP_PX * expectedRatio + 0.01,
       )
-      await page.locator('[data-hud="pan-reset"]').click()
-      const beforeFine = await panState(page)
-      const fine = await dispatchWheel(page, { deltaY: 2, deltaMode: 0 })
-      expect(fine.state.y - beforeFine.y).toBeCloseTo(2 * expectedRatio, 5)
-
-      await dispatchWheelBatch(page, Array.from({ length: 10 }, () => [
-        { shiftKey: true, deltaY: 5000, deltaMode: 0 },
-        { deltaY: 5000, deltaMode: 0 },
-      ]).flat())
-      const atMaximum = await panState(page)
-      expect(atMaximum.x).toBeCloseTo(atMaximum.maxX, 1)
-      expect(atMaximum.y).toBeCloseTo(atMaximum.maxY, 1)
-
-      await dispatchWheelBatch(page, Array.from({ length: 10 }, () => [
-        { shiftKey: true, deltaY: -5000, deltaMode: 0 },
-        { deltaY: -5000, deltaMode: 0 },
-      ]).flat())
-      const atMinimum = await panState(page)
-      expect(atMinimum.x).toBeCloseTo(0, 1)
-      expect(atMinimum.y).toBeCloseTo(0, 1)
+      expect(trace.fineDisplacement).toBeCloseTo(2 * expectedRatio, 5)
+      expect(trace.atMaximum.x).toBeCloseTo(trace.atMaximum.maxX, 1)
+      expect(trace.atMaximum.y).toBeCloseTo(trace.atMaximum.maxY, 1)
+      expect(trace.atMinimum.x).toBeCloseTo(0, 1)
+      expect(trace.atMinimum.y).toBeCloseTo(0, 1)
     }
   })
 

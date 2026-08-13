@@ -93,8 +93,10 @@ describe('E2E runner support', () => {
       .map((match) => match[1])
       .sort()
 
-    expect(matrixSpecs).toEqual(discoverE2eSpecFiles(repositoryRoot))
-    expect(new Set(matrixSpecs).size).toBe(matrixSpecs.length)
+    expect([...new Set(matrixSpecs)].sort()).toEqual(discoverE2eSpecFiles(repositoryRoot))
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-fit.spec.ts')).toHaveLength(2)
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-input.spec.ts')).toHaveLength(2)
+    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 2)
   })
 
   it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {
@@ -108,10 +110,19 @@ describe('E2E runner support', () => {
       /id: phase3-renderer\n\s+spec: e2e\/phase3-renderer\.spec\.ts\n\s+timeout: 75\n\s+timing_scale: 1\.5/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-fit\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5/u,
+      /id: phase5-fit-1\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=1\/2/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2/u,
+      /id: phase5-fit-2\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=2\/2/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-input-1\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=1\/2/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-input-2\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=2\/2/u,
+    )
+    expect(workflow).toContain(
+      'npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}',
     )
     expect(workflow).toContain('ac17-decoration:')
     expect(workflow).toMatch(
