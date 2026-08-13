@@ -111,9 +111,12 @@ describe('E2E runner support', () => {
       /id: phase5-fit\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90/u,
+      /id: phase5-input\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2/u,
     )
     expect(workflow).toContain('ac17-decoration:')
+    expect(workflow).toMatch(
+      /ac17-decoration:[\s\S]*?timeout-minutes: 50[\s\S]*?CI_E2E_TIMING_SCALE: 2/u,
+    )
     expect(workflow).toContain(
       '--grep "AC-17 arbitrates wide-fit decorations where each target is reachable"',
     )

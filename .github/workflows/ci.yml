@@ -75,7 +75,7 @@ jobs:
           - id: phase5-input
             spec: e2e/phase5-input.spec.ts
             timeout: 90
-            timing_scale: 1
+            timing_scale: 2
           - id: smoke
             spec: e2e/smoke.spec.ts
             timeout: 45
@@ -122,7 +122,10 @@ jobs:
     name: E2E (AC-17 wide-fit decorations)
     needs: checks
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # AC-17 exercises two complete discover/cancel/activate sequences. On
+    # SwiftShader the first sequence alone can consume the default 10-minute
+    # test budget, and a diagnostic retry carries additional trace overhead.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
@@ -146,6 +149,7 @@ jobs:
           --grep "AC-17 arbitrates wide-fit decorations where each target is reachable"
         env:
           CI: 'true'
+          CI_E2E_TIMING_SCALE: 2
 
       - name: Upload Playwright report on failure
         if: failure()
