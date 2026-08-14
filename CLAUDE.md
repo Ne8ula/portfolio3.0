@@ -36,10 +36,20 @@ modules remain `@ts-nocheck`.
    `window.__warpTimeScale` slows debugging. Reduced motion skips warp.
 3. **Cockpit** — free-look `±22°/±15°`; objects still except purposeful motion
    (platter, interactions); cream arrow becomes jade hand over pickable items.
-   - **PC** → `monitor` camera + matrix3d ScreenDialog; send remains a stub.
-   - **Crate** → fixed top-down `crate`; hover highlights, click plays a record.
-   - **Deck** → sleeve/cover/disc/tonearm sequence, jade beam + in-scene project
-     card; VIEW MORE fires `cockpit-project-view` (destination stub).
+   Free-look uses the shaped live visible-box policy, keeps its full edge
+   envelope, and disables parallax under reduced motion. Artifact actions use
+   one shared same-pointer, sub-slop `pointerup` arbiter.
+   - **PC** → safe-frame-fitted `monitor` camera + matrix3d ScreenDialog; send
+     remains a stub.
+   - **Crate** → authored-point, safe-frame-fitted top-down `crate`; hover
+     highlights, click plays a record.
+   - **Deck** → authored-point, safe-frame-fitted sleeve/cover/disc/tonearm
+     sequence, jade beam + in-scene project card; VIEW MORE fires
+     `cockpit-project-view` (destination stub).
+   - Below `1024×600`, the stable `ResponsiveStage` wrapper exposes one
+     centred native-scroll crop with normalized wheel/drag/keyboard pan,
+     bounded drag-release inertia, instructions, and RESET; page scrolling
+     chains at region bounds.
    - Theme toggle only in base cockpit (`localStorage['cockpit-theme']`);
      boot/warp stay authored-dark.
 
@@ -49,17 +59,20 @@ modules remain `@ts-nocheck`.
 |---|---|
 | `cockpit-app.tsx` | Phase machine, theme, lifecycle/rebuild, `TWEAK_DEFAULTS`. |
 | `cockpit-hud.tsx` | Site header, projected tags/brackets, browse UI, VinylInfoCard, ScreenDialog. |
-| `globe-canvas.tsx` | Scene/render loop, camera modes, picking, themes, object builders. |
+| `globe-canvas.tsx` | Scene/render loop, cached focus fit/pose modes, picking, themes, object builders. |
+| `focus-fit-store.ts` / `pointer-activation.ts` | Overlay measurement/status generations and the single pointer-click arbiter. |
 | `materials.ts` / `decals.ts` / `highlights.ts` | Glass/frost, micrographics, hover-only x-ray edges. |
 | `glass-mac.ts` | AX-01 monitor/keyboard/mouse; protected benchmark. |
 | `vinyl-crate.ts` / `turntable.ts` | Project selection, deck sequence, disc/card/beam, deck bridge. |
 | `coffee.ts` / `decorations.ts` | Coffee loop and subordinate personal props; tablet/shaker clickable. |
 | `test-hooks.ts` | Dev-only `__COCKPIT_TEST_HOOKS__`; additive, statically absent in production. |
 
-`components/responsive/` (Phase 1): root `AccessibilityProvider` (matchMedia +
+`components/responsive/`: root `AccessibilityProvider` (matchMedia +
 persisted `cockpit-a11y-v1` → `data-a11y-*` on `<html>`), ACCESSIBILITY
 trigger/dialog, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/
-`AccessibleExperienceLink`; `/responsive-preview` is the representative page.
+`AccessibleExperienceLink`; Phase 5 adds the contained native-scroll pan
+controller and stable instructions/RESET chrome. `/responsive-preview` is the
+representative page.
 
 Canonical public facts live only in `lib/projects/catalog.ts` +
 `lib/portfolio/profile.ts` (six projects + profile owner-approved,
@@ -97,7 +110,10 @@ through dev-only `__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
 
 ## Responsive/content workflow — mandatory
 
-Phases −1 through 3 are delivered; Phase 3 awaits QA/controller commit. The owner-approved
+Phases −1 through 4 are delivered. Phase 5 production implementation is in
+Step 8 with all twelve AC-28 captures and a fresh five-gate run complete;
+independent QA remains before the owner checkpoint, while AC-27 hardware
+certification and AC-28 visual approval remain owner-only. The owner-approved
 `PROFILE.targetRole` is “Creative Technologist” and its current content hash
 is recorded. Before any rendered
 UI, layout, typography, 3D framing/material/lighting, interaction, or canonical
@@ -167,6 +183,9 @@ reduced-transparency/high-contrast/forced-colors states.
 
 ## Next
 
-Phase 3 independent QA/controller delivery → Phases 4–8 per the plan.
+Complete Step 8 independent Kimi QA → Phase 5 owner checkpoint → fresh Step 9
+gates and Kimi QA → controller-owned
+implementation commit and owner/CI acceptance. Phase 6 owns
+the known deck-HUD overlap; do not stopgap it during Phase 5 delivery.
 Approved visual migrations require scheduled rendered work; preserve phase
 dependencies.

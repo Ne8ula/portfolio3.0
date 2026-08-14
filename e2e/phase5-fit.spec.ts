@@ -9,6 +9,9 @@ const CAPTURE = {
   timeMs: 12_000,
   pauseAmbient: true as const,
 }
+
+type RendererStatus = 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
+
 async function enterCockpit(
   page: Page,
   capture = true,
@@ -40,6 +43,64 @@ async function enterCockpit(
     () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status),
     { timeout: timing.transition },
   ).toBe('ready')
+}
+
+async function rendererStatus(page: Page): Promise<RendererStatus> {
+  return page.evaluate(
+    () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status,
+  )
+}
+
+async function waitForRendererStatus(
+  page: Page,
+  status: RendererStatus,
+): Promise<void> {
+  await expect.poll(() => rendererStatus(page), { timeout: timing.transition }).toBe(status)
+}
+
+async function loseMainContext(page: Page): Promise<number> {
+  const probeIndex = await page.evaluate(() => {
+    type LoseContext = {
+      loseContext(): void
+      restoreContext(): void
+    }
+    type Probe = {
+      extension: LoseContext
+    }
+    const runtime = window as Window & {
+      __cockpitRenderer?: {
+        getContext(): WebGLRenderingContext | WebGL2RenderingContext
+      } | null
+      __phase5RecoveryContextProbes?: Probe[]
+    }
+    const renderer = runtime.__cockpitRenderer
+    if (!renderer) throw new Error('main renderer missing')
+    const extension = renderer
+      .getContext()
+      .getExtension('WEBGL_lose_context') as LoseContext | null
+    if (!extension) throw new Error('WEBGL_lose_context unavailable')
+    runtime.__phase5RecoveryContextProbes ??= []
+    runtime.__phase5RecoveryContextProbes.push({ extension })
+    extension.loseContext()
+    return runtime.__phase5RecoveryContextProbes.length - 1
+  })
+  await waitForRendererStatus(page, 'lost')
+  return probeIndex
+}
+
+async function restoreMainContext(page: Page, probeIndex: number): Promise<void> {
+  await page.evaluate((index) => {
+    const runtime = window as Window & {
+      __phase5RecoveryContextProbes?: Array<{
+        extension: { restoreContext(): void }
+      }>
+    }
+    const probe = runtime.__phase5RecoveryContextProbes?.[index]
+    if (!probe) throw new Error(`context probe ${index} missing`)
+    probe.extension.restoreContext()
+  }, probeIndex)
+  await waitForRendererStatus(page, 'restoring')
+  await waitForRendererStatus(page, 'ready')
 }
 
 async function enterView(page: Page, kind: 'monitor' | 'deck' | 'crate') {
@@ -569,5 +630,73 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     await enterView(page, 'monitor')
     expectModeSwitchUnchanged(await sampleModeSwitch(page, 'crate'), 0.85)
     expectModeSwitchUnchanged(await sampleModeSwitch(page, 'deck'), 0.38)
+  })
+
+  test('AC-25: contained deck fit and pan recover after context restoration', async ({ page }) => {
+    test.setTimeout(ciTimeout(180_000, 600_000))
+    await page.setViewportSize({ width: 800, height: 450 })
+    await enterCockpit(page, true)
+    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
+      { timeout: timing.settle },
+    ).toBe(true)
+
+    const region = page.locator('.responsive-stage[data-stage-mode="contained"]')
+    await expect(region).toBeVisible()
+    await region.evaluate((element) => {
+      element.scrollLeft = 37
+      element.scrollTop = 29
+    })
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getPanState()),
+      { timeout: timing.expect },
+    ).toMatchObject({ mode: 'contained', x: 37, y: 29 })
+
+    const before = await page.evaluate(() => ({
+      fit: window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
+      pan: window.__COCKPIT_TEST_HOOKS__!.getPanState(),
+      rebuildCount: window.__COCKPIT_TEST_HOOKS__!.getRendererState().rebuildCount,
+      mode: window.__cockpitViewMode,
+      recordIndex: window.__cockpitDeck?.index,
+    }))
+    expect(before.fit).not.toBeNull()
+    expect(before.fit).toMatchObject({ kind: 'deck', status: 'fit' })
+    expect(before.mode).toBe('deck')
+    expect(before.recordIndex).toBe(0)
+
+    const probeIndex = await loseMainContext(page)
+    await restoreMainContext(page, probeIndex)
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.distance),
+      { timeout: timing.transition },
+    ).toBe(before.fit!.distance)
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
+      { timeout: timing.settle },
+    ).toBe(true)
+
+    const after = await page.evaluate(() => ({
+      fit: window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
+      pan: window.__COCKPIT_TEST_HOOKS__!.getPanState(),
+      rebuildCount: window.__COCKPIT_TEST_HOOKS__!.getRendererState().rebuildCount,
+      mode: window.__cockpitViewMode,
+      recordIndex: window.__cockpitDeck?.index,
+    }))
+    expect(after.fit).not.toBeNull()
+    expect(after.fit).toMatchObject({ kind: 'deck', status: 'fit' })
+    expect(after.fit!.distance).toBe(before.fit!.distance)
+    expect(after.fit!.safeFrame).toEqual(before.fit!.safeFrame)
+    expect(after.fit!.points).toHaveLength(before.fit!.points.length)
+    for (let index = 0; index < before.fit!.points.length; index += 1) {
+      const beforePoint = before.fit!.points[index]!
+      const afterPoint = after.fit!.points[index]!
+      expect(Math.abs(afterPoint.x - beforePoint.x), `point ${index} x`).toBeLessThanOrEqual(1)
+      expect(Math.abs(afterPoint.y - beforePoint.y), `point ${index} y`).toBeLessThanOrEqual(1)
+    }
+    expect(after.pan).toMatchObject({ mode: 'contained', x: 37, y: 29 })
+    expect(after.rebuildCount).toBe(before.rebuildCount + 1)
+    expect(after.mode).toBe('deck')
+    expect(after.recordIndex).toBe(0)
   })
 })
