@@ -5,6 +5,24 @@
 **Technical authority:** [responsive-system.md](responsive-system.md)  
 **Phase authority:** [hud-responsive-layout-plan.md](hud-responsive-layout-plan.md)
 
+> **Status note (2026-08-14, plan revision 8).** The rendered appearance
+> migration this handoff describes is now scheduled as **plan §8 Phase 8 —
+> appearance and art-direction migration**, after the Phase 6/7 HUD
+> re-anchoring and before the enforcement phase (now **Phase 9**,
+> renumbered from Phase 8). The §5 gap analysis below remains the
+> art-direction content reference feeding the Phase 8 design document. The
+> §7 stage sequence, however, predates the Phase 3–5 deliveries and is
+> **superseded where it conflicts with the plan**: Stage 5's "studio pass
+> before the Phase 4 baselines" placement was overtaken by events — the
+> Phase 4 baselines were recorded against the pre-migration scene, and
+> baseline governance now lives in plan §8 Phase 8 (immutable Phase 4
+> evidence; owner-approved replacement set at Phase 8 exit; Phase 9
+> consumes only the replacement set). Stage 7's "migrate remaining HUD
+> typography/panels while their geometry owner is active" is likewise
+> superseded: Phases 6/7 re-anchor geometry only, and all typography/token
+> restyling belongs to Phase 8. Stage 8's "Phase 8 should verify" refers to
+> the enforcement phase now numbered Phase 9.
+
 ## 1. Mission
 
 Bring the rendered portfolio into conformance with the finalized
@@ -423,6 +441,10 @@ still unstable.
 
 ### Stage 5 — named studio-scene visual pass
 
+*[Superseded — see the status note. This pass did not run before Phase 4;
+its scope is now owned by plan §8 Phase 8, and the baseline instruction
+below is replaced by Phase 8's baseline governance.]*
+
 Add a reviewed, named work item to the phase plan **after Phase 3 and before
 Phase 4 visual baselines**. Its scope is:
 
@@ -469,14 +491,16 @@ not styled against obsolete coordinates:
 
 Also migrate remaining cockpit header, tags, browse controls, info cards, and
 ScreenDialog typography/panels to the shared target tokens when their
-geometry owner is active. Preserve keyboard/click parity and at least the
+geometry owner is active. *[Superseded — see the status note: Phases 6/7
+re-anchor geometry only; this restyling belongs to plan §8 Phase 8.]*
+Preserve keyboard/click parity and at least the
 preferred hit-area policy.
 
 Do not add interim viewport constants before these phases.
 
 ### Stage 8 — enforcement and final review
 
-Phase 8 should verify:
+Phase 9 (enforcement — formerly numbered Phase 8) should verify:
 
 - the complete viewport/browser matrix;
 - dark, light, high-contrast, reduced-transparency, large-text,

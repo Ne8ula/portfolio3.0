@@ -1,5 +1,11 @@
 # Phase 2 Design Specification — Canonical DOM and Recruiter-Readable Content Path
 
+> **Historical numbering note (2026-08-14).** This document predates plan
+> revision 8 (plan §0.7). The "scheduled visual migration" it defers to
+> (typography/lighting/background; the `--doc-*` tier unification in §6.2/R4)
+> is now **plan §8 Phase 8 — appearance and art-direction migration**. The
+> document is otherwise preserved as written.
+
 Role: Claude, design lead (`AGENTS.md` §"Three-agent roles").
 Status: **APPROVED by the owner 2026-07-29.** Owner decisions D1–D9 are settled
 (§11), including the exact `/about` prose to be hashed. **D10 was raised after

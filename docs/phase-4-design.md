@@ -1,5 +1,14 @@
 # Phase 4 Design — Shared Geometry and Projection Contract
 
+> **Historical numbering note (2026-08-14).** This document predates plan
+> revision 8 (plan §0.7): "Phase 8" below means the enforcement phase now
+> numbered **Phase 9**. Its "Phase 8 expands, never re-creates" baseline
+> rule is superseded by plan §8 Phase 8's baseline governance: the Phase 4
+> sets stay immutable pre-migration evidence through Phases 5–7; Phase 8
+> (appearance migration) records an owner-approved replacement set; Phase 9
+> expands the replacement set. The document is otherwise preserved as
+> written.
+
 **Status:** OWNER APPROVED — D1–D8 all approved with the recommended
 defaults on 2026-08-05, explicitly including the four-commit Phase 4
 exception to AGENTS.md's one-commit-per-phase default (D8) and the

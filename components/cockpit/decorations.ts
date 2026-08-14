@@ -9,7 +9,6 @@
 // no view mode — just motion, and the PC's hitbox wins wherever they
 // overlap). The pieces map to Alex's actual life:
 //   • frosted alto sax figurine   — jazz (the reason the vinyl deck exists)
-//   • handheld console            — Switch-style, jade grips
 //   • drawing tablet + stylus     — sketching (click → the stylus scribbles)
 //   • potted succulent            — greenery (frosted planter, echeveria rosette)
 //   • protein shaker              — gym (click → shake wiggle + slosh)
@@ -33,10 +32,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
 
   // ── Shared materials ──────────────────────────────────────────
   const creamLt   = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, roughness: 0.6 });
-  const graphite  = new THREE.MeshStandardMaterial({ color: 0x3A3733, roughness: 0.6, metalness: 0.08 });
-  const ink       = new THREE.MeshLambertMaterial({ color: 0x26231F });
   const jade      = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6 });
-  const screenDark= new THREE.MeshStandardMaterial({ color: 0x16140F, roughness: 0.3, metalness: 0.1 });
   const frost     = makeFrost({ color: 0xE7E2D9, transmission: 0.75, roughness: 0.32, thickness: 0.06 });
   const frostCap  = makeFrost({ transmission: 0.7, roughness: 0.3, thickness: 0.08 });
   // shake lands darker than the target tan — the frosted wall lightens
@@ -574,23 +570,6 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     // tight sage cone hides the open leaf bases at the heart
     mesh(rosette, new THREE.ConeGeometry(0.030, 0.075, 12),
       new THREE.MeshStandardMaterial({ color: 0xAEC3AA, roughness: 0.6 }), 0, 0.185, 0);
-  }
-
-  // ══ HANDHELD CONSOLE — Switch-style, jade grips, screen-up ══
-  // Sits in the front gap between crate and turntable, lying flat with its
-  // long axis running left↔right across the desk (only a whisper of yaw, so
-  // it reads horizontal, not angled in).
-  {
-    const g = item('handheld', -2.1, 2.6, 0.18);
-    mesh(g, new RoundedBoxGeometry(0.66, 0.045, 0.40, 2, 0.015), graphite, 0, 0.024, 0);
-    [-1, 1].forEach(s => {
-      const pad = mesh(g, new RoundedBoxGeometry(0.16, 0.05, 0.40, 2, 0.02), jade, s * 0.41, 0.026, 0);
-      // stick + two buttons per pad
-      mesh(g, new THREE.CylinderGeometry(0.028, 0.032, 0.02, 12), ink, s * 0.41, 0.058, -0.08);
-      mesh(g, new THREE.SphereGeometry(0.014, 8, 8), ink, s * 0.38, 0.055, 0.1);
-      mesh(g, new THREE.SphereGeometry(0.014, 8, 8), ink, s * 0.44, 0.055, 0.14);
-    });
-    mesh(g, new THREE.BoxGeometry(0.56, 0.004, 0.30), screenDark, 0, 0.049, 0);
   }
 
   // ══ PROTEIN SHAKER — beside the monitor's right edge, BEHIND the mouse ══

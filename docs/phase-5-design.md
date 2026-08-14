@@ -1,5 +1,12 @@
 # Phase 5 Design — 3D Fit and Input Normalization
 
+> **Renumbering note (2026-08-14, plan §0.7 revision 8).** "Phase 8" in
+> this owner-approved document means the enforcement phase now numbered
+> **Phase 9** (Phase 8 is now the appearance/art-direction migration). The
+> §10.1/A2 deferred obligations are unchanged in substance and are now
+> recorded under plan §8 **Phase 9**; no approved decision or acceptance
+> criterion is altered by the renumbering.
+
 **Status:** OWNER APPROVED — D1–D9 approved on 2026-08-10 with the
 recommended defaults (including D5 drag-release inertia, D7 pre-init
 record commit + single implementation commit, D8 uniform click semantics)
@@ -1777,7 +1784,7 @@ Viewport sets used below:
   (`WeakRef`/marker comparison), `getRendererState().rebuildCount` does
   not advance, and no context-lifecycle event fires.
 
-### 10.1 Manual matrix — Phase 5 versus Phase 8 (amendment A2)
+### 10.1 Manual matrix — Phase 5 versus the enforcement phase (amendment A2; "Phase 8" here = Phase 9 after plan §0.7)
 
 Plan §9.4's manual-coverage list ("must include" macOS/Windows precision
 trackpads, a detented wheel mouse **on Windows or Linux**, a ChromeOS
@@ -2042,9 +2049,10 @@ authorities never contradict the design mid-phase), A3 in §11.2 step 8
   trackpad, a detented wheel mouse **on Windows or Linux** (the plan's
   literal wording — its platform qualifier is preserved, not dropped),
   ChromeOS touchpad, and Safari/Firefox wheel behavior become **named
-  Phase 8 exit obligations** (they gate the plan-final input-normalization
-  claim, not Phase 5). The amendment text lists those obligations in plan
-  §8 Phase 8 so they cannot be dropped.
+  enforcement-phase exit obligations** (they gate the plan-final
+  input-normalization claim, not Phase 5). The amendment text lists those
+  obligations in the plan's enforcement-phase entry — Phase 9 after the
+  plan §0.7 renumbering — so they cannot be dropped.
 - **A3 — responsive-system §10 `data-hud` registry.** The registry table
   row gains `pan-instructions` and `pan-reset` (§7.D), with a note that
   both render only in contained mode. No `LayoutContract` schema change —

@@ -1,14 +1,17 @@
 # Plan — Site-Wide Responsive System and Resolution-Independent Cockpit
 
-- **Status**: product decisions finalized; revision 7 route amendment and
-  enforceability audit applied. Phase −1 is complete **including its
-  automated assertion** (delivered with Phase 0 in `e2e/smoke.spec.ts`).
-  **Phases 0, 0A, 0B, and 1 are complete** (commits recorded in §8, including
-  Phase 1 at `809607c`). Phase 2 is code-complete in the current reviewable
-  worktree change and awaits independent QA/merge; its commit hash does not
-  exist until that merge. The canonical
-  catalog/profile carry owner-approved strict records with blocking
-  approval gates. Phases 3–8 have not started.
+- **Status**: product decisions finalized; revision 8 (2026-08-14) assigns
+  the approved appearance/art-direction migration to a new Phase 8 and
+  renumbers the former enforcement phase to Phase 9 (§0.7). Phases −1
+  through 5 are **delivered and merged to `main`**: Phase 4's delivery
+  commit is `96fc9c5`, and Phase 5 merged at `03fca60` (implementation
+  `15c53ad`) with the dated owner checkpoint
+  (`docs/baselines/phase-5-input/OWNER-CHECKPOINT-2026-08-14.md`, AC-27 +
+  AC-28 approved), two independent Kimi QA PASS verdicts, and a green
+  16-job CI run. The Phase 6 design (`docs/phase-6-design.md`) awaits owner
+  approval of its §18 blocking items. Phases 7–9 have not started. The
+  canonical catalog/profile carry owner-approved strict records with
+  blocking approval gates.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
   cockpit views (`deck`, `crate`, `monitor`) as the first adopter.
 - **Normal composition range**: `1024×600` CSS pixels through `3440×1536`,
@@ -153,7 +156,7 @@ after reading the remaining skills in each:
 | 9 | Dominant-color share replaces background-region occupancy as the 4th scorecard metric | §9.6.3 | `inspect-threejs-canvas.mjs` |
 | 10 | Console/page/network error capture as a pass gate, with a reasoned allowlist | §9.6.4, §9.6 step 10 | `threejs-qa-release` |
 | 11 | Performance baseline method for the `DPR_CAP` decision | Phase 3 | `threejs-debug-profiler` |
-| 12 | Production-gate the development surface as a release blocker | Phase 8 | `threejs-qa-release` |
+| 12 | Production-gate the development surface as a release blocker | Phase 9 (enforcement; renumbered from Phase 8 by §0.7) | `threejs-qa-release` |
 
 `threejs-game-ui-designer` was read and **rejected**: its guidance
 (viewport-relative units, corner anchoring with safe-area padding, `44px`
@@ -181,7 +184,7 @@ decisions resolved all six:
 `e2e/smoke.spec.ts` samples each outer anchor's computed transform at the
 start/mid/end of the inner entrance animation in Chromium and requires an
 identical matrix, and additionally proves the animation actually ran.
-Phase 8 expands this existing assertion across the final browser and
+Phase 9 expands this existing assertion across the final browser and
 viewport matrix.
 
 ### 0.6 Revision 7 — `/recruiter` becomes `/about`
@@ -192,6 +195,45 @@ moves unchanged from `/recruiter` to `/about`; `/recruiter` remains a
 permanent redirect. `ContentPurpose` uses `professional-summary`, the
 contract id is `content-about-v1`, and all initial navigation says `About`.
 No canonical profile/project fact changed as part of this amendment.
+
+### 0.7 Revision 8 — appearance migration scheduled; enforcement renumbered
+
+Owner-directed roadmap revision, 2026-08-14, documentation-only (no
+production code, canonical content, approval record, or completed evidence
+changed):
+
+1. **New Phase 8 — appearance and art-direction migration.** The approved
+   `DESIGN.md` target appearance (materials/shell texture, studio lighting
+   and physical grounding, environment/background, typography migration,
+   restrained finishing, general aesthetic reconciliation) was previously
+   described in `DESIGN.md` and `docs/design-visual-migration-handoff.md`
+   but never assigned to a phase ("schedule deliberately"). It is now the
+   explicit Phase 8 in §8, after both HUD re-anchoring phases and before
+   enforcement, so restyling happens against final HUD anchoring and
+   enforcement verifies the final appearance.
+2. **The former "Phase 8 — enforcement, skill, and CI" is renumbered to
+   Phase 9** and retitled "enforcement, browser matrix, CI, and release
+   verification". Its scope is unchanged except where Phase 8's baseline
+   governance redirects its visual inputs: Phase 9 evaluates the
+   post-migration visual state and consumes the owner-approved Phase 8
+   replacement baseline set; the immutable Phase 0/4/5 capture sets remain
+   pre-migration evidence only and are never compared against post-Phase-8
+   output.
+3. **Historical numbering.** Documents and code comments written before
+   this revision use the old numbering. In `docs/phase-0-handoff.md`,
+   `docs/phase-2-design.md`, `docs/phase-3-design.md`,
+   `docs/phase-4-design.md`, `docs/phase-5-design.md`,
+   `docs/phase-5-implementation.md`, `playwright.config.ts`,
+   `.github/workflows/ci.yml`, `components/cockpit/test-hooks.ts`,
+   `e2e/smoke.spec.ts`, `e2e/foundation.spec.ts`, and
+   `scripts/phase-runner/manifests/phase-4.json`, "Phase 8" means the
+   enforcement phase now numbered Phase 9. `docs/phase-3-design.md`'s
+   "Phase 7 appearance migration" phrase was stale even against the plan of
+   its day — Phase 7 has always been crate re-anchoring here, and the
+   appearance migration was unscheduled until this revision created
+   Phase 8. The affected historical documents carry renumbering notes; code
+   comments are renumbered in the next code-touching engineering turn,
+   because this revision is documentation-only.
 
 ---
 
@@ -1662,7 +1704,7 @@ responsive work and would otherwise persist through every intervening phase.
 three scoped sites keep positioning transforms on stable outer anchors and
 run `termFadeIn` on inner elements (code 2026-07-27). The focused Chromium
 start/mid/end computed-transform assertion was delivered with Phase 0 in
-`e2e/smoke.spec.ts`; Phase 8 expands that existing assertion across the
+`e2e/smoke.spec.ts`; Phase 9 expands that existing assertion across the
 final browser and viewport matrix.
 
 Scope is exactly the three defective sites in §2.2.1: `VinylInfoCard`, the
@@ -1678,7 +1720,7 @@ previous/next arrows, and the browse hint.
 **Assertion**: the outer anchor's computed `transform` is unchanged for the
 full duration of the entrance animation — sample at animation start, mid, and
 end and require an identical matrix. Implement the first executable assertion
-in Phase 0 and carry it forward into the Phase 8 geometry suite rather than
+in Phase 0 and carry it forward into the Phase 9 geometry suite rather than
 replacing or discarding it.
 
 **Exit**: no focused-view overlay changes position during its entrance
@@ -1704,7 +1746,7 @@ static `NODE_ENV` guard, drawing-buffer reads via synchronous in-frame
 forced re-render. Completeness/approval checks run non-blocking pending
 Phase 0B, as specified.
 
-Contract enforcement cannot wait for the final phase. Without it, Phases 1–7
+Contract enforcement cannot wait for the final phase. Without it, Phases 1–8
 would build against contracts CI never checks. Phase 0 therefore establishes
 a **strict, isolated enforcement island** — not the complete final test
 suite.
@@ -2101,7 +2143,7 @@ first backend-specific §9.6.3 baselines are recorded.
 **Exit**: every focused subject fits its safe frame; the full Chromium
 FIT-MATRIX plus HOVER-TRIO/PAN-SET automated evidence passes; and the owner
 certifies the Phase 5 macOS precision-trackpad and owner-host detented-wheel
-checkpoints. The deferred manual and browser rows named under Phase 8 remain
+checkpoints. The deferred manual and browser rows named under Phase 9 remain
 plan-final exit obligations.
 
 ### Phase 6 — re-anchor deck HUD
@@ -2123,7 +2165,280 @@ pass.
 
 **Exit**: crate acceptance tests pass.
 
-### Phase 8 — enforcement, skill, and CI
+### Phase 8 — appearance and art-direction migration
+
+**Implementation status: not started.** Requires Phases 6 and 7 delivered,
+so restyled chrome is styled against its final geometry owner and the
+measured-size solver contracts absorb the typography change. Blocks
+Phase 9: enforcement verifies the post-migration appearance, never the
+pre-migration one. Added by revision 8 (§0.7); this is the scheduled home
+for the rendered visual work that `DESIGN.md` §14 previously deferred with
+"schedule deliberately".
+
+This phase implements the owner-approved `DESIGN.md` target appearance.
+`DESIGN.md` §§1–11 own the visual intent;
+`docs/design-visual-migration-handoff.md` §5 carries the gap-by-gap
+art-direction detail (its §7 stage sequencing is superseded — see the note
+in that file). A dedicated `docs/phase-8-design.md`, authored by the design
+lead and owner-approved before implementation (the Phase 6 precedent), must
+refine this roadmap entry into numbered acceptance criteria; the entry
+below is the binding scope, constraint, and exit contract for that design.
+
+**Bounded production scope.** Derived, not open-ended. The Phase 8 design
+document must enumerate the exact production files before implementation,
+drawn from this closed candidate set; touching a file outside the
+enumerated list requires a design-doc amendment recorded before the code
+change:
+
+- tokens and typography: `app/globals.css`, `app/layout.tsx` (font loading
+  and the `--font-display/ui/label/technical/terminal` role tokens);
+- 3D materials and textures: `components/cockpit/materials.ts`,
+  `decals.ts`, `project-textures.ts`, and the object builders
+  (`glass-mac.ts`, `turntable.ts`, `vinyl-crate.ts`, `coffee.ts`,
+  `decorations.ts`, `incense.ts` — the last three draw canvas-texture text
+  with the legacy families, verified by live search);
+- scene lighting, environment, background, exposure/tone mapping:
+  `globe-canvas.tsx` — its lighting/background/material blocks only; the
+  camera-fit, sampler, picking, and renderer-lifecycle code in the same
+  file stays out of scope;
+- DOM chrome restyle (tokens/typography only; geometry and interaction
+  contracts intact): `cockpit-hud.tsx`, `theme-toggle.tsx`,
+  `boot-screen.tsx`, and `warp-transition.tsx` (exact files — both carry
+  live legacy-font references; their restyle stays within the §A.6.1
+  authored-dark precedence).
+
+A 2026-08-14 repository-wide search for the legacy families (Cormorant
+Garamond, JetBrains Mono, Major Mono Display) confirms this closed set
+covers every production file with a live reference; D-TYPE's
+no-legacy-typography exit assertion is therefore satisfiable inside it. A
+future legacy reference discovered outside the set is handled by the
+amendment rule above, never by silent scope growth.
+
+Explicitly outside the scope: `lib/**` contract modules,
+`focus-fit-store.ts`, `hud-sampler.ts`, `pointer-activation.ts`,
+input policy, `renderer-size-sync.ts`, the canonical catalog/profile, and
+`content/portfolio-approvals.json`.
+
+**Named deliverables** — each gets numbered acceptance criteria and an
+evidence artifact in the phase design doc:
+
+- **D-MAT — translucent-shell material system.** Replace flat or generic
+  material response with an original or procedurally generated shell
+  texture; document target ranges per material family for opacity,
+  transmission, roughness, density/thickness variation, haze, refraction,
+  and edge response; preserve readable depth across broad faces and molded
+  edges; keep opaque cream liners and selectively visible internals
+  wherever a bare transmissive would read as an empty shell or milk slab.
+  Add restrained, object-specific wear per the `DESIGN.md` §7 condition
+  table — subtle scratches, softened printing, mild edge haze,
+  fingerprints visible only in highlights; never uniform grime. AX-01
+  remains the protected modeling/material benchmark: material response may
+  improve, form language may not change. The Modal reference boundary in
+  `DESIGN.md` §7 applies verbatim: translate shell texture quality only —
+  never Modal's assets, geometry, palette, lighting, post-processing, or
+  composition. New procedural texture randomness draws from seedable named
+  streams per §9.6.5; never `Math.random`.
+- **D-LIGHT — one product-photography studio.** The `DESIGN.md` §8 rig
+  across cockpit rest, crate, deck, and monitor views: large soft cream
+  key, low frontal fill, controlled jade transmission/rim, ambient
+  mauve/ink (dark) or cream/fog (light) field; plausible soft contact
+  shadows and ambient occlusion where technically appropriate within the
+  performance budget; exposure, tone mapping, and color balance consistent
+  across all camera states. Light mode must keep cream objects separated
+  from the field; dark mode must keep objects atmospherically separated
+  from the background. The DOM drop-shadow prohibition is untouched —
+  physically generated 3D shadows are the sanctioned kind and must never
+  be imitated with DOM `box-shadow`.
+- **D-ENV — studio environment/background.** Replace flat scene colors
+  with broad palette-token gradients or a curved seamless-backdrop
+  impression; both themes keep atmospheric separation; the background
+  remains continuous during free-look and focused-object transitions (no
+  per-view lighting or backdrop swaps), so every interactive angle reads
+  as the same photographed studio; behavior is deterministic under §9.6.5
+  capture.
+- **D-TYPE — typography migration.** Complete the outstanding `DESIGN.md`
+  §4 migration: Newsreader / IBM Plex Sans / IBM Plex Sans Condensed /
+  IBM Plex Mono / VT323 behind the existing role tokens; DOM, SVG, canvas
+  textures, decals, and object screens all consume roles; canvas-rendered
+  text redraws after fonts are ready; no legacy Cormorant Garamond /
+  JetBrains Mono / Major Mono Display family remains loaded or referenced
+  at exit (asserted, not assumed). Includes reviewing the Phase 2
+  `--doc-*` surface tier for token unification — the deferred item
+  recorded in `docs/phase-2-design.md` — without changing route
+  semantics.
+- **D-FX — restrained finishing (optional, with a defined disposition).**
+  Grain and vignette only as restrained finishing per `DESIGN.md` §8;
+  removed or replaced under reduced transparency, high contrast, and
+  forced colors; never carrying information. No neon glow, cyberpunk
+  effects, particle spectacle, constant glitches, or decorative
+  diagnostics. "Optional" is enforceable, not vague: D-FX is either
+  **implemented and verified** like every other deliverable, or
+  **explicitly omitted** in the owner-approved Phase 8 design and
+  acknowledged in the owner art-direction checkpoint. An omission is
+  recorded in the implementation report, no other Phase 8 acceptance
+  criterion may require grain/vignette or comparable finishing, and the
+  omission does not block the "every deliverable complete" exit clause.
+- **D-BASE — replacement visual baseline set.** See baseline governance
+  below.
+
+**Palette rule restated for this phase.** The palette remains cream, ink,
+mauve, fog/mist, and jade; jade stays the sole chromatic family. "New
+color" work means richer tokenized tonal use within those families —
+additional tonal steps are legal only when derived from the five families
+and declared in `globals.css` / `materials.ts` `PALETTE` — never a new
+accent family: no red, blue, orange, yellow, cyan, or magenta, in DOM or
+3D, in any theme or state.
+
+**Renderer and shader constraints.** three.js stays imperative; no React
+Three Fiber, WebGPU, or TSL. Custom WebGL/GLSL shader work **is permitted,
+narrowly**: only for material surface response (for example,
+`onBeforeCompile` shell-texture modulation alongside the existing beam/warp
+GLSL) and the environment/background surface — never for post-processing
+pipelines, HUD, picking, or geometry. Every custom shader must have a named
+purpose in the phase design doc; fail safe (a compile failure falls back to
+the standard material path and surfaces through §9.6.4 error capture — it
+may degrade the look, never blank the canvas or break interaction);
+allocate nothing per frame; and carry no cross-browser or cross-backend
+pixel-identity requirement — its test boundary is the §9.6.2 blank-canvas
+check, §9.6.3 scorecard bands, and §9.6.4 error capture, never pixel
+diffs. Renderer sizing, capped DPR, context loss/recovery, deterministic
+capture, and the `window.__cockpit*` bridge contracts are preserved
+exactly; `preserveDrawingBuffer` stays `false`.
+
+**Performance budget.** Re-run the Phase 3 measurement method (frame
+time/FPS, draw calls, triangles, geometry/texture counts, JS heap, bundle
+size) on the recorded scenario set — deck and crate focused views at the
+DPR cap — on the owner's hardware and the CI environment. Testable
+starting thresholds, tunable only by recorded amendment (the `DPR_CAP`
+discipline): median frame time per recorded scenario regresses no more
+than 15% against the Phase 3 baseline record; no new class of sustained
+long tasks; the font/bundle size delta is measured and justified in the
+implementation report (subsetting documented). A `DPR_CAP` change remains
+a policy amendment, never Phase 8 tuning.
+
+**WebGL-unavailable and recovery behavior.** Tier 1/2 guarantees (§A.4.3)
+are untouched — the migration is tier-3 presentation, and the typography/
+token changes must keep the document routes WCAG 2.2 AA conformant in both
+themes. Context-loss recovery must rebuild the migrated appearance —
+environment/PMREM, custom shader materials, decal canvases — and the §10.1
+loss/restore test plus the §9.6.2 blank-canvas check are re-run
+post-migration; repeated-failure routing to the canonical routes is
+unchanged.
+
+**Baseline governance — binding for Phase 9.**
+
+- The Phase 4 scorecard sets under `docs/baselines/phase-4-scorecard/` and
+  every earlier capture set are **immutable pre-migration evidence**. They
+  remain the regression reference through Phases 5–7 and are never
+  overwritten, re-recorded, or compared against post-Phase-8 output.
+- Phase 8 intentionally changes visual output, so scorecard or screenshot
+  comparison against pre-migration baselines is expected to fail and
+  proves nothing. During Phase 8, the §9.6.2 blank-canvas check, §9.6.4
+  error capture, and all geometry/interaction/accessibility suites remain
+  blocking; the §9.6.3 band comparison against the Phase 4 sets is
+  suspended for the migrated scene — recorded explicitly in the phase
+  design doc and implementation report, never silently skipped.
+- At Phase 8 exit, record a **replacement deterministic baseline set**
+  under `docs/baselines/phase-8-scorecard/` with the same §9.6.5 protocol:
+  fixed seeds, frozen clock, paused ambient, backend separation
+  (SwiftShader and owner-hardware sets are distinct identities, hardware
+  capture/certification stays owner-only, and the two are never compared
+  to each other), covering at minimum the Phase 4 §6.1 capture matrix
+  (viewports, views, DPR, themes).
+- Review and approval chain: Codex captures the CI-backend sets and
+  prepares the owner capture protocol → independent QA verifies
+  determinism (repeat-capture within the documented same-backend
+  tolerance) and band plausibility → the owner reviews the visual captures
+  and approves the replacement set in a dated Phase 8 owner checkpoint
+  (agents prepare but never author the approval — the AC-27/AC-28
+  precedent). Only the owner-approved set is a valid Phase 9 input.
+- Phase 9 consumes the Phase 8 replacement set exclusively: its matrix
+  expansion, browser projects, composition review, and CI band enforcement
+  all reference `phase-8-scorecard`. Phase 9 never points at
+  pre-migration imagery.
+
+**Verification obligations** (the phase design doc numbers these as
+acceptance criteria; each names its test method or evidence artifact):
+
+Automated, blocking:
+
+1. All five repository gates green post-migration. Every retained suite —
+   foundation, phase2, phase3-renderer, phase4-hud including the pinned
+   34-name bridge assertion, phase5-fit/input, and the Phase 6/7 deck and
+   crate acceptance suites — passes; where a retained test pins a specific
+   legacy font or color token, the assertion is updated to the target
+   token in the same change and itemized in the implementation report.
+2. No-legacy-typography assertion: rendered output loads only the five
+   approved families; a build/e2e assertion checks the legacy families are
+   gone.
+3. Palette conformance: token sources (`globals.css`, `PALETTE`, decal
+   colors) and sampled rendered DOM styles contain no color outside the
+   declared five-family token set.
+4. §9.6.2 blank-canvas plus §9.6.4 error capture green at the twelve §9.1
+   normal viewports in all four camera states (cockpit rest, crate, deck,
+   monitor), both themes, plus one contained-mode case.
+5. Replacement captures reproduce within the documented same-backend
+   tolerance (repeat-capture determinism check).
+6. Geometry non-regression: the Phase 6/7 solver acceptance suites re-run
+   green after the restyle — changed fonts change measured control sizes,
+   and the measured-size solver path must absorb them.
+7. Accessibility: reduced motion, reduced transparency, high contrast,
+   large text, large controls, and forced colors verified — decorative
+   effects (grain, vignette, transmission styling, glow) are removed or
+   replaced in the states that require it; automated scans report no new
+   violations; contrast passes in both themes and high contrast.
+8. Performance measurements within the thresholds above. Exceeding a
+   threshold is a **blocking failure** unless the owner authors the
+   performance waiver defined in obligation 12 — there is no informal
+   "accepted tradeoff" path.
+9. §10.1 context recovery re-verified post-migration.
+
+Owner-blocking (subjective art direction — never agent-certified):
+
+10. The owner reviews the capture matrix — both themes × the four camera
+    states × at least `1440×900`, `1024×600`, and one wide case — and
+    approves the final art direction (materials, wear intensity, lighting,
+    background, typography, grain/vignette retention **or the recorded
+    D-FX omission**) in a dated owner checkpoint under
+    `docs/baselines/phase-8-scorecard/`.
+11. The owner approves the D-BASE replacement baseline set.
+12. **Performance waiver (only if obligation 8's thresholds are
+    exceeded).** A dated, owner-authored waiver record stating: the
+    measured baseline; the measured post-migration result; hardware,
+    backend, and browser; the affected camera scenario(s); the percentage
+    regression; the user-visible consequence; the mitigation attempted;
+    the accepted residual risk; and the owner identity and date. Agents
+    prepare the measurements but never author the approval (the AC-27
+    precedent); independent QA verifies the waiver exists and matches the
+    measurements. Absent a waiver, the numerical threshold remains
+    blocking.
+
+**Non-goals and protected contracts** (a violation is a phase failure): no
+geometry or authored-transform changes; no interaction, gesture, or
+camera-fit changes; no new desk objects; no HUD placement changes — Phases
+6/7 own placement and Phase 8 restyles within the solver and measured-size
+contracts; no canonical content or approval-record writes; no
+`window.__cockpit*` bridge or test-hook contract changes; no
+`LayoutContract`/`ContentContract` semantic changes; boot and warp keep
+their authored-dark identity under the §A.6.1 precedence.
+
+**Exit**: every deliverable D-MAT through D-BASE implemented — D-FX per
+its disposition rule (implemented and verified, or explicitly omitted in
+the owner-approved design and checkpoint); the automated obligations above
+green, with the performance budget passing **or** the obligation-12
+owner-authored waiver in place and independently verified; no bridge,
+canonical-content, responsive-layout, or accessibility regression; both
+themes and all required accessibility states verified; the viewport and
+camera-state matrix captured; the owner has approved the final art
+direction and the replacement baseline set in the dated checkpoint; and
+independent QA has passed the phase — only then does Phase 9 begin.
+
+### Phase 9 — enforcement, browser matrix, CI, and release verification
+
+Renumbered from Phase 8 by revision 8 (§0.7); this remains the final
+enforcement and release phase, and every visual activity in it — browser
+matrix, scorecard, screenshot composition review, production-surface
+checks, release checklist — evaluates the post-Phase-8 visual state.
 
 - Expand the Phase 0 enforcement island to the full suite: browser geometry,
   action-parity, initial-HTML/content delivery, and automated accessibility
@@ -2131,20 +2446,25 @@ pass.
 - Expand the Phase 0 entrance-animation assertion across the final browser
   and viewport matrix as part of the geometry suite.
 - Run the §9.6.3 scorecard across the final matrix using the deterministic,
-  backend-specific baselines created in Phase 4; do not create a competing
-  Phase 8 baseline set.
+  backend-specific, owner-approved **Phase 8 replacement baselines**
+  (`docs/baselines/phase-8-scorecard/`); do not create a competing Phase 9
+  baseline set — Phase 9 expands the Phase 8 set across the final matrix.
+  The Phase 4 sets are immutable pre-migration evidence and are never
+  compared against post-Phase-8 output.
 - Add narrowly scoped forbidden-pattern lint rules.
 - Create and validate
   `.claude/skills/enforce-responsive-design/SKILL.md` using §A.8.
 - Add the corresponding Codex instructions and ensure both agents point to
   the same neutral contract.
-- Review screenshots for composition rather than pixel-perfect shader output.
+- Review screenshots for composition rather than pixel-perfect shader
+  output; the review subject is the post-Phase-8 appearance against the
+  owner-approved Phase 8 captures, never pre-migration imagery.
 - Add CI gates and the manual branded-browser/release checklist.
 - Complete the deferred input-normalization exit obligations: re-run the
   Phase 5 automated traces in the expanded browser matrix; verify a Windows
   precision trackpad, a detented wheel mouse on Windows or Linux, and a
   ChromeOS touchpad; and verify Safari and Firefox wheel behavior through the
-  Phase 8 browser projects. These obligations gate the plan-final
+  Phase 9 browser projects. These obligations gate the plan-final
   input-normalization claim, not the Phase 5 implementation exit.
 - Mark phases complete in this file.
 
@@ -2313,7 +2633,7 @@ Phase 5 manual input coverage must include:
 - a macOS precision trackpad;
 - a detented wheel mouse on the owner's host.
 
-Phase 8 manual input coverage must include the deferred plan-final
+Phase 9 manual input coverage must include the deferred plan-final
 obligations: a Windows precision trackpad; a detented wheel mouse on Windows
 or Linux; a ChromeOS touchpad; and Safari and Firefox wheel behavior through
 the expanded browser projects. Chromium automated traces, full fit evidence,
@@ -2618,10 +2938,14 @@ The per-file figures above are **source-line counts**, not invocation counts:
 coffee 6, glass-mac 7, incense 9, tea-set 9, vinyl-crate 4, boot-screen 3,
 and globe-canvas 4. Migration belongs to Phase 4 alongside the
 projection/sampler work; Phase 4 records the first backend-specific scorecard
-baselines immediately after deterministic capture passes. Phase 8 consumes
-and expands those baselines across the final matrix—it does not create a
-different baseline set. New scene code must take a named stream argument from
-the start.
+baselines immediately after deterministic capture passes, and those sets
+remain the regression reference through Phases 5–7. Phase 8 intentionally
+changes visual output and therefore records an owner-approved
+**replacement** baseline set with this same protocol (§8 Phase 8 baseline
+governance); Phase 9 consumes and expands the Phase 8 replacement set
+across the final matrix — it does not create a set of its own, and it never
+compares post-migration output against the Phase 4 sets. New scene code must
+take a named stream argument from the start.
 
 Use Chromium, Firefox, and WebKit projects in CI. Before release, run branded
 browser smoke checks:

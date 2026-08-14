@@ -1,5 +1,10 @@
 # HANDOFF — Execute Phase 0 (Portfolio 3.0 responsive system)
 
+> **Historical numbering note (2026-08-14).** This document predates plan
+> revision 8 (plan §0.7): "Phase 8" below means the enforcement phase now
+> numbered **Phase 9**; Phase 8 is now the appearance/art-direction
+> migration. The document is otherwise preserved as written.
+
 You are picking up mid-project. The planning is **done and owner-approved**;
 your job is to execute **Phase 0 only** of
 [docs/hud-responsive-layout-plan.md](hud-responsive-layout-plan.md) (~2,560

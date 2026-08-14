@@ -228,7 +228,7 @@ not viewport percentages or literal Three.js `scale` values:
 | Pour-over + mug | `0.3–0.45` | Ambient interactive | Pristine ritual object; quiet contrast and no project-level emphasis |
 | Drawing tablet | `0.45–0.6`, low profile | Personal artifact | Broad but visually flat; must not read as a fourth hero |
 | Saxophone | `0.3–0.45`, vertical | Personal artifact | Narrow silhouette and restrained reflectance |
-| Plant, handheld, shaker | `0.15–0.3` each | Personal/decorative | Small identity cues; limited detail and interaction emphasis |
+| Plant, shaker | `0.15–0.3` each | Personal/decorative | Small identity cues; limited detail and interaction emphasis |
 
 Exact transforms remain in `TWEAK_DEFAULTS` and the model modules. Do not copy
 runtime scale numbers into this guide as a second source of truth.
@@ -565,13 +565,23 @@ matching `data-hud`, `data-layout-region`, `data-layout-contract`, and
 
 The implementation sequence in
 [docs/hud-responsive-layout-plan.md](docs/hud-responsive-layout-plan.md)
-remains authoritative.
+remains authoritative. The current sequence is: Phase 6 re-anchors the deck
+HUD, Phase 7 re-anchors the crate HUD, Phase 8 implements the approved
+appearance and art-direction migration, and Phase 9 is final enforcement,
+browser matrix, CI, and release verification.
 
 - Do not implement later phases ad hoc.
 - Do not stopgap the known deck HUD overlap before Phase 6.
-- Typography migration, lighting implementation, scene-background work, and
-  identity animation are rendered changes: schedule them deliberately,
-  update applicable contracts, and run the full gates.
+- Plan §8 **Phase 8 owns the approved visual migration** as scheduled
+  rendered work: material and texture migration (§7); lighting and physical
+  grounding (§8); environment/background migration (§8); typography
+  migration (§4); restrained visual finishing — grain/vignette (§8); and
+  general aesthetic reconciliation with §§1–11. Identity-animation changes
+  remain rendered changes under the same discipline. Update applicable
+  contracts and run the full gates.
+- Phase 9 evaluates the post-Phase-8 visual state against the
+  owner-approved Phase 8 replacement baselines; earlier capture sets stay
+  immutable pre-migration evidence.
 - Preserve the documented `window.__cockpit*` bridge.
 - Test instrumentation stays additive and development-only through
   `__COCKPIT_TEST_HOOKS__`.

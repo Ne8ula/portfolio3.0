@@ -1,5 +1,9 @@
 # Phase 5 Implementation and Acceptance Report
 
+> **Renumbering note (2026-08-14, plan §0.7 revision 8).** "Phase 8" in
+> this report means the enforcement phase now numbered **Phase 9**. No
+> claim or evidence in the report is altered by the renumbering.
+
 **Phase:** 5 — 3D fit and input normalization
 
 **Step:** 8 — docs, amendments, and delivery

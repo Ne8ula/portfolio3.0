@@ -110,10 +110,9 @@ through dev-only `__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
 
 ## Responsive/content workflow — mandatory
 
-Phases −1 through 4 are delivered. Phase 5 production implementation is in
-Step 8 with all twelve AC-28 captures and a fresh five-gate run complete;
-independent QA remains before the owner checkpoint, while AC-27 hardware
-certification and AC-28 visual approval remain owner-only. The owner-approved
+Phases −1 through 5 are delivered and merged (Phase 5 at `03fca60` with the
+dated AC-27/AC-28 owner checkpoint and Kimi QA PASS). The Phase 6 design
+awaits owner approval of its §18 blocking items. The owner-approved
 `PROFILE.targetRole` is “Creative Technologist” and its current content hash
 is recorded. Before any rendered
 UI, layout, typography, 3D framing/material/lighting, interaction, or canonical
@@ -156,14 +155,16 @@ benchmark; coffee/props stay subordinate. Exact runtime transforms remain in
 Approved typography target: Newsreader (identity/project display), IBM Plex
 Sans (body/UI), Plex Sans Condensed (labels), Plex Mono (technical/screen),
 VT323 (boot only); runtime still loads Cormorant Garamond + JetBrains Mono
-behind role tokens (`--font-display/ui/label/technical/terminal`). The
+behind role tokens (`--font-display/ui/label/technical/terminal`); the
+migration is plan §8 Phase 8. The
 “Creative Technologist” role (typed once, then stable) is owner-approved in
 `PROFILE.targetRole` and covered by the current approval record.
 
 Approved scene target: one photographed studio across all views—soft cream
 key, frontal fill, controlled jade transmission/rim, mauve/ink or cream/fog
 gradient field, soft physical grounding. Runtime lighting/background is not
-migrated. UI drop shadows stay forbidden; physical 3D contact shadows are
+migrated; Phase 8 owns that migration. UI drop shadows stay forbidden;
+physical 3D contact shadows are
 allowed. Grain/vignette are restrained finishing, removed by the
 reduced-transparency/high-contrast/forced-colors states.
 
@@ -183,9 +184,12 @@ reduced-transparency/high-contrast/forced-colors states.
 
 ## Next
 
-Complete Step 8 independent Kimi QA → Phase 5 owner checkpoint → fresh Step 9
-gates and Kimi QA → controller-owned
-implementation commit and owner/CI acceptance. Phase 6 owns
-the known deck-HUD overlap; do not stopgap it during Phase 5 delivery.
-Approved visual migrations require scheduled rendered work; preserve phase
-dependencies.
+Phase 5 is delivered. Next: owner approval of the Phase 6 design's §18
+blocking items → Codex plan/implementation → Kimi QA. Roadmap (plan §8,
+revision 8): Phase 6 deck-HUD re-anchor (owns the known overlap — never
+stopgapped) → Phase 7 crate-HUD re-anchor → Phase 8
+appearance/art-direction migration (materials, lighting, environment,
+typography, finishing; owner-approved replacement baselines) → Phase 9
+enforcement/browser matrix/CI/release, which consumes the post-Phase-8
+baselines (Phase 9 was formerly numbered Phase 8; pre-revision docs and
+code comments retain the old number).

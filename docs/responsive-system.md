@@ -644,7 +644,8 @@ puts the crate into its deterministic selection state (the legacy pull-out —
 `selectedIdx` set, no deck flight). The Phase −1 entrance assertion needs it
 because all three fixed overlays mount only while a record is selected, and
 the deck-return selection window is too short to sample under software
-rendering. Phase 8 reviews whether it stays.
+rendering. Phase 9 (enforcement; renumbered from Phase 8 by plan §0.7)
+reviews whether it stays.
 
 Two settled Phase 0 decisions, recorded here as the durable rule:
 
@@ -652,7 +653,7 @@ Two settled Phase 0 decisions, recorded here as the durable rule:
    guard in `components/cockpit/test-hooks.ts`. Next.js inlines `NODE_ENV`,
    so the guard is statically eliminated from production bundles and the
    hook object is never attached. Browser tests therefore run against a
-   **dev server** (see `playwright.config.ts` webServer); the Phase 8
+   **dev server** (see `playwright.config.ts` webServer); the Phase 9
    production gate builds for production and asserts
    `window.__COCKPIT_TEST_HOOKS__` is absent from the shipped artifact.
 2. **§9.6.2 drawing-buffer read** = a synchronous in-frame forced
@@ -685,12 +686,13 @@ build-time boundary.
 | 0A | Owner-approved profile + six-project dossier (owner supplies facts) | **Delivered** (2026-07-28; all 7 records approved + hashed) |
 | 0B | Strict catalog completeness + approval hashes become **blocking** | **Delivered** (gates active) |
 | 1 | Shared responsive/accessibility foundation: tokens, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink` primitives, root `AccessibilityProvider`, settings dialog + persistence, static reduced-motion boot, boot gating on the operable ACCESSIBILITY trigger, `/responsive-preview` representative page | **Delivered** (2026-07-28; commit `809607c`) |
-| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered in code** (2026-07-30; independent QA/merge pending, so no commit hash exists yet) |
+| 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered** (code 2026-07-30; committed on `main` at `685eb67` "Complete Phase 2 canonical portfolio routes") |
 | 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered** (2026-08-04; delivery `d9756de`) |
-| 4 | Stage-relative projection contract, focused-HUD sampler, hud-layout solver, 14 seedable random streams, deterministic capture, and first backend-separated scorecard baselines | **Implemented with owner-certified hardware evidence** (2026-08-07; implementation `f3dc4c4`, `50ca962`, `8987589`, capture allowlist `9fab531`; final delivery boundary requires independent QA) |
-| 5 | Authored focus envelopes, cached projection fit, normalized free-look, shared pointer arbitration, and contained-stage pan/chrome | **Implemented with Step 8 AC-28 captures and fresh five-gate evidence; independent QA and the AC-27/AC-28 owner gate remain** (2026-08-14; final delivery boundary requires owner approval, step-9 verification, and independent QA) |
+| 4 | Stage-relative projection contract, focused-HUD sampler, hud-layout solver, 14 seedable random streams, deterministic capture, and first backend-separated scorecard baselines | **Delivered** (2026-08-07 implementation `f3dc4c4`, `50ca962`, `8987589`, capture allowlist `9fab531`; delivery commit `96fc9c5` "Phase 4: record scorecard baselines and delivery" on `main`) |
+| 5 | Authored focus envelopes, cached projection fit, normalized free-look, shared pointer arbitration, and contained-stage pan/chrome | **Delivered** (merged to `main` 2026-08-14 at `03fca60`, implementation `15c53ad`; dated owner checkpoint `docs/baselines/phase-5-input/OWNER-CHECKPOINT-2026-08-14.md` with AC-27/AC-28 approved; two independent Kimi QA PASS verdicts; 16-job CI green) |
 | 6 / 7 | Re-anchor deck HUD / crate HUD (the known deck overlap is fixed HERE, not by an interim constant) | Pending |
-| 8 | Full browser/viewport matrix, accessibility scans, production gate, enforcement skill, CI expansion | Pending |
+| 8 | Appearance and art-direction migration: shell materials/wear, studio lighting and grounding, environment/background, typography migration, restrained finishing, owner-approved replacement visual baselines (plan §8 Phase 8; added by plan revision 8) | Pending |
+| 9 | Full browser/viewport matrix, accessibility scans, production gate, enforcement skill, CI expansion — evaluates the post-Phase-8 visual state and consumes the Phase 8 replacement baselines (renumbered from 8 by plan §0.7) | Pending |
 
 Hard rules that survive every phase:
 

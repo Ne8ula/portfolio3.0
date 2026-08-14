@@ -1,5 +1,15 @@
 # Phase 3 Design — Renderer and Viewport Sizing
 
+> **Historical numbering note (2026-08-14).** This document predates plan
+> revision 8 (plan §0.7). Its out-of-scope list says "Phase 7 appearance
+> migration; Phase 8 browser-matrix expansion" — **stale numbering**: in
+> the authoritative plan, Phase 7 has always been crate-HUD re-anchoring,
+> and the appearance migration was unscheduled until revision 8 created
+> the current **Phase 8 — appearance and art-direction migration**; the
+> browser-matrix/enforcement phase is now **Phase 9**. Do not read this
+> document's numbering as the current roadmap. It is otherwise preserved
+> as written.
+
 **Status:** owner-approved — D1–D6 all approved with the recommended
 defaults on 2026-07-31, including exact recovery wording (D2). Ready for
 Codex implementation per §9.
