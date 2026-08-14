@@ -12,9 +12,11 @@ import { Cockpit } from "./cockpit-hud"
 import { CURSOR_DEFAULT } from "./cursors"
 import {
   installTestHooks,
+  registerAuthoredTweakGuardAction,
   registerPhaseController,
   reportRendererLifecycle,
   unregisterPhaseController,
+  unregisterAuthoredTweakGuardAction,
 } from "./test-hooks"
 import { RendererRecoveryPanel } from "./renderer-recovery-panel"
 import { useAccessibility } from "@/components/responsive/accessibility-provider"
@@ -271,9 +273,9 @@ export function CockpitApp({ onFatal, onMountChange }) {
     if (phase !== 'cockpit' && phase !== 'warp') return;
     let cancelled = false;
     let frames = 0;
+    let guardFrame = 0;
     const t = TWEAK_DEFAULTS;
-    const apply = () => {
-      if (cancelled) return;
+    const applyDefaults = () => {
       const pc = window.__cockpitPC;
       const kb = window.__cockpitKeyboard;
       const fpv = window.__cockpitFPV;
@@ -290,11 +292,27 @@ export function CockpitApp({ onFatal, onMountChange }) {
       if (tt && tt.setTransform) {
         tt.setTransform({ x: t.ttX, y: t.ttY, z: t.ttZ, ry: t.ttRY, s: t.ttS });
       }
-      frames++;
-      if (frames < 180) requestAnimationFrame(apply);
     };
+    const apply = () => {
+      guardFrame = 0;
+      if (cancelled) return;
+      applyDefaults();
+      frames++;
+      if (frames < 180) guardFrame = requestAnimationFrame(apply);
+    };
+    registerAuthoredTweakGuardAction(() => {
+      if (cancelled) return;
+      if (guardFrame) cancelAnimationFrame(guardFrame);
+      guardFrame = 0;
+      frames = 180;
+      applyDefaults();
+    });
     apply();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      if (guardFrame) cancelAnimationFrame(guardFrame);
+      unregisterAuthoredTweakGuardAction();
+    };
   }, [phase, rebuildKey]);
 
   return (

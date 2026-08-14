@@ -26,6 +26,7 @@
 // requestAnimationFrame callback.
 
 import type { FrameTimesCaptureState } from './frame-times'
+import { invalidateFocusMeasurements } from './focus-fit-store'
 import {
   getContainedPanSnapshotForTests,
   type ContainedPanSnapshot,
@@ -200,6 +201,8 @@ export type CockpitTestHooks = {
   configureVisualCapture(config: VisualCaptureConfig): void
   configureSettleTimeout(timeoutMs: number): void
   getVisualCaptureState(): VisualCaptureState
+  completeAuthoredTweakGuard(): void
+  armFocusMeasurementReplacement(): void
   skipIntro(): void
   armWarpContextLoss(): void
   getWarpLifecycle(): WarpLifecycleSnapshot
@@ -256,6 +259,7 @@ type VinylSleeveProbe = () => VinylSleeveSnapshot
 type VinylFlightProbe = () => VinylFlightSnapshot
 type FocusFitProbe = () => FocusFitSnapshot | null
 type FreeLookProbe = () => FreeLookSnapshot
+type AuthoredTweakGuardAction = () => void
 type PointerActivationProbe = {
   readonly snapshot: () => PointerActivationSnapshot
   readonly candidateAt: (point: {
@@ -290,6 +294,7 @@ type Registry = {
   vinylFlightProbe: VinylFlightProbe | null
   focusFitProbe: FocusFitProbe | null
   freeLookProbe: FreeLookProbe | null
+  authoredTweakGuardAction: AuthoredTweakGuardAction | null
   pointerActivationProbe: PointerActivationProbe | null
 }
 
@@ -326,6 +331,7 @@ const registry: Registry = {
   vinylFlightProbe: null,
   focusFitProbe: null,
   freeLookProbe: null,
+  authoredTweakGuardAction: null,
   pointerActivationProbe: null,
 }
 
@@ -340,6 +346,18 @@ export function registerPhaseController(skip: () => void): void {
 export function unregisterPhaseController(): void {
   if (!testHooksEnabled) return
   registry.skipIntroImpl = null
+}
+
+export function registerAuthoredTweakGuardAction(
+  action: AuthoredTweakGuardAction,
+): void {
+  if (!testHooksEnabled) return
+  registry.authoredTweakGuardAction = action
+}
+
+export function unregisterAuthoredTweakGuardAction(): void {
+  if (!testHooksEnabled) return
+  registry.authoredTweakGuardAction = null
 }
 
 /** GlobeCanvas marks the moment scene construction begins — the lifecycle
@@ -648,6 +666,17 @@ function buildHooks(): CockpitTestHooks {
         timeMs: config?.timeMs ?? null,
         streams: [...registry.visualCaptureStreams].sort(),
       }
+    },
+
+    completeAuthoredTweakGuard(): void {
+      if (!registry.authoredTweakGuardAction) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: authored tweak guard is not ready')
+      }
+      registry.authoredTweakGuardAction()
+    },
+
+    armFocusMeasurementReplacement(): void {
+      invalidateFocusMeasurements()
     },
 
     skipIntro(): void {

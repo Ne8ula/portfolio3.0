@@ -93,7 +93,55 @@ describe('E2E runner support', () => {
       .map((match) => match[1])
       .sort()
 
-    expect(matrixSpecs).toEqual(discoverE2eSpecFiles(repositoryRoot))
-    expect(new Set(matrixSpecs).size).toBe(matrixSpecs.length)
+    expect([...new Set(matrixSpecs)].sort()).toEqual(discoverE2eSpecFiles(repositoryRoot))
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-fit.spec.ts')).toHaveLength(4)
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-input.spec.ts')).toHaveLength(3)
+    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 5)
+  })
+
+  it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {
+    const workflow = readFileSync(
+      resolve(repositoryRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    )
+
+    expect(workflow).toContain('timeout-minutes: ${{ matrix.timeout }}')
+    expect(workflow).toMatch(
+      /id: phase3-renderer\n\s+spec: e2e\/phase3-renderer\.spec\.ts\n\s+timeout: 75\n\s+timing_scale: 1\.5/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-fit-1\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=1\/4/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-fit-4\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=4\/4/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-input-1\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=1\/3/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase5-input-3\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=3\/3/u,
+    )
+    expect(workflow).toContain(
+      'npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}',
+    )
+    expect(workflow).toContain('ac17-decoration:')
+    expect(workflow).toMatch(
+      /ac17-decoration:[\s\S]*?timeout-minutes: 50[\s\S]*?CI_E2E_TIMING_SCALE: 2/u,
+    )
+    expect(workflow).toContain(
+      '--grep "AC-17 arbitrates wide-fit decorations where each target is reachable"',
+    )
+  })
+
+  it('uses Node 24-native GitHub actions', () => {
+    const workflow = readFileSync(
+      resolve(repositoryRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    )
+
+    expect(workflow).toContain('actions/checkout@v6')
+    expect(workflow).toContain('actions/setup-node@v6')
+    expect(workflow).toContain('actions/upload-artifact@v6')
+    expect(workflow).not.toMatch(/actions\/(?:checkout|setup-node|upload-artifact)@v4/u)
   })
 })

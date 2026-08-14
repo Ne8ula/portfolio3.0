@@ -20,6 +20,146 @@ Hook setup:
 ## Recent handoffs
 
 <!-- agent-handoff:entry:start -->
+### 2026-08-12T14:41:18Z · codex
+
+- Branch / HEAD: `main` / `728ac8e`
+- Session / turn: `root` / cloud AC-17 handoff
+- Model: `not exposed`
+
+#### Final report
+
+> Phase 5 remains blocked at step-6 after the trusted host E2E run reached
+> `e2e/phase5-input.spec.ts`: 10 tests passed, but AC-17 timed out after
+> 600 seconds on both the initial attempt and CI retry while discovering a
+> wide-fit decoration activation point. Earlier spec files were green. The
+> failure is unrelated to account usage or model capacity.
+>
+> Cloud continuation requirements:
+> - Start a new Codex Cloud chat from the temporary handoff branch; active
+>   local chats cannot be handed directly to Codex Cloud.
+> - Configure the cloud environment setup phase to run `npm ci` and
+>   `npx playwright install --with-deps chromium` so browser verification does
+>   not repeat the prior missing-Chromium blocker.
+> - Diagnose AC-17 in isolation before rerunning the full Phase 5 gate.
+> - Preserve the controller cursor and do not manually edit `.agent-runs`.
+>
+> Handoff: Phase 5 step-6 is ready for a new Codex Cloud engineering task to
+> diagnose the AC-17 timeout, validate the focused test, run all required
+> gates remotely, and return a pushed branch for independent QA; the local Mac
+> should not run Playwright while this cloud task is active.
+
+#### Git status at handoff
+
+```text
+ M components/responsive/responsive-stage.tsx
+ M components/responsive/use-contained-pan.ts
+ M docs/agent-handoff.md
+ M e2e/phase5-input.spec.ts
+ M scripts/phase-runner/core.ts
+ M tests/unit/phase-runner.test.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-08-12T02:15:57.718Z · codex
+
+- Branch / HEAD: `main` / `728ac8e`
+- Worktree snapshot: `73bf0b9882a5`
+- Session / turn: `phase-runner-codex` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> Contained-pan repairs are present and audited. Four required gates pass; E2E cannot execute because the sandbox denies the Playwright server port bind. No files were staged or committed.
+>
+> Verification:
+> - npm run lint: pass — Exit 0.
+> - npm run typecheck:contracts: pass — Exit 0.
+> - npm run validate:contracts: pass — Validated 5 layout contracts, 4 content contracts, 5 routes, and 6 catalog records.
+> - npm run test:unit: pass — 31 test files and 381 tests passed.
+> - npm run test:e2e: fail — No tests executed; the Playwright web server failed to bind 0.0.0.0:3000 with EPERM.
+>
+> Unresolved risks:
+> - AC-11, AC-12, AC-14, AC-15, AC-16, AC-18, AC-19, AC-21, and AC-29 require the trusted controller's browser run before independent QA.
+>
+> Handoff: Phase 5 step-6 contained-pan repairs span use-contained-pan.ts, responsive-stage.tsx, and phase5-input.spec.ts; four gates pass, E2E is sandbox-blocked before execution, browser acceptance remains unresolved, and Kimi is next only after the trusted controller makes the E2E gate green.
+
+#### Git status at handoff
+
+```text
+ M components/responsive/responsive-stage.tsx
+ M components/responsive/use-contained-pan.ts
+ M e2e/phase5-input.spec.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-08-12T01:04:41.176Z · codex
+
+- Branch / HEAD: `main` / `728ac8e`
+- Worktree snapshot: `73bf0b9882a5`
+- Session / turn: `phase-runner-codex` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> Contained-pan repairs are present and audited. Four required gates pass; E2E cannot execute because the sandbox denies the Playwright server port bind. No files were staged or committed.
+>
+> Verification:
+> - npm run lint: pass — Exit 0.
+> - npm run typecheck:contracts: pass — Exit 0.
+> - npm run validate:contracts: pass — Validated 5 layout contracts, 4 content contracts, 5 routes, and 6 catalog records.
+> - npm run test:unit: pass — 31 test files and 381 tests passed.
+> - npm run test:e2e: fail — No tests executed; the Playwright web server failed to bind 0.0.0.0:3000 with EPERM.
+>
+> Unresolved risks:
+> - AC-11, AC-12, AC-14, AC-15, AC-16, AC-18, AC-19, AC-21, and AC-29 require the trusted controller's browser run before independent QA.
+>
+> Handoff: Phase 5 step-6 contained-pan repairs span use-contained-pan.ts, responsive-stage.tsx, and phase5-input.spec.ts; four gates pass, E2E is sandbox-blocked before execution, browser acceptance remains unresolved, and Kimi is next only after the trusted controller makes the E2E gate green.
+
+#### Git status at handoff
+
+```text
+ M components/responsive/responsive-stage.tsx
+ M components/responsive/use-contained-pan.ts
+ M e2e/phase5-input.spec.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-08-11T22:53:26.305Z · codex
+
+- Branch / HEAD: `main` / `94be7fa`
+- Worktree snapshot: `411bfed7443d`
+- Session / turn: `phase-runner-codex` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> Contained-entry centering, controller scroll attribution, and large-control RESET sizing are implemented. Four required gates pass, but E2E cannot start because the sandbox denies the test server’s port bind.
+>
+> Verification:
+> - npm run lint: pass — Exit 0.
+> - npm run typecheck:contracts: pass — Exit 0.
+> - npm run validate:contracts: pass — Validated 5 layout contracts, 4 content contracts, 5 routes, and 6 catalog records.
+> - npm run test:unit: pass — 31 files and 381 tests passed.
+> - npm run test:e2e: fail — Playwright executed no tests because the Next.js server bind to 0.0.0.0:3000 failed with EPERM.
+>
+> Unresolved risks:
+> - AC-11/12/14/15, AC-18/19, and AC-21/29 require the trusted controller’s full browser run.
+> - No files were staged or committed.
+>
+> Handoff: Phase 5 step-6 fixes are confined to components/responsive/use-contained-pan.ts and responsive-stage.tsx; four gates pass, E2E is sandbox-blocked before execution, browser acceptance remains unresolved, and Kimi is next after the trusted controller makes the full E2E gate green.
+
+#### Git status at handoff
+
+```text
+ M components/responsive/responsive-stage.tsx
+ M components/responsive/use-contained-pan.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
 ### 2026-08-11T21:40:34Z · codex
 
 - Branch / HEAD: `main` / `7fc525d`
@@ -319,198 +459,6 @@ No files are staged or committed.
 ?? components/cockpit/pointer-activation.ts
 ?? e2e/phase5-fit.spec.ts
 ?? e2e/phase5-input.spec.ts
-?? lib/responsive/camera-fit.ts
-?? tests/unit/camera-fit-oracle.test.ts
-?? tests/unit/camera-fit.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-11T13:21:10.531Z · kimi
-
-- Branch / HEAD: `main` / `7fc525d`
-- Worktree snapshot: `e9663b34053b`
-- Session / turn: `phase-runner-kimi` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Free-look rewire matches §7.A and §11.2 step-4 scope exactly: policy-driven hoverAngle/responseExponentFor mapping with live visible-box origin (stage rect in fit, container client rect in contained), reduced-motion gating with smoothing snap (no residual drift), pointer-exit decay, dev-only probe-based getFreeLookState(), and no pan/production-bridge/Phase-6 changes. All five gates green on fresh runs; e2e full canonical CI=true suite 58 passed, 1 intentional Phase-6 fixme skip, 0 failed, including the 3 new AC-9/10/13/18 tests. QA made no repository writes; final git status identical to the initial snapshot.
->
-> Verdict: PASS
->
-> Verification:
-> - npm run lint: pass — Exit 0, fresh run.
-> - npm run typecheck:contracts: pass — Exit 0, strict contract island clean, fresh run.
-> - npm run validate:contracts: pass — 5 layout contracts, 4 content contracts, 5 routes, 6 catalog records valid, fresh run.
-> - npm run test:unit: pass — 31 test files, 381 tests passed, fresh run; matches Codex report.
-> - npm run test:e2e: pass — Full canonical CI=true suite green in per-spec/grep chunks (300s foreground cap): foundation 6, phase2-boundary 3, phase2-completion 13, phase3-renderer 7, phase4-hud 8, phase5-fit 4 (AC-3 alone 5.3m), phase5-input 3, smoke 12 + 1 intentional Phase-6 fixme skip, turntable-tether 2 = 58 passed, 1 skipped, 0 failed. Required gitignored-only environment repair (node_modules dereferenced copy + PATH de-pollution), fully restored afterward.
->
-> Findings:
-> - INFO e2e/phase5-input.spec.ts:136-194 — The AC-9/13 browser test asserts |yawTarget| ≤ MAX_YAW_RAD and |pitchTarget| ≤ MAX_PITCH_RAD at 8 edge/corner points per viewport (with a 0.5px CDP inset), but never positions the pointer beyond the visible box while inside the viewport; beyond-box clamping is pinned at unit level (tests/unit/input-policy.test.ts:184 'clamps pointers beyond the stage edge to the full envelope') and the production path is the same hoverAngle clamp.
-> - INFO N/A:N/A — The disposable checkout's node_modules was a symlink into the real repo (Turbopack rejects it), and the harness PATH contained the real repo's node_modules/.bin first, which made the dev server resolve into the real repo and panic ('FileSystemPath join ... leaves the filesystem root') even with a dereferenced copy. Both are harness defects, not product defects.
->
-> Handoff: Phase 5 step-4 (free-look rewire) QA verdict PASS. Verified against §7.A and §11.2 step 4: cockpit-hud.tsx now maps pointer position through hoverAngle()/responseExponentFor() with the live visible-box origin (stage rect in fit mode, ResponsiveStage container client rect in contained mode), window-level pointermove, pointerleave/mouseleave/blur exit decay through the existing smoothing, and useAccessibility reduced-motion gating (listener detached, targets zeroed, globe-canvas snaps the smoothing accumulator under data-a11y-motion=reduced so no residual drift plays); hard-coded tuning left the JSX for MAX_YAW_RAD/MAX_PITCH_RAD/PARALLAX_YAW_SCALE(0.25)/PARALLAX_PITCH_SCALE(0.15) policy exports; getFreeLookState() is additive and dev-only (probe registry, NODE_ENV-gated); the live window.__cockpit* bridge is unchanged and no contained-stage pan or Phase-6 stopgap was introduced. Gates run fresh: lint exit 0; typecheck:contracts exit 0; validate:contracts valid (5 layout/4 content/5 routes/6 catalog); test:unit 31 files, 381 tests pass; test:e2e full canonical CI=true suite green in chunks — foundation 6, phase2-boundary 3, phase2-completion 13, phase3-renderer 7, phase4-hud 8, phase5-fit 4, phase5-input 3, smoke 12 + 1 intentional Phase-6 fixme skip, turntable-tether 2 = 58 passed, 1 skipped, 0 failed. Non-blocking notes: AC-13 beyond-box pointer positions are pinned at unit level rather than by a browser point (same clamped code path); the disposable checkout needed the documented gitignored-only node_modules dereference plus a PATH de-pollution (real repo's node_modules/.bin was first in PATH and made Turbopack resolve into the real repo) — fully restored afterward, node_modules symlink recreated to its identical target, final git status identical to the initial snapshot. QA made no repository writes. Next role: the phase runner owns sequencing.
-
-#### Git status at handoff
-
-```text
- M .github/workflows/ci.yml
- M components/cockpit/cockpit-hud.tsx
- M components/cockpit/glass-mac.ts
- M components/cockpit/globe-canvas.tsx
- M components/cockpit/test-hooks.ts
- M components/cockpit/turntable.ts
- M components/cockpit/vinyl-crate.ts
- M lib/responsive/hud-layout.ts
- M lib/responsive/input-policy.ts
- M tests/unit/input-policy.test.ts
-?? components/cockpit/focus-fit-store.ts
-?? e2e/phase5-fit.spec.ts
-?? e2e/phase5-input.spec.ts
-?? lib/responsive/camera-fit.ts
-?? tests/unit/camera-fit-oracle.test.ts
-?? tests/unit/camera-fit.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-11T11:28:13.559Z · codex
-
-- Branch / HEAD: `main` / `7fc525d`
-- Worktree snapshot: `e9663b34053b`
-- Session / turn: `phase-runner-codex` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Implemented policy-driven free-look, visible-box normalization, reduced-motion snapping, pointer-exit decay, dev-only getFreeLookState(), and AC-9/10/13/18 hover coverage. Four required gates pass, but E2E cannot start because the sandbox denies localhost binding. The trusted phase controller then ran the required E2E gate outside the model sandbox and it passed.
->
-> Verification:
-> - npm run lint: pass — Exit 0.
-> - npm run typecheck:contracts: pass — Exit 0.
-> - npm run validate:contracts: pass — Validated 5 layout contracts, 4 content contracts, 5 routes, and 6 catalog records.
-> - npm run test:unit: pass — 31 test files and 381 tests passed.
-> - npm run test:e2e: pass — Host phase controller exit 0 after the Codex sandbox denied localhost binding.
-> - npx playwright test e2e/phase5-input.spec.ts --list: pass — Discovered all 3 new AC-9/10/13/18 tests.
->
-> Unresolved risks:
-> - None reported.
->
-> Handoff: Phase 5 step-4 free-look scope is implemented across the six listed files; lint, typecheck, validation, and 381 unit tests pass, E2E is blocked solely by sandbox EPERM before execution, no pan/production-bridge/Phase-6/content changes were introduced, and Kimi is the next role after a green controller-host E2E run. Host verification subsequently made the required E2E gate green; the change is ready for independent Kimi QA.
-
-#### Git status at handoff
-
-```text
- M .github/workflows/ci.yml
- M components/cockpit/cockpit-hud.tsx
- M components/cockpit/glass-mac.ts
- M components/cockpit/globe-canvas.tsx
- M components/cockpit/test-hooks.ts
- M components/cockpit/turntable.ts
- M components/cockpit/vinyl-crate.ts
- M lib/responsive/hud-layout.ts
- M lib/responsive/input-policy.ts
- M tests/unit/input-policy.test.ts
-?? components/cockpit/focus-fit-store.ts
-?? e2e/phase5-fit.spec.ts
-?? e2e/phase5-input.spec.ts
-?? lib/responsive/camera-fit.ts
-?? tests/unit/camera-fit-oracle.test.ts
-?? tests/unit/camera-fit.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-11T10:41:39.456Z · kimi
-
-- Branch / HEAD: `main` / `7fc525d`
-- Worktree snapshot: `04a363e61b7f`
-- Session / turn: `phase-runner-kimi` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Fit integration matches the approved §11.2 step-3 scope: solver + §5 cache with tombstone/generation laws, focus-fit-store measurement passes with the font barrier and accessibility double-buffer, §4.5 failure rule (last-valid distance, one dev warning per episode, hint hiding), §4.7 refit (REFIT_BLEND_S=0.6, REFIT_MAX_FRAME_STEP_S=1/30, coalescing, reduced-motion snap), scalar-formula/legacy-field retirement, and dev-only getFocusFit(). The full capture-branch guard is preserved verbatim. All five gates green on fresh runs, including the complete canonical CI=true e2e suite (55 passed, 1 intentional Phase-6 fixme skip, 0 failed; phase5-fit 4/4 covering AC-3, AC-5, AC-6 with all three tombstone variants, AC-7(a)(b), and the AC-25 degraded path). Two failures seen in a preliminary non-CI run (AC-3 timeout at the 300s local budget, AC-6 tombstone variant racing the design's 1000ms font ceiling under load) both pass under canonical CI=true timing and are environment/timing artifacts, not product defects. QA made no repository writes; the gitignored-only node_modules repair was fully restored and final git status is identical to the initial snapshot.
->
-> Verdict: PASS
->
-> Verification:
-> - npm run lint: pass — Exit 0, fresh run.
-> - npm run typecheck:contracts: pass — Exit 0, strict contract island clean, fresh run.
-> - npm run validate:contracts: pass — 5 layout contracts, 4 content contracts, 5 routes, 6 catalog records valid, fresh run.
-> - npm run test:unit: pass — 31 test files, 381 tests passed, fresh run; matches Codex report.
-> - npm run test:e2e: pass — Full canonical CI=true per-spec run, fresh: foundation 6, phase2-boundary 3, phase2-completion 13, phase3-renderer 7, phase4-hud 8, phase5-fit 4, smoke 12 + 1 intentional Phase-6 fixme skip, turntable-tether 2 = 55 passed, 1 skipped, 0 failed. Required the known gitignored-only node_modules dereference repair (checkout symlink rejected by Turbopack); fully restored afterward, git status identical to initial snapshot.
->
-> Findings:
-> - LOW components/cockpit/globe-canvas.tsx:78-79, 1479-1534 — preservePhase4FocusBaseline keyed on the dev-only capture seed 'ax-cockpit-phase4-v1' routes focused poses through hardcoded PHASE4_CAPTURE_POSE constants reproducing the pre-Phase-5 composition; the design does not explicitly specify this mechanism.
-> - LOW e2e/phase5-fit.spec.ts:365-446 — The AC-6 tombstone variants require exit-before-commit within the design's 1000ms font ceiling; under non-CI local timing on a loaded machine the entry pass committed before the exit (solveCount 2->2, expected >=3), failing the variant. The same test passes under canonical CI=true timing in two independent fresh runs.
-> - INFO e2e/phase5-fit.spec.ts:274-363 — The AC-5/6 DPR/idle test runs under configureVisualCapture with pauseAmbient:true, so AC-6's 'card bob, platter spin' idle condition is exercised with ambient animation frozen; live-ambient solve-count exactness is instead covered by the AC-7/25 test (record playing, exact +1 counts across observeFrames).
-> - INFO lib/responsive/hud-layout.ts:39 — FIT_NDC_MARGIN = 0.04 token added preemptively; design §4.6 names it as the fix only 'if the margin ever fails'. AC-3 (maximum-parallax corner, 0.5px tolerance) is green at all 17 FIT-MATRIX cases with it.
-> - INFO N/A:N/A — Disposable checkout's node_modules symlink into the real repo is rejected by Turbopack ('points out of the filesystem root'); same harness defect recorded in the step-1/step-2 QA handoffs. QA used a gitignored-only dereferenced copy plus relative .bin symlinks, then restored the symlink; final git status identical to the initial snapshot.
->
-> Handoff: Phase 5 step-3 (fit integration) QA verdict PASS. Scope verified against §11.2 step 3 and the binding design: the solver, §5 cache with tombstone/generation laws (full wasFocused && focusKind !== m && modeT > 0.3 capture-branch guard preserved verbatim; reassignment and same-kind-atomic-replacement cleanups; modeT < 0.005 GC), focus-fit-store measurement passes with the §3.2 font barrier and accessibility double-buffer, the §4.5 failure rule (last-valid distance, FOCUS_FALLBACK_DISTANCE, one dev warning per episode, browse-hint hiding), the §4.7 refit transition (REFIT_BLEND_S = 0.6, REFIT_MAX_FRAME_STEP_S = 1/30, coalescing, reduced-motion snap, settle gating), complete scalar-formula and fitHeight/fitDepth/fitWidth/legacyCameraCenter retirement, and the dev-only getFocusFit() hook are all implemented as designed. Gates run fresh: lint exit 0; typecheck:contracts exit 0; validate:contracts valid (5 layout/4 content/5 routes/6 catalog); test:unit 31 files, 381 tests pass; test:e2e full canonical CI=true run green — foundation 6, phase2-boundary 3, phase2-completion 13, phase3-renderer 7, phase4-hud 8, phase5-fit 4 (AC-3, AC-5/6, AC-6 all three tombstone variants, AC-7(a)(b), AC-25 degraded path incl. single-warning episodes and recovery), smoke 12 + 1 intentional Phase-6 fixme skip, turntable-tether 2 = 55 passed, 1 skipped, 0 failed. A preliminary non-CI run failed AC-3 (300s local budget) and one AC-6 tombstone variant (1000ms font-ceiling race under load); both pass under canonical CI=true timing and are environment artifacts. Non-blocking notes: the dev-only seed-gated phase-4 baseline pose path is an engineering-chosen reconciliation not explicit in the design (production unaffected; phase4-hud 8/8 green); AC-6 tombstone variants are load-sensitive but fail-safe; FIT_NDC_MARGIN=0.04 added preemptively per the §4.6 allowance. QA made no repository writes: the gitignored-only node_modules dereference repair was fully restored and final git status is identical to the initial snapshot. Next role: the phase runner owns sequencing.
-
-#### Git status at handoff
-
-```text
- M .github/workflows/ci.yml
- M components/cockpit/cockpit-hud.tsx
- M components/cockpit/glass-mac.ts
- M components/cockpit/globe-canvas.tsx
- M components/cockpit/test-hooks.ts
- M components/cockpit/turntable.ts
- M components/cockpit/vinyl-crate.ts
- M lib/responsive/hud-layout.ts
- M lib/responsive/input-policy.ts
- M tests/unit/input-policy.test.ts
-?? components/cockpit/focus-fit-store.ts
-?? e2e/phase5-fit.spec.ts
-?? lib/responsive/camera-fit.ts
-?? tests/unit/camera-fit-oracle.test.ts
-?? tests/unit/camera-fit.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-11T09:10:08.510Z · codex
-
-- Branch / HEAD: `main` / `7fc525d`
-- Worktree snapshot: `04a363e61b7f`
-- Session / turn: `phase-runner-codex` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Fit integration is implemented and audited, including cache/tombstone laws, reservation measurement, degraded hint handling, refit replacement/coalescing, scalar-field retirement, getFocusFit(), and four Playwright acceptance tests. The required E2E gate could not start because the sandbox denied binding 0.0.0.0:3000, so the step cannot be marked ready-for-qa. The trusted phase controller then ran the required E2E gate outside the model sandbox and it passed.
->
-> Verification:
-> - npm run lint: pass — Exit 0.
-> - npm run typecheck:contracts: pass — Exit 0.
-> - npm run validate:contracts: pass — 5 layout contracts, 4 content contracts, 5 routes, and 6 catalog records valid.
-> - npm run test:unit: pass — 31 test files and 381 tests passed.
-> - npm run test:e2e: pass — Host phase controller exit 0 after the Codex sandbox denied localhost binding.
->
-> Unresolved risks:
-> - None reported.
->
-> Handoff: Phase 5 step-3 fit integration spans the listed camera, store, overlay, hook, provider, CI, and E2E files; four gates pass and the only blocker is sandbox-denied E2E startup, after a green controller-host E2E run Kimi is the next role; nothing was staged or committed. Host verification subsequently made the required E2E gate green; the change is ready for independent Kimi QA.
-
-#### Git status at handoff
-
-```text
- M .github/workflows/ci.yml
- M components/cockpit/cockpit-hud.tsx
- M components/cockpit/glass-mac.ts
- M components/cockpit/globe-canvas.tsx
- M components/cockpit/test-hooks.ts
- M components/cockpit/turntable.ts
- M components/cockpit/vinyl-crate.ts
- M lib/responsive/hud-layout.ts
- M lib/responsive/input-policy.ts
- M tests/unit/input-policy.test.ts
-?? components/cockpit/focus-fit-store.ts
-?? e2e/phase5-fit.spec.ts
 ?? lib/responsive/camera-fit.ts
 ?? tests/unit/camera-fit-oracle.test.ts
 ?? tests/unit/camera-fit.test.ts

@@ -10,11 +10,23 @@ const CAPTURE = {
   pauseAmbient: true as const,
 }
 
-async function enterCockpit(page: Page, capture = true): Promise<void> {
-  await page.addInitScript(() => {
+type RendererStatus = 'initializing' | 'ready' | 'lost' | 'restoring' | 'terminal'
+
+async function enterCockpit(
+  page: Page,
+  capture = true,
+  renderDpr: number | null = null,
+): Promise<void> {
+  await page.addInitScript((testDpr) => {
     window.sessionStorage.removeItem('cockpit-intro-complete-v1')
     window.localStorage.setItem('cockpit-theme', 'dark')
-  })
+    if (testDpr !== null) {
+      Object.defineProperty(window, 'devicePixelRatio', {
+        configurable: true,
+        get: () => testDpr,
+      })
+    }
+  }, renderDpr)
   await page.goto('/')
   await page.waitForFunction(() => Boolean(window.__COCKPIT_TEST_HOOKS__), undefined, {
     timeout: timing.transition,
@@ -33,9 +45,66 @@ async function enterCockpit(page: Page, capture = true): Promise<void> {
   ).toBe('ready')
 }
 
+async function rendererStatus(page: Page): Promise<RendererStatus> {
+  return page.evaluate(
+    () => window.__COCKPIT_TEST_HOOKS__!.getRendererState().status,
+  )
+}
+
+async function waitForRendererStatus(
+  page: Page,
+  status: RendererStatus,
+): Promise<void> {
+  await expect.poll(() => rendererStatus(page), { timeout: timing.transition }).toBe(status)
+}
+
+async function loseMainContext(page: Page): Promise<number> {
+  const probeIndex = await page.evaluate(() => {
+    type LoseContext = {
+      loseContext(): void
+      restoreContext(): void
+    }
+    type Probe = {
+      extension: LoseContext
+    }
+    const runtime = window as Window & {
+      __cockpitRenderer?: {
+        getContext(): WebGLRenderingContext | WebGL2RenderingContext
+      } | null
+      __phase5RecoveryContextProbes?: Probe[]
+    }
+    const renderer = runtime.__cockpitRenderer
+    if (!renderer) throw new Error('main renderer missing')
+    const extension = renderer
+      .getContext()
+      .getExtension('WEBGL_lose_context') as LoseContext | null
+    if (!extension) throw new Error('WEBGL_lose_context unavailable')
+    runtime.__phase5RecoveryContextProbes ??= []
+    runtime.__phase5RecoveryContextProbes.push({ extension })
+    extension.loseContext()
+    return runtime.__phase5RecoveryContextProbes.length - 1
+  })
+  await waitForRendererStatus(page, 'lost')
+  return probeIndex
+}
+
+async function restoreMainContext(page: Page, probeIndex: number): Promise<void> {
+  await page.evaluate((index) => {
+    const runtime = window as Window & {
+      __phase5RecoveryContextProbes?: Array<{
+        extension: { restoreContext(): void }
+      }>
+    }
+    const probe = runtime.__phase5RecoveryContextProbes?.[index]
+    if (!probe) throw new Error(`context probe ${index} missing`)
+    probe.extension.restoreContext()
+  }, probeIndex)
+  await waitForRendererStatus(page, 'restoring')
+  await waitForRendererStatus(page, 'ready')
+}
+
 async function enterView(page: Page, kind: 'monitor' | 'deck' | 'crate') {
   await page.evaluate((mode) => window.__COCKPIT_TEST_HOOKS__!.enterView(mode), kind)
-  await page.waitForTimeout(200)
   await expect.poll(
     () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
     { timeout: timing.settle },
@@ -89,31 +158,6 @@ async function observeFrames(page: Page, count: number): Promise<void> {
     { initial: start, frames: count },
     { polling: 50, timeout: timing.frameObservation },
   )
-}
-
-async function armPendingMeasurementFont(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const runtime = window as unknown as { __phase5PendingFont?: FontFace }
-    const face = new FontFace(
-      'Phase5 Pending Measurement',
-      'url(/phase5-pending-measurement.woff2)',
-    )
-    runtime.__phase5PendingFont = face
-    document.fonts.add(face)
-    void face.load().catch(() => {})
-  })
-  await expect.poll(
-    () => page.evaluate(() => document.fonts.status),
-    { timeout: timing.expect },
-  ).toBe('loading')
-}
-
-async function releasePendingMeasurementFont(page: Page): Promise<void> {
-  await page.evaluate(() => {
-    const runtime = window as unknown as { __phase5PendingFont?: FontFace }
-    if (runtime.__phase5PendingFont) document.fonts.delete(runtime.__phase5PendingFont)
-    runtime.__phase5PendingFont = undefined
-  })
 }
 
 async function sampleModeSwitch(
@@ -215,20 +259,18 @@ function expectModeSwitchUnchanged(
 }
 
 test.describe('Phase 5 focus-camera fit integration', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.route('**/phase5-pending-measurement.woff2', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 5_000))
-      await route.abort('timedout').catch(() => {})
-    })
-  })
-  test('AC-3: every authored point fits the safe frame across FIT-MATRIX', async ({ page }) => {
-    test.setTimeout(ciTimeout(300_000, 1_200_000))
-    await enterCockpit(page, true)
-    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
-    let cratePreviewPrimed = false
-
-    for (const viewport of REQUIRED_VIEWPORT_CASES) {
+  for (const [viewportIndex, viewport] of REQUIRED_VIEWPORT_CASES.entries()) {
+    test(`AC-3: every authored point fits ${viewport.id}`, async ({ page }) => {
+      test.setTimeout(ciTimeout(180_000, 600_000))
       await page.setViewportSize({ width: viewport.w, height: viewport.h })
+      // CSS geometry and camera aspect are the AC-3 subjects. At ultrawide
+      // and 4K sizes, lower only the E2E drawing-buffer density so GitHub's
+      // software WebGL host does not spend the settle budget rasterizing
+      // five-to-eight million pixels per frame. DPR behavior has its own
+      // dedicated AC-5/6 case below.
+      const renderDpr = viewport.w * viewport.h > 4_000_000 ? 0.5 : null
+      await enterCockpit(page, true, renderDpr)
+      await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
       const stage = page.locator('[data-layout-region="cockpit-stage"]')
       const box = await stage.boundingBox()
       expect(box, viewport.id).not.toBeNull()
@@ -238,8 +280,7 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       )
       // In contained cases the pinned 1024×600 surface extends beyond the
       // physically visible container. Exercise the authored maximum-parallax
-      // corner for both the current mousemove producer and Phase 5 step 4's
-      // pointermove producer without changing either production path.
+      // corner through both production input paths.
       await page.evaluate(() => {
         const stageNode = document.querySelector<HTMLElement>(
           '[data-layout-region="cockpit-stage"]',
@@ -251,14 +292,15 @@ test.describe('Phase 5 focus-camera fit integration', () => {
       })
 
       for (const kind of ['monitor', 'crate', 'deck'] as const) {
-        const fit = await enterView(page, kind)
-        if (kind === 'crate' && !cratePreviewPrimed) {
+        const fit = await test.step(`${viewport.id}: ${kind} fit`, () =>
+          enterView(page, kind),
+        )
+        if (kind === 'crate' && viewportIndex === 0) {
           await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.selectRecord(1))
           await expect.poll(
             () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
             { timeout: timing.settle },
           ).toBe(true)
-          cratePreviewPrimed = true
           const previewFit = await page.evaluate(
             () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
           )
@@ -268,8 +310,8 @@ test.describe('Phase 5 focus-camera fit integration', () => {
         expect(fit.kind).toBe(kind)
         expectPointsInside(fit)
       }
-    }
-  })
+    })
+  }
 
   test('AC-5/6: DPR invariance and cache invalidation counts are exact', async ({ page }) => {
     test.setTimeout(ciTimeout(240_000, 900_000))
@@ -366,26 +408,22 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     test.setTimeout(ciTimeout(240_000, 900_000))
 
     // Completed focus→cockpit exit: the ease-out reads the tombstone without
-    // solving, then the next entry treats it as absent and performs solve #1.
+    // solving, then the next entry treats it as absent and performs a new solve.
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('deck'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('deck')
-    const completedEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const completedEntry = await enterView(page, 'deck')
     const easingSnapshot = await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       // Capture mode intentionally snaps modeT on the next animation frame.
       // Read in the transition task itself to pin the tombstone's permitted
       // focused-to-cockpit handoff without racing that capture-frame snap.
       return window.__COCKPIT_TEST_HOOKS__!.getFocusFit()
     })
-    expect(easingSnapshot?.solveCount).toBe(completedEntry.solveCount)
-    await releasePendingMeasurementFont(page)
+    expect(easingSnapshot).toMatchObject({
+      kind: 'deck',
+      solveCount: completedEntry.solveCount,
+      lastSolveCause: completedEntry.lastSolveCause,
+    })
     await expect.poll(
       () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
       { timeout: timing.settle },
@@ -397,20 +435,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     // Interrupted exit → different kind above the 0.3 threshold exercises
     // the reassignment branch (wasFocused is false; no pose capture).
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('crate'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('crate')
-    const interruptedEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const interruptedEntry = await enterView(page, 'crate')
     await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       window.__setCockpitViewMode!('monitor')
     })
-    await releasePendingMeasurementFont(page)
     const reassigned = await enterView(page, 'monitor')
     expect(reassigned.solveCount).toBeGreaterThan(interruptedEntry.solveCount)
     const interruptedReturn = await enterView(page, 'crate')
@@ -420,20 +450,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     // Same-kind interrupted re-entry replaces the non-reusable tombstone
     // atomically; the superseded generation cannot commit later.
     await enterCockpit(page, true)
-    await armPendingMeasurementFont(page)
-    await page.evaluate(() => window.__setCockpitViewMode!('monitor'))
-    await expect.poll(
-      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.kind),
-      { timeout: timing.transition },
-    ).toBe('monitor')
-    const sameKindEntry = await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!,
-    )
+    const sameKindEntry = await enterView(page, 'monitor')
     await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.armFocusMeasurementReplacement()
       window.__setCockpitViewMode!('cockpit')
       window.__setCockpitViewMode!('monitor')
     })
-    await releasePendingMeasurementFont(page)
     const sameKindReentry = await enterView(page, 'monitor')
     expect(sameKindReentry.solveCount).toBeGreaterThanOrEqual(sameKindEntry.solveCount + 1)
     expect(sameKindReentry.solveCount).toBeLessThanOrEqual(sameKindEntry.solveCount + 2)
@@ -535,10 +557,12 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     expect(maxStep).toBeLessThanOrEqual(0.5)
     expect(maxSpeed).toBeLessThanOrEqual(12)
 
-    // CockpitApp deliberately reasserts authored tweak defaults for its first
-    // 180 frames after mount. Wait past that startup guard before exercising
-    // the same live setter as an independent transform invalidation.
-    await observeFrames(page, 190)
+    // Complete CockpitApp's authored-default startup guard through dev-only
+    // instrumentation. Counting 180 fully rendered SwiftShader frames tests
+    // host throughput, not the independent transform invalidation below.
+    await page.evaluate(() => {
+      window.__COCKPIT_TEST_HOOKS__!.completeAuthoredTweakGuard()
+    })
     const beforeTransform = await page.evaluate(
       () => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()!.solveCount,
     )
@@ -606,5 +630,73 @@ test.describe('Phase 5 focus-camera fit integration', () => {
     await enterView(page, 'monitor')
     expectModeSwitchUnchanged(await sampleModeSwitch(page, 'crate'), 0.85)
     expectModeSwitchUnchanged(await sampleModeSwitch(page, 'deck'), 0.38)
+  })
+
+  test('AC-25: contained deck fit and pan recover after context restoration', async ({ page }) => {
+    test.setTimeout(ciTimeout(180_000, 600_000))
+    await page.setViewportSize({ width: 800, height: 450 })
+    await enterCockpit(page, true)
+    await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
+      { timeout: timing.settle },
+    ).toBe(true)
+
+    const region = page.locator('.responsive-stage[data-stage-mode="contained"]')
+    await expect(region).toBeVisible()
+    await region.evaluate((element) => {
+      element.scrollLeft = 37
+      element.scrollTop = 29
+    })
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getPanState()),
+      { timeout: timing.expect },
+    ).toMatchObject({ mode: 'contained', x: 37, y: 29 })
+
+    const before = await page.evaluate(() => ({
+      fit: window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
+      pan: window.__COCKPIT_TEST_HOOKS__!.getPanState(),
+      rebuildCount: window.__COCKPIT_TEST_HOOKS__!.getRendererState().rebuildCount,
+      mode: window.__cockpitViewMode,
+      recordIndex: window.__cockpitDeck?.index,
+    }))
+    expect(before.fit).not.toBeNull()
+    expect(before.fit).toMatchObject({ kind: 'deck', status: 'fit' })
+    expect(before.mode).toBe('deck')
+    expect(before.recordIndex).toBe(0)
+
+    const probeIndex = await loseMainContext(page)
+    await restoreMainContext(page, probeIndex)
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFocusFit()?.distance),
+      { timeout: timing.transition },
+    ).toBe(before.fit!.distance)
+    await expect.poll(
+      () => page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.isSettled()),
+      { timeout: timing.settle },
+    ).toBe(true)
+
+    const after = await page.evaluate(() => ({
+      fit: window.__COCKPIT_TEST_HOOKS__!.getFocusFit(),
+      pan: window.__COCKPIT_TEST_HOOKS__!.getPanState(),
+      rebuildCount: window.__COCKPIT_TEST_HOOKS__!.getRendererState().rebuildCount,
+      mode: window.__cockpitViewMode,
+      recordIndex: window.__cockpitDeck?.index,
+    }))
+    expect(after.fit).not.toBeNull()
+    expect(after.fit).toMatchObject({ kind: 'deck', status: 'fit' })
+    expect(after.fit!.distance).toBe(before.fit!.distance)
+    expect(after.fit!.safeFrame).toEqual(before.fit!.safeFrame)
+    expect(after.fit!.points).toHaveLength(before.fit!.points.length)
+    for (let index = 0; index < before.fit!.points.length; index += 1) {
+      const beforePoint = before.fit!.points[index]!
+      const afterPoint = after.fit!.points[index]!
+      expect(Math.abs(afterPoint.x - beforePoint.x), `point ${index} x`).toBeLessThanOrEqual(1)
+      expect(Math.abs(afterPoint.y - beforePoint.y), `point ${index} y`).toBeLessThanOrEqual(1)
+    }
+    expect(after.pan).toMatchObject({ mode: 'contained', x: 37, y: 29 })
+    expect(after.rebuildCount).toBe(before.rebuildCount + 1)
+    expect(after.mode).toBe('deck')
+    expect(after.recordIndex).toBe(0)
   })
 })

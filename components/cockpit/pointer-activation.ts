@@ -39,6 +39,7 @@ function createArbiter(canvas){
   const interactionSurface = canvas.closest('[data-layout-region="cockpit-stage"]') || canvas
   const entries = new Map()
   const pending = new Map()
+  const testPoints = new Map()
   let activationCount = 0
   let lastActivation = null
 
@@ -64,6 +65,18 @@ function createArbiter(canvas){
     const index = indexValue === null ? null : Number(indexValue)
     if (Number.isInteger(index)) hit.index = index
     return { entry, hit }
+  }
+
+  const resolveTestPoint = (point) => {
+    // A raycast hit hidden behind ordinary HUD cannot receive the real
+    // pointerdown. Keep dev-only point discovery on the same delivery path.
+    const target = document.elementFromPoint(point.x, point.y)
+    if (!(target instanceof Element)) return null
+    const nativeTarget = target.closest('[data-pointer-activation-proxy]')
+    if (target !== canvas && nativeTarget === null) return null
+    return nativeTarget
+      ? resolveProxy(nativeTarget)
+      : resolveOwner({ clientX: point.x, clientY: point.y })
   }
 
   const onPointerDown = (event) => {
@@ -189,9 +202,22 @@ function createArbiter(canvas){
         : { owner: resolved.entry.owner, key: resolved.hit.key }
     },
     pointFor(key){
+      const cached = testPoints.get(key)
+      if (cached) {
+        const resolved = resolveTestPoint(cached)
+        if (resolved?.hit.key === key) return cached
+        testPoints.delete(key)
+      }
       for (const entry of orderedEntries()) {
-        const point = entry.testPoint?.(key)
-        if (point) return point
+        const proposed = entry.testPoint?.(key)
+        const points = Array.isArray(proposed) ? proposed : proposed ? [proposed] : []
+        for (const point of points) {
+          const resolved = resolveTestPoint(point)
+          if (resolved?.hit.key === key) {
+            testPoints.set(key, point)
+            return point
+          }
+        }
       }
       return null
     },

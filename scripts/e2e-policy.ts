@@ -22,16 +22,37 @@ export const CI_E2E_TIMING: E2eTimingPolicy = {
   test: 600_000,
 }
 
-export function resolveE2eTiming(ci = process.env.CI): E2eTimingPolicy {
-  return ci ? CI_E2E_TIMING : LOCAL_E2E_TIMING
+function ciTimingScale(value = process.env.CI_E2E_TIMING_SCALE): number {
+  const parsed = Number(value ?? 1)
+  return Number.isFinite(parsed) && parsed >= 1 && parsed <= 2 ? parsed : 1
+}
+
+export function resolveE2eTiming(
+  ci = process.env.CI,
+  scale = process.env.CI_E2E_TIMING_SCALE,
+): E2eTimingPolicy {
+  if (!ci) return LOCAL_E2E_TIMING
+  const multiplier = ciTimingScale(scale)
+  if (multiplier === 1) return CI_E2E_TIMING
+  return {
+    expect: Math.round(CI_E2E_TIMING.expect * multiplier),
+    transition: Math.round(CI_E2E_TIMING.transition * multiplier),
+    // configureSettleTimeout() intentionally enforces a 120s ceiling. This
+    // inner runtime deadline must remain within that contract; only outer
+    // Playwright observation and test budgets scale on slow CI hosts.
+    settle: CI_E2E_TIMING.settle,
+    frameObservation: Math.round(CI_E2E_TIMING.frameObservation * multiplier),
+    test: Math.round(CI_E2E_TIMING.test * multiplier),
+  }
 }
 
 export function ciTimeout(
   localMs: number,
   ciMs: number,
   ci = process.env.CI,
+  scale = process.env.CI_E2E_TIMING_SCALE,
 ): number {
-  return ci ? ciMs : localMs
+  return ci ? Math.round(ciMs * ciTimingScale(scale)) : localMs
 }
 
 export type E2eRect = {

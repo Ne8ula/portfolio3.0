@@ -157,6 +157,105 @@ async function dispatchWheel(
   }, init)
 }
 
+async function dispatchWheelBatch(
+  page: Page,
+  traces: readonly WheelTraceInit[],
+): Promise<PanSnapshot> {
+  return page.locator('.responsive-stage').evaluate((element, wheelTraces) => {
+    for (const init of wheelTraces) {
+      element.dispatchEvent(new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        ...init,
+      }))
+    }
+    const state = window.__COCKPIT_TEST_HOOKS__!.getPanState()
+    if (!state) throw new Error('contained-pan state is not ready')
+    return state
+  }, traces)
+}
+
+async function measureContainedPanGain(page: Page): Promise<{
+  initial: PanSnapshot
+  wheel: { defaultPrevented: boolean; state: PanSnapshot }
+  modeDisplacements: number[]
+  spikeDisplacement: number
+  fineDisplacement: number
+  atMaximum: PanSnapshot
+  atMinimum: PanSnapshot
+}> {
+  return page.locator('.responsive-stage').evaluate((element) => {
+    const reset = document.querySelector<HTMLElement>('[data-hud="pan-reset"]')
+    if (!reset) throw new Error('contained-pan reset control is not mounted')
+    const snapshot = () => {
+      const state = window.__COCKPIT_TEST_HOOKS__!.getPanState()
+      if (!state) throw new Error('contained-pan state is not ready')
+      return state
+    }
+    const dispatch = (init: WheelTraceInit) => {
+      const event = new WheelEvent('wheel', {
+        bubbles: true,
+        cancelable: true,
+        ...init,
+      })
+      element.dispatchEvent(event)
+      return { defaultPrevented: event.defaultPrevented, state: snapshot() }
+    }
+    const dispatchBatch = (traces: readonly WheelTraceInit[]) => {
+      for (const init of traces) dispatch(init)
+      return snapshot()
+    }
+    const resetPan = () => reset.click()
+
+    const initial = snapshot()
+    const wheel = dispatch({ deltaY: 20, deltaMode: 0 })
+    resetPan()
+
+    const parsedLineHeight = Number.parseFloat(getComputedStyle(element).lineHeight)
+    const lineHeight = Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
+      ? parsedLineHeight
+      : 16
+    const equivalentDeltas = [
+      { deltaY: 20, deltaMode: 0 },
+      { deltaY: 20 / lineHeight, deltaMode: 1 },
+      { deltaY: 20 / element.clientHeight, deltaMode: 2 },
+    ] as const
+    const modeDisplacements = equivalentDeltas.map((init) => {
+      resetPan()
+      const before = snapshot()
+      const result = dispatch(init)
+      return result.state.y - before.y
+    })
+
+    resetPan()
+    const beforeSpike = snapshot()
+    const spike = dispatch({ deltaY: 5000, deltaMode: 0 })
+    resetPan()
+    const beforeFine = snapshot()
+    const fine = dispatch({ deltaY: 2, deltaMode: 0 })
+
+    const positiveBounds = Array.from({ length: 10 }, () => [
+      { shiftKey: true, deltaY: 5000, deltaMode: 0 },
+      { deltaY: 5000, deltaMode: 0 },
+    ]).flat()
+    const atMaximum = dispatchBatch(positiveBounds)
+    const negativeBounds = Array.from({ length: 10 }, () => [
+      { shiftKey: true, deltaY: -5000, deltaMode: 0 },
+      { deltaY: -5000, deltaMode: 0 },
+    ]).flat()
+
+    return {
+      initial,
+      wheel,
+      modeDisplacements,
+      spikeDisplacement: spike.state.y - beforeSpike.y,
+      fineDisplacement: fine.state.y - beforeFine.y,
+      atMaximum,
+      atMinimum: dispatchBatch(negativeBounds),
+    }
+  })
+}
+
 async function windowScrollState(page: Page): Promise<number> {
   return page.evaluate(() => window.scrollY)
 }
@@ -217,7 +316,12 @@ async function findActivationPoint(
   page: Page,
   key: string,
 ): Promise<ActivationPoint | null> {
-  const scrollFractions = [0.5, 0, 1] as const
+  const wideDecoration = key === 'tablet' || key === 'shaker'
+  const contained = await page.locator('.responsive-stage').getAttribute('data-stage-mode') === 'contained'
+  // Fit stages cannot scroll. Repeating the same CPU-heavy raycast search at
+  // nine identical scroll positions made wide-fit discovery appear hung on
+  // software-rendered Chromium.
+  const scrollFractions = contained ? [0.5, 0, 1] as const : [0.5] as const
   for (const yFraction of scrollFractions) {
     for (const xFraction of scrollFractions) {
       await page.evaluate(({ x, y }) => {
@@ -232,6 +336,13 @@ async function findActivationPoint(
       await page.evaluate(() => new Promise<void>((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
       }))
+
+      if (wideDecoration) {
+        const point = await page.evaluate((targetKey) =>
+          window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint(targetKey), key)
+        if (point) return point
+        continue
+      }
 
       const point = await page.evaluate(({ targetKey }) => {
         const hooks = window.__COCKPIT_TEST_HOOKS__!
@@ -274,35 +385,25 @@ async function findActivationPoint(
         }
         const projected = hooks.getPointerActivationPoint(targetKey)
         if (projected) {
-          const localRadius = targetKey === 'tablet' || targetKey === 'shaker' ? 180 : 48
-          const localStep = targetKey === 'tablet' || targetKey === 'shaker' ? 6 : 3
-          const localMatches: Array<{ x: number; y: number }> = []
-          for (
-            let y = projected.y - localRadius;
-            y <= projected.y + localRadius;
-            y += localStep
-          ) {
-            for (
-              let x = projected.x - localRadius;
-              x <= projected.x + localRadius;
-              x += localStep
-            ) {
-              if (isCandidate(x, y)) localMatches.push({ x, y })
+          const localRadius = 48
+          const localStep = 3
+          if (isCandidate(projected.x, projected.y)) return projected
+          // Search outward from the authored projection and stop at the first
+          // hit. The former full-square scan collected every matching pixel
+          // before returning, forcing thousands of synchronous three.js
+          // raycasts even when the projection itself was already usable.
+          for (let radius = localStep; radius <= localRadius; radius += localStep) {
+            for (let offset = -radius; offset <= radius; offset += localStep) {
+              const candidates = [
+                { x: projected.x + offset, y: projected.y - radius },
+                { x: projected.x + offset, y: projected.y + radius },
+                { x: projected.x - radius, y: projected.y + offset },
+                { x: projected.x + radius, y: projected.y + offset },
+              ]
+              for (const candidate of candidates) {
+                if (isCandidate(candidate.x, candidate.y)) return candidate
+              }
             }
-          }
-          if (localMatches.length > 0) {
-            const center = localMatches.reduce(
-              (sum, match) => ({ x: sum.x + match.x, y: sum.y + match.y }),
-              { x: 0, y: 0 },
-            )
-            center.x /= localMatches.length
-            center.y /= localMatches.length
-            return localMatches.reduce((best, match) => (
-              Math.hypot(match.x - center.x, match.y - center.y) <
-              Math.hypot(best.x - center.x, best.y - center.y)
-                ? match
-                : best
-            ))
           }
         }
         const steps = [12, 6]
@@ -350,7 +451,16 @@ async function discoverActivationPoint(
     const discovered = await findActivationPoint(page, key)
     if (discovered) return discovered
   }
-  throw new Error(`No reachable pointer-activation target found for ${key}`)
+  const diagnostic = await page.evaluate((targetKey) => ({
+    targetKey,
+    projected: window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint(targetKey),
+    freeLook: window.__COCKPIT_TEST_HOOKS__!.getFreeLookState(),
+    activation: window.__COCKPIT_TEST_HOOKS__!.getPointerActivationState(),
+    stageMode: document.querySelector<HTMLElement>('.responsive-stage')?.dataset.stageMode,
+  }), key)
+  throw new Error(
+    `No reachable pointer-activation target found: ${JSON.stringify(diagnostic)}`,
+  )
 }
 
 async function armActivationTarget(
@@ -361,6 +471,30 @@ async function armActivationTarget(
   let point = await discoverActivationPoint(page, key)
   for (let attempt = 0; attempt < 4; attempt += 1) {
     await page.mouse.move(point.x, point.y)
+    if (key.startsWith('coffee-')) {
+      // Coffee sits at the wide frame's free-look edge. On a slow software
+      // renderer the camera can finish smoothing between Playwright's move
+      // and down commands, invalidating a point discovered at the prior pose.
+      // Reacquire after the pointer-defined camera pose is fully settled.
+      const target = await freeLook(page)
+      await expectSmoothed(
+        page,
+        target.yawTarget,
+        target.pitchTarget,
+        PARALLAX_YAW_SCALE * 0.005,
+        PARALLAX_PITCH_SCALE * 0.005,
+      )
+      const settledPoint = await findActivationPoint(page, key)
+      if (!settledPoint) {
+        point = await discoverActivationPoint(page, key)
+        continue
+      }
+      if (Math.hypot(settledPoint.x - point.x, settledPoint.y - point.y) > 0.5) {
+        point = settledPoint
+        continue
+      }
+      point = settledPoint
+    }
     await page.mouse.down()
     const state = await pointerActivationState(page)
     if (
@@ -597,12 +731,22 @@ test.describe('Phase 5 contained pan', () => {
   }) => {
     test.setTimeout(ciTimeout(240_000, 900_000))
 
-    for (const viewport of PAN_CASES) {
-      await page.setViewportSize(viewport)
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await enterCockpit(page)
+    await page.setViewportSize(PAN_CASES[0])
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await enterCockpit(page)
 
-      const initial = await panState(page)
+    for (const [index, viewport] of PAN_CASES.entries()) {
+      if (index > 0) {
+        await page.setViewportSize(viewport)
+        await expect(page.locator('.responsive-stage')).toHaveAttribute(
+          'data-stage-mode',
+          'contained',
+        )
+        await page.locator('[data-hud="pan-reset"]').click()
+      }
+
+      const trace = await measureContainedPanGain(page)
+      const initial = trace.initial
       const expectedRatio = sizeRatioFor({ w: viewport.width, h: viewport.height })
       expect(initial).toMatchObject({
         mode: 'contained',
@@ -613,63 +757,20 @@ test.describe('Phase 5 contained pan', () => {
       expect(initial.x).toBeCloseTo(initial.maxX / 2, 1)
       expect(initial.y).toBeCloseTo(initial.maxY / 2, 1)
 
-      const wheel = await dispatchWheel(page, { deltaY: 20, deltaMode: 0 })
-      expect(wheel.defaultPrevented).toBe(true)
-      expect(wheel.state.y - initial.y).toBeCloseTo(20 * expectedRatio, 5)
-
-      await page.locator('[data-hud="pan-reset"]').click()
-      const lineHeight = await page.locator('.responsive-stage').evaluate((element) => {
-        const parsed = Number.parseFloat(getComputedStyle(element).lineHeight)
-        return Number.isFinite(parsed) && parsed > 0 ? parsed : 16
-      })
-      const pageSize = await page.locator('.responsive-stage').evaluate(
-        (element) => element.clientHeight,
-      )
-      const equivalentDeltas = [
-        { deltaY: 20, deltaMode: 0 },
-        { deltaY: 20 / lineHeight, deltaMode: 1 },
-        { deltaY: 20 / pageSize, deltaMode: 2 },
-      ] as const
-      const modeDisplacements: number[] = []
-      for (const init of equivalentDeltas) {
-        await page.locator('[data-hud="pan-reset"]').click()
-        const before = await panState(page)
-        const result = await dispatchWheel(page, {
-          deltaY: init.deltaY,
-          deltaMode: init.deltaMode,
-        })
-        modeDisplacements.push(result.state.y - before.y)
-      }
-      for (const displacement of modeDisplacements) {
+      expect(trace.wheel.defaultPrevented).toBe(true)
+      expect(trace.wheel.state.y - initial.y).toBeCloseTo(20 * expectedRatio, 5)
+      for (const displacement of trace.modeDisplacements) {
         expect(displacement).toBeCloseTo(20 * expectedRatio, 4)
       }
 
-      await page.locator('[data-hud="pan-reset"]').click()
-      const beforeSpike = await panState(page)
-      const spike = await dispatchWheel(page, { deltaY: 5000, deltaMode: 0 })
-      expect(spike.state.y - beforeSpike.y).toBeLessThanOrEqual(
+      expect(trace.spikeDisplacement).toBeLessThanOrEqual(
         MAX_WHEEL_STEP_PX * expectedRatio + 0.01,
       )
-      await page.locator('[data-hud="pan-reset"]').click()
-      const beforeFine = await panState(page)
-      const fine = await dispatchWheel(page, { deltaY: 2, deltaMode: 0 })
-      expect(fine.state.y - beforeFine.y).toBeCloseTo(2 * expectedRatio, 5)
-
-      for (let index = 0; index < 10; index += 1) {
-        await dispatchWheel(page, { shiftKey: true, deltaY: 5000, deltaMode: 0 })
-        await dispatchWheel(page, { deltaY: 5000, deltaMode: 0 })
-      }
-      const atMaximum = await panState(page)
-      expect(atMaximum.x).toBeCloseTo(atMaximum.maxX, 1)
-      expect(atMaximum.y).toBeCloseTo(atMaximum.maxY, 1)
-
-      for (let index = 0; index < 10; index += 1) {
-        await dispatchWheel(page, { shiftKey: true, deltaY: -5000, deltaMode: 0 })
-        await dispatchWheel(page, { deltaY: -5000, deltaMode: 0 })
-      }
-      const atMinimum = await panState(page)
-      expect(atMinimum.x).toBeCloseTo(0, 1)
-      expect(atMinimum.y).toBeCloseTo(0, 1)
+      expect(trace.fineDisplacement).toBeCloseTo(2 * expectedRatio, 5)
+      expect(trace.atMaximum.x).toBeCloseTo(trace.atMaximum.maxX, 1)
+      expect(trace.atMaximum.y).toBeCloseTo(trace.atMaximum.maxY, 1)
+      expect(trace.atMinimum.x).toBeCloseTo(0, 1)
+      expect(trace.atMinimum.y).toBeCloseTo(0, 1)
     }
   })
 
@@ -679,10 +780,20 @@ test.describe('Phase 5 contained pan', () => {
     test.setTimeout(ciTimeout(180_000, 720_000))
     const dragDisplacements: number[] = []
 
-    for (const viewport of [PAN_CASES[0], PAN_CASES[2]]) {
-      await page.setViewportSize(viewport)
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await enterCockpit(page)
+    const pointerViewports = [PAN_CASES[0], PAN_CASES[2]] as const
+    await page.setViewportSize(pointerViewports[0])
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await enterCockpit(page)
+
+    for (const [index, viewport] of pointerViewports.entries()) {
+      if (index > 0) {
+        await page.setViewportSize(viewport)
+        await expect(page.locator('.responsive-stage')).toHaveAttribute(
+          'data-stage-mode',
+          'contained',
+        )
+        await page.locator('[data-hud="pan-reset"]').click()
+      }
       const region = page.locator('.responsive-stage')
       const box = await region.boundingBox()
       if (!box) throw new Error('responsive stage has no box')
@@ -756,18 +867,24 @@ test.describe('Phase 5 contained pan', () => {
     await expect.poll(() => panState(page), { timeout: timing.expect }).toMatchObject({
       reducedMotion: false,
     })
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+    // Use a trusted browser pointer trace. A synthetic PointerEvent does not
+    // create an active platform pointer, so the production controller's
+    // setPointerCapture() correctly throws NotFoundError when that synthetic
+    // trace first exceeds drag slop.
+    const center = {
+      x: box.x + box.width / 2,
+      y: box.y + box.height / 2,
+    }
+    await page.mouse.move(center.x, center.y)
     await page.mouse.down()
     await page.waitForTimeout(40)
-    await page.mouse.move(box.x + box.width / 2 - 20, box.y + box.height / 2)
-    await page.waitForTimeout(40)
-    await page.mouse.move(box.x + box.width / 2 - 40, box.y + box.height / 2)
-    await page.waitForTimeout(40)
-    await page.mouse.move(box.x + box.width / 2 - 60, box.y + box.height / 2)
+    for (const offsetX of [20, 40, 60]) {
+      await page.mouse.move(center.x - offsetX, center.y)
+      await page.waitForTimeout(40)
+    }
     await page.mouse.up()
-    await expect.poll(() => panState(page), { timeout: timing.expect }).toMatchObject({
-      inertiaActive: true,
-    })
+    const released = await panState(page)
+    expect(released).toMatchObject({ inertiaActive: true })
 
     await page.locator('[data-hud="accessibility-trigger"]').click()
     const dialog = page.locator('[data-hud="accessibility-dialog"]')
@@ -821,9 +938,10 @@ test.describe('Phase 5 contained pan', () => {
     await page.mouse.wheel(0, 300)
     await expect.poll(() => windowScrollState(page), { timeout: timing.expect }).toBeGreaterThan(0)
 
-    for (let index = 0; index < 10; index += 1) {
-      await dispatchWheel(page, { deltaY: 5000 })
-    }
+    await dispatchWheelBatch(
+      page,
+      Array.from({ length: 10 }, () => ({ deltaY: 5000 })),
+    )
     const beforeChain = await windowScrollState(page)
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
     await page.mouse.wheel(0, 600)
@@ -914,12 +1032,16 @@ test.describe('Phase 5 contained pan', () => {
       })
       expect(boxes.chromeRect.left).toBeGreaterThanOrEqual(boxes.wrapperRect.left + 11)
       expect(boxes.chromeRect.right).toBeLessThanOrEqual(boxes.wrapperRect.right - 11)
-      expect(boxes.buttonRect.width).toBeGreaterThanOrEqual(
-        attributes['data-a11y-controls'] === 'large' ? 56 : 44,
-      )
-      expect(boxes.buttonRect.height).toBeGreaterThanOrEqual(
-        attributes['data-a11y-controls'] === 'large' ? 56 : 44,
-      )
+      const expectedControlSize =
+        attributes['data-a11y-controls'] === 'large' ? 56 : 44
+      await expect.poll(
+        () => reset.evaluate((element) => element.getBoundingClientRect().width),
+        { timeout: timing.expect },
+      ).toBeGreaterThanOrEqual(expectedControlSize)
+      await expect.poll(
+        () => reset.evaluate((element) => element.getBoundingClientRect().height),
+        { timeout: timing.expect },
+      ).toBeGreaterThanOrEqual(expectedControlSize)
     }
     const largeCaptionSize = await bar.locator('.pan-instructions-caption').evaluate(
       (element) => Number.parseFloat(getComputedStyle(element).fontSize),
@@ -1161,7 +1283,7 @@ test.describe('Phase 5 gesture arbitration', () => {
     expect(pointerDowns?.defaultPrevented).toBe(0)
   })
 
-  test('AC-17 arbitrates the wide-fit decoration targets at 1920×900', async ({ page }) => {
+  test('AC-17 arbitrates wide-fit decorations where each target is reachable', async ({ page }) => {
     test.setTimeout(ciTimeout(180_000, 600_000))
     await page.setViewportSize({ width: 1920, height: 900 })
     await enterCockpit(page)
@@ -1177,14 +1299,20 @@ test.describe('Phase 5 gesture arbitration', () => {
       })
     })
 
-    await expectDragThenSubSlopClick(page, 'tablet')
-    expect(await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('tablet'),
-    )).toBeNull()
-    await expectDragThenSubSlopClick(page, 'shaker')
-    expect(await page.evaluate(
-      () => window.__COCKPIT_TEST_HOOKS__!.getPointerActivationPoint('shaker'),
-    )).toBeNull()
+    await test.step('tablet: discover, drag-cancel, and activate', async () => {
+      await expectDragThenSubSlopClick(page, 'tablet')
+    })
+    expect(await pointerActivationState(page)).toMatchObject({
+      activationCount: 1,
+      lastActivation: { key: 'tablet', count: 1 },
+    })
+    await test.step('shaker: discover, drag-cancel, and activate', async () => {
+      await expectDragThenSubSlopClick(page, 'shaker')
+    })
+    expect(await pointerActivationState(page)).toMatchObject({
+      activationCount: 2,
+      lastActivation: { key: 'shaker', count: 2 },
+    })
 
     expect((await pointerActivationState(page)).activationCount).toBe(2)
     const pointerDowns = await page.evaluate(() => {

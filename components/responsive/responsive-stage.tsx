@@ -156,6 +156,7 @@ export function ResponsiveStage({
         }
         .pan-reset {
           flex: 0 0 auto;
+          block-size: var(--control-min);
           min-width: var(--control-min);
           min-height: var(--control-min);
           padding: 0 var(--space-3);

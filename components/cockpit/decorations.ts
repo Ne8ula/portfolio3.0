@@ -656,6 +656,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   const projectedPickPoint = new THREE.Vector3();
+  const projectedPickBox = new THREE.Box3();
   let overClickable = false;
   const viewMode = () => window.__cockpitViewMode || 'cockpit';
   const pickShaker = (e) => {
@@ -732,11 +733,39 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
           object.updateWorldMatrix(true, false);
           camera.updateMatrixWorld(true);
           const r = renderer.domElement.getBoundingClientRect();
-          object.getWorldPosition(projectedPickPoint).project(camera);
-          return {
-            x: r.left + (projectedPickPoint.x + 1) * r.width / 2,
-            y: r.top + (1 - projectedPickPoint.y) * r.height / 2,
-          };
+          object.geometry.computeBoundingBox();
+          projectedPickBox.copy(object.geometry.boundingBox).applyMatrix4(object.matrixWorld);
+          const min = { x: Infinity, y: Infinity };
+          const max = { x: -Infinity, y: -Infinity };
+          for (const x of [projectedPickBox.min.x, projectedPickBox.max.x]) {
+            for (const y of [projectedPickBox.min.y, projectedPickBox.max.y]) {
+              for (const z of [projectedPickBox.min.z, projectedPickBox.max.z]) {
+                projectedPickPoint.set(x, y, z).project(camera);
+                const screenX = r.left + (projectedPickPoint.x + 1) * r.width / 2;
+                const screenY = r.top + (1 - projectedPickPoint.y) * r.height / 2;
+                min.x = Math.min(min.x, screenX); min.y = Math.min(min.y, screenY);
+                max.x = Math.max(max.x, screenX); max.y = Math.max(max.y, screenY);
+              }
+            }
+          }
+          const left = Math.max(r.left + 1, min.x);
+          const right = Math.min(r.right - 1, max.x);
+          const top = Math.max(r.top + 1, min.y);
+          const bottom = Math.min(r.bottom - 1, max.y);
+          if (left > right || top > bottom) return null;
+          // Dev-only instrumentation proposes points across the clipped
+          // projected pick volume. The arbiter validates them in production
+          // owner priority before exposing any point to Playwright.
+          const points = [];
+          for (const yf of [0.5, 0.25, 0.75]) {
+            for (const xf of [0.5, 0.25, 0.75]) {
+              points.push({
+                x: left + (right - left) * xf,
+                y: top + (bottom - top) * yf,
+              });
+            }
+          }
+          return points;
         },
         action: (hit) => {
           if (hit.key === 'shaker') shakeT = 0;

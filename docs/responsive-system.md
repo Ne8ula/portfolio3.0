@@ -246,9 +246,30 @@ only:
 - projected positions of subject-attached HUD.
 
 Protected hero subjects and interaction targets must remain inside the
-per-view safe frame; the point-projection solver of plan §6 implements
-this. Letterboxing is not the default — controlled compositional variation
-is preferable to bars.
+per-view safe frame. Phase 5 implements this through authored world-space
+framing points for monitor, deck, and crate plus the pure, three-free
+[camera-fit solver](../lib/responsive/camera-fit.ts). The solver converts the
+shared CSS-pixel safe frame to asymmetric NDC bounds, enforces the optical
+center invariant, and finds the smallest fitting distance with a bounded
+binary search. The monitor uses the same solver; its former planar
+`max(distV, distH)` solution remains only as a unit-test oracle.
+
+The per-scene fit cache keys CSS surface size, camera intrinsics, reservation
+epoch, and authored-transform epoch. DPR-only changes do not invalidate it.
+Focus entry, CSS-size change, authored-transform change, and the bounded
+overlay-measurement generations are the only solve triggers; live projected
+HUD geometry never feeds back into fitting. A mid-focus changed fit uses the
+motion-safe refit blend unless reduced motion is active. On failure, the
+camera keeps the last valid distance (or the authored cold-start fallback),
+emits one development warning per failure episode, and hides nonessential
+hints. A non-finite pose is never applied.
+
+Camera-fit reservations, bounds, fallback distances, minimum frame size, and
+parallax margin live with the existing HUD tokens in
+[hud-layout.ts](../lib/responsive/hud-layout.ts). The implemented
+`resolveFocusHudLayout()` remains deliberately unwired from live placement
+until Phases 6/7. Letterboxing is not the default — controlled compositional
+variation is preferable to bars.
 
 ## 6. Input policy
 
@@ -257,7 +278,8 @@ is preferable to bars.
 selected by user-agent sniffing. "Cursor movement" is two behaviors with
 two DIFFERENT mechanisms (plan §A.5) — do not merge them:
 
-1. **Hover free-look** — normalized against the LIVE viewport, then shaped
+1. **Hover free-look** — implemented in `cockpit-hud.tsx`, normalized against
+   the live visible stage/container box, then shaped
    by `responseExponentFor(viewport)` (`1.0` at the reference `1440×900`,
    rising toward `1.7` at the smallest supported ratio). Because
    `1 ** e === 1`, the full `±22°` yaw / `±15°` pitch envelope is reachable
@@ -265,10 +287,14 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    damp response near center. Applying a reference-dimension divisor to
    hover (which would truncate the envelope) is the regression plan §9.4
    guards against.
-2. **Contained-stage panning** — accumulated drag/trackpad/wheel/keyboard
-   input has no reach ceiling, so it is scaled by `sizeRatioFor(viewport)`
-   (floor `0.45`): a smaller viewport legitimately requires more movement
-   for the same logical pan. `sizeRatio` applies ONLY here, never to hover.
+2. **Contained-stage panning** — implemented by
+   [use-contained-pan.ts](../components/responsive/use-contained-pan.ts) over
+   the native scroll position. Accumulated drag/trackpad/wheel/keyboard input
+   has no reach ceiling, so it is scaled by `sizeRatioFor(viewport)` (floor
+   `0.45`): a smaller viewport legitimately requires more movement for the
+   same logical pan. `sizeRatio` applies ONLY here, never to hover. Contained
+   entry centers the crop; same-tier resize clamps and preserves it; renderer
+   rebuild leaves it untouched; re-entry from fit centers again.
 
 Wheel input normalizes `WheelEvent.deltaMode` via `normalizeWheelDelta()`:
 pixel deltas stay pixels, line deltas convert through the computed line
@@ -276,7 +302,13 @@ height, page deltas through the contained viewport dimension; results are
 spike-clamped (`MAX_WHEEL_STEP_PX`). Maximum camera yaw/pitch stays bounded
 independently of sensitivity. Reduced motion disables inertial continuation
 and free-look parallax; explicit non-animated panning remains available.
-Contained panning must not trap document scrolling (plan §A.5).
+Only drag release receives bounded inertia; wheel momentum is not doubled.
+Modifier wheel events bypass the controller, unmodified wheel chains to the
+document at bounds, and keyboard/Home plus the visible RESET control keep the
+region operable without a pointer. Cockpit artifact actions use one shared
+same-pointer, sub-6-pixel `pointerup` arbiter, so a contained drag cannot fire
+an artifact or deck/crate click-away action. Contained panning must not trap
+document scrolling (plan §A.5).
 
 ## 7. Canonical content
 
@@ -431,13 +463,19 @@ DOM identifier scheme (used by diagnostics and browser tests):
 | `data-layout-region` | `cockpit-stage` (the WebGL stage), `cockpit-shell` (client overlay root), `boot` (boot region), `app-shell` |
 | `data-layout-contract` | the registered contract id (e.g. `cockpit-v1`) on the region root |
 | `data-content-contract` | the content-contract id (e.g. `content-home-v1`) |
-| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog`, `renderer-status`, `renderer-recovery`, `renderer-restart`, `cockpit-runtime-notice`, `object-tag`, `pc-hover-brackets`, `crate-hover-brackets`, `deck-project-link` |
+| `data-hud` | `site-header`, `skip-link`, `primary-nav`, `appearance-control`, `return-control`, `vinyl-info-card`, `browse-arrow-prev`, `browse-arrow-next`, `browse-hint`, `screen-dialog`, `theme-toggle`, `boot-enter`, `accessibility-trigger`, `accessibility-dialog`, `renderer-status`, `renderer-recovery`, `renderer-restart`, `cockpit-runtime-notice`, `object-tag`, `pc-hover-brackets`, `crate-hover-brackets`, `deck-project-link`, `pan-instructions`, `pan-reset` |
 
 `object-tag` repeats once per rendered subject and is disambiguated by
 `data-tag-id="pc|crate|turntable|coffee"`. The two bracket identifiers live
 on content-bounding inner `<g>` elements, never on their stage-spanning SVG
 wrappers, so occupied-rectangle consumers measure the brackets rather than
 the whole stage.
+
+`pan-instructions` and its child `pan-reset` render only while
+`ResponsiveStage` is in contained mode. They are viewport-anchored region
+chrome in the stable every-mode wrapper, not camera-safe-frame reservations.
+This registry amendment does not add an identifier property to
+`LayoutContract`; such a schema/validator migration remains outside Phase 5.
 
 Phase 4 also reserves two **development-only, non-contract instrumentation**
 attributes. `data-hud-frame` stamps the published frame committed by React on
@@ -489,6 +527,8 @@ type CockpitTestHooks = {
     timeMs: number | null
     streams: readonly string[]
   }
+  completeAuthoredTweakGuard(): void         // finish the 180-frame startup guard
+  armFocusMeasurementReplacement(): void    // arm the production replacement generation
   skipIntro(): void                          // mount cockpit directly, no boot/warp
   enterView(mode: 'cockpit' | 'monitor' | 'crate' | 'deck'): Promise<void>  // resolves settled
   playRecord(index: number): Promise<void>   // resolves on landed, busy === false
@@ -527,6 +567,39 @@ type CockpitTestHooks = {
       sizeVersion: number
     } | null
   }
+  getFocusFit(): {
+    kind: 'monitor' | 'deck' | 'crate'
+    status: 'fit' | 'degraded'
+    reason: string | null
+    distance: number
+    solveCount: number
+    lastSolveCause: string
+    safeFrame: Rect
+    points: readonly { x: number; y: number }[]
+  } | null
+  getFreeLookState(): {
+    yawTarget: number
+    pitchTarget: number
+    exponent: number
+    boxW: number
+    boxH: number
+  }
+  getPanState(): {
+    mode: 'fit' | 'contained'
+    x: number
+    y: number
+    maxX: number
+    maxY: number
+    sizeRatio: number
+    inertiaActive: boolean
+    reducedMotion: boolean
+  } | null
+  getPointerActivationState(): {
+    pendingCount: number
+    pendingActivation: { owner: string; key: string } | null
+    activationCount: number
+    lastActivation: { owner: string; key: string; count: number } | null
+  }
 }
 ```
 
@@ -539,6 +612,22 @@ CSS size, capped DPR, drawing-buffer dimensions, and the idempotent
 `sizeVersion`. It is protected by the same `testHooksEnabled` production
 guard as the rest of the bridge and introduces no new live
 `window.__cockpit*` global.
+
+`completeAuthoredTweakGuard()` and `armFocusMeasurementReplacement()` are
+bounded Phase 5 harness actions. The former applies the authored defaults once
+and cancels only CockpitApp's startup reassertion loop, so transform-refit tests
+do not need 180 software-rendered frames. The latter calls the same production
+focus-store invalidation used by large-text/control changes, allowing a test to
+cancel that generation in the same task before the measurement component's
+one-second font fallback can legitimately commit it. Neither member exists in
+production or changes the preserved `window.__cockpit*` bridge.
+
+`getFocusFit()`, `getFreeLookState()`, `getPanState()`, and the pointer
+activation diagnostics are Phase 5 observables. Browser tests drive real
+pointer, wheel, keyboard, resize, accessibility, and context-loss paths; the
+hooks observe state and bounded hit-test fixtures rather than injecting a
+production interaction. They remain behind `testHooksEnabled` and add no
+live `window.__cockpit*` member.
 
 Phase 4's upgraded `getHudSnapshot()` waits for one production sampler
 compute (or returns the frozen parked diagnostic frame), then reads the DOM
@@ -599,7 +688,7 @@ build-time boundary.
 | 2 | Server-rendered `/`, `/projects`, `/projects/[slug]`, `/about`, metadata/JSON-LD/sitemap/`portfolio.json`; contracts implemented; `/recruiter` redirects | **Delivered in code** (2026-07-30; independent QA/merge pending, so no commit hash exists yet) |
 | 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered** (2026-08-04; delivery `d9756de`) |
 | 4 | Stage-relative projection contract, focused-HUD sampler, hud-layout solver, 14 seedable random streams, deterministic capture, and first backend-separated scorecard baselines | **Implemented with owner-certified hardware evidence** (2026-08-07; implementation `f3dc4c4`, `50ca962`, `8987589`, capture allowlist `9fab531`; final delivery boundary requires independent QA) |
-| 5 | 3D fit solver + input normalization wiring | Pending |
+| 5 | Authored focus envelopes, cached projection fit, normalized free-look, shared pointer arbitration, and contained-stage pan/chrome | **Implemented with Step 8 AC-28 captures and fresh five-gate evidence; independent QA and the AC-27/AC-28 owner gate remain** (2026-08-14; final delivery boundary requires owner approval, step-9 verification, and independent QA) |
 | 6 / 7 | Re-anchor deck HUD / crate HUD (the known deck overlap is fixed HERE, not by an interim constant) | Pending |
 | 8 | Full browser/viewport matrix, accessibility scans, production gate, enforcement skill, CI expansion | Pending |
 

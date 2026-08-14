@@ -269,6 +269,7 @@ describe('phase runner', () => {
     expect(canonicalStepId('Step-4: enforcement')).toBe('step-4')
     expect(canonicalStepId('Step 1 — sizing policy')).toBe('step-1')
     expect(canonicalStepId('step-30 catalogue routes')).toBe('step-30')
+    expect(canonicalStepId('6 — Contained pan only')).toBe('step-6')
   })
 
   it('accepts a descriptive Codex step label and isolates a host-recoverable e2e failure', () => {
@@ -346,6 +347,66 @@ describe('phase runner', () => {
                 status: 'fail',
                 details:
                   'Playwright could not start because the managed sandbox denied binding 0.0.0.0:3000 with EPERM; no browser test executed.',
+              }
+            : gate,
+        ),
+        unresolvedRisks: ['Browser verification requires the host controller.'],
+        handoff: 'Handoff: Step 2 awaits host E2E.',
+      },
+      phase3Manifest,
+      getStep(phase3Manifest, 'step-2'),
+    )
+
+    expect(
+      isHostRecoverableE2eFailure(result, phase3Manifest.requiredGates),
+    ).toBe(true)
+  })
+
+  it('recognizes failed-to-bind EPERM wording from a saved Codex result', () => {
+    const result = parseCodexResult(
+      {
+        phase: 3,
+        step: 'step-2',
+        outcome: 'blocked',
+        summary: 'Only the sandboxed browser gate is blocked.',
+        filesChanged: ['components/cockpit/globe-canvas.tsx'],
+        gates: requiredGates.map((gate) =>
+          gate.command === 'npm run test:e2e'
+            ? {
+                ...gate,
+                status: 'fail',
+                details:
+                  'No tests executed; the Playwright web server failed to bind 0.0.0.0:3000 with EPERM.',
+              }
+            : gate,
+        ),
+        unresolvedRisks: ['Browser verification requires the host controller.'],
+        handoff: 'Handoff: Step 2 awaits host E2E.',
+      },
+      phase3Manifest,
+      getStep(phase3Manifest, 'step-2'),
+    )
+
+    expect(
+      isHostRecoverableE2eFailure(result, phase3Manifest.requiredGates),
+    ).toBe(true)
+  })
+
+  it('recognizes a denied Playwright server bind from a saved Codex result', () => {
+    const result = parseCodexResult(
+      {
+        phase: 3,
+        step: 'step-2',
+        outcome: 'blocked',
+        summary: 'Only the sandboxed browser gate is blocked.',
+        filesChanged: ['components/cockpit/globe-canvas.tsx'],
+        gates: requiredGates.map((gate) =>
+          gate.command === 'npm run test:e2e'
+            ? {
+                ...gate,
+                status: 'fail',
+                details:
+                  'No tests executed because the sandbox denied the Playwright server bind to 0.0.0.0:3000 with EPERM.',
               }
             : gate,
         ),
