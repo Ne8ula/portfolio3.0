@@ -20,6 +20,74 @@ Hook setup:
 ## Recent handoffs
 
 <!-- agent-handoff:entry:start -->
+### 2026-08-31T19:15:31.109Z · claude
+
+- Branch / HEAD: `main` / `543f6c6`
+- Worktree snapshot: `619bf1f67a1d`
+- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> All five findings are resolved; the only file I changed is [docs/phase-6-design.md](docs/phase-6-design.md) (the `docs/agent-handoff.md` modification is a new hook-managed entry, preserved untouched).
+>
+> **High — D20 vs plan §9.3.** I verified the conflict is real and predates Phase 6 (today's live behavior already makes `/projects` unreachable during deck focus). Rather than unilaterally amending a binding roadmap check or silently expanding production scope, **D20 is now an explicit blocking owner decision** in §18 with a recommendation: approve the two-step exit path (`esc · return` → cockpit rest → header `/projects`) as satisfying §9.3's intent for focused modes, **with the plan §9.3 clarification amendment recorded only upon approval**; the alternative (persistent deck-mode link) is documented with its costs — new chrome, new identifier, and a mandatory §13 forecast amendment before implementation. P6-AC-22 and its test row are explicitly written against the recommended path and carry the amendment obligation if the owner chooses otherwise. State row 10's "Escape + DOM catalog remain" was corrected to say the catalog is reachable only after exit via the D20 path.
+>
+> **Medium — F3 closed form.** The fixture now defines scalars first (`W_x`, `H_x`) and builds `X` from them; three new named-inequality preconditions cover exactly the gaps you listed: `(W_f − W_x)/2 − G_s − A_w ≥ 8` asserted on actual values so the `max(24, …)` floor branch cannot silently void the overlap claim; a compact candidate proven legal under F3 (`X.y − S.y ≥ H_c + G_c` plus the F2 return-control clearance) so retention yields compact, never `hidden`; and the fresh-entry sequence must first assert `status: 'placed'` with `compact === false` on the natural subject before applying F3.
+>
+> **Medium — contained coverage.** P6-AC-22 and its row now run **all four** plan §9.1 declared zoom/narrow pressure viewports — 800×450, 683×325, 512×300, **320×568** — matching §9.4's four-case pan-trace requirement; no exclusion needed.
+>
+> **Low — malformed table.** The truth table now terminates cleanly with a blank line before the "deliberately deck-only" paragraph (verified by scan).
+>
+> **Low — closed reachability set.** P6-AC-22 enumerates it exactly: `browse-arrow-prev`, `browse-arrow-next`, `return-control`, and `deck-project-link` (landed, non-busy), with `browse-hint` (identified but noninteractive) and `screen-dialog` (in-scene imagery, not a deck control) explicitly excluded.
+>
+> The §20 audit row was aligned: the design now names **two** genuine owner decisions (compact microcopy; the D20 disposition + §9.3 clarification), both with recommended choices and stated effects.
+>
+> Handoff: Phase 6 design review fixes — D20 converted to a blocking owner decision reconciling the plan §9.3 zoom/narrow reachability requirement (recommended two-step exit path with an approval-gated plan clarification; persistent-link alternative costed), F3 made genuinely closed-form with overlap/compact-legality/fresh-entry preconditions, contained coverage extended to the four declared pressure viewports including 320×568, the truth-table markdown repaired, and P6-AC-22's pan-reachability set closed and enumerated. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved: the §18 blocking owner approvals (now including D20). Next role: owner approval of §18, then Codex plan/implementation, then Kimi QA.
+
+#### Git status at handoff
+
+```text
+ M docs/phase-6-design.md
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-08-28T14:14:15.843Z · claude
+
+- Branch / HEAD: `main` / `543f6c6`
+- Worktree snapshot: `103b09cb4a38`
+- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> All six findings are resolved; the only modification on top of the clean `543f6c6` tree is [docs/phase-6-design.md](docs/phase-6-design.md) (+89/−40).
+>
+> **High — P6-AC-22's DOM alternative is now enforceable.** I chose and documented the exit-path interpretation (new decision **D20**): a persistent deck-mode `/projects` link would be new production chrome and a new identifier in a phase that must not grow rendered scope, and it's redundant with the plan §A.4 parity-sanctioned exit. The criterion and its contained-mode test row now specify the concrete verified path: pan the return control into the visible viewport → activate `esc · return` → await cockpit-rest → assert `[data-hud="site-header"] a[href="/projects"]` is visible, keyboard-reachable (Tab-focusable), and operable. D20 records the live evidence you cited (inert page content in [cockpit-entry.tsx:63](components/cockpit/cockpit-entry.tsx#L63), rest-only header at [cockpit-hud.tsx:323](components/cockpit/cockpit-hud.tsx#L323), preview-only `AccessibleExperienceLink`) and the rejected alternative.
+>
+> **Medium — tier fixtures are now closed-form.** All qualitative phrases are gone. F1/F2/F3 are exact rects: F1 below-forcing `{x: S.x+(S.w−240)/2, y: S.y+⌊(H_f+G_s)/2⌋, 240×160}`; F2 compact-top-forcing `{S.x, S.y, 120×200}` — redesigned to discriminate **horizontally** (subject-centered full candidates overflow the left edge whenever `W_f > X.w`, so above *and* below fail on x-containment; this also removes the unsound vertical-band assumption, since `H_c` may equal `H_f`), with `X.y = S.y` eliminating the above rail band so arrows deterministically resolve below; F3 hysteresis with the obstacle and axis named (beside arrow pair, vertical), `X.h = A_h + 2(G_c−G_s) + HYS` yielding an exact 12 px clearance = `G_c + HYS/2`, strictly inside the retention band. Every fixture's preconditions are asserted before the tier assertion, and a violated precondition fails the test naming the inequality — never skips or substitutes.
+>
+> **Medium — warn-once recipe corrected.** The hook-suite row now drives real unsatisfiable episodes with the override (noting `forceDeckFitStatus` alone never produces one): apply safe-frame override → await `unsatisfiable`, count 1 → hold across publications, still 1 → clear, await `placed` (episode ends) → reapply → count 2.
+>
+> **Low — AC-08 actionability.** The busy-swap row now captures the arrow handles before the swap and asserts, at the gap frame: `disabled`, focus rejection, and that `click()`/synthesized Enter changes neither `__cockpitDeck.index` nor the probe state and dispatches no navigation.
+>
+> **Low — complete `forceDeckFitStatus` truth table.** A six-row accepted/rejected matrix in §12 with no normalization: `(true, validReason)` and `(false)`/`(false, undefined)` accepted; `(true)` without reason, `(true, invalidReason)`, `(false, anything ≠ undefined)` (including `null` or a valid reason), and non-boolean `degraded` all throw with no state change. P6-AC-26(a) now requires the full matrix — every rejected row throws, every accepted row takes effect.
+>
+> **Low — §1 note is now fully historical**, recording that the concurrent work was committed and the tree is clean at `543f6c6` on top of the Phase 5 merge, with no claim about live uncommitted state.
+>
+> Final checks: AC IDs continuous 01–26 with counts consistent everywhere; no stale phrases remain from any of the six findings; no production code, tests, canonical content, or evidence touched.
+>
+> Handoff: Phase 6 design review fixes complete in `docs/phase-6-design.md` — D20 exit-path DOM-alternative contract for P6-AC-22 (verified against the live inert/header behavior), closed-form F1/F2/F3 tier fixtures with named-inequality failure (F2 rebuilt on horizontal discrimination, removing the `H_c < H_f` assumption), override-driven warn-once episodes, handle-captured AC-08 actionability assertions, the complete `forceDeckFitStatus` input matrix wired into P6-AC-26, and the §1 worktree note made fully historical at `543f6c6`. Files changed: `docs/phase-6-design.md` only. Unresolved: the §18 blocking owner approvals. Next role: owner approval of §18, then Codex plan/implementation, then Kimi QA.
+
+#### Git status at handoff
+
+```text
+ M docs/phase-6-design.md
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
 ### 2026-08-14T22:03:58.381Z · claude
 
 - Branch / HEAD: `main` / `03fca60`
@@ -304,62 +372,6 @@ Hook setup:
 > **Forecast and approvals updated.** The `test-hooks.ts` forecast row lists both hooks under the same static guard and source-level review; the §18 blocking owner approval now names both; and new decision D18 records why `s: 50` was rejected for arrow-preservation testing (the scaled card's published corners fill the safe frame under the retained camera distance, so `unsatisfiable` is the *correct* solver answer there).
 >
 > Handoff: Phase 6 design eighth revision — degraded/unsatisfiable precedence made explicit across §7/§8/§11, the infeasible `s: 50` degraded-arrow test replaced by the geometry-neutral dev-only `forceFocusFitStatus()` hook with a rewritten P6-AC-07 clause and §15 row, phase5's `s: 50` test retained as the compound integration case, and the hook propagated through §12, the forecast, §18's blocking approvals, and decision D18. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T19:00:49.268Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `65dd97253f09`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Both lifecycle issues and the clarification are resolved in [docs/phase-6-design.md](docs/phase-6-design.md); the tree still holds only the design doc plus the preserved hook-managed handoff.
->
-> **§7 rule 1 is now per-control.** Hiding is decided by whether *that control* is placed: all three controls hide only in the states where nothing is placed (pre-measurement, `no-subject`, unsatisfiable), while degraded camera fit hides **only the hint shells** — the arrows stay identified, visible, and solver-placed, following only the normal busy/boundary disabled rules, never a blanket disable. The rule explicitly cites state row 7, §11, and Phase 5's essential-controls requirement, and the defensive `disabled` now applies only to a hidden shell's own button.
->
-> **Degraded-arrow preservation is enforced.** P6-AC-07 gains a degraded clause — under a forced degraded deck fit, both arrows remain identified, visible, and solver-placed (probe `status: 'placed'` with non-null arrow rects), the non-boundary arrow stays enabled, and only the hint hides. A dedicated §15 test row implements it with the proven phase5 AC-7/25 technique (`completeAuthoredTweakGuard()`, `setTransform({ s: 50 })` to force `unfittable-at-max`, assert hint count 0 + arrow presence/enablement + probe shape, then restore and assert recovery).
->
-> **Global no-solve-without-subject rule.** A footnote after the state table now states that measurement events — fonts, ResizeObserver reports, stage resizes, `data-a11y-*` changes — always update stored measurements and the derived return-control rect, but the solver runs only while the published frame carries a valid card rect (live or retained); otherwise the state remains or returns to `no-subject` holding the fresh measurements, and the first subject-bearing frame solves against them. Rows 8 and 14 now reference the rule explicitly as the with-subject path.
->
-> Handoff: Phase 6 design seventh revision — per-control hiding semantics in §7 rule 1 (degraded fit hides only hint shells; arrows keep placement and normal disabled rules), executable degraded-arrow coverage via P6-AC-07's new clause and a dedicated forced-degradation test row, and the global no-solve-without-subject rule governing font/resize/accessibility measurement events. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T18:56:37.862Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `65dd97253f09`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> The `no-subject` state is now fully propagated through [docs/phase-6-design.md](docs/phase-6-design.md); the tree still holds only the design doc plus the preserved hook-managed handoff.
->
-> Three coordinated edits:
->
-> - **State row 2 is now conditional:** if the published frame carries a card rect (live or retained), the first valid measurement solves and reveals; otherwise the HUD enters `no-subject` — measured, hidden, unidentified — until a card arrives, cross-referencing rows 3/6. This removes the contradiction with the probe contract's "measurement may complete before a card exists."
-> - **The probe contract now defines the distinguishing shape:** `'no-subject'` means `sizes !== null` while `subject`, `hint`, `previous`, `next`, both tiers, **and `compact`** are all null (the previously omitted `compact` is included); `'unmeasured'` is explicitly reserved for `sizes === null`. The comment also now cites state rows 2/6.
-> - **The state is tested:** P6-AC-08 requires the probe to report `status: 'no-subject'` with `sizes !== null` and the full null-field shape at gap frames past grace, and the mapped busy-swap test row in §15 spells out that assertion (read the probe at a gap frame past grace; assert status, non-null sizes, and null subject/placement rects/tiers/`compact`).
->
-> I also re-checked the surrounding contracts for knock-on effects: §7 rule 7 (reveal only after a solve) and the §11 failure bullets remain consistent with the conditional row 2, since a solve still presupposes a card.
->
-> Handoff: Phase 6 design sixth revision — the `no-subject` probe state propagated end-to-end: conditional first-measurement behavior in state row 2, a distinguishing-shape definition in the probe contract (`sizes !== null`, all placement fields including `compact` null), and executable coverage via the strengthened P6-AC-08 and its mapped busy-swap test. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
 
 #### Git status at handoff
 

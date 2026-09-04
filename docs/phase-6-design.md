@@ -16,12 +16,14 @@ No production code or tests were changed by this design turn.
   (AC-27 hardware certification and AC-28 visual approval recorded in
   `docs/baselines/phase-5-input/OWNER-CHECKPOINT-2026-08-14.md`).
 - Retained Phase 5 fallback branch: `codex/diagnose-and-fix-ac-17-e2e-timeout`.
-- Working-tree note (historical): at the initial design-turn snapshot the
-  tree carried only the hook-managed `docs/agent-handoff.md` modification.
-  The current tree additionally carries concurrent, unrelated work —
-  the plan revision-8 roadmap documentation, historical renumbering notes,
-  and an owner-driven prop removal — all preserved untouched by this
-  design's turns; nothing was cleaned, staged, or committed.
+- Working-tree note (historical only): during the design turns the tree
+  transiently carried the hook-managed `docs/agent-handoff.md`
+  modification and concurrent, unrelated work (the plan revision-8 roadmap
+  documentation, historical renumbering notes, an owner-driven prop
+  removal) — all preserved untouched by this design's turns. That work has
+  since been committed; as of `543f6c6` ("design roadmap fixes", on top of
+  the Phase 5 merge `03fca60`) the tree is clean and this document
+  describes no live uncommitted state.
 - Phases −1 through 5 are delivered per `docs/responsive-system.md` §12.
   Phase 6 is the next scheduled phase in `docs/hud-responsive-layout-plan.md`
   §8 ("the plan").
@@ -600,7 +602,7 @@ remount); its wrapper is measured directly.
 | 7 | Fit degraded | `focus-fit-store` deck `degraded` | Hint de-identified and hidden (both shells keep measuring); arrows keep solver placement **while the layout remains satisfiable** — an unsatisfiable solve takes precedence (row 10). Preserves phase5 AC-7/25, which asserts only hint absence/recovery |
 | 8 | Resize while focused | stage size change → `sizeVersion` publication | Same-commit re-solve (subject to the no-solve-without-subject rule below); return rect re-derived arithmetically; settles ≤ 2 frames (plan §9.3) |
 | 9 | Compact↔full hysteresis | space frees/tightens across solves | Full→compact when full tiers fail; compact→full only when the full-tier candidate clears every collision obstacle by ≥ `HUD_COLLISION_GAP + HUD_COMPACT_HYSTERESIS` (obstacle clearance only — §5) |
-| 10 | Unsatisfiable solve | `status:'unsatisfiable'` with valid subject | Hint + arrows de-identify and hide; one dev-only `console.warn('[deck-hud] …')` per episode; never reachable at supported viewports (P6-AC-13); Escape + DOM catalog remain |
+| 10 | Unsatisfiable solve | `status:'unsatisfiable'` with valid subject | Hint + arrows de-identify and hide; one dev-only `console.warn('[deck-hud] …')` per episode; never reachable at supported viewports (P6-AC-13); Escape/`esc · return` remains operable back to cockpit rest, where the header's catalog links are available (D20 — the catalog is not directly reachable until exit) |
 | 11 | Leave deck | mode exits | `DeckHud` unmounts entirely; hysteresis and measurements die with it; sampler clears retention (existing) |
 | 12 | Remount / context recovery | rebuild seeds deck landed at rest | Fresh mount → states 1→2→3; no pre-loss geometry or identifiers reused (sampler reset is existing behavior); verified by the new recovery test (P6-AC-23) |
 | 13 | Reduced motion | `data-a11y-motion="reduced"` / system | Identical placement path; entrance animation suppressed by the existing global CSS; controls appear immediately at their solved rects |
@@ -734,10 +736,20 @@ forceDeckFitStatus(degraded: boolean, reason?: FocusFitReason): void
 // camera-failure integration test (degraded + no-subject, P6-AC-25).
 ```
 
-`forceDeckFitStatus` contract: **input** — `degraded` a boolean, `reason`
-(required when `degraded` is true) a valid `FocusFitReason`; anything else
-throws a `__COCKPIT_TEST_HOOKS__:`-prefixed error and changes nothing (no
-partial mutation). The hook is deliberately **deck-only**: Phase 6 needs no
+`forceDeckFitStatus` contract: **input truth table (complete — no
+normalization, no silent coercion; every rejected row throws the
+`__COCKPIT_TEST_HOOKS__:`-prefixed error and changes nothing):**
+
+| Call | Result |
+|---|---|
+| `(true, validReason)` | accepted — store set degraded with that reason |
+| `(false)` / `(false, undefined)` | accepted — store cleared; reason becomes `null` |
+| `(true)` / `(true, undefined)` | **throws** — a reason is mandatory when forcing degraded |
+| `(true, invalidReason)` | **throws** — reason must be a `FocusFitReason` member |
+| `(false, anything ≠ undefined)` (incl. `null` or a valid reason) | **throws** — a reason with `false` is a caller mistake, not normalized away |
+| non-boolean `degraded` | **throws** |
+
+The hook is deliberately **deck-only**: Phase 6 needs no
 monitor/crate forcing, and the narrower signature keeps the dev mutation
 surface minimal (§17-D19). **Observability — store vs fit cache
 (critical):** the hook writes the React `focus-fit-store` — the same store
@@ -941,11 +953,11 @@ named owner checkpoint reviews in §18, which require capture evidence.
 | P6-AC-19 | Phase 7-owned crate subject HUD is untouched, except for the explicitly approved shared return-control correction (§6.9): `BrowseArrows`, `VinylBrowseArrows`, `VinylInfoCard`, crate placement, and the crate arrow/hint replica formulas have no behavior change in the diff, and the retained phase4 AC-4 crate fixture rows (which do not assert the return control) stay green |
 | P6-AC-20 | The pinned 34-name `window.__cockpit*` bridge is byte-identical; new instrumentation sits behind the same static `NODE_ENV` guard as the existing hooks (source-level verification in the implementation report); the artifact-level production-absence assertion remains Phase 9's gate (plan §0.7 renumbering) and is not claimed here |
 | P6-AC-21 | The old Phase 6 `test.fixme` is converted, not deleted or weakened; phase4 AC-21 is updated to guard the executable coverage; `phase4-hud-parity.json` is unmodified |
-| P6-AC-22 | Contained mode at **all three** declared pressure viewports — 800×450, 683×325, 512×300: DeckHud solves against the pinned 1024×600 surface; P6-AC-01…06 hold in stage coordinates; controls pan with the surface; each identified control can be brought fully into the visible contained viewport by panning (the pan range from `getPanState().maxX/maxY` covers each control's stage rect, verified with explicit stage→viewport coordinate conversion — never a raw viewport/stage comparison); and the page-level DOM alternative (`AccessibleExperienceLink` / VIEW PROJECTS) remains reachable |
+| P6-AC-22 | Contained mode at **all four** plan §9.1 declared zoom/narrow pressure viewports — 800×450, 683×325, 512×300, 320×568: DeckHud solves against the pinned 1024×600 surface; P6-AC-01…06 hold in stage coordinates; controls pan with the surface. **Pan-reachability set (closed):** `browse-arrow-prev`, `browse-arrow-next`, `return-control`, and `deck-project-link` (landed, non-busy state) can each be brought fully into the visible contained viewport by panning — the pan range from `getPanState().maxX/maxY` covers each of those stage rects, verified with explicit stage→viewport coordinate conversion, never a raw viewport/stage comparison. Explicitly excluded from the reachability set: `browse-hint` (identified but noninteractive, `pointer-events: none`) and `screen-dialog` (in-scene monitor imagery, not a deck control). And, **per the owner's D20 disposition (§18)**, the DOM-alternative path is operable from deck mode — recommended path: pan the return control into view, activate `esc · return`, await cockpit-rest, then assert `[data-hud="site-header"] a[href="/projects"]` is visible, keyboard-reachable, and operable; if the owner instead requires a persistent link, this criterion and the §13 forecast take a recorded amendment first |
 | P6-AC-23 | After a forced context loss and restore in deck view, the rebuilt HUD reaches probe `status:'placed'` with visible, identified controls satisfying P6-AC-01…06; no pre-loss geometry or identifier survives the rebuild |
 | P6-AC-24 | Degraded + unsatisfiable precedence is enforced end-to-end with a deterministic finite oversized subject: with `forceDeckFitStatus(true, 'unfittable-at-max')` **and** `setDeckHudSubjectOverride(safeFrame)` set — the safe-frame rect read from `getHudSnapshot().safeFrame` under the same-frame handshake (dev-only actions, not a supported-viewport state — no conflict with P6-AC-13) — the probe reports `status: 'unsatisfiable'` with `fitDegraded === true` and the hint and **both** arrow identifiers are absent (precedence over the degraded arrows-remain rule); clearing only the override returns the probe to `placed` with arrows identified and the hint still degraded-hidden (`fitDegraded === true`, `hintTier: 'hidden'`); clearing the forced status restores the hint. The forced store status is observed via the probe, never via `getFocusFit()` |
 | P6-AC-25 | The real `s: 50` camera failure is pinned as the degraded + `no-subject` integration case, observed through the **real renderer probe**: after `setTransform({ s: 50 })`, `getFocusFit().status === 'degraded'` with reason `unfittable-at-max` (the production path also reaches the store, so probe `fitDegraded === true`), the published deck card is null, the probe reports `status: 'no-subject'` with `sizes !== null` and null `subject`/`hint`/`previous`/`next`/tiers/`compact` (the §12 no-subject shape), and all three identifiers are absent; restoring `s: 1.75` returns `getFocusFit()` to `fit`, the probe to `placed`, and the identified controls to legal placement |
-| P6-AC-26 | The dev-only hook contracts are executable law: (a) `forceDeckFitStatus` and `setDeckHudSubjectOverride` throw the documented `__COCKPIT_TEST_HOOKS__:`-prefixed errors on malformed input — non-boolean/invalid reason; non-finite coordinates, zero/negative area, missing or extra rect fields — and change no observable state; (b) calling the override setter with a rect while DeckHud is unmounted throws the documented "DeckHud not ready" error and queues nothing; (c) `getDeckHudLayout()` returns `null` while unmounted; (d) a set override is cleared by deck exit/re-entry and by context rebuild (fresh session shows `subject` from the published card); (e) forced status cleared explicitly never leaks into a later test; (f) the unsatisfiable dev warning fires once per episode, a recovery ends the episode, and a later unsatisfiable episode warns once again — development builds only; (g) hysteresis state does not survive exit/re-entry: after a compact prior session, fresh entry with the §15 hysteresis-retention geometry places the **full** hint (`previousCompact` reset); (h) every mutating test in the suite restores hook state in `try/finally` |
+| P6-AC-26 | The dev-only hook contracts are executable law: (a) `forceDeckFitStatus` enforces its complete §12 input truth table — every rejected row (`(true)` without reason, `(true, invalidReason)`, `(false, anything ≠ undefined)`, non-boolean `degraded`) throws the documented prefixed error, every accepted row takes effect — and `setDeckHudSubjectOverride` throws on malformed input (non-finite coordinates, zero/negative area, missing or extra rect fields); no rejected call changes observable state; (b) calling the override setter with a rect while DeckHud is unmounted throws the documented "DeckHud not ready" error and queues nothing; (c) `getDeckHudLayout()` returns `null` while unmounted; (d) a set override is cleared by deck exit/re-entry and by context rebuild (fresh session shows `subject` from the published card); (e) forced status cleared explicitly never leaks into a later test; (f) the unsatisfiable dev warning fires once per episode, a recovery ends the episode, and a later unsatisfiable episode warns once again — development builds only; (g) hysteresis state does not survive exit/re-entry: after a compact prior session, fresh entry with the §15 hysteresis-retention geometry places the **full** hint (`previousCompact` reset); (h) every mutating test in the suite restores hook state in `try/finally` |
 
 ## 15. Test and viewport matrix mapped to acceptance criteria
 
@@ -954,11 +966,11 @@ named owner checkpoint reviews in §18, which require capture evidence.
 | Test | Viewports | Covers |
 |---|---|---|
 | Matrix geometry sweep (one test per plan §9.1 normal case, phase5-fit AC-3 pattern; land record, settle, one snapshot + probe read, full invariant set) | 1024×600, 1024×768, 1280×720, 1280×800, 1366×650, 1366×768, 1440×900, 1512×982, 1920×1080, 2048×1536, 2560×1440, 3440×1440 | P6-AC-01…07, and the standard-state half of 13 |
-| Busy-swap and grace observation (AC-8/9 pattern: MutationObserver on `data-hud-frame`, retained/gap frame classification; at a gap frame past grace, read the probe and assert `status: 'no-subject'`, `sizes !== null`, null subject/placement rects/tiers/`compact`, and that a hidden arrow button rejects programmatic focus) | 1440×900 | P6-AC-08 |
+| Busy-swap and grace observation (AC-8/9 pattern: MutationObserver on `data-hud-frame`, retained/gap frame classification). Capture the arrow element handles **before** the swap; at a gap frame past grace, read the probe and assert `status: 'no-subject'`, `sizes !== null`, null subject/placement rects/tiers/`compact`; on the captured handles assert the buttons are `disabled`, programmatic `focus()` does not take focus, and `click()` / synthesized Enter changes neither `__cockpitDeck.index` nor the probe state and dispatches no navigation | 1440×900 | P6-AC-08 |
 | Degraded-fit arrow preservation with an otherwise legal subject: land record 0, then `forceDeckFitStatus(true, 'unfittable-at-max')` in `try/finally` — geometry, camera, and fit cache untouched; assert probe `fitDegraded === true` while `getFocusFit().status` stays `'fit'` (store/fit-cache separation), `[data-hud="browse-hint"]` count 0 while both arrow identifiers stay present and visible, probe `status: 'placed'` with non-null arrow rects, and the next arrow remains enabled; then `forceDeckFitStatus(false)` and assert hint recovery. (The precedence and `s: 50` compound cases are enforced separately by the P6-AC-24/25 rows below; phase5-fit AC-7/25 remains unmodified) | 1440×900 | P6-AC-07 (degraded clause) |
 | Exit clearing + re-entry | 1440×900 | P6-AC-09 |
 | Resize-while-focused (1440×900 → 1024×600 → 1280×720, two-frame settle via frame meta) | transitions | P6-AC-10 |
-| Hint-tier probe evidence via derived override fixtures (tier-fixture note below): land record 0, settle, read measured sizes from the probe and `safeFrame` from `getHudSnapshot()`; in `try/finally` apply the below-forcing fixture and assert `hintTier: 'below'`, then the compact-top-forcing fixture and assert `hintTier: 'compact-top'` + `compact: true`, then the hysteresis fixture (full-tier slack in `(HUD_COLLISION_GAP, HUD_COLLISION_GAP + HUD_COMPACT_HYSTERESIS)`) and assert compact is retained; clear the override and assert the natural full tier returns. No font/viewport luck: every fixture is computed from the probe's own measured sizes | 1440×900 | P6-AC-12 (browser half) |
+| Hint-tier probe evidence via derived override fixtures (tier-fixture note below): land record 0, settle, read measured sizes from the probe and `safeFrame` from `getHudSnapshot()`; in `try/finally` apply fixture F1 and assert `hintTier: 'below'`, then F2 and assert `hintTier: 'compact-top'` + `compact: true`, then F3 in the same session and assert compact is retained (12 px slack < `G_c + HYS`); clear the override and assert the natural full tier returns. Each fixture's preconditions are asserted before its tier assertion (tier-fixture note). No font/viewport luck: every fixture is computed from the probe's own measured sizes | 1440×900 | P6-AC-12 (browser half) |
 | Reduced motion entry | 1440×900 | P6-AC-15 |
 | Theme flip in deck | 1440×900 | P6-AC-16 |
 | Accessibility size states — large text, large controls, and combined large text + large controls, each driven live. Per transition, assert both sides: HUD re-measure/re-solve with the P6-AC-01…06 invariants, **and** the camera-side chain — measurement replacement committed, `getFocusFit()` solve count +1 with cause `measurement`, `status: 'fit'`, and reservations ≥ the probe's measured return/arrow/hint requirements (P6-AC-17's inequalities) | 1024×600, 1440×900 (per state) | P6-AC-17, 02, 06, and the a11y half of 13 |
@@ -967,32 +979,66 @@ named owner checkpoint reviews in §18, which require capture evidence.
 | Context loss/restore in deck (`WEBGL_lose_context` force-loss + restore, phase4 AC-15/23 technique). Capture element handles for the identified deck controls **before** the loss; after restore assert those handles are disconnected (`isConnected === false`), the published frame is fresh (frameId beyond the parked frame; `deck.card.sourceFrameId === frameId`, `retained !== true` — the existing AC-15/23 pattern), the probe returns `placed`, and the full geometry invariant set holds on the newly identified controls | 1440×900 | P6-AC-23 |
 | Degraded + unsatisfiable precedence with a deterministic finite subject: land record 0, settle, read `safeFrame` from `getHudSnapshot().safeFrame` under the same-frame handshake, then in `try/finally`: `forceDeckFitStatus(true, 'unfittable-at-max')` + `setDeckHudSubjectOverride(thatSafeFrameRect)`; assert probe `status: 'unsatisfiable'`, `fitDegraded === true`, and all three identifiers absent. Then `setDeckHudSubjectOverride(null)` and assert the pure-degraded state returns — probe `placed`, arrows identified/visible, hint still hidden with `fitDegraded === true`. Then `forceDeckFitStatus(false)` and assert full recovery. `getFocusFit()` is not consulted for the forced status; geometry, camera, sampler, and fit cache untouched throughout | 1440×900 | P6-AC-24 |
 | Real `s: 50` camera failure as the degraded + no-subject integration case (phase5 AC-7/25 technique: land record 0, `completeAuthoredTweakGuard()`, then `__cockpitTurntable.setTransform({ s: 50 })`): assert `getFocusFit().status === 'degraded'` with reason `unfittable-at-max`, `publishedFrame.deck.card === null`, probe `status: 'no-subject'` with `sizes !== null` and the §12 no-subject null-field shape, and all three identifiers absent; then `setTransform({ s: 1.75 })` and assert `getFocusFit()` returns `fit`, the probe returns `placed`, and hint + both arrows are identified and legally placed again. Phase5-fit AC-7/25 itself remains unmodified (it asserts hint absence/recovery only) | 1440×900 | P6-AC-25 |
-| Contained-mode deck at each declared pressure viewport: assert the pinned 1024×600 surface, the P6-AC-01…06 invariants in stage coordinates, pan-tracking, control reachability (pan range from `getPanState()` covers each identified control's stage rect, checked via explicit stage→viewport conversion), and the reachable DOM alternative | 800×450, 683×325, 512×300 (executed at all three — no "covered by construction" claim) | P6-AC-22 |
-| Hook-contract suite (development-only): drive every P6-AC-26 clause — malformed-input throws with state unchanged before/after (probe snapshot equality), unmounted setter throw, unmounted getter `null`, override cleared by exit/re-entry and by `WEBGL_lose_context` rebuild, forced-status clearing, warn-once-per-episode via console capture across force → recover → force, and the hysteresis-reset re-entry check using the §15 hysteresis-retention fixture; all mutations in `try/finally` | 1440×900 | P6-AC-26 |
+| Contained-mode deck at each declared pressure viewport: assert the pinned 1024×600 surface, the P6-AC-01…06 invariants in stage coordinates, pan-tracking, closed-set control reachability (`browse-arrow-prev`/`browse-arrow-next`/`return-control`/`deck-project-link`; pan range from `getPanState()` covers each stage rect via explicit stage→viewport conversion; hint and screen-dialog excluded as non-controls), and the owner-approved D20 path — recommended: pan to and activate `esc · return`, await cockpit-rest, assert `[data-hud="site-header"] a[href="/projects"]` visible, keyboard-reachable (focusable via Tab), and operable | 800×450, 683×325, 512×300, 320×568 (executed at all four plan §9.1 declared cases — no "covered by construction" claim) | P6-AC-22 |
+| Hook-contract suite (development-only): drive every P6-AC-26 clause — malformed-input throws with state unchanged before/after (probe snapshot equality), unmounted setter throw, unmounted getter `null`, override cleared by exit/re-entry and by `WEBGL_lose_context` rebuild, forced-status clearing. Warn-once-per-episode via console capture with **override-driven unsatisfiable episodes** (`forceDeckFitStatus` alone never produces one): `setDeckHudSubjectOverride(safeFrame)` → await probe `unsatisfiable`, assert `[deck-hud]` warning count 1 → hold across further publications, assert still 1 → `setDeckHudSubjectOverride(null)` → await `placed` (episode ends) → reapply the safe-frame override → assert count 2. Plus the hysteresis-reset re-entry check using fixture F3 on a fresh session (expect `hintTier: 'above'`); all mutations in `try/finally` | 1440×900 | P6-AC-26 |
 
-**Tier-fixture derivation (deterministic — no font or viewport luck).**
-Browser tier evidence uses `setDeckHudSubjectOverride` rects computed at
-runtime from the probe's measured sizes (`H_f` = full-hint height, `H_c` =
-compact height, `A` = normalized arrow size), `S` = `getHudSnapshot().safeFrame`,
-`G_s` = `HUD_SUBJECT_GAP`, `G_c` = `HUD_COLLISION_GAP`. Each fixture must
-satisfy documented inequalities that make the intended candidate legal and
-every higher-priority candidate illegal, and the test **asserts the
-inequalities on the computed rect before asserting the tier**, so a
-violated precondition fails loudly rather than passing by accident:
+**Tier-fixture derivation (deterministic — exact formulas, no font or
+viewport luck).** Browser tier evidence uses `setDeckHudSubjectOverride`
+rects computed at runtime from measured sizes (`W_f×H_f` full hint,
+`W_c×H_c` compact hint, `A_w×A_h` normalized arrow — all from the probe),
+`S` = `getHudSnapshot().safeFrame` under the same-frame handshake,
+`G_s = HUD_SUBJECT_GAP (14)`, `G_c = HUD_COLLISION_GAP (8)`,
+`HYS = HUD_COMPACT_HYSTERESIS (8)`. Each fixture is a **closed-form rect**;
+before asserting the tier, the test asserts the fixture's preconditions on
+the computed values, and a violated precondition **fails the test naming
+the violated inequality** — it never skips, retries, or substitutes
+another fixture. Because full-hint candidates center on the *subject*
+while compact candidates center on the *safe frame*, the compact fixture
+discriminates horizontally (`H_c` may equal `H_f`; no vertical-band
+assumption is made):
 
-- *Below-forcing*: `X.y − S.y < H_f + G_s` (the above candidate breaks
-  safe-frame containment) and `(S.y+S.h) − (X.y+X.h) ≥ H_f + G_s + G_c`
-  (below legal), with `X` horizontally centered and narrow enough that the
-  beside arrow tier stays legal.
-- *Compact-top-forcing*: `H_c + G_s ≤ X.y − S.y < H_f + G_s` (top rail
-  admits the compact form but not full-above) and
-  `(S.y+S.h) − (X.y+X.h) < H_f + G_s` (below fails), with the beside
-  arrows vertically distant from the top rail by > `G_c`.
-- *Hysteresis-retention*: from the compact state, an adjusted `X` whose
-  full-tier candidate clears its nearest obstacle by a slack in
-  `(G_c, G_c + HUD_COMPACT_HYSTERESIS)` — compact must be retained; the
-  same geometry with `previousCompact` reset (fresh entry) must place full
-  (also reused by P6-AC-26's hysteresis-reset check).
+- *F1 — below-forcing* (expect `hintTier: 'below'`, `arrowTier:
+  'beside'`): `X = { x: S.x + (S.w − 240)/2, y: S.y + ⌊(H_f + G_s)/2⌋,
+  w: 240, h: 160 }`. Above fails by construction
+  (`X.y − S.y < H_f + G_s` ⇒ the subject-centered above candidate breaks
+  top containment). Preconditions: `(S.y+S.h) − (X.y+X.h) ≥ H_f + G_s +
+  G_c` (below room); `(S.w − 240)/2 ≥ A_w + G_s` (beside legal);
+  `X.h/2 + G_s − A_h/2 > G_c` (below-hint clears the beside arrows).
+- *F2 — compact-top-forcing* (expect `hintTier: 'compact-top'`,
+  `compact: true`): `X = { x: S.x, y: S.y, w: 120, h: 200 }`. Both full
+  candidates are subject-centered, so they overflow the safe frame's left
+  edge whenever `W_f > X.w` — above **and** below fail on x-containment
+  regardless of vertical room. `X.y = S.y` leaves no above rail band, so
+  the arrow rail resolves below the subject, away from the top rail.
+  Preconditions: `W_f > 120`; `X.x + X.w + G_c ≤ S.x + (S.w − W_c)/2`
+  (the safe-frame-centered compact candidate clears the subject);
+  `X.w ≥ 2·A_w + G_c` (the arrow rail stays contained); the compact
+  candidate's right edge + `G_c` ≤ the return-control rect's left edge
+  (top-rail chrome clearance).
+- *F3 — hysteresis-retention* (obstacle = **the beside arrow pair**, axis
+  = **vertical**). Define the scalars first, then the rect:
+  `W_x = max(24, W_f − 2·(G_s + A_w) − 16)`,
+  `H_x = A_h + 2·(G_c − G_s) + HYS`, and
+  `X = { x: S.x + (S.w − W_x)/2, y: S.y + H_f + G_s + 40, w: W_x,
+  h: H_x }`. The width makes the subject-centered full-above hint
+  horizontally overlap both beside arrows; the height makes the full
+  candidate's vertical clearance to the arrows **exactly**
+  `H_x/2 + G_s − A_h/2 = G_c + HYS/2` (= 12 px) — strictly inside
+  `(G_c, G_c + HYS)`. Preconditions (each asserted; a failure names its
+  inequality): `(W_f − W_x)/2 − G_s − A_w ≥ 8` (the ≥ 8 px per-side
+  overlap holds **as an assertion on the actual values**, so the `max`
+  floor branch cannot silently void it); computed clearance within 0.5 px
+  of `G_c + HYS/2`; `X.y − S.y ≥ H_f + G_s` (above otherwise contained);
+  beside arrows legal; **a compact candidate stays legal under F3** —
+  `X.y − S.y ≥ H_c + G_c` (top rail clears the subject) and the F2
+  return-control clearance inequality — so hysteresis retention yields a
+  compact placement, never `hidden`. Sequence: apply F2 (establish
+  `compact: true`), then F3 in the same session — hysteresis retains
+  compact (`hintTier` stays compact). P6-AC-26(g) reuses F3 on a **fresh**
+  deck entry: first assert `previousCompact` is genuinely reset (probe
+  `status: 'placed'` with `compact === false` on the natural subject,
+  before any override), then apply F3 — the 12 px slack exceeds `G_c`, so
+  the full tier places (`hintTier: 'above'`).
 
 Exhaustive tier coverage lives in the **unit** suite (below); the browser
 fixtures corroborate the same solver through the real measurement/probe
@@ -1151,6 +1197,28 @@ suites.
   widening it later is a new owner decision). Also rejected: duplicating
   `safeFrame` on the probe — `getHudSnapshot().safeFrame` already provides
   it under the same-frame handshake, and duplicate observables drift.
+- **D20 — Deck-mode DOM alternative: recommended two-step exit path,
+  gated on an explicit owner decision (§18).** Verified live: ordinary
+  page content is `inert` while the cockpit is active
+  (`cockpit-entry.tsx:63`), the site header renders only at cockpit rest
+  (`cockpit-hud.tsx:323`), and `AccessibleExperienceLink` ships only on
+  the responsive preview — so during deck focus, `/projects` is reachable
+  only by exiting first. This **conflicts with the plan §9.3 zoom/narrow
+  check** that "the page-level `VIEW PROJECTS` path remains visible or
+  keyboard-reachable"; the §A.4 parity table's exit-control row does not
+  override that separate requirement, and the conflict predates Phase 6
+  (it is today's live behavior, not a regression this design introduces).
+  The choice is therefore a **blocking owner decision**:
+  **(recommended)** approve the two-step path — always-visible
+  `esc · return` → cockpit rest → header `/projects` — as satisfying the
+  intent for focused modes, and record a plan §9.3 clarification
+  amendment to that effect **upon approval** (this design does not amend
+  the plan unilaterally); **(alternative)** require a persistent
+  deck-mode `/projects` link — new production chrome, a new identifier,
+  a registry/contract touch, and a design amendment expanding the §13
+  forecast before implementation. P6-AC-22 is written against the
+  recommended path and carries a recorded amendment obligation if the
+  owner chooses the alternative.
 
 ## 18. Owner-review checklist
 
@@ -1181,6 +1249,15 @@ post-implementation gates, not implementation preconditions.
       Enforced deterministically via the subject override (P6-AC-24); the
       real `s: 50` failure instead nulls the card's projection and is
       pinned separately as degraded + `no-subject` (P6-AC-25).
+- [ ] **The D20 deck-mode DOM-alternative disposition** (§17-D20): the
+      recommended two-step exit path (`esc · return` → cockpit rest →
+      header `/projects`) as satisfying plan §9.3's "page-level VIEW
+      PROJECTS path remains visible or keyboard-reachable" for focused
+      cockpit modes, **plus** the plan §9.3 clarification amendment to be
+      recorded on approval — or, alternatively, a persistent deck-mode
+      link, which requires a design amendment expanding the §13 forecast
+      before implementation. P6-AC-22 is written against the recommended
+      path.
 - [ ] Live deck controls and the return control consuming the accessibility
       size tokens (§6.9), **including its deliberate standard-state
       accessibility correction**: the shared return-control button grows
@@ -1236,7 +1313,7 @@ gates and independent QA.
 
 | Check | Result |
 |---|---|
-| No unresolved TBDs | PASS — every decision is concrete; the one subjective item (compact microcopy) is a named blocking owner approval with a recommended value and a stated effect |
+| No unresolved TBDs | PASS — every decision is concrete; the two items that are genuinely the owner's (compact microcopy; the D20 deck-mode DOM-alternative disposition and its plan §9.3 clarification) are named blocking approvals with recommended choices and stated effects |
 | No conflicting constants | PASS — zero new spacing constants; one existing chrome offset extracted to a single shared local (§6.4) |
 | No viewport/stage coordinate ambiguity | PASS — §6.1 pins stage padding-box CSS px for every input/output, incl. contained mode |
 | No unmeasured overlay used as if measured | PASS — hidden-until-complete gating (§7 rules 1, 6, 7) |
