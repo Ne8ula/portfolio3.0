@@ -20,6 +20,39 @@ Hook setup:
 ## Recent handoffs
 
 <!-- agent-handoff:entry:start -->
+### 2026-09-10T21:12:19.560Z · claude
+
+- Branch / HEAD: `main` / `f7ec5b8`
+- Worktree snapshot: `a965e5fca03a`
+- Session / turn: `fb20bfdd-3c4d-49e2-8b58-048398b63dd8` / `not exposed`
+- Model: `not exposed`
+
+#### Final report
+
+> Both findings are addressed in [phase-6-design.md](docs/phase-6-design.md). Only that file changed, plus one memory note. `DESIGN.md` was already modified before this session and is untouched.
+>
+> **Finding 1, hysteresis reset.** I reproduced your masking sequence against the real solver at 1440×900 with representative deck sizes. Leaked `true` → natural card → `compact: false` → F3 → full. F3 solved first discriminates cleanly: `true` gives compact, `false` gives the full `above` tier. The fix has four parts.
+>
+> - **F3 lifecycle sequence** in §15 ([phase-6-design.md:1076](docs/phase-6-design.md#L1076)) replaces the natural-first check. The prior session must end compact with the F2 override still active at exit, since clearing it first would re-solve the card to full and reset the state under test. Re-entry starts `playRecord(0)` un-awaited and, in one in-page task, waits for the fresh instance at `no-subject`, requires `solveCount === 0`, computes F3 from that instance's own sizes, and arms the override. The read and the arm share one task so no React commit can interleave, and the override wins over the landing card from that instant.
+> - **Per-mount `solveCount`** is added to the `getDeckHudLayout()` probe ([phase-6-design.md:849](docs/phase-6-design.md#L849)). It increments in the same layout effect that writes `previousCompact`, so zero means the hysteresis state is untouched since mount. It is a field on the approved probe, not a fourth hook. A nonzero count at arm time fails the test as invalid rather than passing it.
+> - **Mutation check** is required in P6-AC-26(g) and the §13/§19 report row: Codex temporarily retains `previousCompact` across mounts, confirms the test fails at the tier assertion, reverts, and records the output in the implementation report.
+> - **Unit discriminator** in `tests/unit/hud-layout.test.ts` pins that F3 yields compact under `true` and full under `false`, so the browser verdict depends only on the reset.
+>
+> **Finding 2, AC-17 safe-frame source.** §6.1 now has a two-safe-frame table ([phase-6-design.md:249](docs/phase-6-design.md#L249)). The HUD frame from `getHudSnapshot()` stays edge-gutter-only for placement tests and fixtures. P6-AC-17 ([phase-6-design.md:988](docs/phase-6-design.md#L988)) names `cameraSafeFrame = getFocusFit().safeFrame`, takes the stage size from `getHudSnapshot().liveFrame.stage`, and writes all four inequalities, with bottom as `(H − (y + h)) − 16 ≥ hintH + 24` and right symmetric. It adds a containment precondition against the HUD frame to catch a coordinate mix-up, and notes that the renderer's edge-gutter fallback fails the inequalities by design.
+>
+> Supporting updates: §6.7, §12 state-by-field table, §15 accessibility and hook-contract rows, §16 risks, D19 clarified plus new D21/D22, §18 probe item, §20 audit rows, and the handoff paragraph. The one table column mismatch reported by my checker is the pre-existing `|arrowLeft − 36|` literal in P6-AC-08.
+>
+> Context-rebuild remount is deliberately not armed separately: the rebuild seeds the deck landed, so there is no deterministic `no-subject` window, and any retention that outlives the component is caught by the exit/re-entry path. If you want that path covered anyway, the sequence would need a probe-side gate on the rebuilt instance's first commit.
+
+#### Git status at handoff
+
+```text
+ M DESIGN.md
+ M docs/phase-6-design.md
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
 ### 2026-08-31T19:15:31.109Z · claude
 
 - Branch / HEAD: `main` / `543f6c6`
@@ -343,35 +376,6 @@ Hook setup:
 > Bookkeeping: the acceptance suite is a continuous P6-AC-01…24, and the audit row and final handoff counts were updated to match.
 >
 > Handoff: Phase 6 design ninth revision — new P6-AC-24 plus its §15 test row making the degraded + unsatisfiable precedence enforceable end-to-end on the `s: 50` compound scenario (degraded fit status, unsatisfiable probe, all three identifiers absent, full recovery at `s: 1.75`), stale enforcement claims re-pointed to it, D18 expanded with the enforcement rationale, and the precedence narrowing named as its own §18 blocking owner approval. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T19:08:07.769Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `65dd97253f09`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> The feasibility blocker is resolved in [docs/phase-6-design.md](docs/phase-6-design.md); the tree still holds only the design doc plus the preserved hook-managed handoff.
->
-> **Precedence defined explicitly.** §7 rule 1's degraded bullet, state row 7, and §11 now all state the same rule: degraded fit hides only the hint *while the layout remains satisfiable*; when the same failure also distorts the subject past any legal arrow placement, the unsatisfiable rule wins and all three controls hide. §11 names the phase5 `s: 50` scenario as exactly that compound case, and row 7 notes phase5 AC-7/25 stays compatible because it asserts only hint absence/recovery.
->
-> **Geometry-neutral test hook.** §12 defines the second dev-only member, `forceFocusFitStatus(kind, degraded, reason?)` — a wrapper over the production store's existing `setFocusFitStatus()` that toggles the degraded flag without touching geometry, camera, fit cache, or any transform. Its semantics are pinned: the forced status persists until the next genuine solve event, tests clear it by calling the hook again, and it explicitly does not replace phase5's `s: 50` integration test. The guard paragraph now covers both members.
->
-> **Test rewritten.** P6-AC-07's degraded clause and its §15 row now use the hook against an otherwise legal subject: land record 0, force `unfittable-at-max`, assert hint count 0 + both arrow identifiers present/visible + probe `placed` with non-null arrow rects + next arrow enabled, then clear and assert hint recovery — with an in-row note that phase5-fit AC-7/25's `s: 50` run is retained unmodified as the real camera-failure case, which under this design exercises the unsatisfiable precedence path.
->
-> **Forecast and approvals updated.** The `test-hooks.ts` forecast row lists both hooks under the same static guard and source-level review; the §18 blocking owner approval now names both; and new decision D18 records why `s: 50` was rejected for arrow-preservation testing (the scaled card's published corners fill the safe frame under the retained camera distance, so `unsatisfiable` is the *correct* solver answer there).
->
-> Handoff: Phase 6 design eighth revision — degraded/unsatisfiable precedence made explicit across §7/§8/§11, the infeasible `s: 50` degraded-arrow test replaced by the geometry-neutral dev-only `forceFocusFitStatus()` hook with a rewritten P6-AC-07 clause and §15 row, phase5's `s: 50` test retained as the compound integration case, and the hook propagated through §12, the forecast, §18's blocking approvals, and decision D18. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
 
 #### Git status at handoff
 

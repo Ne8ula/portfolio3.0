@@ -530,7 +530,7 @@ areas—not unrelated subject positions.
 ### Accessibility baseline
 
 WCAG 2.2 AA is always on:
-
+ 
 - semantic landmarks and complete keyboard operation;
 - visible, unobscured focus;
 - no color-only information;
