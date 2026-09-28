@@ -1,6 +1,8 @@
 # Automated cross-agent handoff
 
-This is the single rolling communication record for Claude, Codex, and Kimi.
+This is the single rolling communication record for the Astra orchestrator,
+Claude design, Codex engineering, and Kimi QA. Client and model are recorded
+separately; a Claude Code session can run Astra through Model Gateway.
 Lifecycle hooks maintain it; do not create a new handoff file after each turn.
 Read the newest entry together with the live Git status and diff. Repository
 files and test output are authoritative when this summary becomes stale.
@@ -18,6 +20,169 @@ Hook setup:
 - Run `npm run agent:handoff` to inspect this record.
 
 ## Recent handoffs
+
+<!-- agent-handoff:entry:start -->
+### 2026-09-18T00:48:11.462Z · Codex
+
+- Branch / HEAD: `main` / `f49804a`
+- Worktree snapshot: `ea8b253c2c6e`
+- Session / turn: `not exposed` / `not exposed`
+- Client: Codex
+- Model: `not exposed`
+
+#### Final report
+
+> Handoff: Implemented community Model Gateway setup for Astra orchestration in Claude Code. Installed project plugin 0.51.2 and checksum-verified proxy 0.1.40; ChatGPT authorized in macOS Keychain; renewed Kimi login. Added portfolio-orchestrator (Astra) and portfolio-design (native Opus), project marketplace/plugin declaration, local gateway endpoint and default agent, role guidance, setup/recovery/verification guide, and client/model handoff attribution with bounded transcript metadata parsing.
+> Files changed: .claude/settings.json, .claude/settings.local.json, .claude/agents/portfolio-orchestrator.md, .claude/agents/portfolio-design.md, AGENTS.md, CLAUDE.md, docs/astra-orchestration.md, scripts/agent-handoff.mjs, tests/unit/agent-handoff.test.ts, and this rolling handoff. Preserved pre-existing package.json/package-lock.json changes.
+> Verification: Gateway doctor healthy; route metadata confirmed gpt-6-astra on Codex backend and claude-opus-5 on Anthropic. Fresh Astra Read/delegation smoke returned ASTRA_ORCHESTRATION_READY. A separate fresh CLI without model/agent overrides returned DEFAULT_ORCHESTRATOR_READY with Astra selected. Codex and Kimi live probes passed. Phase 5 snapshot doctor passed after settings writes stopped. Agent definitions and JSON valid; lint, contract typecheck/validation, 388 unit tests passed. Independent Kimi QA reran tooling gates and reported PASS, no blocking findings; report preserved below. E2E not run because no rendered application changes.
+> Unresolved: community integration is unsupported by Anthropic; first interactive launch may require the normal workspace trust dialog. CLAUDE.md has a pre-existing length overrun. Local settings are already tracked, so machine-local endpoint/model defaults appear in the diff; no credentials added. Phase 5 remains complete-awaiting-owner-ci; no Phase 6 manifest or phase execution was introduced. Two automatic-review egress rejections were resolved by the owner's explicit approvals; no approval block remains.
+> Next role: owner starts a fresh Claude Code CLI in this repo (claude or claude --agent portfolio-orchestrator); owner/CI retains phase acceptance.
+
+#### Git status at handoff
+
+```text
+ M .claude/settings.json
+ M .claude/settings.local.json
+ M AGENTS.md
+ M CLAUDE.md
+ M package-lock.json
+ M package.json
+ M scripts/agent-handoff.mjs
+?? .claude/agents/portfolio-design.md
+?? .claude/agents/portfolio-orchestrator.md
+?? docs/astra-orchestration.md
+?? tests/unit/agent-handoff.test.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-09-17T21:04:16.788Z · Kimi Code
+
+- Branch / HEAD: `main` / `f49804a`
+- Worktree snapshot: `ea8b253c2c6e`
+- Session / turn: `not exposed` / `not exposed`
+- Client: Kimi Code
+- Model: `not exposed`
+
+#### Final report
+
+> Handoff: Independent Kimi QA of Astra orchestration setup.
+>
+> ## QA Review — Astra orchestration setup (agent tooling scope)
+>
+> **Scope reviewed:** `AGENTS.md`, `CLAUDE.md`, `.claude/agents/portfolio-orchestrator.md`, `.claude/agents/portfolio-design.md`, `.claude/settings.json`, `.claude/settings.local.json`, `docs/astra-orchestration.md`, `scripts/agent-handoff.mjs`, `tests/unit/agent-handoff.test.ts`. The `package.json`/`package-lock.json` Next bump was excluded per the brief. `docs/agent-handoff.md` is the hook-maintained rolling record, not a judged artifact.
+>
+> ### Findings
+>
+> **Minor (pre-existing, not introduced by this diff)**
+> - `CLAUDE.md` header claims "≤9,000 characters" but the file is 10,587 bytes (10,383 before this change — the diff adds ~204). The budget was already exceeded; this change does not fix or worsen it materially. No action required for this scope; flag for a future docs pass.
+>
+> **Observations (non-blocking)**
+> - `.claude/settings.local.json` adds an `"agent": "portfolio-orchestrator"` key. I could not verify in this disposable environment whether Claude Code honors it as a default-agent selector; `docs/astra-orchestration.md:20` documents the explicit `claude --agent portfolio-orchestrator` launch as the primary path, so nothing functionally depends on the key. The env block contains only a loopback base URL, model aliases, and feature flags — no credentials — consistent with the doc's warning at `docs/astra-orchestration.md:75-79`.
+>
+> No major or blocking findings.
+>
+> ### Consistency against the brief
+>
+> - **Role separation holds.** `AGENTS.md:23-42` adds Astra-as-orchestrator without displacing the specialist defaults: Claude designs, Codex implements, Kimi reviews independently, owner/CI accepts. The doc explicitly separates client, model, and role, matching `CLAUDE.md:1-7`.
+> - **One writer enforced.** The orchestrator agent definition (`.claude/agents/portfolio-orchestrator.md:5`) grants no Write/Edit and delegates only to `portfolio-design`; the design agent has no Bash and may write only on an assigned writing turn (`portfolio-design.md:18-20`). Engineering/QA stay with the phase runner, not Claude subagents.
+> - **Phase boundaries respected.** Orchestrator and doc both prohibit running/init-ing phases to test setup, switching to an earlier manifest, and starting Phase 6 without an approved manifest (`astra-orchestration.md:42-49`). No phase mutation commands were run in this review.
+> - **Handoff attribution is sound.** `exposedModel` (`scripts/agent-handoff.mjs:269-307`) prefers an explicit payload model, falls back to a bounded 256KB tail of the local transcript for Claude only, regex-validates model IDs, reads only `type:"assistant"` `message.model` metadata, and never records message text. The three new unit tests cover model-switch attribution, transcript unavailability, and malformed/forged metadata; the payload's `transcript_path` is a standard Claude Code Stop-hook field and the hook at `.claude/settings.json:36-48` invokes `capture --agent claude` correctly.
+>
+> ### Verification evidence
+>
+> - `npm run lint` — clean
+> - `npm run typecheck:contracts` — clean
+> - `npm run validate:contracts` — ✓ 5 layout, 4 content, 5 routes, 6 catalog records
+> - `npm run test:unit` — 388/388 passed across 32 files, including the 3 new handoff attribution tests (matches the record's claim in `docs/astra-orchestration.md:150`)
+> - `claude plugin validate .claude/agents` — validation passed
+> - Both settings files parse as valid JSON
+> - Live probe evidence in `docs/astra-orchestration.md:132-153` (gateway doctor, fresh CLI smoke with `ASTRA_ORCHESTRATION_READY`, independent Codex/Kimi markers, Phase 5 doctor) is consistent with the wiring reviewed; I did not re-run gateway or phase commands and do not treat the record as proof of runtime behavior.
+>
+> Browser E2E not run, per the brief's explicit scoping for this agent-tooling-only change.
+>
+> **Handoff:** Completed independent QA of the Astra orchestration setup (AGENTS.md/CLAUDE.md diffs, both agent definitions, both settings files, `docs/astra-orchestration.md`, `scripts/agent-handoff.mjs`, `tests/unit/agent-handoff.test.ts`). All four required gates green; plugin validation and JSON validity confirmed; one pre-existing CLAUDE.md length-budget nit, zero blocking findings. Files changed by this QA: none (read-only). Unresolved: nothing blocking; optional future CLAUDE.md budget trim. Next role: owner/CI acceptance — not claimed here.
+>
+> **Verdict: PASS** (tooling scope only; no owner/CI acceptance asserted)
+
+#### Git status at handoff
+
+```text
+ M .claude/settings.json
+ M .claude/settings.local.json
+ M AGENTS.md
+ M CLAUDE.md
+ M package-lock.json
+ M package.json
+ M scripts/agent-handoff.mjs
+?? .claude/agents/portfolio-design.md
+?? .claude/agents/portfolio-orchestrator.md
+?? docs/astra-orchestration.md
+?? tests/unit/agent-handoff.test.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-09-17T20:48:52.819Z · Claude Code
+
+- Branch / HEAD: `main` / `f49804a`
+- Worktree snapshot: `ea8b253c2c6e`
+- Session / turn: `35639bca-a04d-4418-8de6-e5fb36290ae1` / `not exposed`
+- Client: Claude Code
+- Model: `claude-gpt-6-astra`
+
+#### Final report
+
+> ASTRA_ORCHESTRATION_READY
+>
+> `portfolio-design` returned the palette rule: 60% neutrals, 30% material jade, 10% signal jade; jade is the sole chromatic family.
+>
+> Single-writer rule: only one agent may write a shared worktree at a time; read-only analysis may overlap, but design writing and Codex implementation must not.
+
+#### Git status at handoff
+
+```text
+ M .claude/settings.json
+ M .claude/settings.local.json
+ M AGENTS.md
+ M CLAUDE.md
+ M package-lock.json
+ M package.json
+ M scripts/agent-handoff.mjs
+?? .claude/agents/portfolio-design.md
+?? .claude/agents/portfolio-orchestrator.md
+?? docs/astra-orchestration.md
+?? tests/unit/agent-handoff.test.ts
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-09-17T20:44:28.637Z · kimi
+
+- Branch / HEAD: `main` / `f49804a`
+- Worktree snapshot: `6c59b1b99d23`
+- Session / turn: `session_d106764d-f9c9-46ac-99dc-76473375b282` / `not exposed`
+- Client: Kimi Code
+- Model: `not exposed`
+
+#### Final report
+
+> The client hook did not expose the final assistant report. Inspect the Git status below and the originating session before accepting the handoff.
+
+#### Git status at handoff
+
+```text
+ M .claude/settings.json
+ M AGENTS.md
+ M CLAUDE.md
+ M package-lock.json
+ M package.json
+ M scripts/agent-handoff.mjs
+?? .claude/agents/portfolio-design.md
+?? .claude/agents/portfolio-orchestrator.md
+?? tests/unit/agent-handoff.test.ts
+```
+<!-- agent-handoff:entry:end -->
 
 <!-- agent-handoff:entry:start -->
 ### 2026-09-10T21:12:19.560Z · claude
@@ -229,157 +394,6 @@ Hook setup:
  M docs/phase-5-design.md
  M docs/phase-5-implementation.md
  M docs/responsive-system.md
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T21:27:30.080Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `bde5728371fc`
-- Session / turn: `07766692-f623-46cd-98d4-c2fe3eeef76d` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> The roadmap revision is complete. Everything requested is in place, and I verified the final state against the live tree.
->
-> ## What was done
->
-> **The revised sequence** (in [hud-responsive-layout-plan.md §8](docs/hud-responsive-layout-plan.md#L2147-L2459), the authoritative roadmap):
->
-> - **Phase 6** — re-anchor deck HUD *(unchanged, not expanded)*
-> - **Phase 7** — re-anchor crate HUD *(unchanged, not expanded)*
-> - **Phase 8 — appearance and art-direction migration** *(new, ~230 lines)*
-> - **Phase 9 — enforcement, browser matrix, CI, and release verification** *(the former Phase 8, renumbered and retitled)*
->
-> A new [plan §0.7 "Revision 8"](docs/hud-responsive-layout-plan.md#L200-L233) records the renumbering, and the stale-status header at the top of the plan was corrected to the current delivery reality (Phases −1–4 delivered, Phase 5 in QA, Phase 6 design in owner review, 7–9 not started).
->
-> **The new Phase 8 section** is enforceable, not aspirational. It contains: a bounded production-file scope (closed candidate set + the rule that `docs/phase-8-design.md` must enumerate exact files before implementation, amendments recorded); six named deliverables (D-MAT shell materials/wear with the Modal boundary and AX-01 protection, D-LIGHT single studio rig with theme-separation guarantees, D-ENV studio background with camera-transition behavior, D-TYPE typography migration including the deferred `--doc-*` unification review, D-FX optional restrained finishing, D-BASE replacement baselines); the palette rule ("new colors" = tokenized tonal steps within cream/ink/mauve/fog-mist/jade only); an explicit GLSL policy (permitted narrowly for material/background surface response, fail-safe fallback, no per-frame allocation, no cross-browser pixel-identity — tested by blank-canvas/scorecard/error-capture, never pixel diffs); a performance budget (Phase 3 measurement method, ≤15% median frame-time regression as a testable starting threshold); WebGL-unavailable/context-recovery obligations; eleven verification obligations split into nine automated-blocking and two owner-blocking; non-goals/protected contracts; and a full exit list requiring owner art-direction approval and independent QA before Phase 9.
->
-> **Baseline governance decision**: Phase 4 evidence stays immutable and remains the regression reference through Phases 5–7. During Phase 8, scorecard comparison against Phase 4 sets is explicitly suspended (documented, never silent) while blank-canvas, error-capture, and all geometry/accessibility suites stay blocking. At Phase 8 exit, a replacement deterministic set is recorded under `docs/baselines/phase-8-scorecard/` with the same §9.6.5 protocol (seeded, frozen clock, backend-separated, hardware capture owner-only), verified for determinism by independent QA, and owner-approved in a dated checkpoint. Phase 9 consumes only that set — the plan's old "use the Phase 4 baselines" bullet, [§9.6.5](docs/hud-responsive-layout-plan.md#L2900-L2913), and [phase-4-design.md](docs/phase-4-design.md)'s "expands, never re-creates" rule were all reconciled so Phase 9 never points at pre-migration imagery.
->
-> **[DESIGN.md §14](DESIGN.md#L564-L590)** now names the Phase 6→9 sequence and assigns Phase 8 explicit ownership of material/texture migration, lighting/grounding, environment/background, typography, restrained finishing, and general aesthetic reconciliation — replacing the old "schedule them deliberately" line.
->
-> **Cross-references reconciled**: CLAUDE.md (typography/scene-target ownership + the Next roadmap), responsive-system.md (§12 phase table gains rows 8 and 9; two Phase 9 gate references), phase-6-design.md (six enforcement references renumbered, plus a new explicit "no Phase 8 appearance work" non-goal), design-visual-migration-handoff.md (status note; Stage 5 and Stage 7 sequencing marked superseded; Stage 8 renumbered — its §5 gap analysis remains the art-direction input to the Phase 8 design).
->
-> **Stale numbering flagged, not rewritten**: [phase-3-design.md](docs/phase-3-design.md#L3-L12) got a note identifying its "Phase 7 appearance migration" wording as stale numbering that never matched the plan; phase-0-handoff, phase-2/4-design got historical renumbering notes; phase-5-design/implementation (active in QA) got renumbering notes plus targeted §10.1/A2 clarifications that change no approved decision.
->
-> ## Handoff
->
-> **Files changed (mine, all documentation)**: `docs/hud-responsive-layout-plan.md`, `DESIGN.md` (§14 only), `CLAUDE.md`, `docs/responsive-system.md`, `docs/phase-6-design.md`, `docs/design-visual-migration-handoff.md`, `docs/phase-0-handoff.md`, `docs/phase-2-design.md`, `docs/phase-3-design.md`, `docs/phase-4-design.md`, `docs/phase-5-design.md`, `docs/phase-5-implementation.md`. Hook-managed `docs/agent-handoff.md` preserved untouched.
->
-> **Verification performed**: repo-wide sweeps for `Phase 7/8/9`, appearance/visual/lighting/typography-migration, and browser-matrix references before and after editing; every remaining old-numbered hit is inside a document carrying a renumbering note; plan heading order and section cross-references verified; each Phase 8 verification obligation maps to a gate, script, capture artifact, or blocking owner approval; Phase 9's baseline consumption confirmed at all four places it's stated.
->
-> **⚠️ Concurrent worktree activity — not mine**: while this turn ran, another writer modified [components/cockpit/decorations.ts](components/cockpit/decorations.ts) (−21 lines, removing the handheld console) and the matching DESIGN.md §6 table row ("Plant, handheld, shaker" → "Plant, shaker"). Per AGENTS.md I did not touch or revert it; the DESIGN.md diff therefore contains both that table edit (theirs) and §14 (mine). QA should attribute accordingly.
->
-> **Unresolved owner decisions**: none created by this revision itself; Phase 8's blocking owner approvals (final art direction, wear intensity, grain/vignette retention, typography acceptance, replacement baseline set, any performance tradeoff) come due at Phase 8, and the phase-8 design doc still needs authoring when the phase approaches. Two pre-existing notes: CLAUDE.md now exceeds its self-declared 9,000-character budget (it already did before this turn — a future `/update-claude-md` pass should trim it), and code comments (`playwright.config.ts`, `ci.yml`, `test-hooks.ts`, `e2e/smoke.spec.ts`, `e2e/foundation.spec.ts`) still say "Phase 8" for the enforcement phase — plan §0.7 assigns their renumbering to the next code-touching engineering turn.
->
-> **No production code, canonical content, approval records, or completed evidence was changed by this turn.** Next role: owner review of the revised roadmap, then the in-flight Phase 5/6 pipeline continues unchanged.
-
-#### Git status at handoff
-
-```text
- M CLAUDE.md
- M DESIGN.md
- M components/cockpit/decorations.ts
- M docs/design-visual-migration-handoff.md
- M docs/hud-responsive-layout-plan.md
- M docs/phase-0-handoff.md
- M docs/phase-2-design.md
- M docs/phase-3-design.md
- M docs/phase-4-design.md
- M docs/phase-5-design.md
- M docs/phase-5-implementation.md
- M docs/responsive-system.md
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T21:14:49.062Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `387c888f1bc2`
-- Session / turn: `a5976f29-fbe2-43f6-95fc-4b752113be3c` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> The edits are done and four of the five gates pass; the Playwright e2e suite is still running in the background (its output arrives when it finishes, since it's piped through `tail`). I'll report the final result when it completes.
->
-> **What was removed:**
-> - The Switch-style handheld console block in [decorations.ts](components/cockpit/decorations.ts) (the `item('handheld', …)` build at the front gap between crate and turntable), along with its now-unused shared materials `graphite`, `ink`, and `screenDark`, and the bullet in the file's header comment.
-> - The `handheld` mention in DESIGN.md's scale-budget table (now "Plant, shaker").
->
-> Nothing else referenced the model — no tests, contracts, or bridge consumers target `handheld`; `__cockpitDecor.list()` derives from the items map, so it drops out automatically.
->
-> **Gates so far:** lint ✅, typecheck:contracts ✅, validate:contracts ✅, test:unit ✅ (385/385). Awaiting test:e2e.
-
-#### Git status at handoff
-
-```text
- M DESIGN.md
- M components/cockpit/decorations.ts
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T21:08:04.805Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `65dd97253f09`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> The blocker is resolved — the precedence enforcement is rebuilt around a deterministic trigger, and the empirically verified `s: 50` behavior is pinned as its own case. The tree still holds only the design doc plus the preserved hook-managed handoff.
->
-> **What changed in [docs/phase-6-design.md](docs/phase-6-design.md):**
->
-> - **New third dev-only hook, `setDeckHudSubjectOverride(rect | null)`** (§12): substitutes a finite stage-pixel rect for the published card as the DeckHud solver subject, touching nothing else (sampler, focus-fit store, camera, published frames). The no-solve-without-subject footnote and the probe's `no-subject` definition were amended so the override counts as a valid subject, keeping the state machine coherent.
-> - **P6-AC-24 rewritten** as a three-step deterministic precedence proof: `forceFocusFitStatus('deck', true)` + override set to the safe frame → probe `unsatisfiable`, all three identifiers absent; clearing **only the override** → probe `placed` with arrows identified and the hint still degraded-hidden (re-proving the pure degraded rule mid-sequence); clearing the forced status → full recovery. The §15 row implements exactly that sequence.
-> - **New P6-AC-25** pins your verified `s: 50` outcome as the degraded + `no-subject` integration case: `getFocusFit()` degraded with `unfittable-at-max`, published card null, probe `no-subject` with `sizes !== null`, all three identifiers absent, and full recovery at `s: 1.75` — with its own §15 row; phase5-fit AC-7/25 remains unmodified.
-> - **§11 and D18 corrected**: both now state the verified mechanism — at `s: 50` the card's projected corners fail §5.2 validity ([stage-projection.ts:159](lib/responsive/stage-projection.ts#L159)), so the sampler publishes a null card and no oversized subject ever reaches the solver; the valid-but-oversized subject exists only via the override. The false "fills the safe frame" claim is gone everywhere.
-> - **§18 owner approvals updated**: the hooks checkbox now lists all three, and the precedence checkbox describes the narrowing accurately — enforced via the override (P6-AC-24), with `s: 50` pinned separately as `no-subject` (P6-AC-25). Forecast row, guard-paragraph plural, and the 25-item counts were updated to match.
->
-> I re-traced the new sequence for fresh enforceability issues before finishing: a safe-frame-sized subject provably defeats every arrow tier (no candidate can clear a subject that spans the containment region), the forced degraded flag survives the sequence because no genuine solve event occurs, and the middle step doubles as a second pure-degraded verification — no new gaps found.
->
-> Handoff: Phase 6 design tenth revision — infeasible `s: 50` precedence test replaced by the dev-only `setDeckHudSubjectOverride()` + `forceFocusFitStatus()` deterministic sequence (P6-AC-24), the empirically verified `s: 50` degraded + `no-subject` outcome pinned as P6-AC-25 with published-card-null and probe-shape assertions, §11/D18 corrected to the corner-validity mechanism, and the hooks/approvals/counts propagated (25 ACs, three dev-only hooks). Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T20:54:13.240Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `65dd97253f09`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Both enforceability gaps are closed in [docs/phase-6-design.md](docs/phase-6-design.md); the tree still holds only the design doc plus the preserved hook-managed handoff.
->
-> **The compound precedence path is now tested (new P6-AC-24).** The criterion requires the full end-to-end chain: forcing the compound failure via the tuning bridge (`setTransform({ s: 50 })` — noted explicitly as a deliberate authored-transform action, not a supported-viewport state, so it doesn't conflict with P6-AC-13's "never unsatisfiable across the matrix"), then asserting `getFocusFit().status === 'degraded'`, probe `status: 'unsatisfiable'`, and absence of the hint **and both** arrow identifiers; restoring `s: 1.75` must return `getFocusFit()` to `fit`, the probe to `placed`, and the controls to identified, legal placement. Its §15 test row implements this with the phase5 AC-7/25 technique (`completeAuthoredTweakGuard()` first) and states that phase5-fit AC-7/25 itself remains unmodified since it asserts hint absence/recovery only. The now-unsupported "exercises the precedence path" claims were re-pointed: the degraded-arrow row defers the compound case to the P6-AC-24 row, and D18 explains why phase5's test alone cannot enforce the rule.
->
-> **The precedence narrowing is a named blocking owner approval.** §18 gains its own checkbox stating that the degraded + unsatisfiable precedence rule (§7 rule 1, rows 7/10, §11) deliberately narrows Phase 5's "essential arrows survive a degraded fit" expectation — in the compound case all three controls hide rather than render illegally — enforced by P6-AC-24. It no longer rides on the general solver-behavior checkbox.
->
-> Bookkeeping: the acceptance suite is a continuous P6-AC-01…24, and the audit row and final handoff counts were updated to match.
->
-> Handoff: Phase 6 design ninth revision — new P6-AC-24 plus its §15 test row making the degraded + unsatisfiable precedence enforceable end-to-end on the `s: 50` compound scenario (degraded fit status, unsatisfiable probe, all three identifiers absent, full recovery at `s: 1.75`), stale enforcement claims re-pointed to it, D18 expanded with the enforcement rationale, and the precedence narrowing named as its own §18 blocking owner approval. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved risks: unchanged (§16). Next role: owner approval of §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
 ?? docs/phase-6-design.md
 ```
 <!-- agent-handoff:entry:end -->

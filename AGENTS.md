@@ -20,6 +20,27 @@ them, but an agent must say when it is working outside its default role.
 `AGENTS.md` coordinates behavior; it does not grant one client access to
 another vendor's model or subscription.
 
+### Astra orchestration in Claude Code
+
+When launched as `portfolio-orchestrator`, **GPT-6 Astra** coordinates the
+workflow inside the Claude Code client through the community Model Gateway.
+Client, model, and role are separate: using Claude Code does not make Astra
+the Claude design lead. Astra maintains the plan, delegates design to the
+`portfolio-design` Claude agent, and supervises the existing Codex/Kimi phase
+runner. It does not replace independent Kimi QA or owner/CI acceptance.
+For setup, launch, verification, and recovery, read `docs/astra-orchestration.md`.
+
+The orchestrator must inspect phase status and approved decisions before
+launching work. Only run a phase with an existing approved manifest; never
+initialize an earlier phase as a substitute for missing current-phase setup.
+Owner-only checkpoints require actual owner decisions. Keep one writer per
+worktree, and never run a design writer alongside a Codex implementation.
+Use named Claude subagents for design; use the phase runner for engineering
+and QA rather than a second overlapping implementation loop. Outside an
+approved phase, obtain a bounded engineering brief before implementation.
+
+The roles below remain the specialist defaults.
+
 - **Claude — design lead.** Own design exploration, interaction intent, visual
   critique, and measurable acceptance criteria. For rendered work, reconcile
   proposals with `DESIGN.md`, the responsive system, and the applicable

@@ -1,7 +1,10 @@
 # Portfolio 3.0 — CLAUDE.md
 
-> Current-state handoff; ≤9,000 characters. Follow `AGENTS.md`'s Claude role
-> and handoff protocol. Visual: `DESIGN.md`; technical: `docs/responsive-system.md`.
+> Current-state handoff; ≤9,000 characters. Follow `AGENTS.md`'s role and
+> handoff protocol. `portfolio-orchestrator` is Astra coordinating through
+> Claude Code; `portfolio-design` is the Claude design specialist. Client
+> identity does not determine model or role. See `docs/astra-orchestration.md`.
+> Visual: `DESIGN.md`; technical: `docs/responsive-system.md`.
 
 ## Overview
 

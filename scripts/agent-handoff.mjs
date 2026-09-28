@@ -4,7 +4,11 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   existsSync,
+  closeSync,
+  fstatSync,
   mkdirSync,
+  openSync,
+  readSync,
   readFileSync,
   renameSync,
   unlinkSync,
@@ -15,7 +19,9 @@ import { dirname, join, resolve } from "node:path";
 
 const HANDOFF_HEADER = `# Automated cross-agent handoff
 
-This is the single rolling communication record for Claude, Codex, and Kimi.
+This is the single rolling communication record for the Astra orchestrator,
+Claude design, Codex engineering, and Kimi QA. Client and model are recorded
+separately; a Claude Code session can run Astra through Model Gateway.
 Lifecycle hooks maintain it; do not create a new handoff file after each turn.
 Read the newest entry together with the live Git status and diff. Repository
 files and test output are authoritative when this summary becomes stale.
@@ -260,22 +266,64 @@ function quoteBlock(text) {
     .join("\n");
 }
 
+function exposedModel(agent, payload) {
+  const modelId = (value) =>
+    typeof value === "string" && /^[a-zA-Z0-9_.:[\]/-]{1,160}$/.test(value)
+      ? value
+      : "";
+  const explicit = modelId(payload.model);
+  if (explicit) return explicit;
+  if (agent !== "claude" || typeof payload.transcript_path !== "string") {
+    return "not exposed";
+  }
+
+  // Stop payloads may omit the model. Read only a bounded tail of the local
+  // transcript, and retain only assistant model metadata, never message text.
+  let descriptor;
+  try {
+    descriptor = openSync(payload.transcript_path, "r");
+    const size = fstatSync(descriptor).size;
+    const start = Math.max(0, size - 256 * 1024);
+    const buffer = Buffer.alloc(size - start);
+    const bytes = readSync(descriptor, buffer, 0, buffer.length, start);
+    const lines = buffer.subarray(0, bytes).toString("utf8").split("\n");
+    if (start > 0) lines.shift();
+    for (const line of lines.reverse()) {
+      try {
+        const item = JSON.parse(line);
+        if (item.type !== "assistant") continue;
+        const model = modelId(item.message?.model);
+        if (model) return model;
+      } catch {
+        // A partially written or truncated line is not identity evidence.
+      }
+    }
+  } catch {
+    // Missing transcript access must not break the handoff hook.
+  } finally {
+    if (descriptor !== undefined) closeSync(descriptor);
+  }
+  return "not exposed";
+}
+
 function handoffEntry({ agent, payload, state, summary }) {
   const timestamp = new Date().toISOString();
   const session = String(payload.session_id ?? "not exposed");
   const turn = String(payload.turn_id ?? "not exposed");
-  const model = String(payload.model ?? "not exposed");
+  const model = exposedModel(agent, payload);
+  const client = { claude: "Claude Code", codex: "Codex", kimi: "Kimi Code" }[agent];
   const finalReport =
     summary ||
     "The client hook did not expose the final assistant report. Inspect the " +
       "Git status below and the originating session before accepting the handoff.";
 
   return `${ENTRY_START}
-### ${timestamp} · ${agent}
+### ${timestamp} · ${client}
 
 - Branch / HEAD: \`${state.branch}\` / \`${state.head}\`
 - Worktree snapshot: \`${state.digest}\`
 - Session / turn: \`${session}\` / \`${turn}\`
+- Client: ${client}
 - Model: \`${model}\`
 
 #### Final report
