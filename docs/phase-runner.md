@@ -36,6 +36,24 @@ receive permission to write protected `.git` metadata.
 
 ## Commands
 
+Phase 6 setup is prepared in `scripts/phase-runner/manifests/phase-6.json`
+and `docs/phase-6-plan.md`; it has not initialized or executed a phase.
+Setup verification passed: all four setup gates and `git diff --check`
+were rerun successfully after the empty duplicate type-directory repair.
+That plan preserves the original failure and exact repair/rerun evidence.
+The design preconditions are owner-approved (2026-10-09). After independent
+Kimi setup review and the orchestrator's local setup commit, use explicit
+`-- --phase 6` for the approved delivery. Step 1 groups all five design §19
+items, complete tests/docs/capture preparation and fresh Kimi QA, then stops
+at `awaiting-owner` without a commit. The orchestrator must verify a genuine
+owner-authored dated `docs/baselines/phase-6-deck/OWNER-CHECKPOINT.md` against
+the plan's evidence protocol before `phase:accept -- --phase 6`. Agents may
+prepare an unfilled template only. The controller checks sequencing, not
+owner identity/evidence. Step 2 verifies that evidence again, reruns all five
+gates and fresh Kimi QA, then permits the single bounded local delivery
+commit. Missing/stale approval blocks delivery; neither the checkpoint nor
+the commit grants final CI/release acceptance. No captures are made in setup.
+
 Every command defaults to Phase 2 for compatibility. Select Phase 3 with
 `-- --phase 3`.
 

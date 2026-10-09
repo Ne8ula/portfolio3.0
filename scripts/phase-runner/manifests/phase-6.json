@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "phase": 6,
+  "title": "Deck HUD re-anchoring",
+  "source": "docs/phase-6-design.md",
+  "sourceSection": "§19 (implementation sequence), §§13–15 (boundaries and all 26 ACs), §18 (owner checkpoint)",
+  "designAuthorities": [
+    "DESIGN.md §§13–15",
+    "docs/responsive-system.md",
+    "docs/hud-responsive-layout-plan.md §0.8, §8 Phase 6, §9.1, §9.3, §9.6",
+    "docs/phase-6-plan.md",
+    "app/layout-contract.ts",
+    "lib/responsive/layout-contracts.ts",
+    "lib/content/content-contracts.ts",
+    "lib/projects/catalog.ts",
+    "lib/portfolio/profile.ts"
+  ],
+  "requiredGates": [
+    "npm run lint",
+    "npm run typecheck:contracts",
+    "npm run validate:contracts",
+    "npm run test:unit",
+    "npm run test:e2e"
+  ],
+  "maxFixAttempts": 3,
+  "initialStep": "step-1",
+  "initiallyAcceptedThrough": null,
+  "steps": [
+    {
+      "id": "step-1",
+      "title": "Complete implementation, coverage, documentation, and owner evidence preparation",
+      "planItems": [1, 2, 3, 4, 5],
+      "scope": [
+        "Implement all five internal §19 items as one complete package, enforcing all P6-AC-01 through P6-AC-26 and their exact §15 verification rows. The closed file boundary for this step is exactly step-2.commitAfterQa.paths, subject to the narrower per-file permissions in docs/phase-6-plan.md; the owner checkpoint is owner-write-only. No interim implementation commit or partial-coverage success claim.",
+        "Add only arrowTier/hintTier metadata to the existing solver and exhaustive unit tier, legality, and F3 discriminator coverage. Replace DeckBrowseArrows with DeckHud using the published frame, five persistent natural-size measurement nodes, identifier-on-placement, normalized solver-sized wrappers, retained-card grace, post-commit hysteresis and solveCount, and the outer-position/inner-animation split. Implement §§6–12 without new loops, spacing tokens, or production bridge changes.",
+        "Apply §6.9 live accessibility tokens to deck controls and shared return control (44 px standard return height in all focused modes, 44 px deck-arrow minimum width, 56 px large control minima). Change FocusFitMeasurement styles only: return replica in every kind, arrow/hint replicas only for deck. Preserve crate arrow/hint formulas and all measurement lifecycle/generation/font-ceiling/store behavior.",
+        "Add exactly the three §12 development-only hooks: getDeckHudLayout, deck-only forceDeckFitStatus, setDeckHudSubjectOverride. Enforce full input truth tables, no partial mutation, lifecycle cleanup, warning episodes, and effective DOM observables. Preserve getFocusFit semantics and the 34-name production bridge. Review static NODE_ENV guards at source level; do not run or claim Phase 9's production-artifact gate.",
+        "Convert the named 1280x720 smoke fixme in place with gap-aware same-frame assertions; add e2e/phase6-deck.spec.ts for every §15 row. Separate HUD and camera safe frames. Prove P6-AC-26(g) with F2 active at prior exit, atomic fresh no-subject/solveCount === 0 F3 arming, and first-solve tier assertions. Temporarily retain hysteresis across mounts, record mutation failure at compact/hintTier (not a precondition), revert, and rerun green; include output in docs/phase-6-implementation.md.",
+        "Amend only Phase 4 AC-4's deck parity list and AC-21's discharged-boundary guard. Keep e2e/fixtures/phase4-hud-parity.json byte-identical. Add the two Phase 6 CI shards (timeout 90, timing_scale 1.5, --fully-parallel --shard=k/2), update the e2e-runner sync count to discovered + 6, and renumber only the touched CI production-gate comment to Phase 9. Preserve Phase 5 suites and other regression tests.",
+        "Update only the §13 current-state documentation portions permitted by the plan; never amend design authority, acceptance criteria, canonical content, approvals, camera fit/store/input, globals.css, crate re-anchoring, or immutable Phase 4/5 evidence. D20 is already approved: esc · return to cockpit rest then header /projects; add no persistent deck link. Discovery conflicts or a fourth hook require outcome blocked and owner/design resolution before widening scope.",
+        "Prepare the implementation report and only the exact Phase 6 evidence files reserved in the plan: six deck captures at 1440x900/1280x720/1024x600 in light/dark, one large-controls capture, monitor plus deck standard 44 px return-height evidence, reference bob-feel recording, and untouched crate review captures. Record provenance and hashes in capture-index.json. Agents may prepare only an UNFILLED OWNER-CHECKPOINT-TEMPLATE.md; never create, fill, edit, or sign OWNER-CHECKPOINT.md or grant owner acceptance.",
+        "Run all five required gates fresh and submit the complete live diff to fresh independent Kimi QA, including all coverage, mutation output, source guard review, fixture integrity, and capture completeness. A technical PASS means ready for the still-open §18 owner checkpoint only. Stop at awaiting-owner with no commit; no delivery, visual approval, or CI acceptance claim. The orchestrator must verify a genuine owner-authored dated decision for all three §18 reviews against the exact current evidence before controller accept; setup/design authorization is not that decision."
+      ],
+      "ownerGateAfter": true
+    },
+    {
+      "id": "step-2",
+      "title": "Verify owner evidence, fresh gates and independent QA, then single delivery commit",
+      "planItems": [5],
+      "scope": [
+        "This is the delivery verification of §19 item 5 after the §18 checkpoint, not another implementation increment. Read docs/phase-6-plan.md's owner protocol. Verify only: docs/baselines/phase-6-deck/OWNER-CHECKPOINT.md must be genuinely owner-authored, dated and signed, reference the current capture-index digest and implementation fingerprint, explicitly approve all three §18 reviews, and have latest decision approved with no unresolved changes-requested. Agents never create, edit, sign, or backfill this record. Missing, stale, ambiguous, or rejected owner evidence means outcome blocked; never infer approval from controller state or the 2026-10-09 setup authorization.",
+        "Verify every exact capture and its provenance/hash, light/dark 1440x900/1280x720/1024x600 placement, large controls, monitor and deck 44 px return height, reference bob-feel review, and unchanged crate subject HUD with only the approved shared return correction. The owner decision must precede controller accept and this step. The existing controller does not authenticate evidence: the orchestrator checks before accept, Codex and fresh Kimi check again here.",
+        "Rerun all five required gates fresh on the complete live diff and hand it to fresh independent Kimi QA. Reconcile the implementation report with actual evidence without claiming final CI/release acceptance. Restrict edits to report/status bookkeeping within the exact final paths. Any needed product, test, or capture correction invalidates the reviewed snapshot: return blocked for owner/orchestrator reconciliation and renewed review before delivery; never silently repair past the owner checkpoint.",
+        "Preserve the approved smoke conversion, Phase 4 AC-4/AC-21 boundary amendments, immutable fixture, source-level dev-hook guards, and all Phase 7/8/9 non-goals. Never edit design authority, canonical content/approvals, production bridge, camera fit/store/input, globals.css, or older evidence. Do not stage or commit: only the trusted runner may create the single bounded implementation commit after fresh Kimi PASS. The result remains complete-awaiting-owner-ci; the owner checkpoint is not final CI/release acceptance."
+      ],
+      "ownerGateAfter": false,
+      "commitAfterQa": {
+        "message": "Phase 6: re-anchor deck HUD with verified owner evidence\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>",
+        "paths": [
+          "components/cockpit/cockpit-hud.tsx",
+          "lib/responsive/hud-layout.ts",
+          "components/cockpit/test-hooks.ts",
+          "tests/unit/hud-layout.test.ts",
+          "e2e/smoke.spec.ts",
+          "e2e/phase6-deck.spec.ts",
+          "e2e/phase4-hud.spec.ts",
+          ".github/workflows/ci.yml",
+          "tests/unit/e2e-runner.test.ts",
+          "docs/responsive-system.md",
+          "CLAUDE.md",
+          "docs/hud-responsive-layout-plan.md",
+          "docs/phase-6-implementation.md",
+          "docs/baselines/phase-6-deck/OWNER-CHECKPOINT-TEMPLATE.md",
+          "docs/baselines/phase-6-deck/OWNER-CHECKPOINT.md",
+          "docs/baselines/phase-6-deck/capture-index.json",
+          "docs/baselines/phase-6-deck/deck-1440x900-light.png",
+          "docs/baselines/phase-6-deck/deck-1440x900-dark.png",
+          "docs/baselines/phase-6-deck/deck-1280x720-light.png",
+          "docs/baselines/phase-6-deck/deck-1280x720-dark.png",
+          "docs/baselines/phase-6-deck/deck-1024x600-light.png",
+          "docs/baselines/phase-6-deck/deck-1024x600-dark.png",
+          "docs/baselines/phase-6-deck/deck-1440x900-light-large-controls.png",
+          "docs/baselines/phase-6-deck/monitor-1440x900-light.png",
+          "docs/baselines/phase-6-deck/crate-1440x900-light.png",
+          "docs/baselines/phase-6-deck/crate-1440x900-dark.png",
+          "docs/baselines/phase-6-deck/deck-1440x900-light-bob.webm"
+        ]
+      }
+    }
+  ]
+}

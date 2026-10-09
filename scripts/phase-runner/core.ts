@@ -700,6 +700,16 @@ function formatCommitBoundary(step: PhaseStep): string {
   )
 }
 
+function formatDeckOverlapBoundary(phase: number): string {
+  if (phase < 6) {
+    return 'Preserve the Phase 6 deck-overlap test.fixme and all other documented phase boundaries.'
+  }
+  if (phase === 6) {
+    return 'Require the approved Phase 6 deck-overlap test.fixme conversion to executable coverage, the Phase 4 AC-4 deck-row narrowing and AC-21 boundary amendment, and the immutable e2e/fixtures/phase4-hud-parity.json fixture. Preserve all other documented phase boundaries.'
+  }
+  return 'Preserve completed Phase 6 deck-overlap executable coverage and all documented phase boundaries; never reintroduce the discharged test.fixme. Keep e2e/fixtures/phase4-hud-parity.json immutable.'
+}
+
 export function buildCodexPrompt(
   manifest: PhaseManifest,
   step: PhaseStep,
@@ -734,7 +744,7 @@ Rules:
 - If the approved design genuinely requires a path outside the controller commit boundary, return outcome "blocked" before editing that path.
 - Do not begin another implementation step or a later phase.
 - Do not edit, regenerate, stage, or commit content/portfolio-approvals.json.
-- Preserve the Phase 6 deck-overlap test.fixme and all other documented phase boundaries.
+- ${formatDeckOverlapBoundary(manifest.phase)}
 - Resolve ambiguity by returning outcome "blocked"; do not silently redefine the approved design.
 - Run all five required gates and do not return ready-for-qa while any required gate is red:
 ${manifest.requiredGates.map((gate) => `  - ${gate}`).join('\n')}
@@ -772,6 +782,7 @@ Run all five gates fresh:
 ${manifest.requiredGates.map((gate) => `- ${gate}`).join('\n')}
 
 Verdict contract:
+- ${formatDeckOverlapBoundary(manifest.phase)}
 - PASS only when every required gate is green, no blocking finding remains,
   the step matches its approved scope, and QA made no repository write.
 - FAIL for an actionable defect in this step. Include severity, file/line,

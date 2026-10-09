@@ -2,14 +2,22 @@
 
 - **Status**: product decisions finalized; revision 8 (2026-08-14) assigns
   the approved appearance/art-direction migration to a new Phase 8 and
-  renumbers the former enforcement phase to Phase 9 (§0.7). Phases −1
+  renumbers the former enforcement phase to Phase 9 (§0.7), and the dated
+  2026-10-09 amendment (§0.8) clarifies §9.3's focused-mode catalog
+  reachability per the owner-approved Phase 6 decision D20. Phases −1
   through 5 are **delivered and merged to `main`**: Phase 4's delivery
   commit is `96fc9c5`, and Phase 5 merged at `03fca60` (implementation
   `15c53ad`) with the dated owner checkpoint
   (`docs/baselines/phase-5-input/OWNER-CHECKPOINT-2026-08-14.md`, AC-27 +
   AC-28 approved), two independent Kimi QA PASS verdicts, and a green
-  16-job CI run. The Phase 6 design (`docs/phase-6-design.md`) awaits owner
-  approval of its §18 blocking items. Phases 7–9 have not started. The
+  16-job CI run. The Phase 6 design (`docs/phase-6-design.md`) is
+  **owner-approved (2026-10-09)**: all seven §18 blocking design approvals
+  are granted, with the owner's verbatim decision and provenance recorded
+  in that document's §1.1. **Phase 6 implementation has not started** — no
+  production code, test, or CI change, no verified runner manifest, no
+  gate run, no independent QA, and no owner visual acceptance exists; the
+  three §18 post-implementation checkpoint reviews remain open owner
+  gates. Phases 7–9 have not started. The
   canonical catalog/profile carry owner-approved strict records with
   blocking approval gates.
 - **Scope**: site-wide responsive/accessibility foundation, with focused
@@ -234,6 +242,50 @@ changed):
    Phase 8. The affected historical documents carry renumbering notes; code
    comments are renumbered in the next code-touching engineering turn,
    because this revision is documentation-only.
+
+### 0.8 Amendment 2026-10-09 — §9.3 focused-mode catalog reachability
+
+Owner-approved amendment, documentation-only (no production code,
+canonical content, approval record, or completed evidence changed). It
+records the owner's Phase 6 decision **D20**, approved on 2026-10-09; the
+decision, the owner's verbatim reply, and its provenance are in
+`docs/phase-6-design.md` §1.1 and §17-D20. The amendment does not change
+any phase's scope, any acceptance criterion, or any live behavior.
+
+1. **What was ambiguous.** §9.3's zoom/narrow check requires that "the
+   page-level `VIEW PROJECTS` path remains visible or keyboard-reachable."
+   Read literally and applied inside a focused cockpit mode (`deck`,
+   `crate`, `monitor`), it is unsatisfiable today and has been since before
+   Phase 6: ordinary page content is `inert` while the cockpit is active
+   and the site header renders only at cockpit rest, so `/projects` is
+   reachable only after exiting the focused mode.
+2. **Clarification (the approved reading).** In a **focused** cockpit mode,
+   the requirement is satisfied by an always-available, keyboard-operable
+   exit control (`esc` key and the `esc · return` control) that returns to
+   cockpit rest, where the header's `/projects` link is visible and
+   keyboard-reachable. At cockpit **rest** and on ordinary routes, the
+   original requirement is unchanged: the page-level `VIEW PROJECTS` path
+   must itself remain visible or keyboard-reachable.
+3. **What this is not.** It is not permission to remove, hide, or weaken
+   any exit control, and not permission to let a focused mode trap the
+   visitor; the exit path must be reachable by panning in contained mode
+   and operable by keyboard. It does not relax §A.1's canonical-content
+   guarantee, DESIGN.md §13's Tier 1/2 degradation requirements, or the
+   rule that an interactive 3D region needs a route or equivalent DOM
+   alternative — the catalogue route itself is unchanged and remains
+   server-rendered.
+4. **Rejected alternative.** A persistent in-focus `/projects` link was
+   considered and rejected by the owner with the recommended path: it
+   would add new production chrome and a new stable identifier inside a
+   phase that must not grow rendered scope (`docs/phase-6-design.md`
+   §17-D20).
+5. **Verification.** The focused-mode path is asserted in contained mode by
+   Phase 6's `P6-AC-22` at all four §9.1 declared pressure viewports (pan
+   the return control into view → activate `esc · return` → await cockpit
+   rest → assert `[data-hud="site-header"] a[href="/projects"]` visible,
+   Tab-focusable, and operable). Approval of the clarification is not
+   evidence that the assertion passes; it passes only when Phase 6 is
+   implemented and its gates are green under independent QA.
 
 ---
 
@@ -2148,6 +2200,16 @@ plan-final exit obligations.
 
 ### Phase 6 — re-anchor deck HUD
 
+**Status: design owner-approved 2026-10-09; implementation not started.**
+`docs/phase-6-design.md` refines this entry into 26 numbered acceptance
+criteria; its §18 blocking design approvals are all granted (provenance in
+that document's §1.1), and its §9.3-related decision D20 is recorded here
+as the §0.8 amendment. No production code, test, CI, or manifest work has
+been done, and no gate run, independent QA, or owner visual acceptance
+exists; the design's three post-implementation checkpoint reviews remain
+open owner gates. The entry below stays the binding scope and exit
+contract.
+
 - Measure hint and arrow sizes.
 - Anchor all three controls to the deck card rect.
 - Add the return-control collision.
@@ -2586,7 +2648,15 @@ In zoom/narrow mode:
 - ordinary document content does not inherit two-dimensional scrolling;
 - all cockpit controls are reachable by panning or through the DOM
   alternative;
-- the page-level `VIEW PROJECTS` path remains visible or keyboard-reachable;
+- the page-level `VIEW PROJECTS` path remains visible or keyboard-reachable
+  — **clarified by the 2026-10-09 amendment (§0.8, owner-approved Phase 6
+  decision D20):** at cockpit rest and on ordinary routes this applies
+  directly; inside a **focused** cockpit mode (`deck`, `crate`, `monitor`),
+  where ordinary page content is `inert` and the header renders only at
+  rest, it is satisfied by an always-available, keyboard-operable exit
+  control that returns to cockpit rest, from which the header `/projects`
+  link is visible and keyboard-reachable. The exit control itself must be
+  pan-reachable and keyboard-operable in contained mode;
 - the normal-mode scroll-reset handler does not cancel intentional contained
   panning.
 

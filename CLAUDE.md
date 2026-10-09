@@ -114,8 +114,13 @@ through dev-only `__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
 ## Responsive/content workflow — mandatory
 
 Phases −1 through 5 are delivered and merged (Phase 5 at `03fca60` with the
-dated AC-27/AC-28 owner checkpoint and Kimi QA PASS). The Phase 6 design
-awaits owner approval of its §18 blocking items. The owner-approved
+dated AC-27/AC-28 owner checkpoint and Kimi QA PASS). The Phase 6 design's
+seven §18 preconditions and D20 path are owner-approved (2026-10-09).
+Phase 6 setup verification passed after the empty duplicate type-directory
+repair recorded in `docs/phase-6-plan.md`; independent Kimi setup review
+is next, and implementation has not begun.
+Postimplementation §18 reviews and final owner/CI acceptance remain open.
+The owner-approved
 `PROFILE.targetRole` is “Creative Technologist” and its current content hash
 is recorded. Before any rendered
 UI, layout, typography, 3D framing/material/lighting, interaction, or canonical
@@ -187,8 +192,12 @@ reduced-transparency/high-contrast/forced-colors states.
 
 ## Next
 
-Phase 5 is delivered. Next: owner approval of the Phase 6 design's §18
-blocking items → Codex plan/implementation → Kimi QA. Roadmap (plan §8,
+Phase 5 is delivered. Phase 6 setup verification passed. Next:
+independent Kimi setup QA → orchestrator's local
+setup commit → approved Phase 6 runner implementation and fresh Kimi QA →
+explicit dated §18 owner checkpoint → fresh gates/Kimi and the runner's single
+delivery commit → owner/CI acceptance. See `docs/phase-6-plan.md`; no phase
+state is initialized by setup. Roadmap (plan §8,
 revision 8): Phase 6 deck-HUD re-anchor (owns the known overlap — never
 stopgapped) → Phase 7 crate-HUD re-anchor → Phase 8
 appearance/art-direction migration (materials, lighting, environment,

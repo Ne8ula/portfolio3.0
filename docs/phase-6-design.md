@@ -1,8 +1,13 @@
 # Phase 6 Design — Deck HUD Re-Anchoring
 
-Author: Claude (design lead, per `AGENTS.md`). Status: **awaiting owner
-design approval — the blocking items in §18 gate Codex implementation.**
-No production code or tests were changed by this design turn.
+Author: Claude (design lead, per `AGENTS.md`). Status: **OWNER APPROVED
+(2026-10-09) — all seven §18 blocking design approvals are granted, so the
+design precondition on Codex implementation is discharged. Implementation
+has not started.** The §18 post-implementation checkpoint reviews remain
+open owner gates; no independent Kimi QA and no owner visual acceptance of
+Phase 6 is claimed anywhere in this document. No production code or tests
+were changed by any design turn, including the approval-recording turn
+(§1.1).
 
 ---
 
@@ -30,6 +35,57 @@ No production code or tests were changed by this design turn.
 
 Phase 6 exit condition (plan §8): **the reported MacBook overlap is fixed and
 deck acceptance tests pass.**
+
+### 1.1 Owner approval record (2026-10-09)
+
+**Provenance.** The owner (Alex Xiong) replied in the Claude Code session
+`f06577e2-8ff2-4905-b9fb-667efffc8ad6` on **2026-10-09**, answering the
+orchestrator's read-only Phase 6 prerequisite review recorded in
+`docs/agent-handoff.md` (entry `2026-10-09T13:24:22.563Z`, which posed the
+six grouped design approvals, the catalog-access choice, and the setup
+authorization). The reply, quoted exactly:
+
+> Approve all six, recommended catalog path, authorize setup and local commits.
+
+**What this turn did and did not do.** This design turn only *records* that
+owner decision; it does not grant it. Claude design cannot approve its own
+design, and nothing here is a self-approval: every §18 blocking checkbox is
+checked **on the owner's behalf, citing the quotation above**. If the
+quotation or its provenance is ever found inaccurate, the checkboxes revert
+to unchecked by default and implementation is blocked again.
+
+**Mapping of the reply onto the seven §18 blocking items** (the six grouped
+approvals plus the catalog-path choice; §18 carries the authoritative list):
+
+| §18 blocking item | Owner's reply | Disposition |
+|---|---|---|
+| 1. Solver-anchored deck hint/arrow behavior, hint tracking the card including its bob (§5) | "Approve all six" (item 1 of the §18 group) | Approved 2026-10-09 |
+| 2. Compact hint microcopy `◄ ► browse` (§5) | "Approve all six" (item 2) | Approved 2026-10-09 — wording frozen; re-wording later re-runs the measurement-dependent deck suite |
+| 3. The two Phase 4 test amendments (AC-4 deck-row narrowing, AC-21 rewrite), historical fixture unchanged (§13, D7) | "Approve all six" (item 3) | Approved 2026-10-09 — `e2e/fixtures/phase4-hud-parity.json` stays unmodified |
+| 4. Additive solver tier metadata plus the three dev-only hooks — `getDeckHudLayout()` (incl. `solveCount`), deck-only `forceDeckFitStatus()`, `setDeckHudSubjectOverride()` (§6.6, §12) | "Approve all six" (item 4) | Approved 2026-10-09 — a *fourth* hook remains a separate blocking owner decision (§12) |
+| 5. The degraded + unsatisfiable precedence rule narrowing Phase 5's "arrows survive a degraded fit" expectation (§7 rule 1, rows 7/10, §11) | "Approve all six" (item 5) | Approved 2026-10-09 |
+| 6. Accessibility size-token consumption by the live deck controls and the shared return control, incl. the standard-state corrections (return button ≈28→44 px tall in **all** focused modes; deck arrows ≈42→44 px wide) and the matching style-only `FocusFitMeasurement` replica alignment (§6.9, D15) | "Approve all six" (item 6) | Approved 2026-10-09 |
+| 7. The **D20** deck-mode DOM-alternative disposition (§17-D20) | "recommended catalog path" | Approved 2026-10-09 — the **recommended** two-step exit path (`esc · return` → cockpit rest → header `/projects`), with the plan §9.3 clarification amendment now recorded (plan §0.8) |
+
+**Out of design scope in the same reply.** "authorize setup and local
+commits" is an orchestration/engineering authorization (phase-runner
+manifest setup and local-only Phase 6 commits). It is recorded here for
+provenance only; it grants this design turn nothing beyond the two
+documentation files it changed, and it is not acceptance of any
+implementation. Nothing is pushed or published by a design turn.
+
+**Where it was recorded.** Per the Git context supplied to the
+approval-recording turn (not independently re-verified by it): branch
+`codex/phase-6-deck-hud`, HEAD `bfa8d82`, with only the hook-owned
+`docs/agent-handoff.md` modified — preserved untouched. The §1 bullets
+above still describe the approved Phase 5 starting point and are unchanged;
+that branch carries **no Phase 6 implementation**. The turn changed exactly
+two files: this document and `docs/hud-responsive-layout-plan.md`.
+
+**Still owner-only and still open:** the three §18 post-implementation
+checkpoint reviews (deck captures, hint bob-tracking feel, the
+crate-unchanged confirmation), independent Kimi QA, and owner/CI phase
+acceptance. None of those is claimed or pre-approved by this record.
 
 ## 2. Evidence from the live implementation
 
@@ -217,11 +273,12 @@ At deck steady state the three controls anchor to the published card rect:
   `◄ ► to browse · esc to return`; the compact form is **`◄ ► browse`** —
   same box styling, type role, and palette as the full hint, one line,
   no wrap. The `esc` affordance is not lost: the `esc · return` control is
-  always visible chrome in deck mode. The wording is a **blocking design
-  approval** (§18): the compact form's measured width feeds tier selection,
-  hysteresis, and snapshot geometry, so re-wording after implementation
-  re-runs the deck acceptance suite. It is presentation microcopy, not
-  canonical content.
+  always visible chrome in deck mode. The wording was a blocking design
+  approval and is **owner-approved as `◄ ► browse` (2026-10-09, §1.1/§18)**;
+  it is now frozen for implementation, because the compact form's measured
+  width feeds tier selection, hysteresis, and snapshot geometry, so
+  re-wording after implementation re-runs the deck acceptance suite. It is
+  presentation microcopy, not canonical content.
 - Everything tracks the epsilon-gated published frame: card bob and focused
   parallax move the card a few CSS px, publication is gated by
   `HUD_RECT_EPSILON`, and hint + arrows follow together — the same tracking
@@ -940,7 +997,7 @@ must not claim or attempt the artifact gate early.
 | `tests/unit/e2e-runner.test.ts` | Matrix-count expectation `discovered + 5` → `discovered + 6`; add the phase6-deck shard-count assertion alongside the phase5 ones | Keep the sync test truthful |
 | `docs/responsive-system.md` | §3.2/§5 "deliberately unwired until Phases 6/7" → deck wired in Phase 6, crate remains Phase 7; §12 phase-status row 6 | Current-state doc duty |
 | `CLAUDE.md` | Current-flow deck bullet: hint/arrows solver-anchored to the card with return-control collision | Handoff accuracy |
-| `docs/hud-responsive-layout-plan.md` | §8 Phase 6 status marked with the delivery commit at acceptance | Plan bookkeeping (§11) |
+| `docs/hud-responsive-layout-plan.md` | §8 Phase 6 status marked with the delivery commit at acceptance. (The D20 §9.3 focused-mode reachability clarification is **already recorded** by the 2026-10-09 design-approval turn — plan §0.8 plus the §9.3 zoom/narrow bullet — so Codex does not re-apply it) | Plan bookkeeping (§11); the §9.3 clarification is the owner-approved D20 amendment |
 | `docs/phase-6-implementation.md` | Implementation report in the Phase 4/5 format at delivery, including the recorded P6-AC-26(g) mutation-check output (§15 F3 lifecycle sequence) | Workflow record |
 
 All five gates (`lint`, `typecheck:contracts`, `validate:contracts`,
@@ -990,7 +1047,7 @@ named owner checkpoint reviews in §18, which require capture evidence.
 | P6-AC-19 | Phase 7-owned crate subject HUD is untouched, except for the explicitly approved shared return-control correction (§6.9): `BrowseArrows`, `VinylBrowseArrows`, `VinylInfoCard`, crate placement, and the crate arrow/hint replica formulas have no behavior change in the diff, and the retained phase4 AC-4 crate fixture rows (which do not assert the return control) stay green |
 | P6-AC-20 | The pinned 34-name `window.__cockpit*` bridge is byte-identical; new instrumentation sits behind the same static `NODE_ENV` guard as the existing hooks (source-level verification in the implementation report); the artifact-level production-absence assertion remains Phase 9's gate (plan §0.7 renumbering) and is not claimed here |
 | P6-AC-21 | The old Phase 6 `test.fixme` is converted, not deleted or weakened; phase4 AC-21 is updated to guard the executable coverage; `phase4-hud-parity.json` is unmodified |
-| P6-AC-22 | Contained mode at **all four** plan §9.1 declared zoom/narrow pressure viewports — 800×450, 683×325, 512×300, 320×568: DeckHud solves against the pinned 1024×600 surface; P6-AC-01…06 hold in stage coordinates; controls pan with the surface. **Pan-reachability set (closed):** `browse-arrow-prev`, `browse-arrow-next`, `return-control`, and `deck-project-link` (landed, non-busy state) can each be brought fully into the visible contained viewport by panning — the pan range from `getPanState().maxX/maxY` covers each of those stage rects, verified with explicit stage→viewport coordinate conversion, never a raw viewport/stage comparison. Explicitly excluded from the reachability set: `browse-hint` (identified but noninteractive, `pointer-events: none`) and `screen-dialog` (in-scene monitor imagery, not a deck control). And, **per the owner's D20 disposition (§18)**, the DOM-alternative path is operable from deck mode — recommended path: pan the return control into view, activate `esc · return`, await cockpit-rest, then assert `[data-hud="site-header"] a[href="/projects"]` is visible, keyboard-reachable, and operable; if the owner instead requires a persistent link, this criterion and the §13 forecast take a recorded amendment first |
+| P6-AC-22 | Contained mode at **all four** plan §9.1 declared zoom/narrow pressure viewports — 800×450, 683×325, 512×300, 320×568: DeckHud solves against the pinned 1024×600 surface; P6-AC-01…06 hold in stage coordinates; controls pan with the surface. **Pan-reachability set (closed):** `browse-arrow-prev`, `browse-arrow-next`, `return-control`, and `deck-project-link` (landed, non-busy state) can each be brought fully into the visible contained viewport by panning — the pan range from `getPanState().maxX/maxY` covers each of those stage rects, verified with explicit stage→viewport coordinate conversion, never a raw viewport/stage comparison. Explicitly excluded from the reachability set: `browse-hint` (identified but noninteractive, `pointer-events: none`) and `screen-dialog` (in-scene monitor imagery, not a deck control). And, **per the owner-approved D20 disposition (2026-10-09, §1.1/§17-D20)**, the DOM-alternative path is operable from deck mode via the approved two-step exit: pan the return control into view, activate `esc · return`, await cockpit-rest, then assert `[data-hud="site-header"] a[href="/projects"]` is visible, keyboard-reachable, and operable. No persistent deck-mode link is added, so no amendment obligation remains on this criterion |
 | P6-AC-23 | After a forced context loss and restore in deck view, the rebuilt HUD reaches probe `status:'placed'` with visible, identified controls satisfying P6-AC-01…06; no pre-loss geometry or identifier survives the rebuild |
 | P6-AC-24 | Degraded + unsatisfiable precedence is enforced end-to-end with a deterministic finite oversized subject: with `forceDeckFitStatus(true, 'unfittable-at-max')` **and** `setDeckHudSubjectOverride(safeFrame)` set — the safe-frame rect read from `getHudSnapshot().safeFrame` under the same-frame handshake (dev-only actions, not a supported-viewport state — no conflict with P6-AC-13) — the probe reports `status: 'unsatisfiable'` with `fitDegraded === true` and the hint and **both** arrow identifiers are absent (precedence over the degraded arrows-remain rule); clearing only the override returns the probe to `placed` with arrows identified and the hint still degraded-hidden (`fitDegraded === true`, `hintTier: 'hidden'`); clearing the forced status restores the hint. The forced store status is observed via the probe, never via `getFocusFit()` |
 | P6-AC-25 | The real `s: 50` camera failure is pinned as the degraded + `no-subject` integration case, observed through the **real renderer probe**: after `setTransform({ s: 50 })`, `getFocusFit().status === 'degraded'` with reason `unfittable-at-max` (the production path also reaches the store, so probe `fitDegraded === true`), the published deck card is null, the probe reports `status: 'no-subject'` with `sizes !== null` and null `subject`/`hint`/`previous`/`next`/tiers/`compact` (the §12 no-subject shape), and all three identifiers are absent; restoring `s: 1.75` returns `getFocusFit()` to `fit`, the probe to `placed`, and the identified controls to legal placement |
@@ -1016,7 +1073,7 @@ named owner checkpoint reviews in §18, which require capture evidence.
 | Context loss/restore in deck (`WEBGL_lose_context` force-loss + restore, phase4 AC-15/23 technique). Capture element handles for the identified deck controls **before** the loss; after restore assert those handles are disconnected (`isConnected === false`), the published frame is fresh (frameId beyond the parked frame; `deck.card.sourceFrameId === frameId`, `retained !== true` — the existing AC-15/23 pattern), the probe returns `placed`, and the full geometry invariant set holds on the newly identified controls | 1440×900 | P6-AC-23 |
 | Degraded + unsatisfiable precedence with a deterministic finite subject: land record 0, settle, read `safeFrame` from `getHudSnapshot().safeFrame` under the same-frame handshake, then in `try/finally`: `forceDeckFitStatus(true, 'unfittable-at-max')` + `setDeckHudSubjectOverride(thatSafeFrameRect)`; assert probe `status: 'unsatisfiable'`, `fitDegraded === true`, and all three identifiers absent. Then `setDeckHudSubjectOverride(null)` and assert the pure-degraded state returns — probe `placed`, arrows identified/visible, hint still hidden with `fitDegraded === true`. Then `forceDeckFitStatus(false)` and assert full recovery. `getFocusFit()` is not consulted for the forced status; geometry, camera, sampler, and fit cache untouched throughout | 1440×900 | P6-AC-24 |
 | Real `s: 50` camera failure as the degraded + no-subject integration case (phase5 AC-7/25 technique: land record 0, `completeAuthoredTweakGuard()`, then `__cockpitTurntable.setTransform({ s: 50 })`): assert `getFocusFit().status === 'degraded'` with reason `unfittable-at-max`, `publishedFrame.deck.card === null`, probe `status: 'no-subject'` with `sizes !== null` and the §12 no-subject null-field shape, and all three identifiers absent; then `setTransform({ s: 1.75 })` and assert `getFocusFit()` returns `fit`, the probe returns `placed`, and hint + both arrows are identified and legally placed again. Phase5-fit AC-7/25 itself remains unmodified (it asserts hint absence/recovery only) | 1440×900 | P6-AC-25 |
-| Contained-mode deck at each declared pressure viewport: assert the pinned 1024×600 surface, the P6-AC-01…06 invariants in stage coordinates, pan-tracking, closed-set control reachability (`browse-arrow-prev`/`browse-arrow-next`/`return-control`/`deck-project-link`; pan range from `getPanState()` covers each stage rect via explicit stage→viewport conversion; hint and screen-dialog excluded as non-controls), and the owner-approved D20 path — recommended: pan to and activate `esc · return`, await cockpit-rest, assert `[data-hud="site-header"] a[href="/projects"]` visible, keyboard-reachable (focusable via Tab), and operable | 800×450, 683×325, 512×300, 320×568 (executed at all four plan §9.1 declared cases — no "covered by construction" claim) | P6-AC-22 |
+| Contained-mode deck at each declared pressure viewport: assert the pinned 1024×600 surface, the P6-AC-01…06 invariants in stage coordinates, pan-tracking, closed-set control reachability (`browse-arrow-prev`/`browse-arrow-next`/`return-control`/`deck-project-link`; pan range from `getPanState()` covers each stage rect via explicit stage→viewport conversion; hint and screen-dialog excluded as non-controls), and the owner-approved D20 two-step exit path (approved 2026-10-09): pan to and activate `esc · return`, await cockpit-rest, assert `[data-hud="site-header"] a[href="/projects"]` visible, keyboard-reachable (focusable via Tab), and operable | 800×450, 683×325, 512×300, 320×568 (executed at all four plan §9.1 declared cases — no "covered by construction" claim) | P6-AC-22 |
 | Hook-contract suite (development-only): drive every P6-AC-26 clause — malformed-input throws with state unchanged before/after (probe snapshot equality), unmounted setter throw, unmounted getter `null`, override cleared by exit/re-entry and by `WEBGL_lose_context` rebuild, forced-status clearing. Warn-once-per-episode via console capture with **override-driven unsatisfiable episodes** (`forceDeckFitStatus` alone never produces one): `setDeckHudSubjectOverride(safeFrame)` → await probe `unsatisfiable`, assert `[deck-hud]` warning count 1 → hold across further publications, assert still 1 → `setDeckHudSubjectOverride(null)` → await `placed` (episode ends) → reapply the safe-frame override → assert count 2. Plus the **F3 lifecycle sequence** (tier-fixture note) for P6-AC-26(g): end a deck session compact under F2, exit with the override still active, re-enter via an un-awaited `playRecord(0)` and, in the same in-page task that observes the fresh instance at `status: 'no-subject'` with `solveCount === 0`, arm F3 computed from that instance's own sizes; after settle assert `subject ≈ F3`, `solveCount ≥ 1`, `compact === false`, `hintTier: 'above'`. Any `solveCount > 0` before arming fails the test as invalid. All mutations in `try/finally` | 1440×900 | P6-AC-26 |
 
 **Tier-fixture derivation (deterministic — exact formulas, no font or
@@ -1241,8 +1298,8 @@ suites.
   silently diverge from the camera-side replicas that already model 1.25×
   scaling. The `calc()` forms are identity at standard scale; the two
   deliberate standard-state changes are the §6.9 accessibility correction
-  (return button ≈ 28→44 px tall, deck arrows ≈ 42→44 px wide), named as a
-  blocking owner approval in §18.
+  (return button ≈ 28→44 px tall, deck arrows ≈ 42→44 px wide), carried as
+  a blocking owner approval in §18 and **approved 2026-10-09** (§1.1).
 - **D16 — Wrappers are solver-sized; measurement reads natural inner
   content; buttons carry `min(var(--control-min))`.** Rejected: writing
   only `left/top` (the real hit box could be smaller than the floored or
@@ -1288,8 +1345,11 @@ suites.
   the HUD safe frame under the same-frame handshake (the camera safe frame
   is a separate observable, `getFocusFit().safeFrame` — D22), and
   duplicate observables drift.
-- **D20 — Deck-mode DOM alternative: recommended two-step exit path,
-  gated on an explicit owner decision (§18).** Verified live: ordinary
+- **D20 — Deck-mode DOM alternative: the two-step exit path.
+  RESOLVED — owner-approved 2026-10-09 ("recommended catalog path", §1.1).**
+  The recommended option below is the decided behavior; the alternative is
+  retained only as the recorded rejected option. The reasoning that led to
+  the recommendation is preserved verbatim. Verified live: ordinary
   page content is `inert` while the cockpit is active
   (`cockpit-entry.tsx:63`), the site header renders only at cockpit rest
   (`cockpit-hud.tsx:323`), and `AccessibleExperienceLink` ships only on
@@ -1299,17 +1359,32 @@ suites.
   keyboard-reachable"; the §A.4 parity table's exit-control row does not
   override that separate requirement, and the conflict predates Phase 6
   (it is today's live behavior, not a regression this design introduces).
-  The choice is therefore a **blocking owner decision**:
-  **(recommended)** approve the two-step path — always-visible
+  The choice was therefore raised as a **blocking owner decision** with two
+  options: **(recommended)** the two-step path — always-visible
   `esc · return` → cockpit rest → header `/projects` — as satisfying the
   intent for focused modes, and record a plan §9.3 clarification
   amendment to that effect **upon approval** (this design does not amend
-  the plan unilaterally); **(alternative)** require a persistent
+  the plan unilaterally); **(alternative)** a persistent
   deck-mode `/projects` link — new production chrome, a new identifier,
   a registry/contract touch, and a design amendment expanding the §13
-  forecast before implementation. P6-AC-22 is written against the
-  recommended path and carries a recorded amendment obligation if the
-  owner chooses the alternative.
+  forecast before implementation.
+
+  **Decision (2026-10-09).** The owner chose the recommended path
+  ("recommended catalog path", §1.1). Consequently: (a) deck-mode catalog
+  access is the two-step exit path, and no persistent deck-mode
+  `/projects` link is added — the alternative is **rejected**, so Phase 6
+  adds no new chrome and no new identifier; (b) the plan §9.3
+  clarification amendment is now **recorded** in
+  `docs/hud-responsive-layout-plan.md` (§0.8 amendment entry plus the
+  §9.3 zoom/narrow bullet), stating that for focused cockpit modes the
+  page-level `VIEW PROJECTS` requirement is satisfied by an
+  always-available, keyboard-operable exit control that returns to
+  cockpit rest where the header catalog link is visible and
+  keyboard-reachable; (c) P6-AC-22 and its §15 row stand as written
+  against this path, and their conditional amendment obligation is
+  discharged — no §13 forecast expansion is required. The pre-existing
+  live behavior is unchanged by this decision; Phase 6 neither improves
+  nor regresses it, and the §13 forecast is unchanged in substance.
 - **D21 — The hysteresis-reset proof orders F3 first and reads a per-mount
   `solveCount`.** Verified against the real solver: a natural full
   placement succeeds under either `previousCompact` value and then writes
@@ -1346,22 +1421,38 @@ checked by the owner** (`AGENTS.md` workflow: Claude design → owner
 approval → Codex plan/code). The checkpoint reviews further down are
 post-implementation gates, not implementation preconditions.
 
+**Status: all seven blocking design approvals granted by the owner on
+2026-10-09.** Each box below is checked **on the owner's behalf** by the
+design lead, recording the owner's own reply quoted verbatim in §1.1
+("Approve all six, recommended catalog path, authorize setup and local
+commits") — not a design self-approval. §1.1 maps the reply item-by-item
+onto these seven boxes. The design precondition on implementation is
+therefore discharged; the three checkpoint reviews below remain **open and
+owner-only**, and nothing in this section asserts implementation,
+independent QA, or visual acceptance.
+
 **Blocking design approvals:**
 
-- [ ] Solver-anchored deck hint/arrow behavior (§5), including the hint now
+- [x] Solver-anchored deck hint/arrow behavior (§5), including the hint now
       tracking the card (with bob) instead of sitting at a fixed band.
-- [ ] Compact hint microcopy `◄ ► browse` — decide the wording **now**: its
-      measured width feeds tier selection, hysteresis, and snapshot
-      geometry, so re-wording after implementation is cheap in code but
-      re-runs the measurement-dependent deck acceptance suite.
-- [ ] The two Phase 4 test amendments (AC-4 deck-row narrowing, AC-21
-      rewrite) as the sanctioned discharge of the Phase 6 boundary.
-- [ ] The additive solver tier metadata and the three dev-only hooks:
+      *(Owner-approved 2026-10-09, §1.1.)*
+- [x] Compact hint microcopy `◄ ► browse` — the wording is decided **now**
+      and frozen: its measured width feeds tier selection, hysteresis, and
+      snapshot geometry, so re-wording after implementation is cheap in code
+      but re-runs the measurement-dependent deck acceptance suite.
+      *(Owner-approved 2026-10-09, §1.1.)*
+- [x] The two Phase 4 test amendments (AC-4 deck-row narrowing, AC-21
+      rewrite) as the sanctioned discharge of the Phase 6 boundary;
+      `e2e/fixtures/phase4-hud-parity.json` stays unmodified.
+      *(Owner-approved 2026-10-09, §1.1.)*
+- [x] The additive solver tier metadata and the three dev-only hooks:
       the `getDeckHudLayout()` probe (incl. its per-mount `solveCount`
       field), the geometry-neutral
       deck-only `forceDeckFitStatus()` degraded-status toggle, and the
       `setDeckHudSubjectOverride()` solver-subject override (§12).
-- [ ] The degraded + unsatisfiable **precedence rule** (§7 rule 1, rows
+      *(Owner-approved 2026-10-09, §1.1. A fourth hook remains a separate
+      blocking owner decision per §12.)*
+- [x] The degraded + unsatisfiable **precedence rule** (§7 rule 1, rows
       7/10, §11): it deliberately narrows Phase 5's "essential arrows
       survive a degraded fit" expectation — when a degraded fit coincides
       with a valid-but-oversized subject that makes the layout
@@ -1369,24 +1460,29 @@ post-implementation gates, not implementation preconditions.
       Enforced deterministically via the subject override (P6-AC-24); the
       real `s: 50` failure instead nulls the card's projection and is
       pinned separately as degraded + `no-subject` (P6-AC-25).
-- [ ] **The D20 deck-mode DOM-alternative disposition** (§17-D20): the
-      recommended two-step exit path (`esc · return` → cockpit rest →
+      *(Owner-approved 2026-10-09, §1.1.)*
+- [x] **The D20 deck-mode DOM-alternative disposition** (§17-D20): the
+      two-step exit path (`esc · return` → cockpit rest →
       header `/projects`) as satisfying plan §9.3's "page-level VIEW
       PROJECTS path remains visible or keyboard-reachable" for focused
-      cockpit modes, **plus** the plan §9.3 clarification amendment to be
-      recorded on approval — or, alternatively, a persistent deck-mode
-      link, which requires a design amendment expanding the §13 forecast
-      before implementation. P6-AC-22 is written against the recommended
-      path.
-- [ ] Live deck controls and the return control consuming the accessibility
+      cockpit modes, **plus** the plan §9.3 clarification amendment.
+      *(Owner chose the recommended path on 2026-10-09 — "recommended
+      catalog path", §1.1. The persistent deck-mode link alternative is
+      rejected, so no new chrome, no new identifier, and no §13 forecast
+      expansion; the plan §9.3 clarification is now recorded in
+      `docs/hud-responsive-layout-plan.md` §0.8 and §9.3. P6-AC-22 stands
+      as written.)*
+- [x] Live deck controls and the return control consuming the accessibility
       size tokens (§6.9), **including its deliberate standard-state
       accessibility correction**: the shared return-control button grows
       from ≈ 28 px to 44 px tall in monitor/crate/deck, and the deck arrows
       from ≈ 42 px to 44 px wide, meeting the project's preferred 44 px
       target; plus the matching style-only replica alignment in
-      `FocusFitMeasurement`.
+      `FocusFitMeasurement`. *(Owner-approved 2026-10-09, §1.1.)*
 
-**Checkpoint reviews — after implementation, before acceptance:**
+**Checkpoint reviews — after implementation, before acceptance (all three
+remain PENDING; owner-only, and not pre-approved by the 2026-10-09 design
+approval):**
 
 - [ ] Deck captures (recommended 1440×900, 1280×720, 1024×600 ×
       light/dark) for placement feel; 1280×720 is the original MacBook
@@ -1401,6 +1497,17 @@ post-implementation gates, not implementation preconditions.
       change (Kimi verifies the diff).
 
 ## 19. Codex implementation handoff
+
+**Readiness, as of 2026-10-09:** the §18 blocking design approvals are
+complete (§1.1), so this design is cleared for Codex planning and
+implementation. **No implementation exists yet** — no production code,
+test, CI, or contract change has been made for Phase 6, no Phase 6 runner
+manifest has been verified by this design turn, no gate has been run, and
+no independent Kimi QA or owner acceptance exists. Everything below is
+still forecast. The owner separately authorized phase-runner setup and
+local-only commits; that authorization belongs to the orchestrator and
+Codex, grants no design-turn code changes, and is not acceptance of any
+result.
 
 Recommended commit shape: one reviewable Phase 6 commit (plan §8), sequenced
 internally as — (1) solver metadata + unit tests; (2) `DeckHud` +
@@ -1433,7 +1540,7 @@ gates and independent QA.
 
 | Check | Result |
 |---|---|
-| No unresolved TBDs | PASS — every decision is concrete; the two items that are genuinely the owner's (compact microcopy; the D20 deck-mode DOM-alternative disposition and its plan §9.3 clarification) are named blocking approvals with recommended choices and stated effects |
+| No unresolved TBDs | PASS — every decision is concrete; the two items that were genuinely the owner's (compact microcopy; the D20 deck-mode DOM-alternative disposition and its plan §9.3 clarification) were named blocking approvals with recommended choices and stated effects, and both are now **owner-decided on 2026-10-09** (§1.1): `◄ ► browse` is frozen and D20 took the recommended two-step exit path with the plan §9.3 clarification recorded. No blocking design choice remains open; the only open gates are the three §18 post-implementation checkpoint reviews, independent Kimi QA, and owner/CI acceptance |
 | No conflicting constants | PASS — zero new spacing constants; one existing chrome offset extracted to a single shared local (§6.4) |
 | No viewport/stage coordinate ambiguity | PASS — §6.1 pins stage padding-box CSS px for every input/output, incl. contained mode |
 | No unmeasured overlay used as if measured | PASS — hidden-until-complete gating (§7 rules 1, 6, 7) |
@@ -1449,7 +1556,7 @@ gates and independent QA.
 | No production bridge change | PASS — §12, P6-AC-20 |
 | No canonical-content change | PASS — §4; compact hint is nonessential presentation microcopy, not a catalog/profile fact |
 | No invented facts | PASS — §2 statements verified against live files/lines |
-| No owner-only approval authored by Claude | PASS — nothing written to approvals; owner gates listed in §18 |
+| No owner-only approval authored by Claude | PASS — nothing written to `content/portfolio-approvals.json`; §18's blocking boxes are checked only as a **record of the owner's own dated reply** (quoted with provenance in §1.1), never as a design self-approval, and the three post-implementation checkpoint reviews stay unchecked |
 | Every acceptance criterion maps to verification | PASS — §15 table covers P6-AC-01…26 |
 | Hook contracts have executable coverage | PASS — P6-AC-26 + its §15 hook-contract suite row; observability corrected to the store-backed probe (`fitDegraded`), never `getFocusFit()` (D19) |
 | No vacuous lifecycle proof | PASS — P6-AC-26(g) requires F3 as the first committed solve after remount (`solveCount === 0` at arm time; prior session ended compact), with a solver-verified rationale, a unit discriminator, and a recorded mutation check (§15, D21) |
@@ -1485,5 +1592,19 @@ the hysteresis reset with F3 as the first committed solve of the new mount
 discriminator, recorded mutation check — D21), and P6-AC-17 names
 `getFocusFit().safeFrame` as its camera safe frame with all four
 reservation inequalities written from the stage size (D22).
-No production code or tests changed. Next role: **owner approval of §18's
-blocking items**, then Codex plan/implementation, then Kimi QA.
+
+The 2026-10-09 approval-recording turn changed only this document and
+`docs/hud-responsive-layout-plan.md`: it records the owner's verbatim
+decision with provenance (§1.1), checks §18's seven blocking boxes on the
+owner's behalf, resolves **D20** to the approved two-step exit path (the
+persistent-link alternative rejected), and records the matching plan §9.3
+focused-mode reachability clarification (plan §0.8 + §9.3). All 26
+acceptance criteria, the P6-AC-26(g) mutation-check requirement, and the
+Phase 7/8/9 boundaries are unchanged; no chrome, identifier, canonical
+content, or approval record was added or touched.
+
+No production code or tests changed, and **no Phase 6 implementation,
+gate run, independent Kimi QA, or owner visual acceptance exists.** Next
+role: **Codex plan/manifest and implementation** against this approved
+design, then independent Kimi QA, then the §18 checkpoint reviews and
+owner/CI acceptance.
