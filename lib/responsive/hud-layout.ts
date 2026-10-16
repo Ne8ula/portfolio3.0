@@ -99,6 +99,8 @@ export type FocusHudPlacedLayout = {
   readonly next: Rect
   readonly info?: Rect
   readonly compact: boolean
+  readonly arrowTier: 'beside' | 'rail' | 'edge'
+  readonly hintTier: 'above' | 'below' | 'compact-top' | 'compact-bottom' | 'hidden'
 }
 
 export type FocusHudUnsatisfiableLayout = {
@@ -393,7 +395,7 @@ function resolveArrows(
   safeFrame: Rect,
   subject: Rect,
   obstacles: readonly Rect[],
-): ArrowPair | null {
+): (ArrowPair & { readonly arrowTier: FocusHudPlacedLayout['arrowTier'] }) | null {
   if (!nonNegativeSize(measuredSize)) return null
 
   const arrowSize = {
@@ -404,12 +406,13 @@ function resolveArrows(
     previous: placeBeside(subject, arrowSize, 'left', HUD_SUBJECT_GAP),
     next: placeBeside(subject, arrowSize, 'right', HUD_SUBJECT_GAP),
   }
-  if (arrowPairIsLegal(beside, safeFrame, subject, obstacles)) return beside
+  if (arrowPairIsLegal(beside, safeFrame, subject, obstacles)) return { ...beside, arrowTier: 'beside' }
 
   const rail = resolveArrowRail(arrowSize, safeFrame, subject, obstacles)
-  if (rail !== null) return rail
+  if (rail !== null) return { ...rail, arrowTier: 'rail' }
 
-  return resolveStageEdgeArrows(arrowSize, safeFrame, subject, obstacles)
+  const edge = resolveStageEdgeArrows(arrowSize, safeFrame, subject, obstacles)
+  return edge === null ? null : { ...edge, arrowTier: 'edge' }
 }
 
 function firstLegalHint(
@@ -430,9 +433,9 @@ function firstLegalHint(
 function resolveHint(
   input: FocusHudInput,
   obstacles: readonly Rect[],
-): { readonly hint: Rect | null; readonly compact: boolean } {
+): { readonly hint: Rect | null; readonly compact: boolean; readonly hintTier: FocusHudPlacedLayout['hintTier'] } {
   if (!positiveSize(input.sizes.hint)) {
-    return { hint: null, compact: true }
+    return { hint: null, compact: true, hintTier: 'hidden' }
   }
 
   const fullCandidates = [
@@ -451,11 +454,11 @@ function resolveHint(
   )
 
   if (fullHint !== null) {
-    return { hint: fullHint, compact: false }
+    return { hint: fullHint, compact: false, hintTier: fullHint === fullCandidates[0] ? 'above' : 'below' }
   }
 
   if (!positiveSize(input.sizes.hintCompact)) {
-    return { hint: null, compact: true }
+    return { hint: null, compact: true, hintTier: 'hidden' }
   }
 
   const compactX =
@@ -485,7 +488,7 @@ function resolveHint(
     HUD_COLLISION_GAP,
   )
 
-  return { hint: compactHint, compact: true }
+  return { hint: compactHint, compact: true, hintTier: compactHint === null ? 'hidden' : compactHint === compactCandidates[0] ? 'compact-top' : 'compact-bottom' }
 }
 
 /**
@@ -536,6 +539,8 @@ export function resolveFocusHudLayout(input: FocusHudInput): FocusHudLayout {
     previous: arrows.previous,
     next: arrows.next,
     compact: hint.compact,
+    arrowTier: arrows.arrowTier,
+    hintTier: hint.hintTier,
   } as const
 
   return info === undefined ? placed : { ...placed, info }

@@ -2200,15 +2200,17 @@ plan-final exit obligations.
 
 ### Phase 6 — re-anchor deck HUD
 
-**Status: design owner-approved 2026-10-09; implementation not started.**
+**Status: design owner-approved 2026-10-09; step-1 implementation in progress,
+uncommitted and not accepted.**
 `docs/phase-6-design.md` refines this entry into 26 numbered acceptance
 criteria; its §18 blocking design approvals are all granted (provenance in
 that document's §1.1), and its §9.3-related decision D20 is recorded here
-as the §0.8 amendment. No production code, test, CI, or manifest work has
-been done, and no gate run, independent QA, or owner visual acceptance
-exists; the design's three post-implementation checkpoint reviews remain
-open owner gates. The entry below stays the binding scope and exit
-contract.
+as the §0.8 amendment. The working diff contains production, test and CI
+changes; actual gate results, recorded F3 mutation proof and outstanding
+browser/capture work are recorded in `docs/phase-6-implementation.md`. No independent product QA,
+delivery or owner visual acceptance is claimed; all three postimplementation
+checkpoint reviews remain open owner gates. The entry below stays the binding
+scope and exit contract.
 
 - Measure hint and arrow sizes.
 - Anchor all three controls to the deck card rect.

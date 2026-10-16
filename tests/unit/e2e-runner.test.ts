@@ -96,7 +96,8 @@ describe('E2E runner support', () => {
     expect([...new Set(matrixSpecs)].sort()).toEqual(discoverE2eSpecFiles(repositoryRoot))
     expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-fit.spec.ts')).toHaveLength(4)
     expect(matrixSpecs.filter((spec) => spec === 'e2e/phase5-input.spec.ts')).toHaveLength(3)
-    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 5)
+    expect(matrixSpecs.filter((spec) => spec === 'e2e/phase6-deck.spec.ts')).toHaveLength(2)
+    expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 6)
   })
 
   it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {

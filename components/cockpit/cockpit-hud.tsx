@@ -28,6 +28,7 @@ import { AX_OS_FUTURE_STUB_LABEL } from "@/lib/content/action-parity"
 import { HudDebugOverlay, shouldMountHudDebug } from "./hud-debug-overlay"
 import { useHudFrame } from "./hud-sampler"
 import {
+  registerDeckHudProbe,
   registerFreeLookProbe,
   testHooksEnabled,
   unregisterFreeLookProbe,
@@ -37,6 +38,15 @@ import {
   invalidateFocusMeasurements,
   useFocusFitStore,
 } from "./focus-fit-store"
+
+import { HUD_RECT_EPSILON, resolveFocusHudLayout } from "@/lib/responsive/hud-layout"
+
+const RETURN_CONTROL_OFFSET = { top:28, right:40 };
+const RETURN_CONTROL_SIZE = {
+  fontSize:'calc(9px * var(--text-scale))',
+  padding:'calc(6px * var(--text-scale)) calc(12px * var(--text-scale))',
+  minWidth:'var(--control-min)',minHeight:'var(--control-min)',
+};
 
 function getVisibleFreeLookBox(stage){
   const container = stage?.closest('.responsive-stage');
@@ -307,12 +317,12 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
       {hudFrame?.mode === 'cockpit' && <CrateHoverHighlight frame={hudFrame}/>}
       {hudFrame?.mode === 'crate' && <VinylInfoCard frame={hudFrame}/>}
       {hudFrame?.mode === 'crate' && <VinylBrowseArrows frame={hudFrame}/>}
-      {hudFrame?.mode === 'deck' && <DeckBrowseArrows frame={hudFrame}/>}
+      {hudFrame?.mode === 'deck' && hudFrame.deck.info !== null && <DeckHud frame={hudFrame}/>}
       {hudFrame?.mode === 'deck' && <DeckProjectLink frame={hudFrame}/>}
       <ScreenDialog frame={hudFrame} interactive={interactive} active={hudFrame?.mode === 'monitor'}/>
       {viewMode !== 'cockpit' && (
-        <div data-hud="return-control" style={{position:'absolute',top:28,right:40,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
-          <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',padding:'6px 12px',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.22em',textTransform:'uppercase',cursor:CURSOR_POINTER}}>esc · return</button>
+        <div data-hud="return-control" style={{position:'absolute',...RETURN_CONTROL_OFFSET,zIndex:90,display:'flex',alignItems:'center',gap:10,color:'var(--cream-deep)',fontFamily:'var(--font-mono)',fontSize:10,letterSpacing:'.22em',textTransform:'uppercase'}}>
+          <button onClick={exitGlobe} style={{border:'1px solid var(--mauve)',background:'transparent',color:'var(--cream)',...RETURN_CONTROL_SIZE,fontFamily:'var(--font-mono)',letterSpacing:'.22em',textTransform:'uppercase',cursor:CURSOR_POINTER}}>esc · return</button>
         </div>
       )}
 
@@ -1030,16 +1040,139 @@ function VinylBrowseArrows({ frame }){
   );
 }
 
-function DeckBrowseArrows({ frame }){
-  return (
-    <BrowseArrows
-      frame={frame}
-      info={frame?.deck.info}
-      rect={frame?.deck.card}
-      requiresRect
-      hint="◄ ► to browse · esc to return"
-    />
-  );
+// Placement and measurement are separate: only these outer shells receive
+// solver dimensions; their persistent children always retain natural size.
+function DeckHudControl({ id, rect, measurementRef, interactive = false, children }){
+  const episode = React.useRef({ placed: false, key: 0 });
+  const placed = rect !== null;
+  const key = episode.current.key + (placed && !episode.current.placed ? 1 : 0);
+  React.useLayoutEffect(() => {
+    episode.current = { placed, key };
+  }, [placed, key]);
+  return <div data-hud={placed ? id : undefined} aria-hidden={!placed ? true : undefined}
+    style={{position:'absolute',left:rect?.x,top:rect?.y,width:rect?.w,height:rect?.h,
+      display:'flex',alignItems:'center',justifyContent:'center',zIndex:17,
+      visibility:placed ? 'visible' : 'hidden',pointerEvents:placed && interactive ? 'auto' : 'none'}}>
+    <div ref={measurementRef} style={{width:'max-content',flex:'none'}}>
+      <div key={key} style={{animation:'termFadeIn .18s ease-out'}}>{children}</div>
+    </div>
+  </div>;
+}
+
+function DeckHud({ frame }){
+  const info = frame.deck.info;
+  const fit = useFocusFitStore().status.deck;
+  const rootRef = React.useRef(null);
+  const fullRef = React.useRef(null);
+  const compactRef = React.useRef(null);
+  const previousRef = React.useRef(null);
+  const nextRef = React.useRef(null);
+  const previousCompact = React.useRef(false);
+  const solveCount = React.useRef(0);
+  const committedSolve = React.useRef(null);
+  const warningEpisode = React.useRef(false);
+  const probe = React.useRef(null);
+  const [measured, setMeasured] = React.useState(null);
+  const [subjectOverride, setSubjectOverride] = React.useState(null);
+
+  React.useLayoutEffect(() => {
+    const nodes = [rootRef.current.closest('[data-layout-region="cockpit-stage"]')
+      .querySelector('[data-hud="return-control"]'), fullRef.current,
+      compactRef.current, previousRef.current, nextRef.current];
+    const read = () => {
+      const sizes = nodes.map(node => {
+        const rect = node?.getBoundingClientRect();
+        return rect ? { w: rect.width, h: rect.height } : null;
+      });
+      const valid = sizes.every(size => size && Number.isFinite(size.w) &&
+        Number.isFinite(size.h) && size.w > 0 && size.h > 0);
+      setMeasured(old => {
+        if (!valid) return null;
+        if (old && sizes.every((size, i) =>
+          Math.abs(size.w - old[i].w) <= HUD_RECT_EPSILON &&
+          Math.abs(size.h - old[i].h) <= HUD_RECT_EPSILON)) return old;
+        return sizes;
+      });
+    };
+    read();
+    const observer = new ResizeObserver(read);
+    nodes.forEach(node => { if (node) observer.observe(node); });
+    return () => observer.disconnect();
+  }, []);
+
+  const placement = React.useMemo(() => {
+    if (!measured) return { status:'unmeasured', sizes:null, chrome:null, subject:null, layout:null };
+    const [returnControl, hint, hintCompact, left, right] = measured;
+    const sizes = { hint, hintCompact, arrow:{
+      w:Math.max(left.w, right.w), h:Math.max(left.h, right.h),
+    }};
+    const chrome = [{ x:frame.stage.w - RETURN_CONTROL_OFFSET.right - returnControl.w,
+      y:RETURN_CONTROL_OFFSET.top, ...returnControl }];
+    const card = testHooksEnabled && subjectOverride ? subjectOverride : frame.deck.card;
+    const subject = card ? { x:card.x, y:card.y, w:card.w, h:card.h } : null;
+    if (!subject) return { status:'no-subject', sizes, chrome, subject:null, layout:null };
+    const layout = resolveFocusHudLayout({ kind:'deck', stage:frame.stage,
+      safeFrame:frame.safeFrame, subject, chrome, sizes, previousCompact:previousCompact.current });
+    return { status:layout.status, sizes, chrome, subject, layout };
+  }, [frame, measured, subjectOverride]);
+  const layout = placement.layout?.status === 'placed' ? placement.layout : null;
+  const hint = fit.degraded ? null : layout?.hint ?? null;
+
+  React.useLayoutEffect(() => {
+    if (placement.layout && committedSolve.current !== placement.layout) {
+      committedSolve.current = placement.layout;
+      if (layout) previousCompact.current = layout.compact;
+      solveCount.current += 1;
+    }
+    if (testHooksEnabled) {
+      if (placement.status === 'unsatisfiable' && !warningEpisode.current) {
+        console.warn('[deck-hud] unsatisfiable layout');
+      }
+      warningEpisode.current = placement.status === 'unsatisfiable';
+      probe.current = { status:placement.status, sizes:placement.sizes,
+        chrome:placement.chrome, subject:placement.subject, fitDegraded:fit.degraded,
+        fitReason:fit.reason, solveCount:solveCount.current,
+        arrowTier:layout?.arrowTier ?? null,
+        hintTier:layout ? (fit.degraded ? 'hidden' : layout.hintTier) : null,
+        compact:layout?.compact ?? null, hint,
+        previous:layout?.previous ?? null, next:layout?.next ?? null };
+    }
+  }, [placement, layout, hint, fit]);
+
+  React.useLayoutEffect(() => {
+    if (!testHooksEnabled) return;
+    return registerDeckHudProbe({ snapshot:() => probe.current, setSubject:setSubjectOverride });
+  }, []);
+
+  const hintStyle = {fontFamily:'var(--font-mono)',fontSize:'calc(9px * var(--text-scale))',
+    fontWeight:600,letterSpacing:'.28em',textTransform:'uppercase',color:'var(--cream-deep)',
+    background:'rgba(30,28,26,0.72)',border:'1px solid rgba(232,228,220,0.18)',
+    backdropFilter:'blur(6px)',padding:'calc(8px * var(--text-scale)) calc(14px * var(--text-scale))'};
+  const arrow = (delta, rect, ref) => {
+    const disabled = !rect || !!info.busy || (delta < 0 ? info.index <= 0 : info.index >= info.count - 1);
+    return <DeckHudControl id={delta < 0 ? 'browse-arrow-prev' : 'browse-arrow-next'}
+      rect={rect} measurementRef={ref} interactive={!disabled}>
+      <button disabled={disabled} aria-label={delta < 0 ? 'previous record' : 'next record'}
+        onClick={() => { if (!disabled) window.__cockpitVinylSelect?.(delta); }}
+        style={{background:'rgba(30,28,26,0.72)',backdropFilter:'blur(6px)',
+          border:'1px solid rgba(232,228,220,0.22)',
+          padding:'calc(13px * var(--text-scale)) calc(15px * var(--text-scale))',
+          minWidth:'var(--control-min)',minHeight:'var(--control-min)',
+          cursor:CURSOR_POINTER,opacity:disabled ? .25 : 1,color:'var(--cream-warm)',transition:'opacity .2s ease'}}>
+        <span style={{fontSize:'calc(16px * var(--text-scale))',lineHeight:1,color:'var(--jade-light)'}}>{delta < 0 ? '◄' : '►'}</span>
+      </button>
+    </DeckHudControl>;
+  };
+  return <div ref={rootRef}>
+    <DeckHudControl id="browse-hint" rect={layout && !layout.compact ? hint : null} measurementRef={fullRef}>
+      <div style={hintStyle}>◄ ► to browse · esc to return</div>
+    </DeckHudControl>
+    <DeckHudControl id="browse-hint" rect={layout?.compact ? hint : null} measurementRef={compactRef}>
+      <div style={hintStyle}>◄ ► browse</div>
+    </DeckHudControl>
+    {arrow(-1, layout?.previous ?? null, previousRef)}
+    {arrow(1, layout?.next ?? null, nextRef)}
+  </div>;
 }
 
 // The holographic card remains an in-scene texture, but its project action is
@@ -1251,9 +1384,9 @@ function FocusFitMeasurement(){
       position:'absolute',left:-10000,top:0,width:1024,visibility:'hidden',
       pointerEvents:'none',zIndex:-1,
     }}>
-      <div ref={returnRef} style={{display:'inline-flex',fontFamily:'var(--font-mono)',fontSize:9 * textScale,letterSpacing:'.22em',padding:`${6 * controlScale}px ${12 * controlScale}px`,border:'1px solid transparent'}}>esc · return</div>
-      {kind !== 'monitor' && <button ref={arrowRef} tabIndex={-1} style={{display:'block',fontSize:16 * textScale,lineHeight:1,padding:`${13 * controlScale}px ${15 * controlScale}px`,border:'1px solid transparent'}}>◄</button>}
-      {kind !== 'monitor' && <div ref={hintRef} style={{display:'inline-block',fontFamily:'var(--font-mono)',fontSize:9 * textScale,fontWeight:600,letterSpacing:'.28em',textTransform:'uppercase',padding:'8px 14px',border:'1px solid transparent'}}>{hint}</div>}
+      <div ref={returnRef} style={{display:'inline-flex',fontFamily:'var(--font-mono)',...RETURN_CONTROL_SIZE,alignItems:'center',letterSpacing:'.22em',textTransform:'uppercase',border:'1px solid transparent'}}>esc · return</div>
+      {kind !== 'monitor' && <button ref={arrowRef} tabIndex={-1} style={{display:'block',fontSize:16 * textScale,lineHeight:1,padding:`${13 * controlScale}px ${15 * controlScale}px`,border:'1px solid transparent',...(kind === 'deck' ? {fontSize:'calc(16px * var(--text-scale))',lineHeight:'inherit',padding:'calc(13px * var(--text-scale)) calc(15px * var(--text-scale))',minWidth:'var(--control-min)',minHeight:'var(--control-min)'} : {})}}>◄</button>}
+      {kind !== 'monitor' && <div ref={hintRef} style={{display:'inline-block',fontFamily:'var(--font-mono)',fontSize:9 * textScale,fontWeight:600,letterSpacing:'.28em',textTransform:'uppercase',padding:'8px 14px',border:'1px solid transparent',...(kind === 'deck' ? {fontSize:'calc(9px * var(--text-scale))',padding:'calc(8px * var(--text-scale)) calc(14px * var(--text-scale))'} : {})}}>{hint}</div>}
       {kind === 'crate' && <div ref={infoRef} style={{display:'inline-block',fontFamily:'var(--font-serif)',fontSize:24 * textScale,lineHeight:1.05,padding:'12px 18px 13px',minWidth:180,maxWidth:300,border:'1px solid transparent'}}>
         <div style={{fontFamily:'var(--font-mono)',fontSize:9 * textScale,letterSpacing:'.26em'}}>{LONGEST_PROJECT.category} · {LONGEST_PROJECT.date}</div>
         <div>{LONGEST_PROJECT.title}</div>

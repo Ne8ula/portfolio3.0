@@ -103,6 +103,16 @@ jobs:
             timeout: 90
             timing_scale: 2
             extra_args: --fully-parallel --shard=3/3
+          - id: phase6-deck-1
+            spec: e2e/phase6-deck.spec.ts
+            timeout: 90
+            timing_scale: 1.5
+            extra_args: --fully-parallel --shard=1/2
+          - id: phase6-deck-2
+            spec: e2e/phase6-deck.spec.ts
+            timeout: 90
+            timing_scale: 1.5
+            extra_args: --fully-parallel --shard=2/2
           - id: smoke
             spec: e2e/smoke.spec.ts
             timeout: 45
@@ -128,7 +138,7 @@ jobs:
       # Browser tests run against a dev server (Playwright webServer):
       # __COCKPIT_TEST_HOOKS__ is compiled out of production builds by
       # design — see components/cockpit/test-hooks.ts and
-      # docs/responsive-system.md. Phase 8 adds the production-build gate
+      # docs/responsive-system.md. Phase 9 adds the production-build gate
       # asserting the bridge is absent from the shipped artifact.
       - name: Browser test (Chromium)
         run: npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}
