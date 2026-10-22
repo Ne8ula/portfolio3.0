@@ -2201,12 +2201,12 @@ plan-final exit obligations.
 ### Phase 6 — re-anchor deck HUD
 
 **Status: design owner-approved 2026-10-09; step-1 implementation in progress,
-uncommitted and not accepted.**
+incomplete and not accepted; prior partial work is preserved in `6a15c82`.**
 `docs/phase-6-design.md` refines this entry into 26 numbered acceptance
 criteria; its §18 blocking design approvals are all granted (provenance in
 that document's §1.1), and its §9.3-related decision D20 is recorded here
-as the §0.8 amendment. The working diff contains production, test and CI
-changes; actual gate results, recorded F3 mutation proof and outstanding
+as the §0.8 amendment. The cumulative changes from setup `59c3dc9` contain
+production, test and CI work; actual gate results, recorded F3 mutation proof and outstanding
 browser/capture work are recorded in `docs/phase-6-implementation.md`. No independent product QA,
 delivery or owner visual acceptance is claimed; all three postimplementation
 checkpoint reviews remain open owner gates. The entry below stays the binding

@@ -409,31 +409,50 @@ test('P6-AC-08 busy swap retains its anchor then hides persistent controls past 
       const buttons = ['browse-arrow-prev','browse-arrow-next'].map(id =>
         document.querySelector<HTMLButtonElement>(`[data-hud="${id}"] button`)!)
       const shells = buttons.map(b => b.parentElement!.parentElement!.parentElement!)
-      type Observation = { p: DeckHudLayoutSnapshot | null; retained: boolean; grace: number | null;
+      type Observation = { frameId: number; p: DeckHudLayoutSnapshot | null; retained: boolean; grace: number | null;
         cardNull: boolean; hintPresent: boolean; ids: boolean[]; disabled: boolean[];
         x: (number | null)[]; hiddenSafe: boolean | null }
       const rows: Observation[] = []
       const unsafe: string[] = []
-      let sampling = false
+      // Keep a bounded diagnostic of ALL commits, including the first idle
+      // one. The busy-only evidence below cannot distinguish a skipped gap
+      // from a stalled sampler; neither condition may pass this test.
+      const startedAt = performance.now()
+      const commits: { frameId: number; elapsedMs: number; busy: boolean;
+        status: string | null; meta: ReturnType<typeof h.getHudFrameMeta>;
+        motion: ReturnType<typeof h.getVinylMotion> }[] = []
+      let commitCount = 0
+      let latestCommit: (typeof commits)[number] | null = null
+      let lastFrameId: number | null = null
       let firstRetained: Rect | null = null
       let timer = 0
       let resolveGap!: () => void
       let rejectGap!: (error: Error) => void
       const gap = new Promise<void>((resolve, reject) => { resolveGap=resolve; rejectGap=reject })
-      const sample = async () => {
-        if (sampling) return
-        sampling = true
+      const sample = () => {
         try {
-          const s = await h.getHudSnapshot()
-          if (s.overlaysCommittedFrameId !== s.publishedFrame?.frameId) return
-          const p = h.getDeckHudLayout()
-          const card = s.publishedFrame.deck.card
-          const busy = s.publishedFrame.deck.info?.busy
+          const rawFrameId = stage.getAttribute('data-hud-frame')
+          if (rawFrameId === null) return
+          const frameId = Number(rawFrameId)
+          if (!Number.isFinite(frameId) || frameId === lastFrameId) return
+          lastFrameId = frameId
+          const busy = window.__cockpitDeck!.busy
+          latestCommit = { frameId, elapsedMs: performance.now() - startedAt,
+            busy, status: h.getDeckHudLayout()?.status ?? null,
+            meta: h.getHudFrameMeta(), motion: h.getVinylMotion() }
+          commitCount++
+          if (commits.length < 16) commits.push(latestCommit)
           if (!busy) return
-          if (card?.retained && !firstRetained) firstRetained = card
-          const row: Observation = { p, retained:card?.retained === true,
+          // Read this commit synchronously, as in Phase 4 AC-8/9. Awaiting
+          // getHudSnapshot here observes a LATER frame and can miss grace.
+          const p = h.getDeckHudLayout()
+          const card = window.__getCockpitDeckCardRect?.() ?? null
+          const grace = h.getHudFrameMeta().graceRemainingMs
+          const retained = card === null && grace !== null && grace > 0
+          if (retained && !firstRetained) firstRetained = p?.subject ?? null
+          const row: Observation = { frameId, p, retained,
             cardNull:card === null, hintPresent:!!document.querySelector('[data-hud="browse-hint"]'),
-            grace:h.getHudFrameMeta().graceRemainingMs,
+            grace,
             ids:shells.map(n => n.hasAttribute('data-hud')), disabled:buttons.map(b => b.disabled),
             x:shells.map(n => n.hasAttribute('data-hud') ? n.getBoundingClientRect().x-stage.getBoundingClientRect().x : null),
             hiddenSafe:null }
@@ -459,12 +478,10 @@ test('P6-AC-08 busy swap retains its anchor then hides persistent controls past 
           }
           rows.push(row)
         } catch (error) { rejectGap(error as Error) }
-        finally { sampling = false }
       }
       const observer = new MutationObserver(() => {
-        // Inspect EVERY DOM commit synchronously as well as collecting atomic
-        // snapshot evidence. An in-flight snapshot must not hide an unsafe
-        // intermediate commit from this guard.
+        // Inspect EVERY DOM commit. Snapshot acquisition never suppresses
+        // the synchronous busy/edge guard or the persistent-handle checks.
         if (window.__cockpitDeck!.busy) shells.forEach((shell,i) => {
           const frame=stage.getAttribute('data-hud-frame')
           if (!buttons[i]!.disabled) unsafe.push(`${frame}: busy arrow enabled`)
@@ -473,17 +490,43 @@ test('P6-AC-08 busy swap retains its anchor then hides persistent controls past 
             unsafe.push(`${frame}: stage-edge fallback`)
           }
         })
-        void sample()
+        sample()
       })
       observer.observe(stage, { attributes:true, attributeFilter:['data-hud-frame'] })
-      timer = window.setTimeout(() => rejectGap(new Error(`no busy gap: ${JSON.stringify(rows)}`)), timeout)
+      timer = window.setTimeout(() => rejectGap(new Error(`no busy gap: ${JSON.stringify({
+        rows, commits, commitCount, latestCommit,
+      })}`)), timeout)
+      // Phase 4's pre-swap snapshot pattern: arm before the action, then
+      // correlate its published frame with the synchronously captured row.
+      const pendingSnapshot = h.getHudSnapshot()
       try {
         ;(window as unknown as DeckRuntime).__cockpitVinylSelect(1)
-        await gap
-        return { rows, firstRetained, unsafe }
+        const [retainedSnapshot] = await Promise.all([pendingSnapshot, gap])
+        // Independently corroborate the gap with the published-card contract;
+        // the focus/activation checks already ran in its original commit.
+        const gapSnapshot = await h.getHudSnapshot()
+        const gapProbe = h.getDeckHudLayout()
+        return { rows, firstRetained, unsafe, retainedSnapshot, gapSnapshot, gapProbe }
       } finally { clearTimeout(timer); observer.disconnect() }
     }, timing.transition)
     expect(observations.unsafe).toEqual([])
+    const retainedSnapshot = observations.retainedSnapshot
+    expect(retainedSnapshot.overlaysCommittedFrameId).toBe(retainedSnapshot.publishedFrame!.frameId)
+    expect(retainedSnapshot.publishedFrame!.deck.card!.retained).toBe(true)
+    const retainedCommit = observations.rows.find(r => r.frameId === retainedSnapshot.publishedFrame!.frameId)
+    expect(retainedCommit, 'published retained frame must have a synchronous commit observation').toBeDefined()
+    expect(retainedCommit!.retained).toBe(true)
+    close(retainedCommit!.p!.subject!, retainedSnapshot.publishedFrame!.deck.card!, 'published retained anchor')
+    for (const [id, rect] of [['browse-arrow-prev', retainedCommit!.p!.previous!],
+      ['browse-arrow-next', retainedCommit!.p!.next!]] as const) {
+      close(retainedSnapshot.overlays[id]!, rect, `${id} retained DOM`)
+    }
+    const gapSnapshot = observations.gapSnapshot
+    expect(gapSnapshot.overlaysCommittedFrameId).toBe(gapSnapshot.publishedFrame!.frameId)
+    expect(gapSnapshot.publishedFrame!.deck.info!.busy).toBe(true)
+    expect(gapSnapshot.publishedFrame!.deck.card).toBeNull()
+    noSubject(observations.gapProbe)
+    for (const id of IDS) expect(gapSnapshot.overlays[id]).toBeUndefined()
     const retained = observations.rows.filter(r => r.retained)
     expect(retained.length, 'a retained-card commit must be observed').toBeGreaterThan(0)
     for (const row of retained) {
@@ -764,6 +807,7 @@ test('P6-AC-23/26(d,e) context rebuild disconnects controls and clears override 
 for (const [width,height] of [[800,450],[683,325],[512,300],[320,568]] as const) {
   test(`P6-AC-22 contained pan and D20 catalog exit ${width}x${height}`, async ({ page }) => {
     const original=page.viewportSize()!
+    let failed = false
     try {
       await page.setViewportSize({width,height}); await boot(page); await land(page,1)
       const before=await committed(page)
@@ -813,6 +857,22 @@ for (const [width,height] of [[800,450],[683,325],[512,300],[320,568]] as const)
       // Tab traversal, never element.focus(), proves the approved keyboard path.
       for (let i=0;i<40 && !await link.evaluate(n => n === document.activeElement);i++) await page.keyboard.press('Tab')
       await expect(link).toBeFocused(); await page.keyboard.press('Enter'); await expect(page).toHaveURL(/\/projects$/)
-    } finally { await clear(page); await page.setViewportSize(original) }
+    } catch (error) {
+      failed = true
+      throw error
+    } finally {
+      const cleanupErrors: string[] = []
+      for (const restore of [() => clear(page), () => page.setViewportSize(original)]) {
+        // A destroyed context has no hook/viewport state left to restore.
+        if (page.isClosed()) break
+        try { await restore() } catch (error) { cleanupErrors.push(String(error)) }
+      }
+      if (cleanupErrors.length) {
+        if (!failed) throw new Error(`contained cleanup failed: ${cleanupErrors.join('; ')}`)
+        await test.info().attach('contained-cleanup-errors', {
+          body: cleanupErrors.join('\n'), contentType: 'text/plain',
+        })
+      }
+    }
   })
 }

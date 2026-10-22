@@ -119,7 +119,8 @@ Phases −1 through 5 are delivered and merged (Phase 5 at `03fca60` with the
 dated AC-27/AC-28 owner checkpoint and Kimi QA PASS). The Phase 6 design's
 seven §18 preconditions and D20 path are owner-approved (2026-10-09).
 Phase 6 setup is committed at `59c3dc9`; step-1 implementation and coverage
-are in progress. Browser execution is blocked in the current sandbox;
+are incomplete; prior partial work is preserved in `6a15c82`, not accepted.
+Browser execution is blocked in the current sandbox;
 stable host F3 mutation proof is recorded; complete browser verification,
 captures and fresh independent Kimi technical QA remain open.
 See `docs/phase-6-implementation.md` for actual verification evidence.
@@ -196,7 +197,8 @@ reduced-transparency/high-contrast/forced-colors states.
 
 ## Next
 
-Phase 5 is delivered. Phase 6 step-1 remains incomplete and uncommitted. Next:
+Phase 5 is delivered. Phase 6 step-1 remains incomplete and unaccepted;
+prior partial work is in `6a15c82`. Next:
 authorized host browser verification and capture preparation
 → complete five green gates and fresh independent Kimi QA →
 explicit dated §18 owner checkpoint → fresh gates/Kimi and the runner's single

@@ -129,6 +129,41 @@ If a local `agent` default was set to `portfolio-orchestrator`, remove that key
 from `.claude/settings.local.json` when reverting. Preserve unrelated keys.
 Do not stop a shared gateway while another project is using it.
 
+## Maintenance verification — 2026-10-21
+
+- Refreshed the Eigenwise marketplace and updated the project-scoped Model
+  Gateway plugin from 0.51.2 to 0.55.1. Its supported `setup` command downloaded
+  proxy 0.1.45 (previously 0.1.40) and verified the archive SHA-256 before
+  installation. Claude Code's updater confirmed 2.1.306 is current.
+- Setup replaced the old supervisor through the plugin lifecycle commands.
+  The October 14 port-conflict record is historical: the final doctor reports
+  an owned 0.55.1 router, authenticated proxy, 29 live model rows, matching
+  discovery cache, and passing model-ID comparison. Discovery briefly used
+  the fallback catalog during startup, then recovered to the proxy catalog.
+- Setup installed project-local SessionStart and UserPromptSubmit readiness
+  hooks and refreshed native Claude pins to Opus 5.5 and Sonnet 5.5. Both
+  readiness hooks returned exit 0 against the healthy router. Permissions,
+  the `portfolio-orchestrator` default, and its Astra model remain intact.
+- This installation had no saved context policy. After the update, doctor
+  reports the current default Codex cap of 272000 and compaction past 187000;
+  before the update Astra advertised 920000 with a sentry trigger of 880012.
+  No custom context policy was written. Native Claude retains its full window.
+- Isolated synthetic CLI probes passed with fallback disabled only for those
+  processes: Astra read a generated temporary fixture and returned
+  `ASTRA_GATEWAY_OK ALPHA-731`; Opus 5.5 returned `CLAUDE_GATEWAY_OK`; Sonnet 5.5
+  returned `SONNET_GATEWAY_OK`. Gateway route metadata independently records
+  `gpt-6-astra` on Codex and the two native models on Anthropic. These probes
+  used no repository content and allowed no edits or delegation.
+- Agent definitions validate; project settings parse; `git diff --check`
+  passes. No rendered UI or application code changed, so product gates and
+  browser E2E were not rerun. No phase workflow or independent Kimi QA ran.
+  Codex/Kimi installations were not updated; Grok remains unused and lacks
+  authentication. No outage, reboot, or long-context fault injection was run.
+- Fully restart existing Claude Code processes in this project to load the
+  updated plugin, hooks, native pins, and model picker. A plugin reload alone
+  is insufficient. This verifies current connectivity, not immunity to future
+  provider outages, rate limits, authentication expiry, or gateway bugs.
+
 ## Verification record — 2026-09-17
 
 - Installed Model Gateway 0.51.2 and checksum-verified proxy 0.1.40.
