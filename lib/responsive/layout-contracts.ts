@@ -3,7 +3,7 @@
 // the same ID through `data-layout-contract`, which browser tests reconcile
 // against this registry.
 
-import { COCKPIT_LAYOUT_CONTRACT } from '@/app/layout-contract'
+import { COCKPIT_LAYOUT_CONTRACT, COCKPIT_IDENTITY_LAYOUT_CONTRACT } from '@/app/layout-contract'
 import { ABOUT_LAYOUT_CONTRACT } from '@/app/about/layout-contract'
 import { PROJECT_DETAIL_LAYOUT_CONTRACT } from '@/app/projects/[slug]/layout-contract'
 import { PROJECTS_INDEX_LAYOUT_CONTRACT } from '@/app/projects/layout-contract'
@@ -13,6 +13,7 @@ import type { LayoutContract } from '@/lib/responsive/layout-contract'
 export {
   ABOUT_LAYOUT_CONTRACT,
   COCKPIT_LAYOUT_CONTRACT,
+  COCKPIT_IDENTITY_LAYOUT_CONTRACT,
   PROJECT_DETAIL_LAYOUT_CONTRACT,
   PROJECTS_INDEX_LAYOUT_CONTRACT,
   RESPONSIVE_PREVIEW_LAYOUT_CONTRACT,
@@ -21,6 +22,7 @@ export {
 /** Every declared contract. Uniqueness/shape are runtime-validated. */
 export const LAYOUT_CONTRACTS: readonly LayoutContract[] = [
   COCKPIT_LAYOUT_CONTRACT,
+  COCKPIT_IDENTITY_LAYOUT_CONTRACT,
   PROJECTS_INDEX_LAYOUT_CONTRACT,
   PROJECT_DETAIL_LAYOUT_CONTRACT,
   ABOUT_LAYOUT_CONTRACT,

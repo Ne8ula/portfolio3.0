@@ -571,6 +571,9 @@ appearance and art-direction migration, and Phase 9 is final enforcement,
 browser matrix, CI, and release verification.
 
 - Do not implement later phases ad hoc.
+- Sanctioned ordering exception (owner, 2026-10-27): Phase 8A, the early
+  visual candidate defined by plan §0.9 and `docs/phase-8-design.md`, may
+  precede Phases 6/7; 8B and the Phase 8 checkpoint still follow them.
 - Do not stopgap the known deck HUD overlap before Phase 6.
 - Plan §8 **Phase 8 owns the approved visual migration** as scheduled
   rendered work: material and texture migration (§7); lighting and physical

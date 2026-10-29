@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/Users/pandora2/.claude/model-gateway/model-gateway.js\" readiness-gate",
+            "command": "node \"C:\\Users\\alexx\\.claude\\model-gateway\\model-gateway.js\" readiness-gate",
             "timeout": 35,
             "onFailure": "block"
           }
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/Users/pandora2/.claude/model-gateway/model-gateway.js\" readiness-gate",
+            "command": "node \"C:\\Users\\alexx\\.claude\\model-gateway\\model-gateway.js\" readiness-gate",
             "timeout": 35,
             "onFailure": "block"
           }

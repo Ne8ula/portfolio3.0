@@ -1,4 +1,50 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+/* Scan app sources only: diagnostic Windows paths are not utility classes. */
+@source "./";
+@source "../components";
+@source "../lib";
+
+/* Rest-view chrome only; boot/warp and semantic document typography are separate. */
+.cockpit-identity-plaque {
+  position: absolute;
+  z-index: 40;
+  width: 18.5rem;
+  box-sizing: border-box;
+  padding: 16px;
+  color: var(--cream);
+  background: var(--ink);
+  border: 1px solid var(--jade-light);
+  border-radius: 0;
+  overflow-wrap: anywhere;
+}
+.cockpit-identity-plaque p { margin: 0; }
+.cockpit-identity-plaque .identity-eyebrow {
+  font-family: var(--font-mono);
+  font-size: calc(12px * var(--text-scale));
+  line-height: 1.5;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.cockpit-identity-plaque h1 {
+  margin: 8px 0;
+  font-family: var(--font-serif);
+  font-size: calc(36px * var(--text-scale));
+  font-weight: 400;
+  line-height: 1.15;
+}
+.cockpit-identity-plaque .identity-role {
+  font-family: var(--font-sans);
+  font-size: calc(16px * var(--text-scale));
+  line-height: 1.5;
+}
+.cockpit-rest-vignette {
+  position: absolute; inset: 0; pointer-events: none; z-index: 3;
+  background: radial-gradient(ellipse at center, transparent 65%, color-mix(in srgb, var(--ink) 12%, transparent));
+}
+@media (forced-colors: active) {
+  .cockpit-identity-plaque { background: Canvas; color: CanvasText; border-color: CanvasText; }
+  .cockpit-rest-vignette { display: none; }
+}
 
 /* ============================================================
    ALEX XIONG — "Editorial Cockpit"
@@ -28,6 +74,8 @@
   --jade-signal:  #7FE6A4;
   /* Boot/warp keep their authored palette across cockpit theme inversion. */
   --warp-cream:   #E8E4DC;
+  --scene-warm-light: #FFC58F;
+  --scene-ash: #CDBCA4;
 
   /* Document surfaces are independent from cockpit `data-theme` inversion.
      The no-JS default is light; prefers-color-scheme supplies the tier-1

@@ -285,7 +285,7 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    the live visible stage/container box, then shaped
    by `responseExponentFor(viewport)` (`1.0` at the reference `1440×900`,
    rising toward `1.7` at the smallest supported ratio). Because
-   `1 ** e === 1`, the full `±22°` yaw / `±15°` pitch envelope is reachable
+   `1 ** e === 1`, the current owner-directed `±6°` yaw / `±3°` pitch envelope is reachable
    at the stage edge on EVERY supported viewport; smaller viewports only
    damp response near center. Applying a reference-dimension divisor to
    hover (which would truncate the envelope) is the regression plan §9.4
@@ -298,6 +298,16 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    same logical pan. `sizeRatio` applies ONLY here, never to hover. Contained
    entry centers the crop; same-tier resize clamps and preserves it; renderer
    rebuild leaves it untouched; re-entry from fit centers again.
+
+The rest-view `identity-plaque` (`cockpit-identity` region,
+`cockpit-identity-v1` layout contract) is ordinary wrapping chrome outside
+the panned artwork. It presents `PROFILE.name` and `PROFILE.targetRole`
+under the existing `content-home-v1` contract; canonical SSR delivery is unchanged.
+Its position uses the measured visible header bottom plus 16 CSS pixels.
+Intrinsic plaque bounds, including large-text wrapping, are measured in stage
+coordinates for the rest-camera reservation. Focused views hide the plaque
+and retain their separate fit and parallax policies. The silk background has
+no identity-sized quiet mask; the opaque plaque supplies text contrast.
 
 Wheel input normalizes `WheelEvent.deltaMode` via `normalizeWheelDelta()`:
 pixel deltas stay pixels, line deltas convert through the computed line

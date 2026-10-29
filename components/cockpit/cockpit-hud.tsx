@@ -7,11 +7,13 @@
 // (Weather + automatic geolocation were removed by owner decision,
 // 2026-07-28: no geolocation prompt, no third-party weather fetch.)
 import React from "react"
+import { createPortal } from "react-dom"
 import { GlobeCanvas } from "./globe-canvas"
 import { consumePointerActivationClick } from "./pointer-activation"
 import { CURSOR_DEFAULT, CURSOR_POINTER } from "./cursors"
 import { useAccessibility } from "@/components/responsive/accessibility-provider"
-import { COCKPIT_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
+import { COCKPIT_LAYOUT_CONTRACT, COCKPIT_IDENTITY_LAYOUT_CONTRACT } from "@/lib/responsive/layout-contracts"
+import { COCKPIT_IDENTITY_CONTENT } from "@/lib/content/content-contracts"
 import {
   MAX_PITCH_RAD,
   MAX_YAW_RAD,
@@ -69,6 +71,60 @@ function getVisibleFreeLookBox(stage){
     width: visibleBox.clientWidth,
     height: visibleBox.clientHeight,
   };
+}
+
+// Ordinary identity chrome lives outside the scrolling artwork. Its real
+// wrapped size is published in stage coordinates for the rest-camera fit.
+function IdentityPlaque({ stageRef }) {
+  const ref = React.useRef(null);
+  const [host, setHost] = React.useState(null);
+  React.useLayoutEffect(() => {
+    setHost(stageRef.current?.closest('.responsive-stage-frame') ?? stageRef.current);
+  }, [stageRef]);
+  React.useLayoutEffect(() => {
+    const plaque = ref.current, stage = stageRef.current;
+    if (!plaque || !stage || !host) return;
+    const container = stage.closest('.responsive-stage') ?? stage;
+    const header = stage.querySelector('[data-hud="site-header"]');
+    const recoveryScene = stage.closest('[data-recovery-hidden]');
+    let cancelled = false;
+    const measure = () => {
+      if (cancelled) return;
+      // Portaled chrome must still obey its original scene's recovery state.
+      plaque.hidden = recoveryScene?.getAttribute('data-recovery-hidden') === 'true' || !!recoveryScene?.hasAttribute('inert');
+      if (plaque.hidden) return;
+      const visible = container.getBoundingClientRect(), frame = host.getBoundingClientRect();
+      const heading = header?.getBoundingClientRect();
+      const headerBottom = Math.max(visible.top, heading?.bottom ?? visible.top);
+      plaque.style.left = `${visible.left-frame.left+16}px`;
+      plaque.style.top = `${headerBottom-frame.top+16}px`;
+      plaque.style.maxWidth = `${Math.max(0,visible.width-32)}px`;
+      const box = plaque.getBoundingClientRect(), surface = stage.getBoundingClientRect();
+      const bounds = [box.left-surface.left,box.top-surface.top,box.width,box.height].map(n=>Math.round(n*100)/100).join(',');
+      if (stage.dataset.identityBounds !== bounds) stage.dataset.identityBounds = bounds;
+    };
+    const observer = new ResizeObserver(measure);
+    for (const node of [plaque, container, header]) if (node) observer.observe(node);
+    const recoveryObserver = new MutationObserver(measure);
+    if (recoveryScene) recoveryObserver.observe(recoveryScene, { attributes: true, attributeFilter: ['data-recovery-hidden','inert'] });
+    container.addEventListener('scroll',measure,{passive:true});
+    window.addEventListener('resize',measure);
+    document.fonts?.ready.then(measure);
+    measure();
+    return () => {
+      cancelled = true; observer.disconnect(); recoveryObserver.disconnect();
+      container.removeEventListener('scroll',measure);window.removeEventListener('resize',measure);
+      delete stage.dataset.identityBounds;
+    };
+  }, [host, stageRef]);
+  if (!host) return null;
+  return createPortal(<section ref={ref} className="cockpit-identity-plaque"
+    data-hud={COCKPIT_IDENTITY_CONTENT.hud} data-layout-region={COCKPIT_IDENTITY_CONTENT.region}
+    data-layout-contract={COCKPIT_IDENTITY_LAYOUT_CONTRACT.id} data-content-contract={COCKPIT_IDENTITY_CONTENT.contractId}>
+    <p className="identity-eyebrow">Portfolio</p>
+    <h1>{PROFILE.name}</h1>
+    <p className="identity-role">{PROFILE.targetRole}</p>
+  </section>,host);
 }
 
 // CockpitHUD.jsx — editorial cockpit, neutral palette, jade as sole accent.
@@ -326,29 +382,13 @@ function Cockpit({ interactive = true, onContextEvent, restore = null }){
         </div>
       )}
 
-      {/* soft inner-window gradient so the scene feels framed */}
-      {viewMode === 'cockpit' && <div style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:3,
-        background:'radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(30,28,26,.35) 75%, rgba(30,28,26,.7) 100%)'}}/>}
+      {viewMode === 'cockpit' && <div className="cockpit-rest-vignette"/>}
 
       {viewMode === 'cockpit' && <>
       {/* Universal site header — full-width bar with identity + nav */}
       <SiteHeader/>
 
-      {/* Title card — sits below the header, on the left */}
-      <div style={{position:'absolute',top:120,left:40,zIndex:20,color:'var(--cream)',maxWidth:560}}>
-        <h1 style={{margin:0,fontFamily:'var(--font-serif)',fontSize:120,fontWeight:300,letterSpacing:'-.02em',lineHeight:.9,color:'var(--cream-warm)'}}>
-          {PROFILE.name.split(/\s+/).map((part, index) => (
-            <React.Fragment key={`${part}-${index}`}>
-              {index > 0 ? <br/> : null}
-              {part}
-            </React.Fragment>
-          ))}
-        </h1>
-        <div style={{marginTop:20,display:'flex',gap:14,alignItems:'center'}}>
-          <span style={{width:24,height:1,background:'var(--cream-deep)',display:'inline-block',opacity:.65}}/>
-          <span style={{color:'var(--cream-deep)',letterSpacing:'.32em',fontWeight:600,fontFamily:'var(--font-mono)',fontSize:13,textTransform:'uppercase'}}>portfolio · v.2026.04</span>
-        </div>
-      </div>
+      {interactive && <IdentityPlaque stageRef={stageRef}/>}
 
       {/* Mid-left vertical label — sits between the name + bottom CLR panel */}
       <div style={{position:'absolute',top:'74%',left:28,transform:'translateY(-50%)',zIndex:20,writingMode:'vertical-rl',fontFamily:'var(--font-mono)',fontSize:9,letterSpacing:'.4em',color:'var(--cream-deep)',textTransform:'uppercase'}}>

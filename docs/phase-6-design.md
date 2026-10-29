@@ -9,6 +9,19 @@ Phase 6 is claimed anywhere in this document. No production code or tests
 were changed by any design turn, including the approval-recording turn
 (§1.1).
 
+> **Supersession note — QA provider (2026-10-24).** Under the owner's
+> 2026-10-24 decisions D2 (fresh independent Codex QA replaces independent
+> Kimi QA for future Phase 6 reviews) and D3 (prospective authority
+> amendments, including this single note), recorded in
+> `docs/codex-qa-proposal.md` §10, every prospective reference below to
+> independent or fresh Kimi QA, or to Kimi verifying a diff, now means fresh
+> independent Codex QA as defined in proposal §§2–4 and §6. This note
+> substitutes the provider only: no acceptance criterion, test mapping, file
+> boundary, gate, owner checkpoint or §18 review changes, and the body below
+> is unchanged. Historical Kimi records (for example the Phase 5 PASS in §1)
+> stay as written. No QA PASS, owner checkpoint or acceptance exists or is
+> implied, and this note authorizes no Kimi use.
+
 ---
 
 ## 1. Status and approved starting point

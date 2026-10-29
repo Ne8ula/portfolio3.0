@@ -1,6 +1,36 @@
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 
-export const PHASE_RESULT_MARKER = 'PHASE_RUNNER_RESULT'
+export const QA_ROLE = 'Independent QA: Codex (fresh session)'
+
+export interface CliIdentity {
+  role: string
+  client: 'Codex CLI'
+  executable: string
+  cliVersion: string
+  sessionId: string
+  model: string
+}
+
+export interface QaBinding {
+  invocationId: string
+  snapshot: string
+  base: string
+  gateRecord: string
+}
+
+export interface HostGate {
+  command: string
+  exitCode: number | null
+  logPath: string
+  logSha256: string
+}
+
+export interface QaEvidence {
+  binding: QaBinding
+  reviewer: CliIdentity
+  gates: HostGate[]
+}
 
 export const RUNNER_STATUSES = [
   'ready',
@@ -72,7 +102,9 @@ export interface QaFinding {
   reproduction: string
 }
 
-export interface KimiResult {
+export interface QaResult {
+  reviewer: CliIdentity
+  binding: QaBinding
   phase: number
   step: string
   verdict: QaVerdict
@@ -97,7 +129,10 @@ export interface PhaseRunnerState {
   initialDirtyPaths: string[]
   pendingFindings: QaFinding[]
   lastCodexResult: CodexResult | null
-  lastKimiResult: KimiResult | null
+  // Historical records are opaque and must never be relabelled or cleared.
+  lastKimiResult?: unknown
+  lastQaResult: QaResult | null
+  sessions: CliIdentity[]
   lastError: string | null
   updatedAt: string
 }
@@ -294,14 +329,18 @@ export function createInitialState(
     initialDirtyPaths,
     pendingFindings: [],
     lastCodexResult: null,
-    lastKimiResult: null,
+    lastQaResult: null,
+    sessions: [],
     lastError: null,
     updatedAt: now,
   }
 }
 
-export function parseState(value: unknown, manifest: PhaseManifest): PhaseRunnerState {
+export function parseState(value: unknown, manifest: PhaseManifest, expectedDigest?: string): PhaseRunnerState {
   if (!isRecord(value)) throw new Error('runner state must be an object')
+  if (expectedDigest !== undefined && value.manifestDigest !== expectedDigest) {
+    throw new Error('manifest digest changed; existing state cannot be reinterpreted')
+  }
   if (value.schemaVersion !== 1 || value.phase !== manifest.phase) {
     throw new Error('runner state does not match the manifest schema or phase')
   }
@@ -351,6 +390,8 @@ export function parseState(value: unknown, manifest: PhaseManifest): PhaseRunner
 
   return {
     ...(value as unknown as PhaseRunnerState),
+    lastQaResult: (value.lastQaResult ?? null) as QaResult | null,
+    sessions: (value.sessions ?? []) as CliIdentity[],
     ownerAcceptedThrough,
     stepCommits,
     initialDirtyPaths,
@@ -413,7 +454,7 @@ export function acceptOwnerGate(
     ownerAcceptedThrough: step.id,
     pendingFindings: [],
     lastCodexResult: null,
-    lastKimiResult: null,
+    lastQaResult: null,
     lastError: null,
     updatedAt: now,
   }
@@ -532,139 +573,200 @@ export function parseCodexResult(
 }
 
 function parseFindings(value: unknown): QaFinding[] {
-  if (!Array.isArray(value)) throw new Error('Kimi findings must be an array')
+  if (!Array.isArray(value)) throw new Error('QA findings must be an array')
   return value.map((entry, index) => {
     if (!isRecord(entry)) {
-      throw new Error(`Kimi findings[${index}] must be an object`)
+      throw new Error(`QA findings[${index}] must be an object`)
     }
     const severity = requireString(
       entry.severity,
-      `Kimi findings[${index}].severity`,
+      `QA findings[${index}].severity`,
     )
     if (!['critical', 'high', 'medium', 'low', 'info'].includes(severity)) {
-      throw new Error(`Kimi findings[${index}].severity is invalid`)
+      throw new Error(`QA findings[${index}].severity is invalid`)
     }
     return {
       severity: severity as QaFinding['severity'],
       blocking: requireBoolean(
         entry.blocking,
-        `Kimi findings[${index}].blocking`,
+        `QA findings[${index}].blocking`,
       ),
-      file: requireString(entry.file, `Kimi findings[${index}].file`),
-      line: requireString(entry.line, `Kimi findings[${index}].line`),
+      file: requireString(entry.file, `QA findings[${index}].file`),
+      line: requireString(entry.line, `QA findings[${index}].line`),
       evidence: requireString(
         entry.evidence,
-        `Kimi findings[${index}].evidence`,
+        `QA findings[${index}].evidence`,
       ),
       expected: requireString(
         entry.expected,
-        `Kimi findings[${index}].expected`,
+        `QA findings[${index}].expected`,
       ),
-      actual: requireString(entry.actual, `Kimi findings[${index}].actual`),
+      actual: requireString(entry.actual, `QA findings[${index}].actual`),
       reproduction: requireString(
         entry.reproduction,
-        `Kimi findings[${index}].reproduction`,
+        `QA findings[${index}].reproduction`,
       ),
     }
   })
 }
 
-export function parseKimiResult(
+export function parseQaResult(
   value: unknown,
   manifest: PhaseManifest,
   step: PhaseStep,
-): KimiResult {
-  if (!isRecord(value)) throw new Error('Kimi result must be an object')
-  const reportedStep =
-    typeof value.step === 'string' ? canonicalStepId(value.step) : ''
+  evidence: QaEvidence,
+): QaResult {
+  validateQaSchema(value)
+  if (!isRecord(value)) throw new Error('QA result must be an object')
+  const reportedStep = value.step
   if (value.phase !== manifest.phase || reportedStep !== step.id) {
-    throw new Error('Kimi result phase/step does not match the active step')
+    throw new Error('QA result phase/step does not match the active step')
   }
-  const verdict = requireString(value.verdict, 'Kimi result verdict')
+  const verdict = requireString(value.verdict, 'QA result verdict')
   if (!['pass', 'fail', 'blocked'].includes(verdict)) {
-    throw new Error(`unsupported Kimi verdict: ${verdict}`)
+    throw new Error(`unsupported QA verdict: ${verdict}`)
   }
-  const handoff = requireString(value.handoff, 'Kimi result handoff')
+  const handoff = requireString(value.handoff, 'QA result handoff')
   if (!handoff.startsWith('Handoff:')) {
-    throw new Error('Kimi result handoff must start with "Handoff:"')
+    throw new Error('QA result handoff must start with "Handoff:"')
   }
-  const result: KimiResult = {
+  const result: QaResult = {
+    reviewer: evidence.reviewer,
+    binding: evidence.binding,
     phase: manifest.phase,
     step: step.id,
     verdict: verdict as QaVerdict,
-    summary: requireString(value.summary, 'Kimi result summary'),
-    gates: parseGateResults(value.gates, 'Kimi gates'),
+    summary: requireString(value.summary, 'QA result summary'),
+    gates: parseGateResults(value.gates, 'QA gates'),
     findings: parseFindings(value.findings),
     residualRisks: requireStringArray(
       value.residualRisks,
-      'Kimi residualRisks',
+      'QA residualRisks',
     ),
-    nextContext: requireString(value.nextContext, 'Kimi nextContext'),
+    nextContext: requireString(value.nextContext, 'QA nextContext'),
     handoff,
+  }
+
+  for (const [key, expected] of Object.entries(evidence.binding)) {
+    if (!isRecord(value.binding) || value.binding[key] !== expected) {
+      throw new Error(`QA binding mismatch: ${key}`)
+    }
+  }
+  if (!evidence.reviewer.sessionId || !evidence.reviewer.cliVersion ||
+      !evidence.reviewer.executable || evidence.reviewer.role !== QA_ROLE) {
+    throw new Error('missing corroborated QA identity')
+  }
+  validateHostGates(evidence.gates, manifest.requiredGates)
+  if (result.gates.length !== evidence.gates.length || result.gates.some((gate, i) =>
+    gate.command !== evidence.gates[i]?.command || gate.status !== 'pass')) {
+    throw new Error('reviewer gate table disagrees with host record')
   }
 
   if (result.verdict === 'pass') {
     validateGateResults(result.gates, manifest.requiredGates)
     if (result.findings.some((finding) => finding.blocking)) {
-      throw new Error('Kimi cannot return PASS with a blocking finding')
+      throw new Error('QA cannot return PASS with a blocking finding')
     }
   }
   if (result.verdict === 'fail' && !result.findings.some((finding) => finding.blocking)) {
-    throw new Error('Kimi FAIL must include at least one blocking finding')
+    throw new Error('QA FAIL must include at least one blocking finding')
   }
   return result
 }
 
-function extractJsonObject(text: string): unknown {
-  const markerIndex = text.lastIndexOf(PHASE_RESULT_MARKER)
-  if (markerIndex < 0) {
-    throw new Error(`Kimi output is missing ${PHASE_RESULT_MARKER}`)
-  }
-  const afterMarker = text.slice(markerIndex + PHASE_RESULT_MARKER.length)
-  const start = afterMarker.indexOf('{')
-  const end = afterMarker.lastIndexOf('}')
-  if (start < 0 || end <= start) {
-    throw new Error('Kimi output marker is not followed by a JSON object')
-  }
-  return JSON.parse(afterMarker.slice(start, end + 1))
-}
-
-function contentText(value: unknown): string {
-  if (typeof value === 'string') return value
-  if (Array.isArray(value)) return value.map(contentText).join('')
-  if (!isRecord(value)) return ''
-  if (typeof value.text === 'string') return value.text
-  if (typeof value.content === 'string') return value.content
-  return contentText(value.content)
-}
-
-export function extractKimiJson(streamJson: string): unknown {
-  const assistantTexts: string[] = []
-  for (const line of streamJson.split('\n')) {
-    if (!line.trim()) continue
-    let record: unknown
-    try {
-      record = JSON.parse(line)
-    } catch {
-      continue
+// Validate the same strict schema supplied to the CLI, including unknown keys.
+export function validateQaSchema(value: unknown): void {
+  const schema = JSON.parse(readFileSync(new URL('./schemas/qa-result.schema.json', import.meta.url), 'utf8'))
+  function visit(v: unknown, s: Record<string, unknown>, label: string): void {
+    if (s.type === 'object') {
+      if (!isRecord(v)) throw new Error(`${label} must be an object`)
+      const properties = s.properties as Record<string, Record<string, unknown>>
+      if (Object.keys(v).some((key) => !Object.hasOwn(properties, key)) ||
+          (s.required as string[]).some((key) => !Object.hasOwn(v, key))) {
+        throw new Error(`${label} has missing or unknown fields`)
+      }
+      for (const [key, child] of Object.entries(properties)) visit(v[key], child, `${label}.${key}`)
+    } else if (s.type === 'array') {
+      if (!Array.isArray(v)) throw new Error(`${label} must be an array`)
+      v.forEach((item, i) => visit(item, s.items as Record<string, unknown>, `${label}[${i}]`))
+    } else if (s.type === 'integer') {
+      if (!Number.isInteger(v)) throw new Error(`${label} must be an integer`)
+    } else if (typeof v !== s.type) {
+      throw new Error(`${label} has wrong type`)
     }
-    if (!isRecord(record)) continue
-    const nestedMessage = isRecord(record.message) ? record.message : null
-    const role =
-      typeof record.role === 'string'
-        ? record.role
-        : typeof nestedMessage?.role === 'string'
-          ? nestedMessage.role
-          : ''
-    const type = typeof record.type === 'string' ? record.type : ''
-    if (role !== 'assistant' && type !== 'assistant') continue
-    const text = contentText(nestedMessage?.content ?? record.content ?? record)
-    if (text.includes(PHASE_RESULT_MARKER)) assistantTexts.push(text)
+    if (Array.isArray(s.enum) && !s.enum.includes(v)) throw new Error(`${label} is invalid`)
+    if (typeof v === 'string' && !v.trim()) throw new Error(`${label} is empty`)
   }
+  visit(value, schema, 'QA result')
+}
 
-  const marked = assistantTexts.at(-1)
-  if (marked) return extractJsonObject(marked)
-  return extractJsonObject(streamJson)
+export const FIXED_GATES = [
+  'npm run lint', 'npm run typecheck:contracts', 'npm run validate:contracts',
+  'npm run test:unit', 'npm run test:e2e',
+]
+
+export function assertQaAuthority(manifest: PhaseManifest): void {
+  if (manifest.phase !== 6 || /kimi/i.test(JSON.stringify(manifest))) {
+    throw new Error('historical or unapproved QA authority; prospective execution is blocked')
+  }
+  if (JSON.stringify(manifest.requiredGates) !== JSON.stringify(FIXED_GATES)) {
+    throw new Error('requiredGates must be the five fixed commands in order')
+  }
+}
+
+export function validateHostGates(gates: HostGate[], required: string[]): void {
+  if (gates.length !== required.length) throw new Error('missing required host gate')
+  for (const [i, gate] of gates.entries()) {
+    if (gate.command !== required[i] || gate.exitCode !== 0 ||
+        !gate.logPath || !/^[a-f0-9]{64}$/.test(gate.logSha256)) {
+      throw new Error(`required gate is not green or lacks host proof: ${required[i]}`)
+    }
+  }
+}
+
+export function reviewerArgs(checkout: string, schema: string, output: string): string[] {
+  // Host fixture proof: 01a16fee-4e1a-7513-be74-a0fe2936e2eb (2026-10-24).
+  // Pin both policies; noninteractive exec alone must not inherit approvals.
+  // A denied launch still blocks. Repository hooks/integrity need separate proof.
+  return ['exec', '--sandbox', 'read-only', '-c', 'approval_policy=never',
+    '--json', '--output-schema', schema, '--output-last-message', output,
+    '--cd', checkout, '-']
+}
+
+export function cliIdentity(
+  jsonl: string, executable: string, cliVersion: string, role: string,
+  usedSessions: string[],
+): CliIdentity {
+  if (!executable || !cliVersion) throw new Error('missing executable/version evidence')
+  const events: Record<string, unknown>[] = jsonl.split(/\r?\n/).filter(Boolean).map((line) => {
+    const event: unknown = JSON.parse(line)
+    if (!isRecord(event)) throw new Error('malformed CLI telemetry')
+    return event
+  })
+  // Inspect telemetry fields, never assistant text as identity evidence.
+  for (const event of events) {
+    if (/resume|fork/i.test(String(event.type)) || event.resumed === true ||
+        event.forked_from_id || event.parent_thread_id || event.resume_id) {
+      throw new Error('resumed or forked CLI session is forbidden')
+    }
+    const item = isRecord(event.item) ? event.item : null
+    if (role === QA_ROLE && item && (
+      /collab|spawn_agent|delegate|request.*approval/i.test(String(item.type)) ||
+      (typeof item.command === 'string' && /\bgit\s+(?:add|commit|push|stash|reset|checkout)\b/i.test(item.command))
+    )) throw new Error('reviewer telemetry reports a prohibited action')
+  }
+  const starts = events.filter((event) => event.type === 'thread.started')
+  const start = starts[0]
+  if (starts.length !== 1 || !start || typeof start.thread_id !== 'string' || !start.thread_id.trim()) {
+    throw new Error('unknown or ambiguous CLI session identity')
+  }
+  const sessionId = start.thread_id
+  if (usedSessions.includes(sessionId)) throw new Error('reused CLI session identity')
+  if (events.some((event) => event.thread_id !== undefined && event.thread_id !== sessionId)) {
+    throw new Error('CLI session identity mismatch')
+  }
+  return { role, client: 'Codex CLI', executable, cliVersion, sessionId,
+    model: typeof start.model === 'string' && start.model.trim() ? start.model : 'not exposed' }
 }
 
 function formatScope(scope: string[]): string {
@@ -748,85 +850,48 @@ Rules:
 - Resolve ambiguity by returning outcome "blocked"; do not silently redefine the approved design.
 - Run all five required gates and do not return ready-for-qa while any required gate is red:
 ${manifest.requiredGates.map((gate) => `  - ${gate}`).join('\n')}
-- End with a compact Handoff: sentence naming scope, files, verification, risks, and Kimi as next role.
+- End with a compact Handoff: sentence naming scope, files, verification, risks, and QA as next role.
 - Your final response must conform exactly to the supplied JSON schema. Do not wrap it in Markdown.
 
-Kimi's nextContext is advisory only. The canonical scope above is authoritative.`
+QA's nextContext is advisory only. The canonical scope above is authoritative.`
 }
 
-export function buildKimiPrompt(
+export function buildQaPrompt(
   manifest: PhaseManifest,
   step: PhaseStep,
   codexResult: CodexResult,
+  evidence?: { binding: QaBinding; gates: HostGate[] },
 ): string {
-  return `Perform independent, read-only QA for Phase ${manifest.phase} ${step.id} — ${step.title}.
-
-You are in a disposable Git checkout containing the complete live diff. The real
-Codex worktree is separate. Do not edit product code, tests, documentation,
-configuration, approval records, or Git state. Your agent profile exposes no
-Write/Edit tools. Use Bash only for read-only inspection and the required gates.
-
-Before judging:
-- read AGENTS.md, docs/agent-handoff.md, ${manifest.source} ${manifest.sourceSection}
-- read ${manifest.designAuthorities.join(', ')}
-- inspect git status and the complete relevant diff
-- verify Codex's report against live files; the report is context, not proof
+  return `Perform Independent QA: Codex (fresh session) for Phase ${manifest.phase} ${step.id}.
+Read AGENTS.md, docs/agent-handoff.md, ${manifest.source} ${manifest.sourceSection},
+${manifest.designAuthorities.join(', ')}. Inspect git status and the complete diff from
+${manifest.phase === 6 ? '59c3dc9' : 'HEAD'} through the live snapshot, including untracked and ignored source.
 
 Canonical scope (plan items ${step.planItems.join(', ')}):
 ${formatScope(step.scope)}
+${formatDeckOverlapBoundary(manifest.phase)}
 
-Codex report:
-${JSON.stringify(codexResult, null, 2)}
+You are read-only. Do not edit files, Git metadata or the handoff; do not delegate,
+launch agents, request escalation, or run gates, builds, installs or mutable commands.
+The trusted host already ran exactly the required gates. Read its logs and compare
+source to the approved scope. Never treat model claims as gate or identity evidence.
+Host binding and gate record (repeat binding exactly):
+${JSON.stringify(evidence ?? 'Runtime host evidence required', null, 2)}
 
-Run all five gates fresh:
-${manifest.requiredGates.map((gate) => `- ${gate}`).join('\n')}
+Return exactly one JSON object under the supplied schema. PASS requires all host
+exit codes zero and no blocking findings. FAIL requires a blocking actionable finding
+with severity, file, line, evidence, expected, actual and reproduction. Missing
+proof or owner/design/environment conflict means BLOCKED. handoff starts Handoff:.
+nextContext is advisory; the controller alone chooses sequencing.
 
-Verdict contract:
-- ${formatDeckOverlapBoundary(manifest.phase)}
-- PASS only when every required gate is green, no blocking finding remains,
-  the step matches its approved scope, and QA made no repository write.
-- FAIL for an actionable defect in this step. Include severity, file/line,
-  evidence, expected/actual behavior, and reproduction steps.
-- BLOCKED for an owner/design decision, missing authority, environmental
-  failure that prevents judgment, or a phase-boundary conflict.
-- nextContext may summarize evidence for Codex, but must not choose or redefine
-  the next implementation step. The runner owns sequencing.
-- handoff must begin with "Handoff:".
-
-Your final assistant message must contain exactly this marker followed by one
-JSON object and no prose after the object:
-
-${PHASE_RESULT_MARKER}
-{
-  "phase": ${manifest.phase},
-  "step": "${step.id}",
-  "verdict": "pass | fail | blocked",
-  "summary": "concise evidence-backed result",
-  "gates": [
-    {"command": "npm run lint", "status": "pass | fail | not-run", "details": "result"}
-  ],
-  "findings": [
-    {
-      "severity": "critical | high | medium | low | info",
-      "blocking": true,
-      "file": "path or N/A",
-      "line": "line or N/A",
-      "evidence": "observed evidence",
-      "expected": "expected behavior",
-      "actual": "actual behavior",
-      "reproduction": "steps or N/A"
-    }
-  ],
-  "residualRisks": ["risk or none"],
-  "nextContext": "verified context only",
-  "handoff": "Handoff: Phase ${manifest.phase} ${step.id} ..."
-}`
+Engineer report ? context, not proof:
+${JSON.stringify(codexResult, null, 2)}`
 }
 
 export function transitionAfterQa(
   manifest: PhaseManifest,
   state: PhaseRunnerState,
-  result: KimiResult,
+  result: QaResult,
   now = new Date().toISOString(),
 ): PhaseRunnerState {
   const step = getStep(manifest, state.currentStep)
@@ -836,7 +901,7 @@ export function transitionAfterQa(
 
   const next: PhaseRunnerState = {
     ...state,
-    lastKimiResult: result,
+    lastQaResult: result,
     lastError: null,
     updatedAt: now,
   }
@@ -892,6 +957,6 @@ export function transitionAfterQa(
     qaPassedSteps,
     pendingFindings: [],
     lastCodexResult: null,
-    lastKimiResult: null,
+    lastQaResult: null,
   }
 }

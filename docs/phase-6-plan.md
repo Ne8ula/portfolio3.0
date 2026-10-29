@@ -13,9 +13,48 @@ repair and fresh exact gate reruns recorded in §6. Awaiting independent
 Kimi setup review, then the orchestrator's setup commit and actual phase
 initiation. No missing design decision was found.
 
+> **QA-provider amendment — 2026-10-24 (owner-approved D2/D3,
+> `docs/codex-qa-proposal.md` §10).** Every prospective independent QA step
+> in §§1 and 5 is now **fresh independent Codex QA**: a new Codex process and
+> session (never the engineer's session, never resumed or forked), read-only,
+> judging the exact disposable snapshot and fresh trusted-host gate evidence,
+> with identity taken from controller launch and CLI telemetry, never model
+> self-report (proposal §§2–4, 6). Only the provider changes. Clean
+> initialization, the empty index, all five gates, `maxFixAttempts: 3`,
+> complete evidence, every owner checkpoint and the approved local-commit
+> permissions are unchanged. The Status paragraphs above and §6 are
+> historical and preserved verbatim; their Kimi wording authorizes no Kimi
+> use. This note neither asserts nor infers that a historical setup review
+> or any Kimi PASS occurred. The setup review is not waived: it requires a
+> fresh independent Codex reviewer, and these reviewed Phase 6 authority
+> amendments fall within the manual bootstrap review scope (proposal §§5,
+> 7 step 4). At this date the runner's QA-dispatch migration candidate is
+> uncommitted, not activated, governance-blocked and not accepted; Phase 6
+> is not initialized. No PASS, checkpoint or acceptance is granted here.
+
+> **Phase 8A note — 2026-10-27 (owner-approved; plan §0.9).** Phase 8A is
+> built on a separate isolated base (`docs/phase-8-design.md`) and changes no
+> Phase 6 product behavior, criterion or step. Its only test overlap is two
+> narrowly described inherited Phase 4 visual assertions in
+> `e2e/phase4-hud.spec.ts` (also a Phase 6 commit path), forced by the
+> approved starfield removal: the stream-inventory expectation, and the
+> unseeded natural-randomness half of AC-13/14 (approved `main` lines
+> 869–904) retargeting from the 700-point starfield (`globe-canvas.tsx`
+> 237–252) to the 120-point `globe-cities` buffer (889–899). The seeded
+> forced-buffer half (860–867) and the immutable fixture stay unchanged. Any
+> overlap with Phase 6 paths is reconciled later under separate bounded
+> scope, never folded into Phase 6 now; this grants no F2/F3 repair. If 8A is later reconciled into this line
+> before Phase 6 captures are taken, those captures may show the reconciled
+> 8A scene; the §18 criteria, the 26 acceptance criteria, deck geometry and
+> placement rules, all five gates and every owner checkpoint are unchanged.
+> Such reconciliation needs its own bounded, owner-requested scope. This note
+> weakens no Phase 6 scope and grants no Phase 6 work outside the runner.
+
 ## 1. Packages and sequencing
 
-The existing schema and controller remain unchanged. `phase-6.json` starts
+The existing manifest schema and controller state machine remain unchanged;
+the 2026-10-24 QA-dispatch migration candidate (above) changes only the
+reviewer dispatch and is not yet accepted. `phase-6.json` starts
 at `step-1`, with `initiallyAcceptedThrough: null`, no preaccepted QA, and
 `maxFixAttempts: 3`. Both packages require exactly these commands:
 
@@ -27,8 +66,8 @@ at `step-1`, with `initiallyAcceptedThrough: null`, no preaccepted QA, and
 
 | Runner package | Approved §19 internal sequence | Exit |
 | --- | --- | --- |
-| Step 1 | Items 1–5 together: solver metadata/unit tests → DeckHud/measurement/accessibility/probe → smoke/new spec/recovery → Phase 4 amendments/CI/sync → documentation and §18 capture preparation | All 26 criteria and five gates complete, fresh independent Kimi technical PASS, then `awaiting-owner`; `ownerGateAfter: true`, no commit |
-| Step 2 | Item 5 delivery verification after §18 owner checkpoint; no new product increment | Verify owner evidence, rerun all five gates, fresh independent Kimi PASS, controller's single `commitAfterQa`, then `complete-awaiting-owner-ci` |
+| Step 1 | Items 1–5 together: solver metadata/unit tests → DeckHud/measurement/accessibility/probe → smoke/new spec/recovery → Phase 4 amendments/CI/sync → documentation and §18 capture preparation | All 26 criteria and five gates complete, fresh independent Codex QA technical PASS, then `awaiting-owner`; `ownerGateAfter: true`, no commit |
+| Step 2 | Item 5 delivery verification after §18 owner checkpoint; no new product increment | Verify owner evidence, rerun all five gates, fresh independent Codex QA PASS, controller's single `commitAfterQa`, then `complete-awaiting-owner-ci` |
 
 This groups the internal engineering sequence into one reviewable
 implementation commit. No partial package can claim success before the
@@ -37,8 +76,8 @@ preparation agree. Setup is a separate local commit owned by the orchestrator;
 Codex never stages or commits. The final delivery message ends exactly with
 `Co-Authored-By: Claude Code <noreply@anthropic.com>`.
 
-Before actual initialization, independent Kimi must review this setup and the
-orchestrator must commit the reviewed manifest, plan, prompt fix, tests, and
+Before actual initialization, a fresh independent Codex reviewer must review
+this setup (not waived; amendment note above) and the orchestrator must commit the reviewed manifest, plan, prompt fix, tests, and
 approved design/roadmap changes. The manifest and design source must be
 tracked and clean, the index empty, and all eventual commit paths clean.
 Preserve the hook-owned handoff and unrelated owner changes. No earlier
@@ -244,11 +283,12 @@ new files), and each evidence filename/hash, CSS viewport, theme,
 accessibility state, mode/record, browser/OS, rendering backend, DPR,
 seed/time/pause configuration or live-motion state. Include standard monitor
 and deck measured return heights, large control dimensions, and a crate
-comparison note citing the unchanged Phase 4 fixture and Kimi diff review.
+comparison note citing the unchanged Phase 4 fixture and the fresh
+independent Codex QA diff review.
 The owner record binds the SHA-256 of the index, which binds every capture
 and implementation file. Report/status prose and the owner record itself
 are excluded from the implementation fingerprint to avoid circular hashes;
-they must remain truthful and are reviewed by fresh Kimi.
+they must remain truthful and are reviewed by fresh independent Codex QA.
 
 The UNFILLED template may list these required owner fields and empty review
 boxes; only the owner creates/fills `OWNER-CHECKPOINT.md`. A fixed filename
@@ -265,7 +305,7 @@ predicting the future review date. Require:
   changes-requested resolved and no placeholders. Setup approval never
   substitutes for any of these decisions.
 
-Step 1's fresh Kimi PASS concerns technical completeness/capture readiness;
+Step 1's fresh independent Codex QA PASS concerns technical completeness/capture readiness;
 the owner record may still be absent. The runner then stops awaiting-owner.
 Only after the real owner supplies the dated record and explicit approval may
 the orchestrator invoke controller accept and proceed to Step 2. Agents never
@@ -273,7 +313,8 @@ sign approvals, accept checkpoints, or treat elapsed time as consent.
 
 The unchanged controller's accept command validates state/QA sequencing, not
 owner identity or evidence. These checks are therefore an explicit operator
-protocol plus required Codex/fresh-Kimi review, not a new automated validator.
+protocol plus required Codex engineering and fresh independent Codex QA
+review, not a new automated validator.
 Step 2 must block on absent/stale/ambiguous/rejected evidence even if someone
 has already advanced controller state. No delivery claim before that review
 and fresh QA. Product/test/capture changes after review invalidate the
@@ -282,7 +323,8 @@ updated evidence and genuine renewed approval before delivery. Do not patch
 past the checkpoint or change controller behavior to bypass it.
 
 The local delivery commit includes the owner-authored record; inclusion is
-not permission for Codex to edit it. A valid owner record and local Kimi PASS
+not permission for Codex to edit it. A valid owner record and local fresh
+Codex QA PASS
 still are not final CI/release acceptance. Final state remains
 complete-awaiting-owner-ci; no push, publication, or release is authorized.
 

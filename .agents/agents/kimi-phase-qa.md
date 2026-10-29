@@ -1,7 +1,7 @@
 ---
 name: kimi-phase-qa
-description: Independent read-only phase QA with severity-ranked evidence
-whenToUse: Automated verification after a Codex phase-step implementation
+description: Retired historical Kimi QA profile; never launch for new work
+whenToUse: Never. Retained only for historical compatibility.
 tools:
   - Read
   - Grep
@@ -10,6 +10,15 @@ tools:
   - Bash
 subagents: []
 ---
+
+# RETIRED — owner instruction, 2026-10-24
+
+Do not launch this profile or use Kimi in any repository session. If this
+profile is nevertheless loaded, make no tool calls and return BLOCKED: the
+profile is retired. Independent Codex QA requires the approved migration in
+`docs/codex-qa-proposal.md`; this profile is not a fallback or approval waiver.
+
+## Historical instructions below — inactive, retained as context only
 
 ${base_prompt}
 

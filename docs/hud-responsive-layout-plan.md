@@ -287,6 +287,41 @@ any phase's scope, any acceptance criterion, or any live behavior.
    evidence that the assertion passes; it passes only when Phase 6 is
    implemented and its gates are green under independent QA.
 
+### 0.9 Amendment 2026-10-27 — Phase 8 splits into 8A and 8B
+
+Owner-approved amendment, documentation-only (no production code,
+canonical content, approval record, test or evidence changed). The owner
+approved OD-1 and OD-2 of `docs/visual-first-amendment.md` on 2026-10-27;
+the verbatim reply and provenance are in that document's §0.
+
+1. **Split.** Phase 8 splits. **8A** (the early visual candidate; files per
+   `docs/visual-first-amendment.md` §2, operationalized in
+   `docs/phase-8-design.md`) may precede Phases 6/7 as a bounded
+   owner-authorized exception. **8B** (HUD typography integration, `:root`
+   token flip, legacy-family removal, replacement baselines and the Phase 8
+   owner checkpoint) still requires Phases 6 and 7 delivered.
+2. **Appearance bands only.** The Phase 8 entry's narrow suspension of the
+   pre-migration Phase 4 §9.6.3 **appearance-band** comparison applies to
+   8A. Determinism (including the unresolved F2), §9.6.4 error capture,
+   §9.6.2 blank-canvas, geometry, interaction, accessibility and the five
+   gates are **not** suspended. Historical capture sets stay immutable; 8A
+   captures are candidates, never replacement baselines.
+3. **What this is not.** Not a second phase framework or controller; not
+   runner activation (the Codex-QA migration stays blocked/unaccepted and
+   every phase command except `status` stays forbidden); never Phase 6
+   product work outside the runner and never a Phase 6 deck-overlap
+   stopgap; Phase 7 unchanged. 8A alone is not publishable and does not
+   complete Phase 8. Every commit, push, visual review, the 8B checkpoint,
+   the replacement set and any performance waiver stay owner-authored.
+4. **Activation.** 8A runs only in a new compatible session from the
+   owner-accepted isolation base (`docs/phase-8-design.md` §2), with one
+   Codex engineer and a manual fresh read-only Codex reviewer.
+5. **Provider note 2026-10-27 (prospective).** For the §4A corrections of
+   `docs/phase-8a-visual-revision.md` only, one native Opus 5.5
+   `portfolio-8a-engineer` session replaces the Codex engineer, under
+   `docs/phase-8-design.md` §10. The fresh read-only Codex reviewer, gates
+   and every limit above are unchanged.
+
 ---
 
 ## A. Finalized site-wide product policy
@@ -2238,6 +2273,18 @@ Phase 9: enforcement verifies the post-migration appearance, never the
 pre-migration one. Added by revision 8 (§0.7); this is the scheduled home
 for the rendered visual work that `DESIGN.md` §14 previously deferred with
 "schedule deliberately".
+
+> **Status amendment 2026-10-27 (§0.9).** Phase 8 splits into **8A** (early
+> visual candidate, owner-authorized to precede Phases 6/7 under
+> `docs/phase-8-design.md`; implementation not started) and **8B** (HUD
+> integration, baselines and checkpoint; still requires Phases 6 and 7
+> delivered). For 8A only the pre-migration Phase 4 appearance-band
+> comparison is suspended; the unchanged applicable safety, gate,
+> determinism, geometry and accessibility checks below remain blocking for
+> 8A. The Phase 8-as-a-whole exit (no legacy HUD families, integration with
+> delivered Phases 6/7, the replacement set and the owner checkpoint)
+> remains binding at 8B, not at 8A alone. The entry below remains the
+> binding scope and exit contract for Phase 8 as a whole.
 
 This phase implements the owner-approved `DESIGN.md` target appearance.
 `DESIGN.md` §§1–11 own the visual intent;

@@ -1,0 +1,149 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "phase",
+    "step",
+    "verdict",
+    "summary",
+    "binding",
+    "gates",
+    "findings",
+    "residualRisks",
+    "nextContext",
+    "handoff"
+  ],
+  "properties": {
+    "phase": {
+      "type": "integer"
+    },
+    "step": {
+      "type": "string"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "blocked"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invocationId",
+        "snapshot",
+        "base",
+        "gateRecord"
+      ],
+      "properties": {
+        "invocationId": {
+          "type": "string"
+        },
+        "snapshot": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string"
+        },
+        "gateRecord": {
+          "type": "string"
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "status",
+          "details"
+        ],
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail",
+              "not-run"
+            ]
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "blocking",
+          "file",
+          "line",
+          "evidence",
+          "expected",
+          "actual",
+          "reproduction"
+        ],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low",
+              "info"
+            ]
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "file": {
+            "type": "string"
+          },
+          "line": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "expected": {
+            "type": "string"
+          },
+          "actual": {
+            "type": "string"
+          },
+          "reproduction": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "residualRisks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nextContext": {
+      "type": "string"
+    },
+    "handoff": {
+      "type": "string"
+    }
+  }
+}

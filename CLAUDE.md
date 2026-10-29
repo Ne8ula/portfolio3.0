@@ -1,212 +1,150 @@
 # Portfolio 3.0 — CLAUDE.md
 
-> Current-state handoff; ≤9,000 characters. Follow `AGENTS.md`'s role and
-> handoff protocol. `portfolio-orchestrator` is Astra coordinating through
-> Claude Code; `portfolio-design` is the Claude design specialist. Client
-> identity does not determine model or role. See `docs/astra-orchestration.md`.
-> Visual: `DESIGN.md`; technical: `docs/responsive-system.md`.
+> Current-state map; <=9,000 characters. **Workflow: AGENTS.md only.**
+> Client/model/role setup: docs/astra-orchestration.md. Visual DESIGN.md;
+> technical docs/responsive-system.md.
+>
+> **Consolidation (2026-10-28):** one bounded-task workflow; phase documents
+> are planning/reference, not execution controllers. The runner is shelved,
+> not accepted. No Kimi. Fresh independent Codex QA, product checks and
+> owner-only approvals remain. Stored edits require a NEW compatible session;
+> they do not change this editing session's loaded rules or launch any work.
 
 ## Overview
 
-**Owner** Alex Xiong (Ne8ula) · **Deploy** Vercel · **Repo**
-Ne8ula/portfolio3.0.
+Alex Xiong (Ne8ula) · Vercel · Ne8ula/portfolio3.0. “Editorial Cockpit”: boot
+terminal → warp → first-person 3D workstation. Heroes: vinyl crate and A.X /
+STUDIO turntable (projects); AX-01 PC is the larger secondary anchor;
+coffee/props subordinate. At rest the desk is quiet; hover shows a light-jade
+wireframe + `OBJECT · PURPOSE` tag. Next.js 16 (Turbopack), React 19, Tailwind
+v4, imperative three.js `^0.184` + `@pmndrs/vanilla`
+MeshTransmissionMaterial; **no React Three Fiber, WebGPU, or TSL.** App scope: `app/`, `components/cockpit/`,
+`components/responsive/`, `lib/`. Gates: `npm run lint | typecheck:contracts |
+validate:contracts | test:unit | test:e2e`. `next build` ignores TS errors;
+the `tsconfig.contracts.json` island (`lib/**`, `components/responsive/**`,
+contract tests) forbids `@ts-nocheck`; cockpit modules keep it.
 
-“Editorial Cockpit”: boot a retro terminal → warp → arrive first-person at
-Alex’s 3D personal workstation. Project-bearing heroes are the vinyl crate and
-A.X / STUDIO turntable; AX-01 PC is the physically larger secondary workstation
-anchor; coffee is ambient; personal props stay subordinate. At rest the desk is
-quiet. Hover reveals a light-jade wireframe trace and `OBJECT · PURPOSE` tag.
+## Flow
 
-## Stack and scope
-
-Next.js 16 App Router/Turbopack, React 19, Tailwind v4, imperative three.js
-`^0.184` with `@pmndrs/vanilla` MeshTransmissionMaterial. **No React Three
-Fiber, WebGPU, or TSL.** App scope is `app/`, `components/cockpit/`,
-`components/responsive/`, and `lib/`; other top-level app-like directories
-are out of scope.
-
-Required gates: `npm run lint | typecheck:contracts | validate:contracts |
-test:unit | test:e2e` (Playwright uses a dev server). `next build` ignores TS
-errors; the strict `tsconfig.contracts.json` island covers `lib/**`,
-`components/responsive/**`, and contract tests (no `@ts-nocheck`); cockpit
-modules remain `@ts-nocheck`.
-
-## Current flow
-
-1. **Boot** — POST/typewriter to `[ENTER THE ROOM]`; waits for the operable
-   ACCESSIBILITY trigger; reduced motion renders static-ready (no timelines).
-2. **Warp** — ~2.5s disposable wireframe airlock over the mounting cockpit.
-   `window.__warpTimeScale` slows debugging. Reduced motion skips warp.
-3. **Cockpit** — free-look `±22°/±15°`; objects still except purposeful motion
-   (platter, interactions); cream arrow becomes jade hand over pickable items.
-   Free-look uses the shaped live visible-box policy, keeps its full edge
-   envelope, and disables parallax under reduced motion. Artifact actions use
-   one shared same-pointer, sub-slop `pointerup` arbiter.
-   - **PC** → safe-frame-fitted `monitor` camera + matrix3d ScreenDialog; send
-     remains a stub.
-   - **Crate** → authored-point, safe-frame-fitted top-down `crate`; hover
-     highlights, click plays a record.
-   - **Deck** → authored-point, safe-frame-fitted sleeve/cover/disc/tonearm
-     sequence, jade beam + in-scene project card; VIEW MORE fires
-     `cockpit-project-view` (destination stub). Phase 6 working code anchors
-     measured hint/arrows to the published card with return-control collision;
-     browser verification and owner acceptance remain open.
-   - Below `1024×600`, the stable `ResponsiveStage` wrapper exposes one
-     centred native-scroll crop with normalized wheel/drag/keyboard pan,
-     bounded drag-release inertia, instructions, and RESET; page scrolling
-     chains at region bounds.
-   - Theme toggle only in base cockpit (`localStorage['cockpit-theme']`);
-     boot/warp stay authored-dark.
+1. **Boot** — typewriter to `[ENTER THE ROOM]`; waits for the operable
+   ACCESSIBILITY trigger; reduced motion is static-ready.
+2. **Warp** — ~2.5s wireframe airlock (`window.__warpTimeScale` slows it);
+   reduced motion skips it.
+3. **Cockpit** — free-look `±22°/±15°` (shaped live visible-box policy, full
+   edge envelope, no reduced-motion parallax); cream arrow → jade hand over
+   pickables; one same-pointer, sub-slop `pointerup` arbiter. Safe-frame-fitted
+   views: **PC** → `monitor` camera + matrix3d ScreenDialog (send stub);
+   **Crate** → authored-point top-down `crate`, click plays a record;
+   **Deck** → sleeve/cover/disc/tonearm sequence, jade beam + in-scene card,
+   VIEW MORE fires `cockpit-project-view` (stub); Phase 6 code anchors
+   hint/arrows to the published card with return-control collision
+   (unverified, unaccepted). Below `1024×600`, `ResponsiveStage` gives one
+   centred native-scroll crop (wheel/drag/keyboard pan, inertia,
+   instructions, RESET). Theme toggle only in base cockpit
+   (`localStorage['cockpit-theme']`); boot/warp stay dark.
 
 ## Architecture (`components/cockpit/`)
 
-| File | Current responsibility |
-|---|---|
-| `cockpit-app.tsx` | Phase machine, theme, lifecycle/rebuild, `TWEAK_DEFAULTS`. |
-| `cockpit-hud.tsx` | Site header, projected tags/brackets, browse UI, VinylInfoCard, ScreenDialog. |
-| `globe-canvas.tsx` | Scene/render loop, cached focus fit/pose modes, picking, themes, object builders. |
-| `focus-fit-store.ts` / `pointer-activation.ts` | Overlay measurement/status generations and the single pointer-click arbiter. |
-| `materials.ts` / `decals.ts` / `highlights.ts` | Glass/frost, micrographics, hover-only x-ray edges. |
-| `glass-mac.ts` | AX-01 monitor/keyboard/mouse; protected benchmark. |
-| `vinyl-crate.ts` / `turntable.ts` | Project selection, deck sequence, disc/card/beam, deck bridge. |
-| `coffee.ts` / `decorations.ts` | Coffee loop and subordinate personal props; tablet/shaker clickable. |
-| `test-hooks.ts` | Dev-only `__COCKPIT_TEST_HOOKS__`; additive, statically absent in production. |
+`cockpit-app.tsx` phase machine, theme, lifecycle, `TWEAK_DEFAULTS` ·
+`cockpit-hud.tsx` header, projected tags, browse UI, VinylInfoCard,
+ScreenDialog · `globe-canvas.tsx` render loop, focus fit/pose, picking, themes,
+builders · `focus-fit-store.ts`/`pointer-activation.ts` overlay measurement;
+click arbiter · `materials.ts`/`decals.ts`/`highlights.ts` glass, micrographics,
+x-ray edges · `glass-mac.ts` AX-01 (protected benchmark) ·
+`vinyl-crate.ts`/`turntable.ts` selection, deck sequence/card/beam, deck bridge
+· `coffee.ts`/`decorations.ts` coffee, props (tablet/shaker clickable) ·
+`test-hooks.ts` dev-only `__COCKPIT_TEST_HOOKS__`, absent in production.
 
-`components/responsive/`: root `AccessibilityProvider` (matchMedia +
-persisted `cockpit-a11y-v1` → `data-a11y-*` on `<html>`), ACCESSIBILITY
-trigger/dialog, `ResponsivePage`/`ResponsiveStage`/`SafeFrame`/
-`AccessibleExperienceLink`; Phase 5 adds the contained native-scroll pan
-controller and stable instructions/RESET chrome. `/responsive-preview` is the
-representative page.
-
+`components/responsive/`: root `AccessibilityProvider` (matchMedia + persisted
+`cockpit-a11y-v1` → `data-a11y-*` on `<html>`), ACCESSIBILITY trigger/dialog,
+`ResponsivePage`/`ResponsiveStage`/`SafeFrame`/`AccessibleExperienceLink`, pan
+controller, instructions/RESET; `/responsive-preview` is representative.
 Canonical public facts live only in `lib/projects/catalog.ts` +
-`lib/portfolio/profile.ts` (six projects + profile owner-approved,
-hash-protected); client artwork in `components/cockpit/project-textures.ts`
-derives the `SLEEVES` visual tokens.
-
-The root enhances Phase 2's server shell/routes with the cockpit. Phase 3 adds
-`ResponsiveStage`, shared sizing, recovery, and canonical fallback.
+`lib/portfolio/profile.ts` (six projects + profile, owner-approved,
+hash-protected); `components/cockpit/project-textures.ts` derives `SLEEVES`.
 
 ## `window.__cockpit*` bridge — preserve exactly
 
-Globals: `__cockpitScene/Camera/Renderer/TableGroup`.
-
-Setters: `__cockpitPC.setTransform`, `__cockpitKeyboard.setOffset`,
+Globals `__cockpitScene/Camera/Renderer/TableGroup`. Setters
+`__cockpitPC.setTransform`, `__cockpitKeyboard.setOffset`,
 `__cockpitVinyl.setTransform`, `__cockpitTurntable.setTransform`,
 `__cockpitFPV.setOffset`, `__cockpitCoffee.setDripper/setMug`,
-`__cockpitDecor.set`; tick: `__cockpitTick(dt,t)`.
-
-View: `__setCockpitViewMode(m)` / `__cockpitViewMode`. Events:
-`cockpit-view-mode`, `cockpit-hover`, `cockpit-crate-hover`, `cockpit-theme`,
-`cockpit-project-view`.
-
-Deck: `__cockpitDeck.play/eject/busy/index`; crate orchestrates it.
-
-rAF/HUD getters: `__getCockpitScreenRect`, `__getCockpitPCRect`,
-`__getCockpitCrateRect`, `__getCockpitAnchors`, `__cockpitHoveredTag`,
-`__getCockpitVinylHover`, `__getCockpitDeckInfo`,
-`__getCockpitDeckCardRect`;
-`__cockpitVinylSelect(±1)` steps crate/deck.
-
-Screen contract: AX-01 sets `xray.userData.screenGroup` and
-`screenCorners{tl,tr,bl,br}`; monitor camera and ScreenDialog depend on both.
-Test behavior, including Phase 3's `getRendererState()`, is additive only
-through dev-only `__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
+`__cockpitDecor.set`; tick `__cockpitTick(dt,t)`. View
+`__setCockpitViewMode(m)`/`__cockpitViewMode`. Events `cockpit-view-mode`,
+`cockpit-hover`, `cockpit-crate-hover`, `cockpit-theme`, `cockpit-project-view`.
+Deck `__cockpitDeck.play/eject/busy/index` (crate orchestrates). rAF/HUD
+getters `__getCockpitScreenRect`, `__getCockpitPCRect`, `__getCockpitCrateRect`,
+`__getCockpitAnchors`, `__cockpitHoveredTag`, `__getCockpitVinylHover`,
+`__getCockpitDeckInfo`, `__getCockpitDeckCardRect`; `__cockpitVinylSelect(±1)`
+steps crate/deck. AX-01 sets `xray.userData.screenGroup` and
+`screenCorners{tl,tr,bl,br}`; monitor camera and ScreenDialog need both. Test
+behavior, including `getRendererState()`, is additive only via dev-only
+`__COCKPIT_TEST_HOOKS__`; never fold it into this bridge.
 
 ## Responsive/content workflow — mandatory
 
-Phases −1 through 5 are delivered and merged (Phase 5 at `03fca60` with the
-dated AC-27/AC-28 owner checkpoint and Kimi QA PASS). The Phase 6 design's
-seven §18 preconditions and D20 path are owner-approved (2026-10-09).
-Phase 6 setup is committed at `59c3dc9`; step-1 implementation and coverage
-are incomplete; prior partial work is preserved in `6a15c82`, not accepted.
-Browser execution is blocked in the current sandbox;
-stable host F3 mutation proof is recorded; complete browser verification,
-captures and fresh independent Kimi technical QA remain open.
-See `docs/phase-6-implementation.md` for actual verification evidence.
-Postimplementation §18 reviews and final owner/CI acceptance remain open.
-The owner-approved
-`PROFILE.targetRole` is “Creative Technologist” and its current content hash
-is recorded. Before any rendered
-UI, layout, typography, 3D framing/material/lighting, interaction, or canonical
-content work, read `DESIGN.md` §§13–15, `docs/responsive-system.md`, the
-relevant `LayoutContract`/`ContentContract`, and canonical catalog/profile.
-Update contracts and matching `data-*` identifiers when views change. A
-rendered/content task is unfinished until all five gates pass.
+Phases −1–5 are merged (Phase 5 `03fca60`: dated AC-27/AC-28 owner checkpoint,
+historical Kimi QA PASS). Phase 6's seven §18 preconditions and D20 path are
+owner-approved (2026-10-09); setup `59c3dc9`; step 1 incomplete, unaccepted
+(partial `6a15c82`). Sandbox blocks browsers; host F3 mutation proof is
+recorded; browser verification, captures, fresh Codex QA, §18 reviews and
+owner/CI acceptance remain open (`docs/phase-6-implementation.md`).
 
-Hard rules:
+Before rendered UI, layout, typography, 3D framing/material/lighting,
+interaction, or content work, read `DESIGN.md` §§13–15,
+`docs/responsive-system.md`, the relevant `LayoutContract`/`ContentContract`
+and catalog/profile; update contracts and `data-*` identifiers when views
+change; unfinished until all five gates pass. Hard rules:
 
-- The semantic DOM is canonical; no essential fact/action only in JSX, canvas,
-  textures, hover, 3D, or client state.
-- Never invent facts, ownership, metrics, or outcomes.
+- Semantic DOM is canonical: no essential fact/action only in JSX, canvas,
+  textures, hover, 3D, or client state. Never invent facts, ownership,
+  metrics, or outcomes.
 - Never create/refresh `content/portfolio-approvals.json` (owner-only); a
-  public-field edit intentionally fails validation until owner review.
-- Interactive 3D regions require a route or equivalent DOM alternative.
-- Models/relative transforms do not respond independently; camera framing,
-  negative space, chrome, and projected HUD may adapt.
-- Subject HUD follows projected geometry; application chrome follows stage.
-- New randomness accepts a seedable named stream; never patch `Math.random`.
-- Preserve WCAG 2.2 AA plus the five explicit accessibility states and
-  forced-colors precedence.
-- The deck overlap belongs to Phase 6; do not stopgap it.
+  public-field edit fails validation until owner review.
+- Interactive 3D regions need a route or equivalent DOM alternative.
+- Models/relative transforms never adapt independently; camera framing,
+  negative space, chrome, and projected HUD may. Subject HUD follows projected
+  geometry; application chrome follows stage.
+- New randomness takes a seedable named stream; never patch `Math.random`.
+- WCAG 2.2 AA, five explicit accessibility states, forced-colors precedence.
+- The deck overlap needs its complete scoped fix; do not add an unrelated stopgap.
 
-## Design system: current runtime and approved target
+## Design system
 
-`DESIGN.md` is authoritative. Approved doctrine: a dreamlike 2050 personal
-workstation expressed through late-1990s translucent electronics; the cockpit
-is the machine and explicit semantic project pages are a vinyl-inflected
-archival catalogue. Avoid cyberpunk, luxury editorial, illegible experiment,
-and interaction overload.
-
-Palette: cream/ink/mauve; jade is the sole chromatic family (60 neutral /
-30 material jade / 10 signal jade).
-DOM remains `--radius: 0`; physical models may use molded radii. Crate and
-turntable are narrative heroes; AX-01 is the physically largest protected
-benchmark; coffee/props stay subordinate. Exact runtime transforms remain in
-`TWEAK_DEFAULTS`.
-
-Approved typography target: Newsreader (identity/project display), IBM Plex
-Sans (body/UI), Plex Sans Condensed (labels), Plex Mono (technical/screen),
-VT323 (boot only); runtime still loads Cormorant Garamond + JetBrains Mono
-behind role tokens (`--font-display/ui/label/technical/terminal`); the
-migration is plan §8 Phase 8. The
-“Creative Technologist” role (typed once, then stable) is owner-approved in
-`PROFILE.targetRole` and covered by the current approval record.
-
-Approved scene target: one photographed studio across all views—soft cream
-key, frontal fill, controlled jade transmission/rim, mauve/ink or cream/fog
-gradient field, soft physical grounding. Runtime lighting/background is not
-migrated; Phase 8 owns that migration. UI drop shadows stay forbidden;
-physical 3D contact shadows are
-allowed. Grain/vignette are restrained finishing, removed by the
-reduced-transparency/high-contrast/forced-colors states.
+`DESIGN.md` is authoritative: a dreamlike 2050 workstation in late-1990s
+translucent electronics; semantic project pages are a vinyl-inflected archival
+catalogue. Avoid cyberpunk, luxury editorial, illegible experiment,
+interaction overload. Cream/ink/mauve; jade is the sole chromatic family (60
+neutral / 30 material / 10 signal). DOM `--radius: 0`; models may use molded
+radii. Runtime transforms live in `TWEAK_DEFAULTS`. Plan §8 Phase 8 migrates
+to the approved targets: Newsreader, IBM Plex Sans/Sans Condensed/Mono, VT323
+boot only (runtime: Cormorant Garamond + JetBrains Mono behind
+`--font-display/ui/label/technical/terminal`); one photographed studio (soft
+cream key, frontal fill, jade transmission/rim, mauve/ink or cream/fog
+gradient, soft grounding). No UI drop shadows; physical contact shadows OK.
+Grain/vignette drop out under reduced-transparency/high-contrast/forced-colors.
+`PROFILE.targetRole` “Creative Technologist” (typed once) is owner-approved.
 
 ## Gotchas
 
-- Hero glass is transmissive, not alpha transparency: keep `depthWrite:false`;
-  transmissives do not see each other; build bins/covers as thin shells.
-- Bare transmissive props need opaque liners; solid volumes become milk slabs.
-- Printed jade uses lit materials; unlit basic accents resemble light bars.
-- Avoid coplanar faces; decals float/sink a few mm. Keep anisotropic blur low.
-- Additive lines clamp white over cream; glow uses normal blend,
+- Hero glass is transmissive, not alpha: `depthWrite:false`; transmissives
+  don't see each other; bins/covers are thin shells; bare props need opaque
+  liners (solid volumes become milk slabs).
+- Printed jade uses lit materials (unlit accents look like light bars).
+- Avoid coplanar faces; decals float/sink a few mm; low anisotropic blur.
+- Additive lines clamp white over cream; glow: normal blend,
   `depthTest:false`, `renderOrder:999`.
-- Never let an entrance keyframe overwrite a positioning transform: outer
-  anchor positions, inner child animates (`tagFadeIn` pattern).
-- `ResponsiveStage` owns contained panning; only its inner surface keeps the
-  scroll pin. Dialog focus uses `preventScroll`.
+- Entrance keyframes never overwrite positioning: outer anchor positions,
+  inner child animates (`tagFadeIn`).
+- `ResponsiveStage` owns panning; only its inner surface keeps the scroll pin.
+  Dialog focus uses `preventScroll`.
 
 ## Next
 
-Phase 5 is delivered. Phase 6 step-1 remains incomplete and unaccepted;
-prior partial work is in `6a15c82`. Next:
-authorized host browser verification and capture preparation
-→ complete five green gates and fresh independent Kimi QA →
-explicit dated §18 owner checkpoint → fresh gates/Kimi and the runner's single
-delivery commit → owner/CI acceptance. See `docs/phase-6-plan.md`. Roadmap (plan §8,
-revision 8): Phase 6 deck-HUD re-anchor (owns the known overlap — never
-stopgapped) → Phase 7 crate-HUD re-anchor → Phase 8
-appearance/art-direction migration (materials, lighting, environment,
-typography, finishing; owner-approved replacement baselines) → Phase 9
-enforcement/browser matrix/CI/release, which consumes the post-Phase-8
-baselines (Phase 9 was formerly numbered Phase 8; pre-revision docs and
-code comments retain the old number).
+After a fresh compatible read-only startup, wait for the owner's bounded task.
+Use AGENTS.md, one handoff and the roadmap; do not resume a phase cursor or
+start migration/identity/custody work by default. Phase 6 and the recovered 8A
+candidate remain unfinished/unaccepted; their evidence, owner checkpoints and
+specific engineering assignments are preserved. The old alignment after-record
+is historical: it does not certify these newly edited instructions. No new
+session, engineering, QA, commit or acceptance is launched by this update.

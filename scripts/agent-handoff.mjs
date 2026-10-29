@@ -20,22 +20,20 @@ import { dirname, join, resolve } from "node:path";
 const HANDOFF_HEADER = `# Automated cross-agent handoff
 
 This is the single rolling communication record for the Astra orchestrator,
-Claude design, Codex engineering, and Kimi QA. Client and model are recorded
+Claude design, Codex engineering, and fresh independent Codex QA. Client and model are recorded
 separately; a Claude Code session can run Astra through Model Gateway.
 Lifecycle hooks maintain it; do not create a new handoff file after each turn.
 Read the newest entry together with the live Git status and diff. Repository
 files and test output are authoritative when this summary becomes stale.
 
 Default route:
-\`Claude design → Codex plan/code → Kimi QA → Codex fixes ↔ Kimi retest\`
+\`Claude design → Codex plan/code → fresh Codex QA → Codex fixes ↔ new fresh Codex QA\`
 
 Hook setup:
 
 - Claude and Codex use the version-controlled project hooks.
-- After installing Kimi Code CLI, run
-  \`npm run agent:handoff:install-kimi\` once for its user-level Stop hook.
-- Kimi's Stop payload contains a session id rather than its final text; the
-  hook exports that local session and records its newest \`Handoff:\` report.
+- Independent QA uses a new read-only Codex session and trusted-host gate evidence.
+- Historical records retain their original provider attribution.
 - Run \`npm run agent:handoff\` to inspect this record.
 
 ## Recent handoffs

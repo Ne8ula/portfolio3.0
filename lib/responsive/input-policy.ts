@@ -5,7 +5,7 @@
 // Two behaviors, two DIFFERENT mechanisms — do not merge them:
 //
 //   1. Hover free-look: normalized against the LIVE viewport, reshaped by
-//      `responseExponent`. Full ±22°/±15° range is reachable at the stage
+//      `responseExponent`. Full ±6°/±3° range is reachable at the stage
 //      edge on EVERY supported viewport (1**e === 1); smaller viewports
 //      only damp response near center. Applying a reference-dimension
 //      divisor to hover is the regression §9.4 guards against.
@@ -27,8 +27,8 @@ export const INPUT_REFERENCE: ViewportSize = { w: 1440, h: 900 }
 
 // ── Hover free-look ───────────────────────────────────────────────────────
 
-export const MAX_YAW_RAD = (22 * Math.PI) / 180
-export const MAX_PITCH_RAD = (15 * Math.PI) / 180
+export const MAX_YAW_RAD = (6 * Math.PI) / 180
+export const MAX_PITCH_RAD = (3 * Math.PI) / 180
 export const PARALLAX_YAW_SCALE = 0.25
 export const PARALLAX_PITCH_SCALE = 0.15
 

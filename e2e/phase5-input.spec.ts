@@ -10,6 +10,7 @@ import {
   sizeRatioFor,
 } from '../lib/responsive/input-policy'
 import { ciTimeout, resolveE2eTiming } from '../scripts/e2e-policy'
+import { PROFILE } from '../lib/portfolio/profile'
 
 const timing = resolveE2eTiming()
 
@@ -127,6 +128,86 @@ async function visibleHoverBox(page: Page): Promise<VisibleBox> {
         }
   })
 }
+
+test('identity plaque reflows in measured visible chrome through live resize, pan and preferences', async ({ page }) => {
+  test.setTimeout(ciTimeout(180_000,600_000))
+  await page.setViewportSize({width:1440,height:900})
+  await enterCockpit(page)
+  const plaque=page.locator('[data-layout-region="cockpit-identity"]')
+  await expect(plaque).toHaveAttribute('data-layout-contract','cockpit-identity-v1')
+  await expect(plaque).toHaveAttribute('data-content-contract','content-home-v1')
+  await expect(plaque.locator('h1')).toHaveText(PROFILE.name)
+  await expect(plaque.locator('.identity-role')).toHaveText(PROFILE.targetRole)
+  await expect(plaque.locator('.identity-eyebrow')).toHaveText('Portfolio')
+  const measurements=()=>page.evaluate(()=>{
+    const plaque=document.querySelector<HTMLElement>('[data-layout-region="cockpit-identity"]')!
+    const stage=document.querySelector<HTMLElement>('[data-layout-region="cockpit-stage"]')!
+    const visible=stage.closest<HTMLElement>('.responsive-stage')!
+    const p=plaque.getBoundingClientRect(),s=stage.getBoundingClientRect(),v=visible.getBoundingClientRect()
+    const h=stage.querySelector('[data-hud="site-header"]')!.getBoundingClientRect()
+    const recorded=(stage.dataset.identityBounds??'').split(',').map(Number)
+    const actual=[p.left-s.left,p.top-s.top,p.width,p.height]
+    const style=getComputedStyle(plaque)
+    const luminance=(color:string)=>{
+      const rgb=(color.match(/[\d.]+/g)??[]).slice(0,3).map(n=>{
+        const s=Number(n)/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4
+      })
+      return .2126*rgb[0]!+.7152*rgb[1]!+.0722*rgb[2]!
+    }
+    const fg=luminance(style.color),bg=luminance(style.backgroundColor)
+    return {left:p.left-v.left,right:v.right-p.right,bottom:v.bottom-p.bottom,header:p.top-Math.max(v.top,h.bottom),
+      overflow:plaque.scrollWidth-plaque.clientWidth,height:p.height,
+      contrast:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05),
+      measurementError:Math.max(...actual.map((n,i)=>Math.abs(n-(recorded[i]??Infinity)))),
+      outsideSurface:!plaque.closest('.responsive-stage-surface'),radius:style.borderRadius,
+      background:style.backgroundColor,color:style.color,transform:style.transform,
+    }
+  })
+  const assertMeasured=async()=>{
+    await expect.poll(async()=>{
+      const m=await measurements()
+      return m.left>=15.9&&m.right>=15.9&&m.bottom>=15.9&&Math.abs(m.header-16)<.2&&m.measurementError<.02&&m.overflow<=1
+    },{timeout:timing.expect}).toBe(true)
+    expect(await measurements()).toMatchObject({outsideSurface:true,radius:'0px',transform:'none'})
+    expect((await measurements()).contrast).toBeGreaterThanOrEqual(4.5)
+  }
+  const sizes=[{width:1440,height:900},{width:2000,height:635},{width:1024,height:600},{width:800,height:500},{width:320,height:568}]
+  for(const theme of ['dark','light']){
+    await page.locator('html').evaluate((root,value)=>root.setAttribute('data-theme',value),theme)
+    for(const size of [...sizes,...sizes.slice().reverse()]){
+      await page.setViewportSize(size)
+      await assertMeasured()
+    }
+  }
+  await page.setViewportSize({width:800,height:500})
+  await assertMeasured()
+  await page.locator('.responsive-stage').evaluate(node=>{node.scrollLeft=170;node.scrollTop=60})
+  await assertMeasured()
+  await page.locator('[data-hud="pan-reset"]').click()
+  await assertMeasured()
+  await page.setViewportSize({width:320,height:568})
+  for(const state of ['motion','contrast','transparency','text','controls']){
+    await page.locator('html').evaluate((root,name)=>root.setAttribute(`data-a11y-${name}`,name==='motion'||name==='transparency'?'reduced':name==='contrast'?'high':'large'),state)
+    await assertMeasured()
+    await page.locator('html').evaluate((root,name)=>root.removeAttribute(`data-a11y-${name}`),state)
+  }
+  // Text-only 200% enlargement exercises wrapping without counter-scaling;
+  // actual browser zoom remains a host visual check.
+  await page.locator('html').evaluate(root=>root.style.setProperty('--text-scale','2'))
+  await assertMeasured()
+  await page.locator('html').evaluate(root=>root.style.removeProperty('--text-scale'))
+  await page.emulateMedia({forcedColors:'active'})
+  await assertMeasured()
+  const forced=await measurements()
+  expect(forced.background).not.toBe('rgba(0, 0, 0, 0)')
+  expect(forced.color).not.toBe(forced.background)
+  await page.emulateMedia({forcedColors:'none'})
+  await page.evaluate(()=>window.__setCockpitViewMode?.('monitor'))
+  await expect(plaque).toHaveCount(0)
+  await page.evaluate(()=>window.__setCockpitViewMode?.('cockpit'))
+  await expect(plaque).toBeVisible()
+  await assertMeasured()
+})
 
 async function freeLook(page: Page): Promise<FreeLookSnapshot> {
   return page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getFreeLookState())
@@ -615,6 +696,8 @@ test.describe('Phase 5 free-look input normalization', () => {
         }), 10)
         expect(Math.abs(state.yawTarget)).toBeLessThanOrEqual(MAX_YAW_RAD + 1e-12)
         expect(Math.abs(state.pitchTarget)).toBeLessThanOrEqual(MAX_PITCH_RAD + 1e-12)
+        expect(state.yawTarget*180/Math.PI).toBeCloseTo(-point.x*6,1)
+        expect(state.pitchTarget*180/Math.PI).toBeCloseTo(-point.y*3,1)
         expect(Math.abs(state.yawTarget - expectedYaw)).toBeLessThanOrEqual(
           point.x === 0 ? 1e-6 : MAX_YAW_RAD * 0.01,
         )

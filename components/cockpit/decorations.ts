@@ -16,14 +16,104 @@
 // LIT materials only (unlit basics glow like light-bars over the dim scene).
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
-import { PALETTE, makeFrost, makeHeroGlass } from "./materials"
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
+import { PALETTE, makeFrost, makeHeroGlass, makeAccentMaterial } from "./materials"
 import { makeTextDecal } from "./decals"
 import { CURSOR_POINTER } from "./cursors"
 import { registerPointerActivation } from "./pointer-activation"
 
 const MONO = '"JetBrains Mono", Consolas, monospace';
 
-export function buildDecorations(scene, tableGroup, camera, renderer){
+// Static articulated task lamp. Local -Y of the recessed emitter owns the key.
+export function buildDeskLamp(warmLight = new THREE.Color(PALETTE.cream)){
+  const lamp = new THREE.Group();
+  lamp.name = 'desk-lamp';
+  lamp.position.set(-7.4, 0.18, -3.2);
+  const cream = new THREE.MeshStandardMaterial({ color: PALETTE.cream, roughness: 0.52 });
+  const ink = new THREE.MeshStandardMaterial({ color: PALETTE.ink, roughness: 0.55 });
+  const clear = makeHeroGlass({ thickness: 0.025, roughness: 0.16 });
+  clear.userData.lampClear = { transmission: clear.transmission, depthWrite: clear.depthWrite };
+  const add = (name, geometry, material, parent = lamp) => {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = name; parent.add(mesh); return mesh;
+  };
+  const parts = { ink: [], cream: [] };
+  const bake = (geometry, position, quaternion, bucket) => {
+    geometry.applyMatrix4(new THREE.Matrix4().compose(position, quaternion, new THREE.Vector3(1,1,1)));
+    parts[bucket].push(geometry);
+  };
+  const rod = (from, to, radius, bucket) => {
+    const delta = to.clone().sub(from);
+    bake(new THREE.CylinderGeometry(radius, radius, delta.length(), 12),
+      from.clone().add(to).multiplyScalar(0.5),
+      new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), delta.normalize()), bucket);
+  };
+  const lower = new THREE.Vector3(0, 0.37, 0);
+  const elbow = new THREE.Vector3(-0.8, 2.32, 0);
+  const wrist = new THREE.Vector3(1.9, 2.77, 0.5);
+  const emitterPosition = new THREE.Vector3(2.4, 2.22, 0.85);
+  const foot = add('lamp-weighted-foot', new THREE.CylinderGeometry(0.48, 0.5, 0.14, 40), cream);
+  foot.position.y = 0.07;
+  rod(new THREE.Vector3(0,0.14,0), lower, 0.055, 'ink');
+  rod(lower, elbow, 0.055, 'ink');
+  rod(elbow, wrist, 0.055, 'ink');
+  rod(wrist, emitterPosition, 0.06, 'ink');
+  // Slim inset rails sit on the front of both structural arms.
+  for (const [a,b] of [[lower,elbow],[elbow,wrist]]) {
+    const delta = b.clone().sub(a);
+    rod(a.clone().addScaledVector(delta,0.09).add(new THREE.Vector3(0,0,0.049)),
+      b.clone().addScaledVector(delta,-0.09).add(new THREE.Vector3(0,0,0.049)), 0.018, 'cream');
+  }
+  for (const pivot of [lower, elbow, wrist]) {
+    bake(new THREE.TorusGeometry(0.145, 0.045, 8, 24), pivot,
+      new THREE.Quaternion(), 'cream');
+    bake(new THREE.TorusGeometry(0.097, 0.016, 6, 24), pivot.clone().add(new THREE.Vector3(0,0,0.012)),
+      new THREE.Quaternion(), 'ink');
+    // Recessed fasteners leave the center of the pivot open.
+    for (const sign of [-1,1]) {
+      bake(new THREE.CylinderGeometry(0.021,0.021,0.009,8),
+        pivot.clone().add(new THREE.Vector3(sign*0.143,0,0.036)),
+        new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2), 'ink');
+    }
+  }
+  for (const pivot of [elbow,wrist]) {
+    const curve = new THREE.CatmullRomCurve3([
+      pivot.clone().add(new THREE.Vector3(-0.18,0,-0.07)),
+      pivot.clone().add(new THREE.Vector3(-0.13,0.27,-0.07)),
+      pivot.clone().add(new THREE.Vector3(0.16,0.24,-0.07)),
+      pivot.clone().add(new THREE.Vector3(0.22,0,-0.07)),
+    ]);
+    parts.ink.push(new THREE.TubeGeometry(curve, 16, 0.014, 5, false));
+  }
+  for (const bucket of ['ink','cream']) {
+    const flattened = parts[bucket].map(g => g.toNonIndexed());
+    const geometry = mergeGeometries(flattened);
+    flattened.forEach(g => g.dispose());
+    parts[bucket].forEach(g => g.dispose());
+    add('lamp-' + bucket + '-assembly', geometry, bucket === 'ink' ? ink : cream);
+  }
+  const collar = add('lamp-clear-collar', new THREE.TorusGeometry(0.195, 0.018, 8, 24), clear);
+  collar.position.copy(elbow);
+  const chip = add('lamp-jade-chip', new THREE.BoxGeometry(0.065,0.035,0.012),
+    makeAccentMaterial(new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.55 })));
+  chip.position.copy(wrist).add(new THREE.Vector3(0,0.144,0.047));
+  const head = new THREE.Group(); head.name = 'lamp-head'; lamp.add(head);
+  const direction = new THREE.Vector3(-2.8, 0.175, -0.2).sub(lamp.position).sub(emitterPosition).normalize();
+  head.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0), direction);
+  head.position.copy(emitterPosition).sub(new THREE.Vector3(0,0.035,0).applyQuaternion(head.quaternion));
+  const profile = [[0.46,0],[0.52,0.035],[0.52,0.54],[0.47,0.60],[0,0.60],
+    [0,0.56],[0.46,0.56],[0.48,0.05],[0.46,0.05]];
+  add('lamp-opaque-shade', new THREE.LatheGeometry(profile.map(([r,y]) => new THREE.Vector2(r,y)), 32), cream, head);
+  const diffuser = add('lamp-recessed-diffuser', new THREE.CylinderGeometry(0.46,0.46,0.012,32),
+    makeAccentMaterial(cream, { color: warmLight, intensity: 2.0 }), head);
+  diffuser.position.y = 0.041;
+  const emitter = new THREE.Object3D(); emitter.name = 'task-lamp-emitter';
+  emitter.position.y = 0.035; head.add(emitter);
+  lamp.traverse(object => { object.userData.noPick = true; object.userData.noGlow = true; });
+  return lamp;
+}
+
+export function buildDecorations(scene, tableGroup, camera, renderer, warmLight = new THREE.Color(PALETTE.cream)){
   const root = new THREE.Group();
   tableGroup.add(root);
   let shakerWiggle = null, shakerLiquid = null, shakerPick = null;
@@ -32,7 +122,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
 
   // ── Shared materials ──────────────────────────────────────────
   const creamLt   = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, roughness: 0.6 });
-  const jade      = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6 });
+  const jade      = makeAccentMaterial(new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6 }));
   const frost     = makeFrost({ color: 0xE7E2D9, transmission: 0.75, roughness: 0.32, thickness: 0.06 });
   const frostCap  = makeFrost({ transmission: 0.7, roughness: 0.3, thickness: 0.08 });
   // shake lands darker than the target tan — the frosted wall lightens
@@ -66,7 +156,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     // silhouette falls behind the turntable's transmissive dust cover (or the
     // crate's frosted walls) gets refraction-magnified. Dialed in live via
     // __cockpitDecor.set to sit in the clear corridor between the two shells.
-    const g = item('sax', -2.8, -0.8, -0.35);
+    const g = item('sax', -6.10, -2.65, -0.35);
     g.scale.setScalar(2.0);   // size exception #2: hero-adjacent scale so the keywork reads from the cockpit
     // ── sax-only materials ── at s 2.0 the figure reads close-up, so its frost
     // carries the reference's etched-filigree micro pattern (roughness variation
@@ -94,7 +184,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     const frostShell = etch(makeFrost({ transmission: 0.7, roughness: 0.42, thickness: 0.06 }));
     frostShell.side = THREE.DoubleSide;   // the bell is an open flare — its hollow must read
     const pearl = new THREE.MeshPhysicalMaterial({ color: 0xEDE8DC, roughness: 0.32, clearcoat: 0.6,  clearcoatRoughness: 0.3 });
-    const sage  = new THREE.MeshPhysicalMaterial({ color: PALETTE.jadeLt, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.45 });
+    const sage  = makeAccentMaterial(new THREE.MeshPhysicalMaterial({ color: PALETTE.jadeLt, roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.45 }));
 
     // pedestal — low rounded puck under the bow, jade inlay flat on the front lip
     const basePts = [
@@ -278,7 +368,8 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   // #2: cockpit click → it lifts to a writing angle and scribbles a quick
   // figure before lying back (tickDraw).
   {
-    const g = item('tablet', 3.7, 2.70, -0.55);
+    const g = item('tablet', 3.90, 2.00, -0.08);
+    g.userData.groundingProfile = 'tablet';
     tabletG = g;
     // tablet-only materials — charcoal family + the PC's hero glass.
     // env intensity is pulled DOWN on the charcoals: the cream PMREM env
@@ -288,7 +379,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     const btnMat  = new THREE.MeshStandardMaterial({ color: 0x191713, roughness: 0.38, metalness: 0.05, envMapIntensity: 0.5 });
     const penMat  = new THREE.MeshStandardMaterial({ color: 0x242120, roughness: 0.55, envMapIntensity: 0.5 });
     const penTrim = new THREE.MeshStandardMaterial({ color: 0x171513, roughness: 0.3, metalness: 0.08, envMapIntensity: 0.5 });
-    const shellGlass = makeHeroGlass({ thickness: 0.16, roughness: 0.16 });
+    const shellGlass = makeHeroGlass({ thickness: 0.16, roughness: 0.34 });
     const liner   = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, roughness: 0.55, metalness: 0.05 });
     const rimLine   = new THREE.LineBasicMaterial({ color: PALETTE.line, transparent: true, opacity: 0.35, depthWrite: false });
     const plateLine = new THREE.LineBasicMaterial({ color: 0x8A857A, transparent: true, opacity: 0.25, depthWrite: false });
@@ -345,6 +436,10 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
         ctx.stroke();
       });
     }, { width: 1.8, pxW: 512, pxH: 280, opacity: 0.9 });
+    gridDecal.material = makeAccentMaterial(gridDecal.material, { rectangles: [
+      [12,12,24,4],[12,12,4,24],[476,12,24,4],[496,12,4,24],
+      [12,264,24,4],[12,244,4,24],[476,264,24,4],[496,244,4,24],
+    ] });
     gridDecal.rotation.x = -Math.PI / 2;
     gridDecal.position.set(0, plateTop + 0.003, 0.14);
     g.add(gridDecal);
@@ -401,7 +496,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   // opposite side — LIT materials floated ~2mm off the frost. Static: no
   // tag, no glow, no tick. Live-tune via __cockpitDecor.set('plant', …).
   {
-    const g = item('plant', 2.5, -0.8, 0.35);
+    const g = item('plant', 2.2, -1.9, 0.35);
     g.scale.setScalar(1.4);   // presence bump — the rosette detail should read from the cockpit
 
     // ── seeded rand — etch, skin, scatter and leaf jitter identical every mount ──
@@ -449,7 +544,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     const potLiner  = new THREE.MeshStandardMaterial({ color: 0xE9E4D8, roughness: 0.55, side: THREE.DoubleSide });
     const soilDark  = new THREE.MeshStandardMaterial({ color: 0x231810, roughness: 0.95 });
     const soilLt    = new THREE.MeshStandardMaterial({ color: 0x332417, roughness: 0.9 });
-    const celadon   = new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.55 });
+    const celadon   = makeAccentMaterial(new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.55 }));
     const leafMat   = new THREE.MeshPhysicalMaterial({
       vertexColors: true, roughness: 0.58, clearcoat: 0.18, clearcoatRoughness: 0.55,
       sheen: 0.15, sheenColor: new THREE.Color(0xDCE8D8), sheenRoughness: 0.6,
@@ -584,7 +679,16 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
   // against the PC it defers to the PC's hitbox wherever they overlap
   // (see pickShaker).
   {
-    const g = item('shaker', 7.6, 1.7, 0);
+    const g = item('shaker', 7.55, -0.8, 0);
+    const shakerBody = frost.clone();
+    shakerBody.color.set(PALETTE.trim).lerp(new THREE.Color(PALETTE.jade), 0.12);
+    shakerBody.transmission = 0.62; shakerBody.roughness = 0.30;
+    const shakerCap = frostCap.clone();
+    shakerCap.color.set(PALETTE.trim).multiplyScalar(0.65);
+    shakerCap.transmission = 0.12; shakerCap.roughness = 0.38;
+    for (const material of [shakerBody, shakerCap]) {
+      material.userData.decorativeClear = { transmission: material.transmission, depthWrite: material.depthWrite };
+    }
     g.scale.setScalar(2.2);
     const wig = new THREE.Group();          // wiggle pivot at the base
     g.add(wig);
@@ -594,28 +698,29 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
       [0.000, 0.012], [0.105, 0.012], [0.148, 0.026], [0.166, 0.062],
       [0.172, 0.130], [0.182, 0.320], [0.190, 0.500],
     ].map(([x, y]) => new THREE.Vector2(x, y));
-    mesh(wig, new THREE.LatheGeometry(bodyPts, 40), frost, 0, 0, 0);
+    const body = mesh(wig, new THREE.LatheGeometry(bodyPts, 40), shakerBody, 0, 0, 0);
+    body.name = 'shaker-frosted-body';
     // half fill — frost lightens enclosed content, same trick as the mug;
     // base-anchored geometry so the slosh tilts around the bottom
     const liqGeo = new THREE.CylinderGeometry(0.155, 0.130, 0.26, 24);
     liqGeo.translate(0, 0.13, 0);
     shakerLiquid = mesh(wig, liqGeo, shake, 0, 0.03, 0);
     // stepped screw lid — frosted rings tightening upward
-    mesh(wig, new THREE.CylinderGeometry(0.204, 0.208, 0.05, 32), frostCap, 0, 0.523, 0);
-    mesh(wig, new THREE.CylinderGeometry(0.196, 0.204, 0.03, 32), frostCap, 0, 0.561, 0);
-    mesh(wig, new THREE.CylinderGeometry(0.150, 0.192, 0.045, 32), frostCap, 0, 0.596, 0);
+    mesh(wig, new THREE.CylinderGeometry(0.204, 0.208, 0.05, 32), shakerCap, 0, 0.523, 0);
+    mesh(wig, new THREE.CylinderGeometry(0.196, 0.204, 0.03, 32), shakerCap, 0, 0.561, 0);
+    mesh(wig, new THREE.CylinderGeometry(0.150, 0.192, 0.045, 32), shakerCap, 0, 0.596, 0);
     // short drinking spout, offset toward one side of the lid
-    mesh(wig, new THREE.CylinderGeometry(0.050, 0.055, 0.075, 20), frostCap, -0.095, 0.65, 0);
+    mesh(wig, new THREE.CylinderGeometry(0.050, 0.055, 0.075, 20), shakerCap, -0.095, 0.65, 0);
     // hinged lever cap — open: the arm tips up off a rounded pivot barrel
     const cap = new THREE.Group();
     cap.position.set(0.145, 0.645, 0);
     cap.rotation.z = -0.38;
     wig.add(cap);
-    const pivot = mesh(cap, new THREE.CylinderGeometry(0.038, 0.038, 0.095, 16), frostCap, 0, 0, 0);
+    const pivot = mesh(cap, new THREE.CylinderGeometry(0.038, 0.038, 0.095, 16), shakerCap, 0, 0, 0);
     pivot.rotation.x = Math.PI / 2;
     const pin = mesh(cap, new THREE.CylinderGeometry(0.012, 0.012, 0.104, 10), jade, 0, 0, 0);
     pin.rotation.x = Math.PI / 2;                     // ends peek past the barrel — the hinge accents
-    mesh(cap, new RoundedBoxGeometry(0.24, 0.038, 0.085, 2, 0.014), frostCap, -0.115, 0.012, 0);
+    mesh(cap, new RoundedBoxGeometry(0.24, 0.038, 0.085, 2, 0.014), shakerCap, -0.115, 0.012, 0);
     mesh(cap, new THREE.BoxGeometry(0.05, 0.008, 0.04), jade, -0.165, 0.037, 0);
     // thin vertical jade tick on the body wall (floated off the frost)
     const tick = mesh(wig, new THREE.BoxGeometry(0.012, 0.095, 0.006), jade, 0, 0.365, 0.19);
@@ -849,5 +954,7 @@ export function buildDecorations(scene, tableGroup, camera, renderer){
     window.__cockpitDecor = null;
   };
 
+  // Append without changing the four existing item indices or public item list.
+  root.add(buildDeskLamp(warmLight));
   return root;
 }

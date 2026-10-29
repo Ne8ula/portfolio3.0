@@ -1,4 +1,104 @@
-# Phase runner — automated Codex ↔ Kimi delivery
+# Phase runner — Codex engineering ↔ fresh Codex QA (migration candidate, BLOCKED)
+
+> **BLOCKED — do not execute engineering or QA paths.** On 2026-10-24 the
+> owner prohibited Kimi in every repository session. A Codex-QA migration
+> candidate of `scripts/phase-runner/` now exists in the worktree, but it is
+> uncommitted, not bootstrap-reviewed, not owner-accepted and not activated
+> (below). Until the remaining repository-hook/full-snapshot proofs, five
+> green host gates on a frozen snapshot, a manual independent bootstrap review
+> (`docs/codex-qa-proposal.md` §7 step 4) and owner acceptance, do not run `phase:init`, `phase:doctor`, `phase:run`,
+> `phase:continue`, `phase:retest`, `phase:retry` or `phase:accept` (nor
+> `phase:resume`), and never install Kimi hooks, log in, probe, or use
+> `PHASE_RUNNER_KIMI_*`. Read-only `phase:status` inspection remains allowed.
+> Nothing in this document is an authorized runnable example.
+>
+> Remaining prerequisites, in order: host O1/O2 proofs beyond the sacrificial
+> fixture (repository hooks, both-tree integrity) and review of their
+> integration into the candidate; host verification of the remaining open
+> proofs (O3–O5, A1–A11) as the proposal requires; a separate fresh read-only
+> Codex bootstrap reviewer with host-run fixed gates on an exact disposable
+> snapshot and verified session/Git integrity; owner acceptance of that
+> result; each local commit separately requested (D5). Historical Phase 2–5
+> manifests still require Kimi and block prospective execution or retest
+> unless separately amended and approved; they never run under Codex QA.
+>
+> The legacy Kimi sections further below are **historical reference only**.
+> Their commands and "fresh Kimi QA" steps are not instructions to execute and
+> cannot authorize Kimi. Historical Kimi PASS records stay historical. The
+> candidate updates the `scripts/agent-handoff.mjs` header text to the Codex
+> route; until accepted, any Kimi route still shown in `docs/agent-handoff.md`
+> is not authority to invoke Kimi.
+
+## Migration candidate status (2026-10-24, not activated)
+
+A new compatible orchestration session is active. One Codex engineer thread
+(`01a16fc9-2ab4-7f60-8529-bb105f84b4c5`) wrote only the eight approved
+tooling/test/manifest paths and generated an untracked `debug.log`. Reported
+results: lint, contract typecheck, contract validation and `npm run
+test:unit` (433 tests, 33 files) passed; `CI=true npm run test:e2e` was
+interrupted after more than seven minutes in `foundation.spec.ts` with exit 1,
+so there is **no complete browser PASS**. No phase command beyond `status`
+ran, nothing was committed, and no bootstrap reviewer or owner acceptance
+exists. These are engineering-reported results, not independent QA. Phase 6
+is not initialized; the Phase 2–5 manifests are unchanged.
+
+Later the same day (engineer-reported and orchestrator-relayed, not QA): a
+fresh Codex CLI session `01a16fee-4e1a-7513-be74-a0fe2936e2eb` proved on a
+sacrificial fixture only that `--sandbox read-only` allows reads, denies an
+append (EPERM, sentinel unchanged), exits 0 and still writes
+`--output-last-message`; its rollout records `approval_policy` never,
+`sandbox_policy` read-only, source `exec`. Repository hooks and full
+both-tree integrity are **not** certified; earlier scratch-probe syntax and
+stdin failures stay on record. A bounded refinement then changed only
+`core.ts`, `phase-runner.ts` and `phase-runner.test.ts`: lint, contract
+typecheck, contract validation, `test:unit` (437 tests, 33 files) and
+`git diff --check` reported passing; E2E was not rerun, so the earlier
+interrupted E2E stands and a full trusted-host E2E remains mandatory. A host
+snapshot clone and isolated `npm ci` succeeded; no frozen final snapshot,
+five host gates or independent QA exist yet.
+
+Intended candidate behavior, from reading the source (not host-certified):
+
+- **Activation checks.** `assertMigrationActivation()` in
+  `scripts/phase-runner/phase-runner.ts` runs operational policy checks for
+  `init`, `doctor`, `run`, `continue`, `retest`, `retry`, `accept` and
+  `resume`. It neither records nor verifies owner acceptance and authorizes
+  no runner use; real phase use stays prohibited by governance until the
+  prerequisites above are met.
+- **QA authority.** `assertQaAuthority` rejects any manifest other than
+  Phase 6, any manifest mentioning Kimi, and any `requiredGates` list other
+  than the five fixed commands in order.
+- **Engineering.** Codex `exec --sandbox workspace-write` in the real
+  worktree, as before; Codex never stages or commits.
+- **Fresh reviewer.** A new `codex exec --sandbox read-only --json
+  --output-schema scripts/phase-runner/schemas/qa-result.schema.json
+  --output-last-message <file under .agent-runs> --cd <disposable checkout>`
+  with the approval policy explicitly pinned to `never` and finite stdin
+  (EOF) for both roles; no resume, fork or model fallback.
+- **Trusted-host gates.** In the disposable checkout the controller runs a
+  fixed `npm ci`, then exactly the five `requiredGates` with `CI=true`,
+  recording exit codes and log SHA-256 values. Only controller exit codes
+  count; a reviewer gate table that disagrees is rejected.
+- **Identity.** Executable path and `--version` from the controller's own
+  launch, corroborated by the session ID in the CLI JSONL; a session equal to
+  any engineering or earlier review session is rejected. The reviewer's own
+  claims are never identity evidence. Role label: "Independent QA: Codex
+  (fresh session)".
+- **Integrity and binding.** Source, handoff, dependency and Git-state
+  fingerprints of both the snapshot and the real worktree are checked before,
+  during and after review; the verdict binds the invocation ID, snapshot,
+  base `59c3dc9`/HEAD and gate record. Any mismatch blocks.
+
+Unchanged: the state machine, `maxFixAttempts`, the lock, `awaiting-owner`,
+`phase:accept`'s owner-gate requirement, controller-only commits from
+`commitAfterQa.paths`, and the exclusion of the approval ledger and handoff.
+O1–O5 and A1–A11 are open; none is host-certified by this document.
+
+## Legacy Kimi reference (historical, inactive)
+
+Every section from here to the end describes the legacy Kimi controller as
+historical reference, except the two Phase 6 paragraphs at the start of
+"Commands", which state current policy. None of it authorizes execution.
 
 The phase runner automates the approved engineering/QA loop after Claude's
 design work and any required owner decision are complete:
@@ -34,28 +134,37 @@ and only from the paths declared by that step's manifest. It never pushes,
 merges, deploys, or grants final owner/CI acceptance. The Codex child does not
 receive permission to write protected `.git` metadata.
 
-## Commands
+## Commands (legacy reference — blocked, see banner)
+
+Phase 6 QA-provider status (2026-10-24): the owner-approved D3 amendments are
+applied in the uncommitted, unaccepted candidate manifest, in the
+`docs/phase-6-plan.md` amendment note and in the `docs/phase-6-design.md`
+supersession note; every Phase 6 review is fresh independent Codex QA. Phase 6
+still cannot initialize or run (banner above).
 
 Phase 6 setup is prepared in `scripts/phase-runner/manifests/phase-6.json`
 and `docs/phase-6-plan.md`; it has not initialized or executed a phase.
 Setup verification passed: all four setup gates and `git diff --check`
 were rerun successfully after the empty duplicate type-directory repair.
 That plan preserves the original failure and exact repair/rerun evidence.
-The design preconditions are owner-approved (2026-10-09). After independent
-Kimi setup review and the orchestrator's local setup commit, use explicit
-`-- --phase 6` for the approved delivery. Step 1 groups all five design §19
-items, complete tests/docs/capture preparation and fresh Kimi QA, then stops
-at `awaiting-owner` without a commit. The orchestrator must verify a genuine
+The design preconditions are owner-approved (2026-10-09). The setup review
+is not waived; it requires a fresh independent Codex reviewer (plan
+amendment note). Once every banner prerequisite holds, Phase 6 is selected
+with an explicit phase argument. Step 1 groups all five design §19 items,
+complete tests/docs/capture preparation and fresh independent Codex QA, then
+stops at `awaiting-owner` without a commit. The orchestrator must verify a genuine
 owner-authored dated `docs/baselines/phase-6-deck/OWNER-CHECKPOINT.md` against
 the plan's evidence protocol before `phase:accept -- --phase 6`. Agents may
 prepare an unfilled template only. The controller checks sequencing, not
 owner identity/evidence. Step 2 verifies that evidence again, reruns all five
-gates and fresh Kimi QA, then permits the single bounded local delivery
+gates and fresh independent Codex QA, then permits the single bounded local delivery
 commit. Missing/stale approval blocks delivery; neither the checkpoint nor
 the commit grants final CI/release acceptance. No captures are made in setup.
 
-Every command defaults to Phase 2 for compatibility. Select Phase 3 with
-`-- --phase 3`.
+**Historical legacy examples (Phase 3, Kimi era) — not authorized.** The
+command blocks below record how the legacy controller was operated. The
+candidate rejects every non-Phase-6 manifest and is not activated; never run
+them as written. Every command defaults to Phase 2 for compatibility.
 
 Initialize once after the selected manifest and its design source are tracked
 and clean:

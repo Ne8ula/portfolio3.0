@@ -26,7 +26,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
 import { CURSOR_POINTER } from "./cursors"
 import { getFrameTimes } from "./frame-times"
-import { PALETTE, makeFrost } from "./materials"
+import { PALETTE, makeFrost, makeAccentMaterial } from "./materials"
 import { makeDecal } from "./decals"
 import { SLEEVES as PROJECTS } from "@/lib/projects/catalog"
 import { makeDiscTexture } from "./project-textures"
@@ -458,10 +458,10 @@ export function buildVinylCrate(
   window.__cockpitVinyl = group;
 
   // ── Materials (reference: milky frost / off-white satin / sage) ──
-  const wallMat = makeFrost({ color: CRATE_COLORS.frost, transmission: 0.82, roughness: 0.5, thickness: 0.08 });
+  const wallMat = makeFrost({ color: CRATE_COLORS.frost, transmission: 0.82, roughness: 0.38, thickness: 0.08 });
   wallMat.clearcoat = 0.5;             // brighter highlights along rounded rims
   wallMat.clearcoatRoughness = 0.3;
-  const plateMat = makeFrost({ color: 0xEDEAE3, transmission: 0.9, roughness: 0.32, thickness: 0.03 });
+  const plateMat = makeFrost({ color: 0xEDEAE3, transmission: 0.9, roughness: 0.18, thickness: 0.03 });
   plateMat.clearcoat = 0.7;
   plateMat.clearcoatRoughness = 0.2;
   const baseMat  = new THREE.MeshPhysicalMaterial({ color: CRATE_COLORS.base, roughness: 0.55, clearcoat: 0.15, clearcoatRoughness: 0.5 });
@@ -469,7 +469,7 @@ export function buildVinylCrate(
   const feetMat  = new THREE.MeshLambertMaterial({ color: CRATE_COLORS.feet });
   // LIT material — an unlit basic here reads as a glowing light-bar over
   // the dim scene; standard shades with the room and matches the decal ink.
-  const sageMat  = new THREE.MeshStandardMaterial({ color: CRATE_COLORS.sage, roughness: 0.6 });
+  const sageMat  = makeAccentMaterial(new THREE.MeshStandardMaterial({ color: CRATE_COLORS.sage, roughness: 0.6 }));
 
   const crateMeshes = [];  // shell meshes — raycast targets for "clicked the crate"
   const shell = (geo, mat, x, y, z) => {

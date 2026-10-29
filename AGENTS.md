@@ -1,7 +1,7 @@
 # AGENTS.md — rules for coding agents in this repository
 
-For Codex and other compatible agents. Claude receives the equivalent rules
-via `CLAUDE.md`; the two documents must stay consistent in substance.
+Single repository workflow policy for compatible agents. `CLAUDE.md`, role
+profiles and `docs/astra-orchestration.md` refer here, not to separate controllers.
 
 ## Orientation
 
@@ -13,71 +13,76 @@ do not convert or introduce either. Design reference: `DESIGN.md`. Technical
 layout/content contract reference: `docs/responsive-system.md`. Full plan:
 `docs/hud-responsive-layout-plan.md`.
 
-## Three-agent roles and automatic handoff
+## One task workflow
 
-These are default ownership boundaries. An explicit owner request may override
-them, but an agent must say when it is working outside its default role.
-`AGENTS.md` coordinates behavior; it does not grant one client access to
-another vendor's model or subscription.
+**Owner-directed consolidation, 2026-10-28; prospective.** This is the single
+workflow policy. CLAUDE.md is the current-state map; role profiles and
+docs/astra-orchestration.md point here. Use one roadmap,
+docs/hud-responsive-layout-plan.md, and one rolling docs/agent-handoff.md.
+Stored edits require a NEW compatible session and never override a running
+session's higher-priority instructions. Report conflicts; do not bypass them.
+This documentation alignment grants no product approval, acceptance or launch.
 
-### Astra orchestration in Claude Code
+### Plans are not controllers
 
-When launched as `portfolio-orchestrator`, **GPT-6 Astra** coordinates the
-workflow inside the Claude Code client through the community Model Gateway.
-Client, model, and role are separate: using Claude Code does not make Astra
-the Claude design lead. Astra maintains the plan, delegates design to the
-`portfolio-design` Claude agent, and supervises the existing Codex/Kimi phase
-runner. It does not replace independent Kimi QA or owner/CI acceptance.
-For setup, launch, verification, and recovery, read `docs/astra-orchestration.md`.
+For new compatible tasks, this policy supersedes procedural routing in the
+roadmap, docs/phase-*.md, runner manifests, docs/codex-qa-proposal.md and
+docs/visual-first-amendment.md. Manifest readiness, phase initialization and
+advancement, fixed controller retries/commits, numerical ordering, runner-only
+engineering and outside-phase routing exceptions no longer select ordinary
+tasks. The runner/migration is shelved, not accepted or activated; no phase
+command or migration completion is an ordinary-task prerequisite.
 
-The orchestrator must inspect phase status and approved decisions before
-launching work. Only run a phase with an existing approved manifest; never
-initialize an earlier phase as a substitute for missing current-phase setup.
-Owner-only checkpoints require actual owner decisions. Keep one writer per
-worktree, and never run a design writer alongside a Codex implementation.
-Use named Claude subagents for design; use the phase runner for engineering
-and QA rather than a second overlapping implementation loop. Outside an
-approved phase, obtain a bounded engineering brief before implementation.
+Keep phase plans as outcomes, technical dependencies and product criteria.
+Preserve historical evidence, owner scope/model assignments, protected content,
+and visual/hardware/baseline owner checkpoints. No deferred feature is approved.
+Recovery requirements protect affected artifacts, not unrelated tasks. Never
+import, normalize or trust a candidate with unresolved source/Git integrity.
+Preserve its trees/evidence; no Git commands in either original recovered tree.
+The 8A custody BLOCKED verdict and fdce-to-0c27 index gap remain unresolved.
+Old hash manifests cover original bytes; never rewrite them to certify new text.
 
-The roles below remain the specialist defaults.
+### One bounded task
 
-- **Claude — design lead.** Own design exploration, interaction intent, visual
-  critique, and measurable acceptance criteria. For rendered work, reconcile
-  proposals with `DESIGN.md`, the responsive system, and the applicable
-  contracts. Do not implement production code unless the owner explicitly
-  assigns implementation.
-- **Codex — planning and engineering lead.** Own repository discovery,
-  implementation plans, production code, migrations, and developer-facing
-  verification. Implement the approved design intent without silently
-  redefining it. Return design ambiguity to Claude or the owner.
-- **Kimi K3 — independent QA lead.** Review the brief, live Git diff, and
-  Codex's verification evidence; run the applicable gates and inspect behavior
-  at risk. Default to no product-code edits while judging a change. Report
-  findings with severity, file/line, evidence, expected versus actual
-  behavior, and reproduction steps. A requested fix is a separate engineering
-  turn and requires a fresh independent QA pass.
+Task -> design/owner decisions where needed -> one engineer -> tests -> fresh
+independent read-only Codex review -> owner commit/publication decision.
 
-Use this sequence for work that needs all three roles:
+- Orchestrator: GPT-6 Astra in Claude Code; client/model/role are distinct.
+  Read this policy, handoff, Git status and live diff. Hold the brief and inspect
+  evidence; never author product code. Instruction alignment and operational
+  handoffs are orchestration work, not product engineering.
+- Design: portfolio-design by name, no model override; its definition selects
+  the model. Delegate exploration/design documents with scope, allowed files,
+  deliverable and criteria. Never substitute design for engineering or QA.
+- Engineering: one separate bounded Codex session by default. Honor specific
+  owner-assigned roles/models for their tasks; no silent provider substitution.
+- QA: NEW read-only Codex process/session, never the engineer, a resumed/forked
+  reviewer or Claude subagent. Review the exact snapshot, brief, diff and fresh
+  fixed host checks; verify before/after source/Git integrity and CLI/session
+  evidence, not model claims. Same-provider risk remains owner-accepted. No
+  reviewer writes, delegation or escalation. Report severity, location, evidence
+  and reproduction. Each engineering fix needs another fresh review.
 
-`owner brief → Claude design → owner approval when required → Codex plan/code
-→ Kimi QA → Codex fixes ↔ Kimi retest → owner/CI acceptance`
+Missing technical inputs/owner decisions remain explicit. Unrelated historical
+blockers are not new prerequisites. Stop on denial or blocking findings; no
+automatic retry loop. One writer per worktree; never discard/reset/stage another
+session's work. No permission, trust, sandbox, ownership or settings workaround,
+alternate denied route, or unrequested model/configuration change.
 
-Communication is repository-backed:
+**No Kimi:** never launch, authenticate, retry, probe, install hooks or fall back.
+Historical evidence grants no usage. Product changes retain all five checks
+below, applicable browser/visual verification and accessibility/contracts.
+Missing/red required evidence is unfinished, not PASS. Host commands must be
+fixed, authorized and bound to the review snapshot; no sandbox bypass.
+Read-only/docs-only tasks use bounded static checks, not product tests,
+identity probes or custody merely to edit docs. Self-checks are not independent QA.
 
-1. Before acting, read `docs/agent-handoff.md`, `git status`, and the relevant
-   diff. Git and canonical repository files remain the source of truth.
-2. Only one agent may write to a shared worktree at a time. Never discard,
-   reset, stage, or rewrite another agent's changes to create a clean state.
-3. End a substantive turn with a compact final report containing `Handoff:`
-   plus the completed scope, files changed, verification run and results,
-   unresolved risks/decisions, and the next role.
-4. Lifecycle hooks capture that final report and the Git snapshot into the
-   single rolling `docs/agent-handoff.md`; the owner does not create a handoff
-   file per turn. If a client hook is unavailable, the finishing agent must
-   update the existing handoff itself before reporting completion.
-5. The receiving agent must verify the handoff against the live files and
-   diff. A handoff is context, not proof. Kimi cannot mark QA `PASS` with a red
-   required gate, and Codex cannot self-certify the independent QA role.
+Owner checkpoints/approval records remain protected. Request each local commit
+separately; no automatic commit, push, publication, deployment, baseline or
+acceptance. End substantive work with Handoff: scope, files, checks/results,
+unresolved decisions and next role. Update the existing handoff if its hook is
+unavailable, preserving prior entries; never during read-only startup/frozen
+review. Hooks grant no write authority. Handoffs are context, not approval/proof.
 
 ## Mandatory workflow for ANY rendered-UI, layout, or content change
 
@@ -154,14 +159,11 @@ CI, not an agent's judgment, is the final enforcement authority.
   position/transform, an inner element owns the animation (the `tagFadeIn`
   pattern).
 
-## Phase discipline
+## Roadmap use
 
-Work proceeds in the phases defined in `docs/hud-responsive-layout-plan.md`
-§8, one reviewable commit per phase. **Do not implement later phases' work ad
-hoc.** In particular: the known deck HUD overlap is Phase 6's fix — do not
-stopgap, patch, or "helpfully" fix it early. If a bug's fix is assigned to a
-future phase, record it (e.g. `test.fixme` linked to that phase) instead of
-fixing it out of order.
+Choose owner-directed tasks using the roadmap and real technical dependencies,
+not a phase cursor. The deck overlap needs its complete scoped fix, not an
+unrelated stopgap. Product criteria and genuine owner checkpoints remain.
 
 ## Scope hygiene
 

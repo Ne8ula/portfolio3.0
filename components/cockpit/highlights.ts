@@ -77,17 +77,16 @@ export function makeEdgeGlow(){
 
   // vis: 0..1 master fade (0 while the camera is focused on monitor/crate).
   // Traces rest at 0 opacity; a hovered target's boost eases its faint
-  // outline glow in (~120ms) and back out, with a slow pulse while held.
+  // outline glow in (~120ms) and back out, holding steady while hovered.
   const tick = (t, vis) => {
     const { tAmbient } = getFrameTimes();
     const ambientT = typeof tAmbient === 'number' ? tAmbient : t;
     const dt = lastT === null ? 0 : Math.min(0.1, Math.max(0, ambientT - lastT));
     lastT = ambientT;
     const k = 1 - Math.exp(-dt * 9);
-    const pulse = 0.5 + 0.5 * Math.sin(ambientT * 2.2);
     targets.forEach(tg => {
       tg.cur += (tg.boost - tg.cur) * k;
-      tg.mat.opacity = vis * tg.cur * (0.78 + pulse * 0.18);
+      tg.mat.opacity = vis * tg.cur * 0.87;
       const on = tg.mat.opacity > 0.01;
       if (on !== tg.lines[0]?.visible) tg.lines.forEach(l => { l.visible = on; });
     });

@@ -7,6 +7,7 @@
 import React from "react"
 import * as THREE from "three"
 import { createRandomSource } from "@/lib/random/seeded-streams"
+import { MAX_YAW_RAD, MAX_PITCH_RAD } from "@/lib/responsive/input-policy"
 import {
   safeFrameToNdcBounds,
   solveCameraFit,
@@ -26,6 +27,10 @@ import { buildDecorations } from "./decorations"
 import { buildTeaSet } from "./tea-set"
 import { buildIncense } from "./incense"
 import { makeEdgeGlow } from "./highlights"
+import { createContactGrounding, createStudioBackdropCache, createSilkScreen, createAshGrain, createStudioMist } from "./listening-room"
+import { deskReceiverGeometry, sculptedDeskGeometries } from "./desk-outline"
+import { createDeskReflections } from "./desk-reflections"
+import { PALETTE, applyDecorativePreferences, makeAccentMaterial } from "./materials"
 import { CURSOR_POINTER } from "./cursors"
 import {
   clearMainRendererSize,
@@ -97,15 +102,15 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         starCol:   0xE8E4DC,
         starOpac:  0.40,
         deskFill:  0xE8E4DC,
-        deskFillOp:0.16,
+        deskFillOp:1,
         deskWire:  0xCFC9C0,
-        deskWireOp:0.85,
+        deskWireOp:0.10,
         gridLine:  0xCFC9C0,
-        gridOp:    0.18,
-        legFillOp: 0.14,
-        legWireOp: 0.60,
-        shelfFillOp:0.10,
-        shelfWireOp:0.50,
+        gridOp:    0.025,
+        legFillOp: 1,
+        legWireOp: 0.06,
+        shelfFillOp:1,
+        shelfWireOp:0.04,
         jadeAccent:0x4B6E4F,
         glowLine:  0x7FE6A4,             // saturated light jade wireframe
         glowBlend: THREE.NormalBlending,
@@ -116,15 +121,15 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         starCol:   0x6E6878,
         starOpac:  0.55,
         deskFill:  0xC9C2B2,
-        deskFillOp:0.55,
+        deskFillOp:1,
         deskWire:  0x4A4640,
-        deskWireOp:0.85,
+        deskWireOp:0.10,
         gridLine:  0x6E685E,
-        gridOp:    0.30,
-        legFillOp: 0.45,
-        legWireOp: 0.70,
-        shelfFillOp:0.40,
-        shelfWireOp:0.60,
+        gridOp:    0.025,
+        legFillOp: 1,
+        legWireOp: 0.06,
+        shelfFillOp:1,
+        shelfWireOp:0.04,
         jadeAccent:0x3A5A3E,
         glowLine:  0x3A5A3E,             // additive washes out on ivory —
         glowBlend: THREE.NormalBlending, // deep-jade ink outline instead
@@ -132,6 +137,40 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     };
     let curTheme = (window.__cockpitTheme === 'light') ? 'light' : 'dark';
     const T = () => THEMES[curTheme];
+    // Scene colors follow the same resolved CSS tokens as the cockpit shell.
+    const token = (name) => new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(name).trim());
+    const backdropCache = createStudioBackdropCache(randomSource.stream('listening-room/bamboo'));
+    const silkScreen = createSilkScreen();
+    silkScreen.mesh.visible = false;
+    scene.add(silkScreen.mesh);
+    let backdropFrame = null;
+    const simplifiedStudio = () =>
+      document.documentElement.getAttribute('data-a11y-contrast') === 'high' ||
+      document.documentElement.getAttribute('data-a11y-transparency') === 'reduced' ||
+      window.matchMedia('(forced-colors: active)').matches;
+    const applyStudioPalette = () => {
+      const t = T();
+      t.deskFill = PALETTE.cream;
+      t.deskWire = token('--cream').getHex();
+      t.gridLine = token('--mauve').getHex();
+      t.jadeAccent = token('--jade').getHex();
+      t.glowLine = token('--jade-signal').getHex();
+      // Preference safety is immediate; theme event/attribute notifications
+      // share one paint after the CSS cascade has settled.
+      scene.background = token('--ink');
+      if (simplifiedStudio()) silkScreen.mesh.visible = false;
+      if (backdropFrame === null) backdropFrame = requestAnimationFrame(() => {
+        backdropFrame = null;
+        if (simplifiedStudio()) { silkScreen.mesh.visible = false; return; }
+        silkScreen.set(backdropCache.get({
+          quiet: token('--ink'),
+          silk: token('--warp-cream').lerp(token('--scene-warm-light'), 0.12).multiplyScalar(0.87),
+          bamboo: new THREE.Color(PALETTE.ink).lerp(new THREE.Color(PALETTE.jade), 0.3),
+          warm: token('--scene-warm-light'),
+        }), token('--ink'));
+        silkScreen.mesh.visible = true;
+      });
+    };
     scene.background = new THREE.Color(T().bg);
     window.__cockpitScene = scene;
     // Registries — populated as we build the scene; used by theme apply.
@@ -151,7 +190,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const applyTheme = () => {
       const t = T();
       if (glassMacHandle && glassMacHandle.applyTheme) glassMacHandle.applyTheme(curTheme);
-      scene.background = new THREE.Color(t.bg);
+      applyStudioPalette();
       if (scene.fog){ scene.fog.color = new THREE.Color(t.fog); }
       themeTargets.deskFill.forEach(m => { m.color.setHex(t.deskFill); m.opacity = t.deskFillOp; });
       themeTargets.deskWire.forEach(m => { m.color.setHex(t.deskWire); m.opacity = t.deskWireOp; });
@@ -209,7 +248,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     renderer.domElement.addEventListener('webglcontextlost', onContextLost);
     renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.05;
     Object.assign(renderer.domElement.style, {
       position: 'absolute',
       inset: '0',
@@ -221,6 +260,21 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     window.__cockpitRenderer = renderer;
     let rendererSizeVersion = 0;
     let rendererSizeTarget = null;
+    let syncRestPose = () => {};
+    let screenMetricsPending = true;
+    let identityBoundsKey = '';
+    const syncScreenSize = (target) => {
+      const stage = mount.closest('[data-layout-region="cockpit-stage"]') ?? mount.parentElement;
+      const rect = mount.getBoundingClientRect();
+      const identity = stage?.dataset.identityBounds?.split(',').map(Number);
+      const header = stage?.querySelector('[data-hud="site-header"]')?.getBoundingClientRect();
+      silkScreen.resize(target.cssWidth, target.cssHeight, identity?.length === 4 ? {
+        width: identity[0] + identity[2], height: identity[1] + identity[3],
+      } : { width: silkScreen.mesh.material.uniforms.identity.value.x,
+        height: silkScreen.mesh.material.uniforms.identity.value.y },
+      header ? header.bottom - rect.top : silkScreen.mesh.material.uniforms.header.value);
+      return identity?.length === 4;
+    };
     const sizeSync = createRendererSizeSync({
       mount,
       renderer,
@@ -229,7 +283,9 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         rendererSizeTarget = target;
         rendererSizeVersion = sizeVersion;
         reportMainRendererSize(target, sizeVersion);
-        if (contextAlive && !disposed) renderer.render(scene, camera);
+        syncScreenSize(target);
+        syncRestPose();
+        // The frame-start path renders after the camera/refit and UVs agree.
       },
     });
     sizeSync.sync();
@@ -251,6 +307,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const starsMat = new THREE.PointsMaterial({ color: T().starCol, size:1.3, sizeAttenuation:false, transparent:true, opacity: T().starOpac });
     themeTargets.starsMat = starsMat;
     const stars = new THREE.Points(starGeo, starsMat);
+    stars.visible = false; // cockpit studio only; boot/warp retain their stars
     scene.add(stars);
 
     // ──────────────────────────────────────────────────────────────
@@ -283,107 +340,29 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     };
     scene.add(tableGroup);
 
-    const tableTopMat = new THREE.MeshBasicMaterial({ color: T().deskFill, transparent:true, opacity: T().deskFillOp });
-    themeTargets.deskFill.push(tableTopMat);
-    const tableTop = new THREE.Mesh(
-      new THREE.BoxGeometry(22, 0.35, 9),
-      tableTopMat
-    );
-    tableGroup.add(tableTop);
-    const tableWireMat = new THREE.LineBasicMaterial({ color: T().deskWire, transparent:true, opacity: T().deskWireOp });
-    themeTargets.deskWire.push(tableWireMat);
-    const tableWire = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.BoxGeometry(22, 0.35, 9)),
-      tableWireMat
-    );
-    tableGroup.add(tableWire);
-
-    const inlayGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-10.8, 0.19, 4.4),
-      new THREE.Vector3( 10.8, 0.19, 4.4)
-    ]);
-    const inlayMat = new THREE.LineBasicMaterial({ color: T().jadeAccent });
-    themeTargets.jadeAccent.push(inlayMat);
-    tableGroup.add(new THREE.Line(inlayGeo, inlayMat));
-
-    const legPositions = [[-10, -4, -4], [10, -4, -4], [-10, -4, 4], [10, -4, 4]];
-    legPositions.forEach(([x,y,z]) => {
-      const legMat = new THREE.MeshBasicMaterial({ color: T().deskFill, transparent:true, opacity: T().legFillOp });
-      themeTargets.legFill.push(legMat);
-      const leg = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.22, 0.22, 8, 10),
-        legMat
-      );
-      leg.position.set(x, y, z);
-      tableGroup.add(leg);
-      const legWireMat = new THREE.LineBasicMaterial({ color: T().deskWire, transparent:true, opacity: T().legWireOp });
-      themeTargets.legWire.push(legWireMat);
-      const legWire = new THREE.LineSegments(
-        // Triangulated lattice (webgl_helpers style) instead of edge outlines
-        new THREE.WireframeGeometry(new THREE.CylinderGeometry(0.22, 0.22, 8, 6, 6)),
-        legWireMat
-      );
-      legWire.position.set(x, y, z);
-      tableGroup.add(legWire);
+    const deskGeometry = sculptedDeskGeometries();
+    const ashGrain = createAshGrain(randomSource.stream('listening-room/wood'));
+    const tableTopMat = new THREE.MeshStandardMaterial({
+      color: token('--scene-ash'), map: ashGrain, roughness: 0.58, metalness: 0, envMapIntensity: 0.3,
     });
-
-    const shelfMat = new THREE.MeshBasicMaterial({ color: T().deskFill, transparent:true, opacity: T().shelfFillOp });
-    themeTargets.shelfFill.push(shelfMat);
-    const shelf = new THREE.Mesh(
-      new THREE.BoxGeometry(20, 0.15, 7.5),
-      shelfMat
-    );
-    shelf.position.y = -4;
-    tableGroup.add(shelf);
-    const shelfWireMat = new THREE.LineBasicMaterial({ color: T().deskWire, transparent:true, opacity: T().shelfWireOp });
-    themeTargets.shelfWire.push(shelfWireMat);
-    const shelfWire = new THREE.LineSegments(
-      new THREE.WireframeGeometry(new THREE.BoxGeometry(20, 0.15, 7.5, 8, 1, 3)),
-      shelfWireMat
-    );
-    shelfWire.position.y = -4;
-    tableGroup.add(shelfWire);
-
-    // Desk surface — webgl_helpers-style triangulated schematic mesh: a
-    // segmented plane rendered via WireframeGeometry (every triangle edge,
-    // diagonals included) replaces the old straight ruled grid.
-    const meshGridGeo = new THREE.PlaneGeometry(21.6, 8.8, 12, 5);
-    meshGridGeo.rotateX(-Math.PI/2);
-    const meshGridMat = new THREE.LineBasicMaterial({ color: T().gridLine, transparent:true, opacity: T().gridOp });
-    themeTargets.gridLine.push(meshGridMat);
-    const meshGrid = new THREE.LineSegments(new THREE.WireframeGeometry(meshGridGeo), meshGridMat);
-    meshGrid.position.y = 0.19;
-    tableGroup.add(meshGrid);
-
-    // Jade normal pins at every grid vertex — the VertexNormalsHelper look,
-    // built as static local-space segments so they track the desk transform
-    // (and the FPV offset) for free.
-    const pinPts = [];
-    const gridPos = meshGridGeo.getAttribute('position');
-    for (let i = 0; i < gridPos.count; i++){
-      const px = gridPos.getX(i), pz = gridPos.getZ(i);
-      pinPts.push(new THREE.Vector3(px, 0.19, pz), new THREE.Vector3(px, 0.53, pz));
+    const seamMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(PALETTE.inkSoft), roughness: 0.65, metalness: 0,
+    });
+    const diffuserMat = makeAccentMaterial(tableTopMat, {
+      color: token('--scene-warm-light'), intensity: 1.1,
+    });
+    diffuserMat.map = null;
+    for (const [name, material] of [
+      ['top', tableTopMat], ['body', tableTopMat], ['seam', seamMat], ['diffuser', diffuserMat],
+    ]) {
+      const mesh = new THREE.Mesh(deskGeometry[name], material);
+      mesh.name = 'sculpted-desk-' + name;
+      mesh.userData.noPick = true;
+      mesh.userData.noGlow = true;
+      tableGroup.add(mesh);
     }
-    const pinMat = new THREE.LineBasicMaterial({ color: T().jadeAccent, transparent:true, opacity: 0.35 });
-    themeTargets.jadeAccent.push(pinMat);
-    tableGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pinPts), pinMat));
-
-    const tagCorners = [[-10.8, 4.4], [10.8, 4.4], [-10.8, -4.4], [10.8, -4.4]];
-    tagCorners.forEach(([x,z]) => {
-      const len = 0.8;
-      const sx = Math.sign(x) * -1, sz = Math.sign(z) * -1;
-      const pts = [
-        new THREE.Vector3(x + sx*len, 0.19, z),
-        new THREE.Vector3(x,           0.19, z),
-        new THREE.Vector3(x,           0.19, z + sz*len)
-      ];
-      const cm = new THREE.LineBasicMaterial({ color: T().jadeAccent });
-      themeTargets.jadeAccent.push(cm);
-      tableGroup.add(new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints(pts),
-        cm
-      ));
-    });
+    const studioMist = createStudioMist(token('--scene-warm-light'));
+    tableGroup.add(studioMist);
 
     // Bobblehead + pedestal removed — they were post-exit artifacts
     // that broke the scene's silhouette. The Rubik's cube now floats
@@ -469,20 +448,32 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     let pmrem = null;
     let envScene = null;
     let environmentTexture = null;
+    let taskKey = null;
 
     // Add soft lighting so Lambert materials render properly.
     // (Previous version used MeshBasicMaterial everywhere; switching
     // to Lambert gives us subtle shading for the opaque shell.)
     if (!scene.userData.__xrayLit){
       scene.userData.__xrayLit = true;
-      const amb = new THREE.AmbientLight(0xFFFBF0, 0.72);
+      const cream = token('--warp-cream');
+      // Invariant studio colors: physical objects and illumination do not
+      // change with the theme present at construction versus a later toggle.
+      const jade = new THREE.Color(PALETTE.jadeLt);
+      const studioNeutral = new THREE.Color(PALETTE.inkSoft);
+      const amb = new THREE.AmbientLight(cream, 0.08);
       scene.add(amb);
-      const key = new THREE.DirectionalLight(0xFFF4D6, 0.85);
-      key.position.set(5, 8, 6);
-      scene.add(key);
-      const fill = new THREE.DirectionalLight(0xBFD6C4, 0.4);
-      fill.position.set(-6, 3, -2);
+      // Shorter lamp-to-target throw: initial on-axis inverse-square calibration.
+      const key = taskKey = new THREE.SpotLight(token('--scene-warm-light'), 140, 0, 0.70, 0.95, 2);
+      key.castShadow = false;
+      key.position.set(-7, 8, 4);
+      key.target.position.set(-2.8, 0.175, -0.2);
+      tableGroup.add(key, key.target);
+      const fill = new THREE.DirectionalLight(cream, 0.18);
+      fill.position.set(0, 2, 7);
       scene.add(fill);
+      const rim = new THREE.DirectionalLight(jade, 0.13);
+      rim.position.set(7, 5, -8);
+      scene.add(rim);
       // PMREM environment so the translucent acrylic has something to
       // reflect/refract against. Uses RoomEnvironment when available.
       try {
@@ -493,33 +484,43 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         // MeshPhysicalMaterial (reflections + refraction).
         envScene = new THREE.Scene();
         const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-        const boxMat = new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, side: THREE.BackSide });
+        const boxMat = new THREE.MeshBasicMaterial({ color: studioNeutral.clone().multiplyScalar(0.12), side: THREE.BackSide });
         const room = new THREE.Mesh(boxGeo, boxMat);
         room.scale.setScalar(20);
         envScene.add(room);
         // Emissive panels (windows) — warm + cool
         const warm = new THREE.Mesh(
-          new THREE.PlaneGeometry(6, 6),
-          new THREE.MeshBasicMaterial({ color: 0xFFE8C6 })
+          new THREE.PlaneGeometry(8, 7),
+          new THREE.MeshBasicMaterial({ color: cream.clone().multiplyScalar(2), side: THREE.DoubleSide })
         );
-        warm.position.set(0, 4, -9.9);
+        warm.position.set(-7, 5, 7);
+        warm.lookAt(0, 0, 0);
         envScene.add(warm);
         const cool = new THREE.Mesh(
-          new THREE.PlaneGeometry(6, 3),
-          new THREE.MeshBasicMaterial({ color: 0xCFE5D3 })
+          new THREE.PlaneGeometry(7, 4),
+          new THREE.MeshBasicMaterial({ color: cream.clone().multiplyScalar(0.15), side: THREE.DoubleSide })
         );
-        cool.position.set(-9.9, 2, 0);
-        cool.rotation.y = Math.PI/2;
+        cool.position.set(0, 1, 9.9);
+        cool.lookAt(0, 0, 0);
         envScene.add(cool);
         const top = new THREE.Mesh(
-          new THREE.PlaneGeometry(10, 10),
-          new THREE.MeshBasicMaterial({ color: 0xFFFFFF })
+          new THREE.PlaneGeometry(4, 7),
+          new THREE.MeshBasicMaterial({ color: jade.clone().multiplyScalar(0.13), side: THREE.DoubleSide })
         );
-        top.position.set(0, 9.9, 0);
-        top.rotation.x = Math.PI/2;
+        top.position.set(8, 4, -8);
+        top.lookAt(0, 0, 0);
         envScene.add(top);
-        environmentTexture = pmrem.fromScene(envScene, 0.04).texture;
+        // Negative-fill cards define dark bands in the glass, never visible props.
+        for (const x of [-5, 5]) {
+          const flag = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 12),
+            new THREE.MeshBasicMaterial({ color: studioNeutral.clone().multiplyScalar(0.02), side: THREE.DoubleSide }));
+          flag.position.set(x, 1, -5);
+          flag.lookAt(0, 0, 0);
+          envScene.add(flag);
+        }
+        environmentTexture = pmrem.fromScene(envScene, 0.12).texture;
         scene.environment = environmentTexture;
+        scene.environmentIntensity = 0.45;
       } catch(e){ /* ok — material just won't refract as richly */ }
     }
 
@@ -1096,7 +1097,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       }
       window.__cockpitViewMode = m;
       window.dispatchEvent(new CustomEvent('cockpit-view-mode', { detail:{ mode: m } }));
-      if (m === 'cockpit'){ applyHover(null); renderer.domElement.style.cursor = ''; }
+      if (m === 'cockpit'){ applyHover(null); renderer.domElement.style.cursor = ''; screenMetricsPending = true; }
     };
     window.__setCockpitViewMode = setViewMode;
 
@@ -1143,11 +1144,93 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     let coffeeStation = null;
     try { coffeeStation = buildCoffee(scene, tableGroup, camera, renderer, { randomSource }); } catch (e) { /* coffee optional */ }
     let decorations = null;
-    try { decorations = buildDecorations(scene, tableGroup, camera, renderer); } catch (e) { /* decorations optional */ }
+    try { decorations = buildDecorations(scene, tableGroup, camera, renderer, token('--scene-warm-light')); } catch (e) { /* decorations optional */ }
+    const lampEmitter = decorations?.getObjectByName('task-lamp-emitter');
+    if (lampEmitter && taskKey) {
+      lampEmitter.add(taskKey);
+      taskKey.position.set(0, 0, 0);
+    }
     let teaSet = null;
     try { teaSet = buildTeaSet(scene, tableGroup, { randomSource }); } catch (e) { /* tea set optional */ }
     let incense = null;
     try { incense = buildIncense(scene, tableGroup, { randomSource }); } catch (e) { /* incense optional */ }
+
+    // Quiet, occluded structural detail at rest. Hero hover traces are added
+    // afterwards by the existing highlight builder, with its exclusions intact.
+    const quietMaterials = new Set();
+    for (const root of [decorations, teaSet, incense]) root?.traverse(object => {
+      if (object.isLine && !quietMaterials.has(object.material)) {
+        quietMaterials.add(object.material);
+        object.material.opacity *= 0.28;
+        object.material.depthTest = true;
+      }
+    });
+    const grounding = createContactGrounding(tableGroup,
+      curTheme === 'light' ? token('--cream') : token('--ink'));
+    const groundingRoots = [xray, crate, turntable, coffeeStation,
+      ...(decorations?.children ?? []), teaSet, incense].filter(Boolean);
+    const deskReflections = createDeskReflections(tableGroup);
+    for (const receiver of [grounding.mesh, deskReflections.mesh]) {
+      receiver.geometry.dispose();
+      receiver.geometry = deskReceiverGeometry();
+    }
+    const reflectionRoots = [crate, turntable].filter(Boolean);
+    // Capture rest geometry once. Playback/cover movement must not breathe
+    // the seat; only authored root transforms and CSS stage dimensions refit.
+    const restSubjects = [crate, turntable, xray, decorations?.getObjectByName('desk-lamp'), coffeeStation,
+      ...((decorations?.children ?? []).filter(root=>root.userData.groundingProfile==='tablet' || root.getObjectByName('shaker-frosted-body')))].filter(Boolean).map(root => {
+      root.updateWorldMatrix(true,true);
+      const inverse=root.matrixWorld.clone().invert(), silhouette=[];
+      const major=[crate,turntable,xray].includes(root);
+      root.traverseVisible(object => {
+        if (!object.isMesh) return;
+        const materials=Array.isArray(object.material)?object.material:[object.material];
+        if (materials.every(m=>!m.visible || m.opacity===0)) return;
+        object.geometry.computeBoundingBox();
+        const matrix=new THREE.Matrix4().multiplyMatrices(inverse,object.matrixWorld);
+        if(root!==decorations?.getObjectByName('desk-lamp')){
+          const box=object.geometry.boundingBox;
+          for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])
+            silhouette.push(new THREE.Vector3(x,y,z).applyMatrix4(matrix));
+        } else {
+          const vertices=object.geometry.getAttribute('position');
+          for(let i=0;i<vertices.count;i++)silhouette.push(new THREE.Vector3().fromBufferAttribute(vertices,i).applyMatrix4(matrix));
+        }
+      });
+      return {root,points:silhouette,major};
+    });
+    let restPose={position:new THREE.Vector3(),pitch:0}, restPoseKey='';
+    syncRestPose = () => {
+      if (!rendererSizeTarget) return;
+      const {cssWidth:width,cssHeight:height}=rendererSizeTarget;
+      const identity=silkScreen.mesh.material.uniforms.identity.value;
+      const header=silkScreen.mesh.material.uniforms.header.value;
+      const key=[width,height,identity.x,identity.y,header,focusTransformEpoch,
+        ...tableGroup.position,...tableGroup.quaternion,...tableGroup.scale,
+        ...restSubjects.flatMap(({root})=>[...root.position,...root.quaternion,...root.scale])].join(',');
+      if(key===restPoseKey)return;
+      tableGroup.updateWorldMatrix(true,true);
+      const points=restSubjects.filter(s=>s.major).flatMap(({root,points})=>points.map(p=>p.clone().applyMatrix4(root.matrixWorld)));
+      const protectedPoints=restSubjects.flatMap(({root,points})=>points.map(p=>p.clone().applyMatrix4(root.matrixWorld)));
+      const crease=tableGroup.localToWorld(new THREE.Vector3(0,.007,3.115));
+      restPose=resolveRestCamera(width,height,points,crease,{width:identity.x,height:identity.y,header},protectedPoints);
+      restPoseKey=key;
+    };
+    const updateStudioPreferences = () => {
+      applyTheme();
+      applyDecorativePreferences(scene, simplifiedStudio());
+      grounding.mesh.visible = !simplifiedStudio();
+      deskReflections.mesh.visible = !simplifiedStudio();
+      if (rendererSizeTarget) syncScreenSize(rendererSizeTarget);
+      syncRestPose();
+    };
+    const studioPreferences = new MutationObserver(updateStudioPreferences);
+    studioPreferences.observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme', 'data-a11y-contrast', 'data-a11y-transparency', 'data-a11y-text', 'data-a11y-controls'],
+    });
+    const forcedColors = window.matchMedia('(forced-colors: active)');
+    forcedColors.addEventListener('change', updateStudioPreferences);
+    updateStudioPreferences();
     window.__cockpitTick = (dt, t) => {
       setFrameTimes(dt, t, captureFrameState);
       if (crate && crate.tick) crate.tick(dt, t);
@@ -1661,6 +1744,13 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const animate = () => {
       if (disposed || !contextAlive) return;
       sizeSync.sync();
+      const stage = mount.closest('[data-layout-region="cockpit-stage"]');
+      const nextIdentityBounds = stage?.dataset.identityBounds ?? '';
+      if (nextIdentityBounds !== identityBoundsKey) { identityBoundsKey = nextIdentityBounds; screenMetricsPending = true; }
+      if (screenMetricsPending && viewMode === 'cockpit' && rendererSizeTarget) {
+        screenMetricsPending = !syncScreenSize(rendererSizeTarget);
+      }
+      syncRestPose();
       const dt = clock.getDelta();
       const t = clock.elapsedTime;
       setFrameTimes(dt, t, captureFrameState);
@@ -1687,8 +1777,10 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
 
       // External tick hooks (e.g. VinylCrate)
       if (window.__cockpitTick) window.__cockpitTick(dt, t);
+      grounding.update(groundingRoots);
+      deskReflections.update(reflectionRoots, curTheme);
 
-      // Hero edge-glow: pulse in the cockpit view, fade out while the
+      // Hero edge-glow: steady hover trace in the cockpit, fade out while the
       // camera is focused on the monitor or the crate.
       edgeGlow.tick(t, 1 - modeT);
 
@@ -1716,9 +1808,9 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
 
       // Cockpit target — static seat, no breathing bob (desk objects must
       // read as perfectly still).
-      const cockpitPos = new THREE.Vector3(0, 0, 0);
+      const cockpitPos = restPose.position;
       const cockpitYaw = yaw;
-      const cockpitPitch = pitch;
+      const cockpitPitch = restPose.pitch + pitch;
 
       // Focused pose — all three subjects use the same authored-point fit.
       let monitorPos, monitorQuat;
@@ -1851,6 +1943,11 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       if (teaSet && teaSet.dispose) teaSet.dispose();
       if (incense && incense.dispose) incense.dispose();
       edgeGlow.dispose();
+      studioPreferences.disconnect();
+      forcedColors.removeEventListener('change', updateStudioPreferences);
+      if (backdropFrame !== null) cancelAnimationFrame(backdropFrame);
+      silkScreen.mesh.material.uniforms.atlas.value = null;
+      backdropCache.dispose();
       disposeObjectGraph(scene);
       if (envScene) disposeObjectGraph(envScene);
       if (environmentTexture) environmentTexture.dispose();
@@ -1892,6 +1989,74 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
 }
 
 function easeInOut(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
+
+// Higher downward-looking seat. Trial nearer first, retreat only when actual
+// geometry/chrome cannot fit the complete shared nine-position look envelope.
+function resolveRestCamera(width,height,points,crease,reservations,protectedPoints=points) {
+  const pitch=-10*Math.PI/180, tangent=Math.tan(68*Math.PI/360);
+  const centerX=(Math.min(...protectedPoints.map(p=>p.x))+Math.max(...protectedPoints.map(p=>p.x)))/2;
+  const direction=new THREE.Vector3(0,-Math.sin(pitch),Math.cos(pitch));
+  const maxY=1-2*(reservations.header+16)/height;
+  // The fixed forward stylus crosses the bottom edge at the proposed 90%
+  // crease band during +3deg pitch. Reserve its complete silhouette first.
+  const k=-.68;
+  const slope=(-Math.sin(pitch)-k*tangent*Math.cos(pitch))/(Math.cos(pitch)-k*tangent*Math.sin(pitch));
+  const origin=new THREE.Vector3(centerX,crease.y-slope*crease.z,0);
+  const movement=new THREE.Vector3(0,slope,1);
+  // Basis construction and world-point transforms happen once per solve,
+  // rather than once per point per binary-search step per look direction.
+  const prepare = (look, samples) => {
+    const right=new THREE.Vector3().crossVectors(look.up,look.direction).normalize();
+    const data=new Float64Array(samples.length*3), offset=new THREE.Vector3();
+    const tx=tangent*width/height;
+    samples.forEach((point,i)=>{
+      offset.copy(point).sub(origin);
+      data[i*3]=offset.dot(right)/tx;
+      data[i*3+1]=offset.dot(look.up)/tangent;
+      data[i*3+2]=-offset.dot(look.direction);
+    });
+    return {data,dx:movement.dot(right)/tx,dy:movement.dot(look.up)/tangent,dz:movement.dot(look.direction)};
+  };
+  const looks=[];
+  for(const yaw of [-MAX_YAW_RAD,0,MAX_YAW_RAD])for(const delta of [-MAX_PITCH_RAD,0,MAX_PITCH_RAD]) {
+    const rotation=new THREE.Euler(pitch+delta,yaw,0,'YXZ');
+    const look={direction:new THREE.Vector3(0,0,1).applyEuler(rotation),up:new THREE.Vector3(0,1,0).applyEuler(rotation)};
+    looks.push({...look,...prepare(look,protectedPoints)});
+  }
+  const major=prepare({direction,up:new THREE.Vector3(0,Math.cos(pitch),Math.sin(pitch))},points);
+  const plaqueRight=2*(reservations.width+16)/width-1;
+  const plaqueBottom=1-2*(reservations.height+16)/height;
+  const poseAt = z => {
+    const position=origin.clone().addScaledVector(movement,z);
+    let minimum=Infinity,maximum=-Infinity;
+    for(let i=0;i<major.data.length;i+=3){
+      const y=(major.data[i+1]-z*major.dy)/(major.data[i+2]+z*major.dz);
+      minimum=Math.min(minimum,y);maximum=Math.max(maximum,y);
+    }
+    const span=(maximum-minimum)/2;
+    const fit=looks.every(look=>{
+      const {data,dx,dy,dz}=look;
+      for(let i=0;i<data.length;i+=3){
+        const x=data[i]-z*dx,y=data[i+1]-z*dy,depth=data[i+2]+z*dz;
+        if(depth<=.1 || x<-.96*depth || x>.96*depth || y<-.98*depth || y>maxY*depth ||
+          (x<=plaqueRight*depth && y>=plaqueBottom*depth))return false;
+      }
+      return true;
+    });
+    return {position,pitch,valid:fit&&span<=.62*(1-reservations.header/height),span};
+  };
+  let low=-.75,high=12;
+  if(poseAt(low).valid)high=low;
+  else for(let i=0;i<24;i++){const mid=(low+high)/2;if(poseAt(mid).valid)high=mid;else low=mid}
+  const result=poseAt(high);
+  // Independently validate the selected candidate with the existing fit utility.
+  result.valid &&= looks.every(look=>solveCameraFit({
+    center:result.position.clone().sub(look.direction),direction:look.direction,up:look.up,
+    points:protectedPoints,fovYRad:68*Math.PI/180,aspect:width/height,near:.1,
+    ndcBounds:{minX:-.96,maxX:.96,minY:-.98,maxY},distance:{min:.999,max:1},
+  }).status==='fit');
+  return result;
+}
 
 function disposeObjectGraph(root){
   const geometries = new Set();

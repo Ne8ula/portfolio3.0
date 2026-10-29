@@ -3,21 +3,34 @@ import { describe, expect, it } from 'vitest'
 import {
   acceptOwnerGate,
   buildCodexPrompt,
-  buildKimiPrompt,
+  buildQaPrompt,
   createInitialState,
   getStep,
   manifestDigest,
   parseCodexResult,
-  parseKimiResult,
+  parseQaResult as parseRawQaResult,
+  QA_ROLE,
+  type QaEvidence,
   parseManifest,
   pathMatchesAllowedCommitPath,
   transitionAfterQa,
 } from '../../scripts/phase-runner/core'
 import type {
   CodexResult,
-  KimiResult,
+  QaResult,
   PhaseManifest,
+  PhaseStep,
 } from '../../scripts/phase-runner/core'
+
+const evidence: QaEvidence = {
+  binding: { invocationId: 'synthetic-invocation', snapshot: 'source-hash', base: 'base-hash', gateRecord: 'gate-hash' },
+  reviewer: { role: QA_ROLE, client: 'Codex CLI', executable: 'C:/test/codex.exe', cliVersion: 'synthetic-version', sessionId: 'review-session', model: 'not exposed' },
+  gates: ['lint', 'typecheck:contracts', 'validate:contracts', 'test:unit', 'test:e2e'].map((script) => ({ command: 'npm run ' + script, exitCode: 0, logPath: script + '.log', logSha256: 'a'.repeat(64) })),
+}
+function parseQaResult(value: QaResult, manifest: PhaseManifest, step: PhaseStep, host = evidence) {
+  const { reviewer: _reviewer, ...raw } = value
+  return parseRawQaResult(raw, manifest, step, host)
+}
 
 const raw = readFileSync(
   new URL('../../scripts/phase-runner/manifests/phase-6.json', import.meta.url),
@@ -81,8 +94,10 @@ function codexResult(step: string, phase = 6): CodexResult {
   }
 }
 
-function qaResult(step: string): KimiResult {
+function qaResult(step: string): QaResult {
   return {
+    reviewer: evidence.reviewer,
+    binding: evidence.binding,
     phase: 6,
     step,
     verdict: 'pass',
@@ -99,7 +114,7 @@ function prompts(candidate: PhaseManifest, stepId = candidate.initialStep) {
   const step = getStep(candidate, stepId)
   return [
     buildCodexPrompt(candidate, step, initial(candidate)),
-    buildKimiPrompt(candidate, step, codexResult(step.id, candidate.phase)),
+    buildQaPrompt(candidate, step, codexResult(step.id, candidate.phase)),
   ]
 }
 
@@ -119,7 +134,7 @@ describe('Phase 6 setup manifest', () => {
       fixAttempts: { 'step-1': 0, 'step-2': 0 },
       pendingFindings: [],
       lastCodexResult: null,
-      lastKimiResult: null,
+      lastQaResult: null,
     })
     expect(() => parseManifest({ ...manifest, initialStep: 'step-2' })).toThrow(
       'initiallyAcceptedThrough may be null only when initialStep is first',
@@ -131,7 +146,7 @@ describe('Phase 6 setup manifest', () => {
     expect(manifest.maxFixAttempts).toBe(3)
     for (const step of manifest.steps) {
       expect(parseCodexResult(codexResult(step.id), manifest, step).outcome).toBe('ready-for-qa')
-      expect(parseKimiResult(qaResult(step.id), manifest, step).verdict).toBe('pass')
+      expect(parseQaResult(qaResult(step.id), manifest, step).verdict).toBe('pass')
       for (const command of gates) {
         const missing = codexResult(step.id)
         missing.gates = missing.gates.filter((gate) => gate.command !== command)
@@ -140,7 +155,7 @@ describe('Phase 6 setup manifest', () => {
         red.gates = red.gates.map((gate) => gate.command === command
           ? { ...gate, status: 'fail' }
           : gate)
-        expect(() => parseKimiResult(red, manifest, step)).toThrow('required gate is not green')
+        expect(() => parseQaResult(red, manifest, step)).toThrow('reviewer gate table disagrees')
       }
     }
   })
@@ -165,7 +180,7 @@ describe('Phase 6 setup manifest', () => {
     expect(accepted.currentStep).toBe('step-2')
     expect(accepted.ownerAcceptedThrough).toBe('step-1')
     expect(accepted.lastCodexResult).toBeNull()
-    expect(accepted.lastKimiResult).toBeNull()
+    expect(accepted.lastQaResult).toBeNull()
     expect(accepted.qaPassedSteps).toEqual(['step-1'])
     const final = transitionAfterQa(manifest, accepted, qaResult('step-2'))
     expect(final.status).toBe('complete-awaiting-owner-ci')
@@ -224,7 +239,7 @@ describe('Phase 6 setup manifest', () => {
       expect(prompt).toContain('genuinely owner-authored, dated and signed')
       expect(prompt).toContain('outcome blocked')
       expect(prompt).toContain('must precede controller accept')
-      expect(prompt).toContain('fresh independent Kimi QA')
+      expect(prompt).toContain('fresh independent Codex QA')
       expect(prompt).toContain('not final CI/release acceptance')
     }
     for (const prompt of prompts(manifest)) {
@@ -236,7 +251,7 @@ describe('Phase 6 setup manifest', () => {
   })
 })
 
-describe('phase-aware deck boundary in generated Codex and Kimi prompts', () => {
+describe('phase-aware deck boundary in generated Codex and QA prompts', () => {
   it.each([2, 3, 4, 5])('preserves the deferred fixme before Phase 6 (phase %i)', (phase) => {
     const earlier = parseManifest(JSON.parse(readFileSync(
       new URL(`../../scripts/phase-runner/manifests/phase-${phase}.json`, import.meta.url),

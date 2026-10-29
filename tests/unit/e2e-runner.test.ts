@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,6 +13,17 @@ import {
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
 describe('E2E runner support', () => {
+  it('discovers sorted repository-relative CLI paths with forward slashes', () => {
+    const specFiles = discoverE2eSpecFiles(repositoryRoot)
+
+    expect(specFiles).toContain('e2e/phase6-deck.spec.ts')
+    expect(specFiles).toEqual([...specFiles].sort())
+    for (const specFile of specFiles) {
+      expect(specFile).toMatch(/^e2e\/[^\\/]+\.spec\.ts$/u)
+      expect(existsSync(resolve(repositoryRoot, specFile))).toBe(true)
+    }
+  })
+
   it('isolates the argument-free CI gate by default', () => {
     expect(
       shouldIsolateE2eFiles({
@@ -100,27 +111,33 @@ describe('E2E runner support', () => {
     expect(matrixSpecs).toHaveLength(discoverE2eSpecFiles(repositoryRoot).length + 6)
   })
 
-  it('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking', () => {
+  it.each(['\n', '\r\n'])('limits extended GitHub job budgets to renderer-heavy specs and keeps focused AC-17 blocking with %j newlines', (newline) => {
     const workflow = readFileSync(
       resolve(repositoryRoot, '.github/workflows/ci.yml'),
       'utf8',
-    )
+    ).replace(/\r?\n/gu, newline)
 
     expect(workflow).toContain('timeout-minutes: ${{ matrix.timeout }}')
     expect(workflow).toMatch(
-      /id: phase3-renderer\n\s+spec: e2e\/phase3-renderer\.spec\.ts\n\s+timeout: 75\n\s+timing_scale: 1\.5/u,
+      /id: phase3-renderer\r?\n\s+spec: e2e\/phase3-renderer\.spec\.ts\r?\n\s+timeout: 75\r?\n\s+timing_scale: 1\.5/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-fit-1\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=1\/4/u,
+      /id: phase5-fit-1\r?\n\s+spec: e2e\/phase5-fit\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 1\.5\r?\n\s+extra_args: --fully-parallel --shard=1\/4/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-fit-4\n\s+spec: e2e\/phase5-fit\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 1\.5\n\s+extra_args: --fully-parallel --shard=4\/4/u,
+      /id: phase5-fit-4\r?\n\s+spec: e2e\/phase5-fit\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 1\.5\r?\n\s+extra_args: --fully-parallel --shard=4\/4/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input-1\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=1\/3/u,
+      /id: phase5-input-1\r?\n\s+spec: e2e\/phase5-input\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 2\r?\n\s+extra_args: --fully-parallel --shard=1\/3/u,
     )
     expect(workflow).toMatch(
-      /id: phase5-input-3\n\s+spec: e2e\/phase5-input\.spec\.ts\n\s+timeout: 90\n\s+timing_scale: 2\n\s+extra_args: --fully-parallel --shard=3\/3/u,
+      /id: phase5-input-3\r?\n\s+spec: e2e\/phase5-input\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 2\r?\n\s+extra_args: --fully-parallel --shard=3\/3/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase6-deck-1\r?\n\s+spec: e2e\/phase6-deck\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 1\.5\r?\n\s+extra_args: --fully-parallel --shard=1\/2/u,
+    )
+    expect(workflow).toMatch(
+      /id: phase6-deck-2\r?\n\s+spec: e2e\/phase6-deck\.spec\.ts\r?\n\s+timeout: 90\r?\n\s+timing_scale: 1\.5\r?\n\s+extra_args: --fully-parallel --shard=2\/2/u,
     )
     expect(workflow).toContain(
       'npm run test:e2e -- ${{ matrix.spec }} ${{ matrix.extra_args }}',

@@ -2,7 +2,7 @@
 
 import { readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { dirname, join, relative, resolve } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
@@ -15,7 +15,7 @@ export function discoverE2eSpecFiles(root = repositoryRoot) {
   const testDirectory = join(root, 'e2e')
   return readdirSync(testDirectory, { withFileTypes: true })
     .filter((entry) => entry.isFile() && entry.name.endsWith('.spec.ts'))
-    .map((entry) => relative(root, join(testDirectory, entry.name)))
+    .map((entry) => relative(root, join(testDirectory, entry.name)).split(sep).join('/'))
     .sort()
 }
 
