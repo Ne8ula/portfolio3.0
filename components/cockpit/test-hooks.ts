@@ -26,7 +26,9 @@
 // requestAnimationFrame callback.
 
 import type { FrameTimesCaptureState } from './frame-times'
-import { invalidateFocusMeasurements } from './focus-fit-store'
+import { invalidateFocusMeasurements, setFocusFitStatus } from './focus-fit-store'
+import type { FocusFitReason } from './focus-fit-store'
+import type { FocusHudPlacedLayout, Rect, Size } from '@/lib/responsive/hud-layout'
 import {
   getContainedPanSnapshotForTests,
   type ContainedPanSnapshot,
@@ -166,6 +168,27 @@ export type FocusFitSnapshot = {
   readonly points: readonly { readonly x: number; readonly y: number }[]
 }
 
+export type DeckHudLayoutSnapshot = {
+  readonly status: 'placed' | 'unsatisfiable' | 'unmeasured' | 'no-subject'
+  readonly fitDegraded: boolean
+  readonly fitReason: FocusFitReason | null
+  readonly arrowTier: FocusHudPlacedLayout['arrowTier'] | null
+  readonly hintTier: FocusHudPlacedLayout['hintTier'] | null
+  readonly compact: boolean | null
+  readonly solveCount: number
+  readonly subject: Rect | null
+  readonly chrome: readonly Rect[] | null
+  readonly sizes: { hint: Size; hintCompact: Size; arrow: Size } | null
+  readonly hint: Rect | null
+  readonly previous: Rect | null
+  readonly next: Rect | null
+}
+
+type DeckHudProbe = {
+  snapshot: () => DeckHudLayoutSnapshot
+  setSubject: (rect: Rect | null) => void
+}
+
 export type FreeLookSnapshot = {
   readonly yawTarget: number
   readonly pitchTarget: number
@@ -221,6 +244,9 @@ export type CockpitTestHooks = {
   getDeckTether(): DeckTetherSnapshot
   getVinylMotion(): VinylMotionSnapshot
   getFocusFit(): FocusFitSnapshot | null
+  getDeckHudLayout(): DeckHudLayoutSnapshot | null
+  forceDeckFitStatus(degraded: boolean, reason?: FocusFitReason): void
+  setDeckHudSubjectOverride(rect: Rect | null): void
   getFreeLookState(): FreeLookSnapshot
   getPanState(): PanSnapshot | null
   getPointerActivationState(): PointerActivationSnapshot
@@ -292,6 +318,7 @@ type Registry = {
   deckTetherProbe: DeckTetherProbe | null
   vinylSleeveProbe: VinylSleeveProbe | null
   vinylFlightProbe: VinylFlightProbe | null
+  deckHudProbe: DeckHudProbe | null
   focusFitProbe: FocusFitProbe | null
   freeLookProbe: FreeLookProbe | null
   authoredTweakGuardAction: AuthoredTweakGuardAction | null
@@ -329,6 +356,7 @@ const registry: Registry = {
   deckTetherProbe: null,
   vinylSleeveProbe: null,
   vinylFlightProbe: null,
+  deckHudProbe: null,
   focusFitProbe: null,
   freeLookProbe: null,
   authoredTweakGuardAction: null,
@@ -487,6 +515,14 @@ export function registerFocusFitProbe(probe: FocusFitProbe): void {
 export function unregisterFocusFitProbe(): void {
   if (!testHooksEnabled) return
   registry.focusFitProbe = null
+}
+
+export function registerDeckHudProbe(probe: DeckHudProbe): () => void {
+  if (!testHooksEnabled) return () => {}
+  registry.deckHudProbe = probe
+  return () => {
+    if (registry.deckHudProbe === probe) registry.deckHudProbe = null
+  }
 }
 
 export function registerFreeLookProbe(probe: FreeLookProbe): void {
@@ -864,6 +900,38 @@ function buildHooks(): CockpitTestHooks {
 
     getFocusFit(): FocusFitSnapshot | null {
       return registry.focusFitProbe?.() ?? null
+    },
+
+    getDeckHudLayout(): DeckHudLayoutSnapshot | null {
+      return registry.deckHudProbe ? structuredClone(registry.deckHudProbe.snapshot()) : null
+    },
+
+    forceDeckFitStatus(degraded: boolean, reason?: FocusFitReason): void {
+      const reasons: readonly FocusFitReason[] = [
+        'invalid-target', 'invalid-stage', 'invalid-input', 'unfittable-at-max',
+      ]
+      if (typeof degraded !== 'boolean' ||
+          (degraded ? !reasons.includes(reason as FocusFitReason) : reason !== undefined)) {
+        throw new Error('__COCKPIT_TEST_HOOKS__: invalid deck fit status')
+      }
+      setFocusFitStatus('deck', degraded, degraded ? reason! : null)
+    },
+
+    setDeckHudSubjectOverride(rect: Rect | null): void {
+      if (rect !== null && (
+        typeof rect !== 'object' || Array.isArray(rect) ||
+        Reflect.ownKeys(rect).length !== 4 ||
+        !['x', 'y', 'w', 'h'].every(key => Object.hasOwn(rect, key)) ||
+        ![rect.x, rect.y, rect.w, rect.h].every(Number.isFinite) ||
+        rect.w <= 0 || rect.h <= 0
+      )) throw new Error('__COCKPIT_TEST_HOOKS__: invalid DeckHud subject rect')
+      if (!registry.deckHudProbe) {
+        if (rect === null) return
+        throw new Error('__COCKPIT_TEST_HOOKS__: DeckHud not ready')
+      }
+      registry.deckHudProbe.setSubject(rect === null ? null : {
+        x: rect.x, y: rect.y, w: rect.w, h: rect.h,
+      })
     },
 
     getFreeLookState(): FreeLookSnapshot {

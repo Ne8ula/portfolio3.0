@@ -10,6 +10,8 @@
 // of production bundles (components/cockpit/test-hooks.ts). Phase 8's
 // production gate asserts the bridge is ABSENT from the production build.
 
+import { HUD_SUBJECT_GAP } from '../lib/responsive/hud-layout'
+
 import { expect, test, type Page } from '@playwright/test'
 
 import { DPR_CAP } from '../lib/responsive/render-policy'
@@ -942,27 +944,31 @@ test.describe('phase 0 smoke', () => {
     expect(html).toContain('href="/about"')
   })
 
-  // ── Named pending work — never recorded as passing (§8 Phase 0) ────────
-
-  // Phase 6 (plan §8 Phase 6 / §2.1): the deck browse hint overlaps the
-  // holographic project card on shorter viewports. Deliberately NOT
-  // stopgapped; the real solver fixes it. This must never be inverted into
-  // a passing baseline.
-  test.fixme(
+  // Phase 6 design §13: the original short-viewport reproducer is executable.
+  test(
     'deck browse hint does not overlap the holographic project card on short viewports (Phase 6)',
     async ({ page }) => {
-      await page.setViewportSize({ width: 1280, height: 720 })
-      await page.goto('/')
-      await enterCockpitDirect(page)
-      await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
-      const snapshot = await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.getHudSnapshot())
-      const hint = snapshot.overlays['browse-hint']
-      const card = snapshot.subject
-      expect(hint && card).toBeTruthy()
-      const separated =
-        hint!.y + hint!.h <= card!.y || hint!.y >= card!.y + card!.h ||
-        hint!.x + hint!.w <= card!.x || hint!.x >= card!.x + card!.w
-      expect(separated, 'hint intersects the holographic card').toBe(true)
+      const viewport = page.viewportSize()!
+      try {
+        await page.setViewportSize({ width: 1280, height: 720 })
+        await page.goto('/')
+        await enterCockpitDirect(page)
+        await page.evaluate(() => window.__COCKPIT_TEST_HOOKS__!.playRecord(0))
+        await expectMainCanvasNotBlank(page)
+        await expect.poll(() => page.evaluate(async (gap) => {
+          const hooks = window.__COCKPIT_TEST_HOOKS__!
+          const snapshot = await hooks.getHudSnapshot()
+          const hint = snapshot.overlays['browse-hint']
+          const card = snapshot.publishedFrame?.deck.card
+          return hooks.isSettled() && snapshot.publishedFrame?.deck.info?.busy === false &&
+            snapshot.overlaysCommittedFrameId === snapshot.publishedFrame?.frameId &&
+            !!hint && !!card && (
+              hint.y + hint.h + gap <= card.y || hint.y >= card.y + card.h + gap ||
+              hint.x + hint.w + gap <= card.x || hint.x >= card.x + card.w + gap)
+        }, HUD_SUBJECT_GAP)).toBe(true)
+      } finally {
+        await page.setViewportSize(viewport)
+      }
     },
   )
 })

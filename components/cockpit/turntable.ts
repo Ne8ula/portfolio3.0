@@ -18,6 +18,7 @@
 // and card. Card's VIEW MORE button is raycast-picked (UV → canvas px);
 // clicking empty space in deck view returns to the cockpit.
 import * as THREE from "three"
+import { makeAccentMaterial } from "./materials"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js"
 import { makeDecal, makeTextDecal } from "./decals"
@@ -162,8 +163,8 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   const greenGlass = new THREE.MeshPhysicalMaterial({ color: 0x94AE90, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.12 });
   // Jade dash accents — LIT material; an unlit basic reads as a glowing
   // light-bar over the dim scene instead of printed jade ink.
-  const sageSolid  = new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.6 });
-  const sageKnob   = new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.5 });
+  const sageSolid  = makeAccentMaterial(new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.6 }));
+  const sageKnob   = makeAccentMaterial(new THREE.MeshStandardMaterial({ color: 0x6F8D75, roughness: 0.5 }));
 
   // ── Base ──────────────────────────────────────────────────────
   const BASE_W = TURNTABLE_FOCUS_AUTHORING.base.width;
@@ -401,10 +402,11 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   // keep grazing-angle fresnel from washing the lid out under the
   // cockpit's high camera — the deck stays readable through the acrylic.
   const coverMat = new THREE.MeshPhysicalMaterial({
-    color: 0xFFFFFF, transmission: 1, roughness: 0.06, thickness: 0.015,
-    ior: 1.25, metalness: 0, envMapIntensity: 0.22,
+    color: 0xFFFFFF, transmission: 1, roughness: 0.14, thickness: 0.015,
+    ior: 1.25, metalness: 0, envMapIntensity: 0.35,
     clearcoat: 0.15, clearcoatRoughness: 0.15, specularIntensity: 0.35,
   });
+  coverMat.userData.decorativeClear = { transmission: coverMat.transmission, depthWrite: coverMat.depthWrite };
   // COVER_H sits low — just clearing the tonearm collar (~0.39 above deck
   // origin) instead of the old tall 0.52 box.
   const COVER_W = BASE_W - 0.06, COVER_D = BASE_D - 0.06, COVER_H = 0.36, CT = 0.015;
@@ -417,6 +419,7 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   coverHinge.position.set(0, coverY0, -COVER_D/2);
   group.add(coverHinge);
   const coverGroup = new THREE.Group();
+  coverGroup.name = 'dust-cover-panels';
   coverGroup.position.set(0, -coverY0, COVER_D/2);   // cancel the pivot offset at rest
   coverHinge.add(coverGroup);
   const coverPanel = (w, h, d, x, y, z) => {
@@ -430,6 +433,26 @@ export function buildTurntable(scene, tableGroup, camera, renderer, options = {}
   [-1, 1].forEach(s =>                                                          // sides
     coverPanel(CT, wallH, COVER_D - CT*2 - 0.002, s * (COVER_W/2 - CT/2), coverY0 + wallH/2, 0));
   coverPanel(COVER_W, CT, COVER_D, 0, coverY0 + COVER_H - CT/2, 0);            // lid
+  // Narrow neutral perimeter reads as frosted edge stock. It rides the
+  // existing hinge; the seating gasket remains on the stationary plinth.
+  const edgeMaterial = new THREE.MeshStandardMaterial({ color: 0xB9B5AE, roughness: 0.48, transparent: true, opacity: 0.50 });
+  edgeMaterial.userData.decorativeClear = { transmission: 0, depthWrite: true, opacity: 0.50, transparent: true };
+  const rimParts = [];
+  for (const y of [coverY0+0.007, coverY0+COVER_H-0.007]) {
+    for (const z of [-COVER_D/2+0.008,COVER_D/2-0.008])
+      rimParts.push(new THREE.BoxGeometry(COVER_W-0.012,0.009,0.012).translate(0,y,z));
+    for (const x of [-COVER_W/2+0.008,COVER_W/2-0.008])
+      rimParts.push(new THREE.BoxGeometry(0.012,0.009,COVER_D-0.012).translate(x,y,0));
+  }
+  const rim = new THREE.Mesh(mergeGeometries(rimParts),edgeMaterial);
+  rimParts.forEach(g=>g.dispose()); rim.name='dust-cover-edge-stock';rim.userData.noGlow=true;rim.userData.noPick=true;
+  coverGroup.add(rim);
+  const seatParts = [
+    new THREE.BoxGeometry(COVER_W-0.025,0.006,0.009).translate(0,coverY0-0.002,COVER_D/2-0.01),
+    ...[-1,1].map(s=>new THREE.BoxGeometry(0.009,0.006,COVER_D-0.025).translate(s*(COVER_W/2-0.01),coverY0-0.002,0)),
+  ];
+  const seat = new THREE.Mesh(mergeGeometries(seatParts),new THREE.MeshStandardMaterial({color:0x55514B,roughness:0.7}));
+  seatParts.forEach(g=>g.dispose());seat.name='dust-cover-seating-gasket';seat.userData.noGlow=true;seat.userData.noPick=true;group.add(seat);
   // The two hinge barrels on the plinth — small dark cylinders along the
   // pivot axis (tiny → skipped by the edge-glow tracer automatically).
   const hingeMat = new THREE.MeshLambertMaterial({ color: 0x2A2722 });

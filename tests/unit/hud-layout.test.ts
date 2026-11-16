@@ -110,6 +110,7 @@ describe('resolveFocusHudLayout info priority', () => {
     expect(result.next).toEqual({ x: 514, y: 258, w: 44, h: 44 })
     expect(result.hint).toEqual({ x: 350, y: 156, w: 100, h: 30 })
     expect(result.compact).toBe(false)
+    expect(result.hintTier).toBe('above')
   })
 
   it('uses the above tier when chrome blocks the below candidate', () => {
@@ -169,6 +170,7 @@ describe('resolveFocusHudLayout arrow tiers', () => {
     expectPlaced(result)
     expect(result.previous).toEqual({ x: 242, y: 258, w: 44, h: 44 })
     expect(result.next).toEqual({ x: 514, y: 258, w: 44, h: 44 })
+    expect(result.arrowTier).toBe('beside')
     expect(result.previous.w).toBeGreaterThanOrEqual(HUD_MIN_HIT_SIZE)
     expect(result.previous.h).toBeGreaterThanOrEqual(HUD_MIN_HIT_SIZE)
   })
@@ -184,6 +186,7 @@ describe('resolveFocusHudLayout arrow tiers', () => {
       }),
     )
     expectPlaced(result)
+    expect(result.arrowTier).toBe('rail')
     expect(result.previous).toEqual({ x: 352, y: 142, w: 44, h: 44 })
     expect(result.next).toEqual({ x: 404, y: 142, w: 44, h: 44 })
   })
@@ -200,6 +203,7 @@ describe('resolveFocusHudLayout arrow tiers', () => {
       }),
     )
     expectPlaced(result)
+    expect(result.arrowTier).toBe('edge')
     expect(result.previous.x).toBe(safeFrame.x)
     expect(result.next.x + result.next.w).toBe(safeFrame.x + safeFrame.w)
     expect(result.previous.y).toBe(result.next.y)
@@ -235,6 +239,7 @@ describe('resolveFocusHudLayout hint tiers and compact hysteresis', () => {
       }),
     )
     expectPlaced(result)
+    expect(result.hintTier).toBe('below')
     expect(result.hint).toEqual({ x: 350, y: 374, w: 100, h: 30 })
     expect(result.compact).toBe(false)
   })
@@ -250,6 +255,15 @@ describe('resolveFocusHudLayout hint tiers and compact hysteresis', () => {
     expectPlaced(compact)
     expect(compact.hint).toEqual({ x: 364, y: 16, w: 72, h: 24 })
     expect(compact.compact).toBe(true)
+    expect(compact.hintTier).toBe('compact-top')
+
+    const bottom = resolveFocusHudLayout(input({
+      chrome: [...blockers, { x: 350, y: 16, w: 100, h: 30 }],
+      sizes: withoutInfo,
+    }))
+    expectPlaced(bottom)
+    expect(bottom.hintTier).toBe('compact-bottom')
+    expect(bottom.hint).toEqual({ x: 364, y: 560, w: 72, h: 24 })
 
     const hidden = resolveFocusHudLayout(
       input({
@@ -262,6 +276,7 @@ describe('resolveFocusHudLayout hint tiers and compact hysteresis', () => {
       }),
     )
     expectPlaced(hidden)
+    expect(hidden.hintTier).toBe('hidden')
     expect(hidden.hint).toBeNull()
     expect(hidden.compact).toBe(true)
   })
@@ -299,6 +314,20 @@ describe('resolveFocusHudLayout hint tiers and compact hysteresis', () => {
     expectPlaced(atThreshold)
     expect(atThreshold.compact).toBe(false)
     expect(atThreshold.hint).toEqual({ x: 350, y: 156, w: 100, h: 30 })
+    for (const slack of [-10, 0, 7.9, 8, 20]) {
+      const fixture = withSlack(slack)
+      const accepted = resolveFocusHudLayout(fixture)
+      expectPlaced(accepted)
+      const placed = [accepted.previous, accepted.next, ...(accepted.hint ? [accepted.hint] : [])]
+      for (const rect of placed) {
+        expect(contains(fixture.safeFrame, rect)).toBe(true)
+        expect(intersects(rect, fixture.subject, HUD_SUBJECT_GAP)).toBe(false)
+        for (const obstacle of fixture.chrome) expect(intersects(rect, obstacle, HUD_COLLISION_GAP)).toBe(false)
+      }
+      for (let i = 0; i < placed.length; i++) {
+        for (const other of placed.slice(i + 1)) expect(intersects(placed[i]!, other, HUD_COLLISION_GAP)).toBe(false)
+      }
+    }
   })
 })
 
@@ -334,5 +363,37 @@ describe('resolveFocusHudLayout invariants', () => {
     const reversed = resolveFocusHudLayout(input({ chrome: [...chrome].reverse() }))
 
     expect(reversed).toEqual(forward)
+  })
+})
+
+
+describe('Phase 6 F3 first-solve discriminator', () => {
+  it('distinguishes a fresh mount from leaked compact state using the closed-form fixture', () => {
+    const stage = { x: 0, y: 0, w: 1440, h: 900 }
+    const safeFrame = computeSafeFrame(stage)
+    const sizes = { hint: { w: 300, h: 31 }, hintCompact: { w: 106, h: 31 }, arrow: { w: 44, h: 55.2 } }
+    const width = Math.max(24, sizes.hint.w - 2 * (HUD_SUBJECT_GAP + sizes.arrow.w) - 16)
+    const height = sizes.arrow.h + 2 * (HUD_COLLISION_GAP - HUD_SUBJECT_GAP) + HUD_COMPACT_HYSTERESIS
+    const subject = { x: safeFrame.x + (safeFrame.w - width) / 2,
+      y: safeFrame.y + sizes.hint.h + HUD_SUBJECT_GAP + 40, w: width, h: height }
+    expect((sizes.hint.w - width) / 2 - HUD_SUBJECT_GAP - sizes.arrow.w).toBeGreaterThanOrEqual(8)
+    expect(height / 2 + HUD_SUBJECT_GAP - sizes.arrow.h / 2).toBe(HUD_COLLISION_GAP + HUD_COMPACT_HYSTERESIS / 2)
+    expect(subject.y - safeFrame.y).toBeGreaterThanOrEqual(sizes.hint.h + HUD_SUBJECT_GAP)
+    expect(subject.y - safeFrame.y).toBeGreaterThanOrEqual(sizes.hintCompact.h + HUD_COLLISION_GAP)
+    expect(safeFrame.x + (safeFrame.w + sizes.hintCompact.w) / 2 + HUD_COLLISION_GAP).toBeLessThanOrEqual(1280)
+    for (const previousCompact of [true, false]) {
+      const result = resolveFocusHudLayout({ kind: 'deck', stage, safeFrame, subject,
+        sizes, chrome: [{ x: 1280, y: 28, w: 120, h: 44 }], previousCompact })
+      expectPlaced(result)
+      expect(result.arrowTier).toBe('beside')
+      expect(result.compact).toBe(previousCompact)
+      expect(result.hintTier).toBe(previousCompact ? 'compact-top' : 'above')
+      expect(result.hint).not.toBeNull()
+      for (const rect of [result.previous, result.next, result.hint!]) {
+        expect(contains(safeFrame, rect)).toBe(true)
+        expect(intersects(rect, subject, HUD_SUBJECT_GAP)).toBe(false)
+        expect(intersects(rect, { x: 1280, y: 28, w: 120, h: 44 }, HUD_COLLISION_GAP)).toBe(false)
+      }
+    }
   })
 })

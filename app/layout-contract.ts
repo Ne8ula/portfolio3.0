@@ -41,3 +41,13 @@ export const COCKPIT_LAYOUT_CONTRACT = {
   },
   viewportCases: REQUIRED_VIEWPORT_CASES,
 } as const satisfies LayoutContract
+
+/** Ordinary, wrapping identity chrome; it is not part of the panned artwork. */
+export const COCKPIT_IDENTITY_LAYOUT_CONTRACT = {
+  id: 'cockpit-identity-v1',
+  supportProfile: 'desktop-laptop-v1',
+  protectedRegions: [],
+  allowedAdaptations: ['reposition', 'reflow'],
+  accessibility: { ...COCKPIT_LAYOUT_CONTRACT.accessibility, reflow: 'standard' },
+  viewportCases: REQUIRED_VIEWPORT_CASES,
+} as const satisfies LayoutContract

@@ -37,17 +37,16 @@ const TWEAK_DEFAULTS = {
   // up and center-stage; the PC is a strong secondary pulled right and
   // slightly smaller; coffee stays ambient on the far-left wing; the
   // hobby decorations (decorations.ts) sit well below all four in scale.
-  pcX: 5.2, pcY: 0.18, pcZ: 0.0, pcScale: 1.35, pcYaw: -0.55, pcPitch: 0, pcRoll: 0,
+  pcX: 4.65, pcY: 0.18, pcZ: -1.10, pcScale: 1.35, pcYaw: -0.42, pcPitch: 0, pcRoll: 0,
   kbX: 0, kbY: 0, kbZ: 0,
   // Seated first-person eye: desk raised toward the camera so the viewer
   // reads as sitting at the desk, not hovering above it.
-  fpvHeight: -2.4, fpvDistance: -0.6,
+  fpvHeight: -2.6, fpvDistance: 0.4,
   // Vinyl crate — hero, left of center, records facing the viewer, angled
-  // slightly toward the desk center. Owner-corrected scale: 2.0;
-  // position remains unchanged for Kimi's independent composition QA.
-  vinylX: -3.6, vinylY: 0.18, vinylZ: 1.15, vinylRX: 0, vinylRY: 0.35, vinylRZ: 0, vinylS: 1.9,
-  // Turntable — hero, center stage, nudged toward the viewer, dead-on.
-  ttX: 0.2, ttY: 0.18, ttZ: 0.9, ttRY: 0, ttS: 1.75,
+  // slightly toward the desk center. Fixed across viewport sizes.
+  vinylX: -3.45, vinylY: 0.18, vinylZ: 0.40, vinylRX: 0, vinylRY: 0.20, vinylRZ: 0, vinylS: 1.9,
+  // Turntable — closest point of the staggered listening-room triangle.
+  ttX: 0.15, ttY: 0.18, ttZ: 0.95, ttRY: -0.08, ttS: 1.75,
 }
 
 const VIEW_MODES = new Set(['cockpit', 'monitor', 'crate', 'deck']);
@@ -357,8 +356,8 @@ export function CockpitApp({ onFatal, onMountChange }) {
           />
         </ResponsiveStage>
       )}
-      {!recovering && <div className="grain" />}
-      {!recovering && <div className="vignette" />}
+      {phase !== 'cockpit' && !recovering && <div className="grain" />}
+      {phase !== 'cockpit' && !recovering && <div className="vignette" />}
       {phase === 'cockpit' && viewMode === 'cockpit' && !recovering && (
         <ThemeToggle theme={theme} onToggle={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))} />
       )}

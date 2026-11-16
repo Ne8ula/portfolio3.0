@@ -1,39 +1,13 @@
 // @ts-nocheck
-// CoffeeStation — a stacked pour-over dripper and a frosted glass mug on
-// the FAR LEFT wing of the desk — pushed past the default cockpit framing
-// so the viewer has to look left to use it.
-//
-// The dripper follows the 6-angle product reference: a frosted-glass
-// inverted cone on top holding a scalloped white paper filter and a bed of
-// wet grounds (glossy brew bubbles on the surface), seated through a
-// rounded frosted collar onto a cylindrical receiving cup. The cup wears a
-// matte cream band over a frosted lower band (the brewed pool shows through
-// it) and carries a small cream V-spout MOLDED into its rim — the spout
-// belongs to the LOWER CUP, not the cone, and it faces the mug (+x). The
-// cup's D-shaped frosted tube handle sits on the OPPOSITE side (−x), so
-// nothing on the stack swings toward the mug during the pour (the cone is
-// handle-free). Jade accents: a
-// narrow vertical marker on the cone, a small square near the collar.
-// Frost encloses opaque content (paper / grounds / pool) the same way the
-// crate walls blur the records — transmission, not alpha (see CLAUDE.md).
-//
-// One interaction loop, entirely in the cockpit view (camera never focuses):
-//   idle     — the cone slow-drips into the receiving cup, mug empty.
-//   pouring  — click the dripper → the WHOLE STACK arcs over the mug and
-//              tilts AROUND THE CUP'S SPOUT (the spout stays fixed over the
-//              mug while the stack cocks up), the cup's pool drains as the
-//              mug fills, the pour ends with three trailing drips, then it
-//              arcs home. SPOUT_H keeps the cup base clear of the mug rim
-//              at every frame; tilting only lifts the base further away.
-//   full     — an ASCII smoke plume (~90 glyphs) rises off the mug.
-//   draining — click the full mug → the coffee sinks back to empty (and the
-//              cup's pool refills), the mug never leaves the desk.
+// Assembled pour-over station and clear mug: thin protective walls, opaque
+// working cores and an open spout that is also the mechanical tilt pivot.
+// The existing idle -> pouring -> full -> draining loop stays in cockpit view.
+// Purposeful brew drops, trailing drips and full-mug steam retain their lifecycle.
 import * as THREE from "three"
 import type { RandomSource, RandomStream } from "@/lib/random/seeded-streams"
 import { CURSOR_POINTER } from "./cursors"
 import { getFrameTimes } from "./frame-times"
-import { PALETTE, makeHeroGlass, makeFrost } from "./materials"
-import { makeTextDecal } from "./decals"
+import { PALETTE, makeHeroGlass, makeFrost, makeAccentMaterial } from "./materials"
 import { registerPointerActivation } from "./pointer-activation"
 
 // ASCII smoke plume — ~90 glyphs along three winding streamlines that
@@ -117,289 +91,70 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
   const group = new THREE.Group();
   tableGroup.add(group);
 
-  // ── Materials — glass family ──────────────────────────────────
-  const glass  = makeHeroGlass({ thickness: 0.3, roughness: 0.15, aberration: 0.015 });
-  const edgeMat= new THREE.LineBasicMaterial({ color: PALETTE.line, transparent: true, opacity: 0.32, depthWrite: false });
-  const frostG = makeFrost({ color: 0xE7E2D9, transmission: 0.8, roughness: 0.3, thickness: 0.06 });   // cone + cup shells — glassy, never opaque plastic
-  const frostC = makeFrost({ color: 0xE7E2D9, transmission: 0.5,  roughness: 0.32, thickness: 0.08 });   // collar — less see-through (frost behind frost shows nothing)
-  const frostH = makeFrost({ color: 0xE4DFD6, transmission: 0.5,  roughness: 0.28, thickness: 0.1  });   // tube handles
+  // Thin protective walls surround opaque working parts; dimensions are table units.
+  const clear = makeHeroGlass({ thickness: 0.03, roughness: 0.16 });
+  const frost = makeFrost({ thickness: 0.03, roughness: 0.32, transmission: 0.82 });
   const creamTex = makeNoiseTexture(noiseRandom, 4);
-  const cream  = new THREE.MeshStandardMaterial({ color: 0xE9E3D7, roughness: 0.82, metalness: 0,
-    roughnessMap: creamTex, bumpMap: creamTex, bumpScale: 0.012 });
-  const paperTex = makeNoiseTexture(noiseRandom, 6);
-  const paper  = new THREE.MeshStandardMaterial({ color: 0xEFE8DA, roughness: 0.95, metalness: 0, side: THREE.DoubleSide,
-    roughnessMap: paperTex, bumpMap: paperTex, bumpScale: 0.008 });
-  const coffee = new THREE.MeshLambertMaterial({ color: 0x2E2016 });   // dark brew
-  const grounds= new THREE.MeshStandardMaterial({ color: 0x241811, roughness: 0.6, metalness: 0 });
-  const bubble = new THREE.MeshPhysicalMaterial({ color: 0x1C120C, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.1 });
-  const jade   = new THREE.MeshLambertMaterial({ color: PALETTE.jade });
-  const pickMat= new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
-
-  const addGlass = (geo, parent, y = 0, mat = glass) => {
-    const m = new THREE.Mesh(geo, mat);
-    m.position.y = y;
-    parent.add(m);
-    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 24), edgeMat);
-    e.position.y = y;
-    parent.add(e);
-    return m;
+  const cream = new THREE.MeshStandardMaterial({ color: PALETTE.cream, roughness: 0.55, bumpMap: creamTex, bumpScale: 0.003 });
+  const ink = new THREE.MeshStandardMaterial({ color: PALETTE.ink, roughness: 0.65 });
+  const coffee = new THREE.MeshLambertMaterial({ color: PALETTE.ink });
+  const jade = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.5 });
+  const pickMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+  const add = (name,geo,mat,parent,x=0,y=0,z=0) => {
+    const m=new THREE.Mesh(geo,mat);m.name=name;m.position.set(x,y,z);parent.add(m);return m;
   };
-  const addRing = (r, y, parent) => {
-    const pts = [];
-    for (let i = 0; i <= 64; i++){
-      const a = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r));
-    }
-    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), edgeMat);
-    l.position.y = y;
-    parent.add(l);
-    return l;
+  const lathe = pts => new THREE.LatheGeometry(pts.map(([r,y])=>new THREE.Vector2(r,y)),48);
+  const ring = (name,r,t,mat,parent,y) => {
+    const m=add(name,new THREE.TorusGeometry(r,t,8,48),mat,parent,0,y);m.rotation.x=Math.PI/2;return m;
   };
-
-  // D-shaped tube handle — authored in the xy plane on −x, then yawed to
-  // ~105° azimuth so it reads in silhouette from the cockpit seat (dead-on
-  // −x hides behind the body). End points sit just inside the parent's wall
-  // so the open tube ends stay hidden. Any azimuth off +x stays clear of
-  // the mug during the pour tilt (the tilt rotates about z, so the handle
-  // only swings up and away).
-  const addHandle = (pts, parent, r = 0.038, yaw = 1.31) => {
-    const g = new THREE.Group();
-    g.rotation.y = yaw;
-    parent.add(g);
-    const curve = new THREE.CatmullRomCurve3(
-      pts.map(([x, y]) => new THREE.Vector3(x, y, 0)), false, 'catmullrom', 0.6);
-    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, r, 10, false), frostH));
-    return g;
-  };
-
-  // ── Placement: left wing, just outside the default cockpit framing.
-  // Compact pairing: dripper just LEFT of the mug, both pulled toward the
-  // viewer so the station sits on the same arc as crate/turntable/PC,
-  // inboard of the table corner (left edge x −11, front edge z 4.5).
-  // Shifted left of the old spot so the hero-scaled crate (s 1.7 at
-  // x −3.7 — front-left corner lands near x −5.1, z 2.7) clears the mug.
-  const REST = new THREE.Vector3(-7.2, 0.18, 2.7);    // dripper stack
-  const MUG  = new THREE.Vector3(-5.6, 0.18, 3.3);    // mug — right of the dripper, toward the crate
-
-  // ── Dripper — station → tilt pivot (at the CUP'S SPOUT) → body ─
-  // The tilt group's origin sits at the receiving cup's spout tip, so
-  // mid-pour the spout stays dead still over the mug while the whole
-  // stack cocks up around it.
-  const station = new THREE.Group();
-  station.position.copy(REST);
-  station.scale.setScalar(1.45);
-  group.add(station);
-  const SPOUT = new THREE.Vector3(0.405, 0.49, 0);    // cup spout tip, station-local
-  const tiltG = new THREE.Group();
-  tiltG.position.copy(SPOUT);
-  station.add(tiltG);
-  const body = new THREE.Group();
-  body.position.copy(SPOUT).negate();
-  tiltG.add(body);
-
-  // ── Receiving cup — frosted cylinder, thick rounded base ──────
-  const cupProfile = [
-    [0.000, 0.000], [0.190, 0.000], [0.265, 0.018], [0.298, 0.055],
-    [0.308, 0.130], [0.312, 0.300], [0.312, 0.480], [0.300, 0.505], [0.270, 0.512],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  addGlass(new THREE.LatheGeometry(cupProfile, 48), body, 0, frostG);
-  // matte cream band wrapped around the upper half (floated off the shell —
-  // never coplanar); the pool stays visible through the frosted band below.
-  // The pour spout is MOLDED into the band, not attached: vertices near +x
-  // flare outward toward the rim, so the lip grows out of the surface.
-  const bandGeo = new THREE.CylinderGeometry(0.320, 0.318, 0.255, 64, 8, true);
-  {
-    const pos = bandGeo.attributes.position, v = new THREE.Vector3();
-    for (let i = 0; i < pos.count; i++){
-      v.fromBufferAttribute(pos, i);
-      const a = Math.atan2(v.z, v.x);                       // 0 rad = +x (seam is at +z — safe)
-      if (Math.abs(a) > 0.5) continue;
-      const fa = Math.cos((a / 0.5) * Math.PI / 2);
-      const fy = Math.pow((v.y + 0.1275) / 0.255, 2);       // fades in toward the rim
-      const r = Math.hypot(v.x, v.z) + 0.05 * fa * fa * fy;
-      pos.setXYZ(i, Math.cos(a) * r, v.y, Math.sin(a) * r);
-    }
-    bandGeo.computeVertexNormals();
-  }
-  const band = new THREE.Mesh(bandGeo, cream);
-  band.position.y = 0.372;
-  body.add(band);
-  // pinched tongue finishing the molded bulge — a z-squashed cone whose
-  // wide base is buried inside the band, tapering to the pour tip (the
-  // pour pivot lives at that tip)
-  const spout = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.065, 0.15, 20), cream);
-  spout.scale.z = 0.5;
-  spout.position.set(0.330, 0.493, 0);
-  spout.rotation.z = -1.55;
-  body.add(spout);
-  // cup handle — D-loop on the −x side (away from the mug)
-  addHandle([
-    [-0.295, 0.155], [-0.445, 0.150], [-0.505, 0.205],
-    [-0.508, 0.360], [-0.455, 0.435], [-0.295, 0.440],
-  ], body);
-  // brewed pool in the cup — bottom-anchored so it can drain; counter-rotated
-  // per-frame so the surface stays level while the stack tilts. It tops out
-  // BELOW the cream band, so any counter-rotation poke hides behind the
-  // blurred frosted band and never shows through the opaque cream.
-  const POOL_H = 0.20;
-  const poolGeo = new THREE.CylinderGeometry(0.245, 0.20, 1, 24);
-  poolGeo.translate(0, 0.5, 0);
-  const pool = new THREE.Mesh(poolGeo, coffee);
-  pool.position.y = 0.028;
-  pool.scale.y = POOL_H;
-  pool.userData.noGlow = true;   // animated liquid — excluded from the edge-glow trace
-  body.add(pool);
-
-  // ── Collar — rounded frosted platform between cup and cone ────
-  const collarProfile = [
-    [0.245, 0.000], [0.330, 0.008], [0.352, 0.038], [0.350, 0.072],
-    [0.325, 0.100], [0.240, 0.122], [0.150, 0.128], [0.130, 0.120],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  addGlass(new THREE.LatheGeometry(collarProfile, 48), body, 0.50, frostC);
-  // small jade square marker near the collar (between spout and viewer side)
-  const sq = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.032, 0.006), jade);
-  {
-    const a = 0.6;
-    sq.position.set(Math.cos(a) * 0.328, 0.462, Math.sin(a) * 0.328);
-    sq.lookAt(sq.position.x * 2, sq.position.y, sq.position.z * 2);
-  }
-  body.add(sq);
-
-  // ── Cone dripper — frosted inverted cone, neck through the collar ─
-  const coneG = new THREE.Group();
-  coneG.position.y = 0.555;
-  body.add(coneG);
-  const coneProfile = [
-    [0.095, 0.000], [0.100, 0.030], [0.112, 0.070], [0.150, 0.130],
-    [0.425, 0.555], [0.448, 0.585], [0.452, 0.612], [0.436, 0.628],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  addGlass(new THREE.LatheGeometry(coneProfile, 48), coneG, 0, frostG);
-  addRing(0.452, 0.612, coneG);   // rim line ties it to the wireframe language
-  // scalloped paper filter — opaque, its folded lip rises above the glass rim
-  const filterGeo = new THREE.CylinderGeometry(0.42, 0.26, 0.30, 64, 6, true);
-  scallopTop(filterGeo);
-  const filter = new THREE.Mesh(filterGeo, paper);
-  filter.position.y = 0.51;
-  coneG.add(filter);
-  // wet grounds — one dark truncated cone: its side silhouettes through the
-  // frosted glass below the paper band, its top face is the brew bed
-  const bed = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.16, 0.34, 48), grounds);
-  bed.position.y = 0.335;
-  coneG.add(bed);
-  // glossy brew bubbles on the bed (the top-view detail)
-  [
-    [ 0.10,  0.14, 0.034], [-0.13, -0.05, 0.022],
-    [ 0.02, -0.15, 0.016], [ 0.15, -0.02, 0.012],
-  ].forEach(([x, z, r]) => {
-    const b = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 10), bubble);
-    b.position.set(x, 0.505, z);
-    coneG.add(b);
-  });
-  // narrow vertical jade marker on the cone wall (per the reference)
-  const mark = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.105, 0.006), jade);
-  {
-    const a = 0.6, my = 0.30;
-    const r = 0.15 + 0.647 * (my - 0.13) + 0.012;   // wall radius at my, floated out
-    mark.position.set(Math.cos(a) * r, my, Math.sin(a) * r);
-    mark.lookAt(mark.position.x * 2, my - r * 0.647, mark.position.z * 2);   // lie along the flaring wall
-  }
-  coneG.add(mark);
-  // idle brew-drip — a drop falling from the cone's neck into the cup pool
-  const idleDrop = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), coffee);
-  idleDrop.visible = false;
-  body.add(idleDrop);
-  // invisible fat pick volume around the whole stack (handles included)
-  const stationPick = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.68, 1.35, 8), pickMat);
-  stationPick.position.y = 0.62;
-  body.add(stationPick);
-
-  // ── Frosted glass mug (origin at its base) ────────────────────
-  // Straight cylinder, thick rounded rim, thick base, rounded-rectangular
-  // glass handle — double-wall lathe so the rim reads as a translucent ring
-  // from above and the coffee shows through the frosted wall as a dark mass
-  // with a horizontal fill line.
-  const mug = new THREE.Group();
-  mug.position.copy(MUG);
-  mug.rotation.y = -0.4;   // handle (+x local) cheated toward the viewer
-  mug.scale.setScalar(1.25);
-  group.add(mug);
-
-  // body — up the outer wall, over the rounded rim, down the inner wall to
-  // a raised interior floor (thick underside glass, per the bottom view).
-  // SAME glass as the dripper: the shell shares frostG (cone/cup) and the
-  // handle shares frostH (tube handles), so the pair reads as one set and
-  // any dripper material tune carries over automatically.
-  const mugProfile = [
-    [0.000, 0.000], [0.200, 0.000], [0.270, 0.012], [0.295, 0.045],
-    [0.300, 0.090], [0.300, 0.500], [0.298, 0.545], [0.285, 0.575],
-    [0.262, 0.590], [0.240, 0.575], [0.232, 0.545], [0.230, 0.500],
-    [0.230, 0.115], [0.210, 0.095], [0.100, 0.085], [0.000, 0.085],
-  ].map(([x, y]) => new THREE.Vector2(x, y));
-  addGlass(new THREE.LatheGeometry(mugProfile, 48), mug, 0, frostG);
-
-  // opaque JADE foot band around the frosted bottom — the mug's chromatic
-  // anchor (LIT material, per the printed-ink rule). Slightly proud of the
-  // wall (r 0.300 → 0.303+) and lifted 2mm so nothing sits coplanar.
-  const footMat = new THREE.MeshStandardMaterial({ color: PALETTE.jade, roughness: 0.6, metalness: 0 });
-  const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.303, 0.309, 0.088, 48), footMat);
-  foot.position.y = 0.046;
-  mug.add(foot);
-
-  // handle — rounded-rectangular tube on +x, joints buried in the wall
-  const handlePts = [
-    [0.255, 0.175], [0.420, 0.160], [0.510, 0.215], [0.535, 0.300],
-    [0.510, 0.385], [0.420, 0.440], [0.255, 0.425],
-  ].map(([x, y]) => new THREE.Vector3(x, y, 0));
-  const handleCurve = new THREE.CatmullRomCurve3(handlePts, false, 'catmullrom', 0.4);
-  const handle = new THREE.Mesh(new THREE.TubeGeometry(handleCurve, 48, 0.045, 12, false), frostH);
-  mug.add(handle);
-  handlePts.forEach((p, i) => {           // cap the open tube ends (inside the wall)
-    if (i !== 0 && i !== handlePts.length - 1) return;
-    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), frostH);
-    cap.position.copy(p);
-    mug.add(cap);
-  });
-
-  // the coffee — unit-height cylinder anchored at its bottom, ENCLOSED in
-  // the frosted volume (same pattern as the CRT inside the PC head), with a
-  // crema ring riding the surface (reads as the fill line through the wall)
-  const liquidGeo = new THREE.CylinderGeometry(0.222, 0.222, 1, 32);
-  liquidGeo.translate(0, 0.5, 0);
-  // near-black brew, darker than the shared `coffee` — the frosted wall
-  // lightens whatever it encloses, so this lands at the reference tone
-  const liquid = new THREE.Mesh(liquidGeo, new THREE.MeshLambertMaterial({ color: 0x100906 }));
-  liquid.position.y = 0.09;
-  liquid.scale.y = 0.0001;
-  liquid.userData.noGlow = true;   // fill-animated — excluded from the edge-glow trace
-  mug.add(liquid);
-  const crema = new THREE.Mesh(
-    new THREE.RingGeometry(0.176, 0.220, 32),
-    new THREE.MeshLambertMaterial({ color: 0x8F6742 })
-  );
-  crema.rotation.x = -Math.PI / 2;
-  crema.visible = false;
-  crema.userData.noGlow = true;   // rides the fill line — excluded from the edge-glow trace
-  mug.add(crema);
-  const LIQUID_MAX = 0.30;   // full pour surface ≈ ⅔ of the mug height
-
-  // muted green accents — vertical marker on the wall, square on the handle
-  const marker = makeTextDecal((ctx, W, H) => {
-    ctx.fillStyle = '#6F8D75';
-    ctx.fillRect(W / 2 - 6, 8, 12, H - 16);
-  }, { width: 0.024, pxW: 32, pxH: 160, opacity: 0.9 });
-  marker.position.set(0, 0.46, 0.304);
-  mug.add(marker);
-  const chip = makeTextDecal((ctx, W, H) => {
-    ctx.fillStyle = '#6F8D75';
-    ctx.fillRect(4, 4, W - 8, H - 8);
-  }, { width: 0.035, pxW: 64, pxH: 64, opacity: 0.9 });
-  chip.position.set(0.584, 0.235, 0);
-  chip.rotation.y = Math.PI / 2;
-  mug.add(chip);
-
-  const mugPick = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.40, 0.68, 8), pickMat);
-  mugPick.position.y = 0.34;
-  mug.add(mugPick);
+  const REST=new THREE.Vector3(-8.00,0.18,-1.25);
+  const MUG=new THREE.Vector3(-7.60,0.18,0.10);
+  const station=new THREE.Group();station.name='coffee-station';station.position.copy(REST);group.add(station);
+  // The modeled spout mouth and the tilt pivot are the same physical point.
+  const SPOUT=new THREE.Vector3(0.53,0.60,0);
+  const tiltG=new THREE.Group();tiltG.name='coffee-spout-pivot';tiltG.position.copy(SPOUT);station.add(tiltG);
+  const body=new THREE.Group();body.name='coffee-body';body.position.copy(SPOUT).negate();tiltG.add(body);
+  add('receiving-clear-wall',lathe([[0,0],[0.30,0],[0.35,0.035],[0.38,0.12],[0.38,0.60],[0.35,0.64],
+    [0.32,0.64],[0.35,0.59],[0.35,0.13],[0.32,0.055],[0,0.055]]),clear,body);
+  ring('receiving-base-rim',0.325,0.025,clear,body,0.035);
+  ring('receiving-upper-rim',0.335,0.018,clear,body,0.635);
+  const spout=add('receiving-open-spout',lathe([[0.055,0],[0.045,0.18],[0.022,0.18],[0.03,0]]),clear,body,0.35,0.60,0);
+  spout.rotation.z=-Math.PI/2;
+  const handleCurve=new THREE.CatmullRomCurve3([[-0.36,0.20],[-0.61,0.19],[-0.67,0.33],[-0.61,0.51],[-0.36,0.52]].map(([x,y])=>new THREE.Vector3(x,y,0)));
+  add('receiving-open-handle',new THREE.TubeGeometry(handleCurve,32,0.03,10,false),clear,body);
+  for(const y of [0.20,0.52])add('handle-pad',new THREE.BoxGeometry(0.075,0.07,0.08),cream,body,-0.37,y);
+  ring('collar-dark-seam',0.33,0.017,ink,body,0.655);
+  add('cream-filter-collar',lathe([[0.13,0],[0.40,0],[0.40,0.055],[0.13,0.055]]),cream,body,0,0.67);
+  add('shallow-frost-cone',lathe([[0.12,0],[0.14,0.07],[0.54,0.80],[0.55,0.86],
+    [0.52,0.86],[0.51,0.80],[0.11,0.07],[0.09,0]]),frost,body,0,0.72);
+  ring('cone-clear-rim',0.535,0.016,clear,body,1.58);
+  const paperGeo=new THREE.CylinderGeometry(0.505,0.25,0.44,48,6,true);
+  scallopTop(paperGeo,11,0.012);
+  const paper=new THREE.MeshStandardMaterial({color:PALETTE.cream,roughness:0.92,side:THREE.DoubleSide});
+  add('cream-paper-filter',paperGeo,paper,body,0,1.40);
+  add('ink-grounds',new THREE.CylinderGeometry(0.35,0.17,0.34,40),ink,body,0,1.21);
+  const POOL_H=0.34;
+  const poolGeo=new THREE.CylinderGeometry(0.29,0.27,1,32);poolGeo.translate(0,0.5,0);
+  const pool=add('receiving-liquid',poolGeo,coffee,body,0,0.06);
+  pool.scale.y=POOL_H;pool.userData.noGlow=true;
+  const idleDrop=add('idle-brew-drop',new THREE.SphereGeometry(0.016,8,8),coffee,body);
+  idleDrop.visible=false;idleDrop.userData.noGlow=true;
+  const stationPick=add('coffee-station-pick',new THREE.CylinderGeometry(0.72,0.72,1.66,12),pickMat,station,0,0.83);
+  const mug=new THREE.Group();mug.name='coffee-mug';mug.position.copy(MUG);mug.rotation.y=-0.4;group.add(mug);
+  add('mug-clear-wall',lathe([[0,0],[0.29,0],[0.345,0.045],[0.345,0.70],[0.33,0.76],
+    [0.30,0.76],[0.315,0.70],[0.315,0.075],[0,0.075]]),clear,mug);
+  add('mug-opaque-inner-base',new THREE.CylinderGeometry(0.30,0.29,0.03,40),cream,mug,0,0.075);
+  ring('mug-jade-foot',0.32,0.018,makeAccentMaterial(jade),mug,0.028);
+  ring('mug-clear-rim',0.315,0.018,clear,mug,0.755);
+  const mugHandle=new THREE.CatmullRomCurve3([[0.32,0.20],[0.52,0.20],[0.56,0.35],[0.52,0.57],[0.32,0.57]].map(([x,y])=>new THREE.Vector3(x,y,0)));
+  add('mug-open-handle',new THREE.TubeGeometry(mugHandle,32,0.03,10,false),clear,mug);
+  for(const y of [0.20,0.57])add('mug-handle-pad',new THREE.BoxGeometry(0.07,0.07,0.08),cream,mug,0.33,y);
+  const liquidGeo=new THREE.CylinderGeometry(0.29,0.29,1,32);liquidGeo.translate(0,0.5,0);
+  const liquid=add('mug-liquid',liquidGeo,coffee,mug,0,0.09);liquid.scale.y=0.0001;liquid.userData.noGlow=true;
+  const crema=add('liquid-surface',new THREE.RingGeometry(0.24,0.288,32),jade,mug);
+  crema.rotation.x=-Math.PI/2;crema.visible=false;crema.userData.noGlow=true;
+  const LIQUID_MAX=0.48;
+  const mugPick=add('coffee-mug-pick',new THREE.CylinderGeometry(0.62,0.62,0.80,12),pickMat,mug,0,0.40);
 
   // ── Pour stream + trailing drips (desk-local) ─────────────────
   const streamGeo = new THREE.CylinderGeometry(0.028, 0.02, 1, 8);
@@ -439,13 +194,10 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
   let idleT = 0;
   const LIFT_T = 1.0, POUR_T = 1.8, DRIP_T = 0.55, RET_T = 1.0;
   const TILT0 = 0.42, TILT1 = 0.60;   // pour tilt deepens as the pool empties
-  const ARC = 0.5;                    // lift arc height
-  // SPOUT_H — spout height above MUG.y mid-pour. The pivot sits LOW on the
-  // stack (the cup's rim), so this must keep the cup base (0.49·1.45 ≈ 0.71
-  // below the pivot) clear of the mug rim (0.59·1.25 ≈ 0.74 above MUG.y):
-  // 1.75 − 0.71 = 1.04 → ~0.30 clearance untilted; the tilt only swings the
-  // base up and away from the mug, so that is the worst frame.
-  const SPOUT_H = 1.75;
+  const ARC = 0.55;                    // lift arc height
+  // The rebuilt spout is 0.60 high; lift leaves the cup base
+  // at least 0.29 above the 0.76-high mug before tilt.
+  const SPOUT_H = 1.65;
   // OVER places the SPOUT (the tilt pivot) directly over the mug — the body
   // position is derived from it, so the stream never drifts off the mug.
   const OVER = new THREE.Vector3();
@@ -620,7 +372,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
     const ft = idleT % 2.6;
     if (state === 'idle' && ft < 0.34){
       const q = ft / 0.34;
-      idleDrop.position.set(0, 0.50 - q * q * 0.32, 0);
+      idleDrop.position.set(0, 0.68 - q * q * 0.27, 0);
       idleDrop.visible = true;
     } else idleDrop.visible = false;
 
@@ -675,7 +427,7 @@ export function buildCoffee(scene, tableGroup, camera, renderer, options: Coffee
   // World-space point just above the dripper stack — the HUD name tag
   // anchors here (see __getCockpitAnchors in globe-canvas).
   group.getAnchorWorld = function(out = new THREE.Vector3()){
-    return station.localToWorld(out.set(0, 1.4, 0));
+    return station.localToWorld(out.set(0, 1.70, 0));
   };
   // Edge-glow targets: only the two artifact groups, never the desk-local
   // effects (stream/drops/smoke) parked at group level.

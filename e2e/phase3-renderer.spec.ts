@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import type { Group, Mesh, PerspectiveCamera, Scene, ShaderMaterial, WebGLRenderer } from 'three'
 
 import { ciTimeout, resolveE2eTiming } from '../scripts/e2e-policy'
 
@@ -197,6 +198,56 @@ async function completeRestore(
 }
 
 test.describe('Phase 3 renderer lifecycle', () => {
+  test('silk cover mapping follows live stage resize without repainting or moving artifacts', async ({ page }) => {
+    test.setTimeout(ciTimeout(180_000, 600_000))
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await enterCockpitDirect(page)
+    const read = () => page.evaluate(() => {
+      const runtime = window as unknown as {
+        __cockpitScene: Scene; __cockpitTableGroup: Group;
+        __cockpitCamera: PerspectiveCamera; __cockpitRenderer: WebGLRenderer;
+      }
+      const screen = runtime.__cockpitScene.getObjectByName('bamboo-silk-screen') as Mesh<never, ShaderMaterial>
+      const uniforms = screen.material.uniforms
+      const texture = uniforms.atlas!.value
+      const box = runtime.__cockpitRenderer.domElement.getBoundingClientRect()
+      return {
+        stage: [uniforms.stage!.value.x, uniforms.stage!.value.y],
+        box: [box.width, box.height], cover: uniforms.cover!.value.toArray() as number[],
+        texture: texture ? [texture.uuid, texture.version] : null,
+        visible: screen.visible, cameraAspect: runtime.__cockpitCamera.aspect,
+        // Authored top-level transforms may never track viewport dimensions.
+        roots: runtime.__cockpitTableGroup.children.map(root => ({
+          uuid: root.uuid, p: root.position.toArray(), q: root.quaternion.toArray(), s: root.scale.toArray(),
+        })),
+        textures: runtime.__cockpitRenderer.info.memory.textures,
+      }
+    })
+    await expect.poll(async () => (await read()).texture).not.toBeNull()
+    const initial = await read()
+    const sizes = [[1440,900],[2000,635],[1024,600],[800,450],[320,568],[2560,1440],[1440,900]] as const
+    for (const [width,height] of [...sizes,...sizes.slice().reverse()]) {
+      await page.setViewportSize({ width,height })
+      await expect.poll(async () => {
+        const state = await read()
+        return state.stage.every((n,i)=>Math.abs(n-state.box[i]!)<1)
+          && Math.abs(state.cameraAspect-state.box[0]!/state.box[1]!)<1e-6
+      }).toBe(true)
+      const state = await read(), aspect = state.box[0]!/state.box[1]!
+      expect(state.cover[0]).toBeCloseTo(Math.min(1,aspect/2),6)
+      expect(state.cover[1]).toBeCloseTo(Math.min(1,2/aspect),6)
+      expect(state.visible).toBe(true)
+      expect(state.texture).toEqual(initial.texture)
+      expect(state.roots).toEqual(initial.roots)
+    }
+    await expectCanvasNotBlank(page)
+    // A second identical tour cannot keep allocating backdrop textures.
+    const settled = await read()
+    for (const [width,height] of sizes) await page.setViewportSize({ width,height })
+    await expect.poll(async () => (await read()).stage).toEqual(initial.stage)
+    expect((await read()).textures).toBeLessThanOrEqual(settled.textures)
+  })
+
   test('AC-5: cockpit renderer follows the contained stage and returns to fit', async ({
     page,
   }) => {
@@ -237,6 +288,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
     test.setTimeout(ciTimeout(180_000, 600_000))
     await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
     await enterCockpitDirect(page)
+    await expect(page.locator('[data-hud="identity-plaque"]')).toBeVisible()
     await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
     await expect(page.locator('[data-hud="theme-toggle"]')).toBeVisible()
 
@@ -262,6 +314,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
     await expect(rendererScene).toHaveAttribute('data-recovery-hidden', 'true')
     await expect(rendererScene).toBeHidden()
     await expect(page.locator('[data-renderer-recovery-backdrop]')).toBeVisible()
+    await expect(page.locator('[data-hud="identity-plaque"]')).toBeHidden()
     await expect(page.locator('[data-hud="site-header"]')).toBeHidden()
     await expect(page.locator('[data-hud="screen-dialog"]')).toBeHidden()
     await expect(page.locator('[data-hud="theme-toggle"]')).toHaveCount(0)
@@ -302,6 +355,7 @@ test.describe('Phase 3 renderer lifecycle', () => {
     await expect(page.locator('[data-renderer-recovery-backdrop]')).toHaveCount(0)
     await expect(rendererScene).toHaveAttribute('data-recovery-hidden', 'false')
     await expect(rendererScene).toBeVisible()
+    await expect(page.locator('[data-hud="identity-plaque"]')).toBeVisible()
     await expect(page.locator('[data-hud="site-header"]')).toBeVisible()
     await expect(page.locator('[data-hud="theme-toggle"]')).toBeVisible()
     await expect(page.locator('[data-layout-region="cockpit-stage"]')).toBeFocused()

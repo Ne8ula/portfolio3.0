@@ -463,10 +463,8 @@ test.describe('Phase 4 focused HUD', () => {
       deck.liveFrame.deck.card!,
       parity.fixtures['deck-record-landed'].geometry.snapshot.subject,
     )
+    // Phase 6 design §13 supersedes only the deck hint/arrow placement.
     expectOverlayParity(deck, 'deck-record-landed', [
-      'browse-hint',
-      'browse-arrow-prev',
-      'browse-arrow-next',
       'deck-project-link',
       'screen-dialog',
     ])
@@ -965,8 +963,11 @@ test.describe('Phase 4 focused HUD', () => {
 
   test('AC-21: the Phase 6 overlap boundary remains explicit', () => {
     const smoke = readFileSync(resolve(process.cwd(), 'e2e/smoke.spec.ts'), 'utf8')
-    expect(smoke).toContain('test.fixme')
-    expect(smoke).toContain('Phase 6')
+    // Phase 6 design §13 discharges this boundary with executable coverage.
+    const title = 'deck browse hint does not overlap the holographic project card on short viewports (Phase 6)'
+    expect(smoke).not.toMatch(/test\.fixme\(\s*['"]deck browse hint/u)
+    expect(smoke).toContain(`test(\n    '${title}'`)
+    expect(readFileSync(resolve(process.cwd(), 'e2e/phase6-deck.spec.ts'), 'utf8')).toContain('P6-AC-')
     expect(parity.assertions.phase6DeckOverlap).toBe(true)
   })
 })

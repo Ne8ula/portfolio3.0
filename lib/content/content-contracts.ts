@@ -3,6 +3,7 @@
 // to `planned-phase-2` a blocking validation failure.
 
 import type { ContentContract } from '@/lib/content/content-contract'
+import type { PublicProfile } from '@/lib/portfolio/profile'
 
 /** `/` — server-rendered identity/portfolio summary plus visible ordinary
  *  links to View projects, About, and contact before cockpit hydration. */
@@ -25,6 +26,15 @@ export const HOME_CONTENT_CONTRACT = {
   },
   structuredData: ['Person', 'WebSite'],
 } as const satisfies ContentContract
+
+/** Client presentation of the existing home identity; SSR remains authoritative. */
+export const COCKPIT_IDENTITY_CONTENT = {
+  region: 'cockpit-identity',
+  hud: 'identity-plaque',
+  contractId: HOME_CONTENT_CONTRACT.id,
+  source: 'profile',
+  fields: ['name', 'targetRole'] satisfies readonly (keyof PublicProfile)[],
+} as const
 
 export const PROJECTS_INDEX_CONTENT_CONTRACT = {
   id: 'content-projects-v1',

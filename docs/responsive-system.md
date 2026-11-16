@@ -204,8 +204,10 @@ The shared policy tokens live only in
 | `HUD_COMPACT_HYSTERESIS` | 8 px | compact-layout exit slack |
 
 All seven focused overlays consume this sampler; none owns a projection rAF
-loop. The pure `resolveFocusHudLayout()` solver is implemented and tested but
-does not drive live placement until the scheduled Phase 6/7 re-anchoring.
+loop. The Phase 6 working implementation wires deck hint/arrows to the pure
+`resolveFocusHudLayout()` solver using measured controls and return chrome.
+Browser verification and owner review remain open; crate placement remains
+pending Phase 7.
 
 ## 4. Layout law
 
@@ -267,8 +269,9 @@ hints. A non-finite pose is never applied.
 Camera-fit reservations, bounds, fallback distances, minimum frame size, and
 parallax margin live with the existing HUD tokens in
 [hud-layout.ts](../lib/responsive/hud-layout.ts). The implemented
-`resolveFocusHudLayout()` remains deliberately unwired from live placement
-until Phases 6/7. Letterboxing is not the default — controlled compositional
+`resolveFocusHudLayout()` drives deck placement in the unaccepted Phase 6
+working implementation; crate placement remains pending Phase 7.
+Letterboxing is not the default — controlled compositional
 variation is preferable to bars.
 
 ## 6. Input policy
@@ -282,7 +285,7 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    the live visible stage/container box, then shaped
    by `responseExponentFor(viewport)` (`1.0` at the reference `1440×900`,
    rising toward `1.7` at the smallest supported ratio). Because
-   `1 ** e === 1`, the full `±22°` yaw / `±15°` pitch envelope is reachable
+   `1 ** e === 1`, the current owner-directed `±4°` yaw / `±2°` pitch envelope is reachable
    at the stage edge on EVERY supported viewport; smaller viewports only
    damp response near center. Applying a reference-dimension divisor to
    hover (which would truncate the envelope) is the regression plan §9.4
@@ -295,6 +298,22 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    same logical pan. `sizeRatio` applies ONLY here, never to hover. Contained
    entry centers the crop; same-tier resize clamps and preserves it; renderer
    rebuild leaves it untouched; re-entry from fit centers again.
+
+The rest-view `identity-plaque` (`cockpit-identity` region,
+`cockpit-identity-v1` layout contract) is ordinary wrapping chrome outside
+the panned artwork. It presents `PROFILE.name` and `PROFILE.targetRole`
+under the existing `content-home-v1` contract; canonical SSR delivery is unchanged.
+Its position uses the measured visible header bottom plus 16 CSS pixels.
+Intrinsic plaque bounds, including large-text wrapping, are measured in stage
+coordinates for the rest-camera reservation. Focused views hide the plaque
+and retain their separate fit and parallax policies. The silk background has
+no identity-sized quiet mask; the opaque plaque supplies text contrast.
+
+Rest framing retains the 68° field of view and all authored model/FPV
+transforms. Its 8° downward aim and 88% front-crease placement solve the
+nearest seat that preserves the complete protected silhouettes, header and
+identity reservations over all nine free-look extrema. Focused framing and
+its separate parallax policy are unchanged.
 
 Wheel input normalizes `WheelEvent.deltaMode` via `normalizeWheelDelta()`:
 pixel deltas stay pixels, line deltas convert through the computed line
@@ -690,7 +709,8 @@ build-time boundary.
 | 3 | Shared idempotent main/warp renderer sizing (`syncRendererSize`, owner-certified DPR cap 2), `ResponsiveStage` integration, context rebuild/recovery, and canonical terminal fallback | **Delivered** (2026-08-04; delivery `d9756de`) |
 | 4 | Stage-relative projection contract, focused-HUD sampler, hud-layout solver, 14 seedable random streams, deterministic capture, and first backend-separated scorecard baselines | **Delivered** (2026-08-07 implementation `f3dc4c4`, `50ca962`, `8987589`, capture allowlist `9fab531`; delivery commit `96fc9c5` "Phase 4: record scorecard baselines and delivery" on `main`) |
 | 5 | Authored focus envelopes, cached projection fit, normalized free-look, shared pointer arbitration, and contained-stage pan/chrome | **Delivered** (merged to `main` 2026-08-14 at `03fca60`, implementation `15c53ad`; dated owner checkpoint `docs/baselines/phase-5-input/OWNER-CHECKPOINT-2026-08-14.md` with AC-27/AC-28 approved; two independent Kimi QA PASS verdicts; 16-job CI green) |
-| 6 / 7 | Re-anchor deck HUD / crate HUD (the known deck overlap is fixed HERE, not by an interim constant) | Pending |
+| 6 | Re-anchor deck HUD (the known overlap belongs here) | Implementation and coverage in progress; browser gates, captures, Kimi QA and owner checkpoint remain open; stable host F3 mutation proof is recorded. See `phase-6-implementation.md` |
+| 7 | Re-anchor crate HUD | Pending |
 | 8 | Appearance and art-direction migration: shell materials/wear, studio lighting and grounding, environment/background, typography migration, restrained finishing, owner-approved replacement visual baselines (plan §8 Phase 8; added by plan revision 8) | Pending |
 | 9 | Full browser/viewport matrix, accessibility scans, production gate, enforcement skill, CI expansion — evaluates the post-Phase-8 visual state and consumes the Phase 8 replacement baselines (renumbered from 8 by plan §0.7) | Pending |
 

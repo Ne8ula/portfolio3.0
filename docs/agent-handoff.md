@@ -1,399 +1,433 @@
 # Automated cross-agent handoff
 
 This is the single rolling communication record for the Astra orchestrator,
-Claude design, Codex engineering, and Kimi QA. Client and model are recorded
+Claude design, Codex engineering, and fresh independent Codex QA. Client and model are recorded
 separately; a Claude Code session can run Astra through Model Gateway.
 Lifecycle hooks maintain it; do not create a new handoff file after each turn.
 Read the newest entry together with the live Git status and diff. Repository
 files and test output are authoritative when this summary becomes stale.
 
 Default route:
-`Claude design → Codex plan/code → Kimi QA → Codex fixes ↔ Kimi retest`
+`Claude design → Codex plan/code → fresh Codex QA → Codex fixes ↔ new fresh Codex QA`
 
 Hook setup:
 
 - Claude and Codex use the version-controlled project hooks.
-- After installing Kimi Code CLI, run
-  `npm run agent:handoff:install-kimi` once for its user-level Stop hook.
-- Kimi's Stop payload contains a session id rather than its final text; the
-  hook exports that local session and records its newest `Handoff:` report.
+- Independent QA uses a new read-only Codex session and trusted-host gate evidence.
+- Historical records retain their original provider attribution.
 - Run `npm run agent:handoff` to inspect this record.
 
 ## Recent handoffs
 
 <!-- agent-handoff:entry:start -->
-### 2026-09-18T00:48:11.462Z · Codex
+### 2026-11-01T02:31:50.040Z · Claude Code
 
-- Branch / HEAD: `main` / `f49804a`
-- Worktree snapshot: `ea8b253c2c6e`
-- Session / turn: `not exposed` / `not exposed`
-- Client: Codex
-- Model: `not exposed`
-
-#### Final report
-
-> Handoff: Implemented community Model Gateway setup for Astra orchestration in Claude Code. Installed project plugin 0.51.2 and checksum-verified proxy 0.1.40; ChatGPT authorized in macOS Keychain; renewed Kimi login. Added portfolio-orchestrator (Astra) and portfolio-design (native Opus), project marketplace/plugin declaration, local gateway endpoint and default agent, role guidance, setup/recovery/verification guide, and client/model handoff attribution with bounded transcript metadata parsing.
-> Files changed: .claude/settings.json, .claude/settings.local.json, .claude/agents/portfolio-orchestrator.md, .claude/agents/portfolio-design.md, AGENTS.md, CLAUDE.md, docs/astra-orchestration.md, scripts/agent-handoff.mjs, tests/unit/agent-handoff.test.ts, and this rolling handoff. Preserved pre-existing package.json/package-lock.json changes.
-> Verification: Gateway doctor healthy; route metadata confirmed gpt-6-astra on Codex backend and claude-opus-5 on Anthropic. Fresh Astra Read/delegation smoke returned ASTRA_ORCHESTRATION_READY. A separate fresh CLI without model/agent overrides returned DEFAULT_ORCHESTRATOR_READY with Astra selected. Codex and Kimi live probes passed. Phase 5 snapshot doctor passed after settings writes stopped. Agent definitions and JSON valid; lint, contract typecheck/validation, 388 unit tests passed. Independent Kimi QA reran tooling gates and reported PASS, no blocking findings; report preserved below. E2E not run because no rendered application changes.
-> Unresolved: community integration is unsupported by Anthropic; first interactive launch may require the normal workspace trust dialog. CLAUDE.md has a pre-existing length overrun. Local settings are already tracked, so machine-local endpoint/model defaults appear in the diff; no credentials added. Phase 5 remains complete-awaiting-owner-ci; no Phase 6 manifest or phase execution was introduced. Two automatic-review egress rejections were resolved by the owner's explicit approvals; no approval block remains.
-> Next role: owner starts a fresh Claude Code CLI in this repo (claude or claude --agent portfolio-orchestrator); owner/CI retains phase acceptance.
-
-#### Git status at handoff
-
-```text
- M .claude/settings.json
- M .claude/settings.local.json
- M AGENTS.md
- M CLAUDE.md
- M package-lock.json
- M package.json
- M scripts/agent-handoff.mjs
-?? .claude/agents/portfolio-design.md
-?? .claude/agents/portfolio-orchestrator.md
-?? docs/astra-orchestration.md
-?? tests/unit/agent-handoff.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-09-17T21:04:16.788Z · Kimi Code
-
-- Branch / HEAD: `main` / `f49804a`
-- Worktree snapshot: `ea8b253c2c6e`
-- Session / turn: `not exposed` / `not exposed`
-- Client: Kimi Code
-- Model: `not exposed`
-
-#### Final report
-
-> Handoff: Independent Kimi QA of Astra orchestration setup.
->
-> ## QA Review — Astra orchestration setup (agent tooling scope)
->
-> **Scope reviewed:** `AGENTS.md`, `CLAUDE.md`, `.claude/agents/portfolio-orchestrator.md`, `.claude/agents/portfolio-design.md`, `.claude/settings.json`, `.claude/settings.local.json`, `docs/astra-orchestration.md`, `scripts/agent-handoff.mjs`, `tests/unit/agent-handoff.test.ts`. The `package.json`/`package-lock.json` Next bump was excluded per the brief. `docs/agent-handoff.md` is the hook-maintained rolling record, not a judged artifact.
->
-> ### Findings
->
-> **Minor (pre-existing, not introduced by this diff)**
-> - `CLAUDE.md` header claims "≤9,000 characters" but the file is 10,587 bytes (10,383 before this change — the diff adds ~204). The budget was already exceeded; this change does not fix or worsen it materially. No action required for this scope; flag for a future docs pass.
->
-> **Observations (non-blocking)**
-> - `.claude/settings.local.json` adds an `"agent": "portfolio-orchestrator"` key. I could not verify in this disposable environment whether Claude Code honors it as a default-agent selector; `docs/astra-orchestration.md:20` documents the explicit `claude --agent portfolio-orchestrator` launch as the primary path, so nothing functionally depends on the key. The env block contains only a loopback base URL, model aliases, and feature flags — no credentials — consistent with the doc's warning at `docs/astra-orchestration.md:75-79`.
->
-> No major or blocking findings.
->
-> ### Consistency against the brief
->
-> - **Role separation holds.** `AGENTS.md:23-42` adds Astra-as-orchestrator without displacing the specialist defaults: Claude designs, Codex implements, Kimi reviews independently, owner/CI accepts. The doc explicitly separates client, model, and role, matching `CLAUDE.md:1-7`.
-> - **One writer enforced.** The orchestrator agent definition (`.claude/agents/portfolio-orchestrator.md:5`) grants no Write/Edit and delegates only to `portfolio-design`; the design agent has no Bash and may write only on an assigned writing turn (`portfolio-design.md:18-20`). Engineering/QA stay with the phase runner, not Claude subagents.
-> - **Phase boundaries respected.** Orchestrator and doc both prohibit running/init-ing phases to test setup, switching to an earlier manifest, and starting Phase 6 without an approved manifest (`astra-orchestration.md:42-49`). No phase mutation commands were run in this review.
-> - **Handoff attribution is sound.** `exposedModel` (`scripts/agent-handoff.mjs:269-307`) prefers an explicit payload model, falls back to a bounded 256KB tail of the local transcript for Claude only, regex-validates model IDs, reads only `type:"assistant"` `message.model` metadata, and never records message text. The three new unit tests cover model-switch attribution, transcript unavailability, and malformed/forged metadata; the payload's `transcript_path` is a standard Claude Code Stop-hook field and the hook at `.claude/settings.json:36-48` invokes `capture --agent claude` correctly.
->
-> ### Verification evidence
->
-> - `npm run lint` — clean
-> - `npm run typecheck:contracts` — clean
-> - `npm run validate:contracts` — ✓ 5 layout, 4 content, 5 routes, 6 catalog records
-> - `npm run test:unit` — 388/388 passed across 32 files, including the 3 new handoff attribution tests (matches the record's claim in `docs/astra-orchestration.md:150`)
-> - `claude plugin validate .claude/agents` — validation passed
-> - Both settings files parse as valid JSON
-> - Live probe evidence in `docs/astra-orchestration.md:132-153` (gateway doctor, fresh CLI smoke with `ASTRA_ORCHESTRATION_READY`, independent Codex/Kimi markers, Phase 5 doctor) is consistent with the wiring reviewed; I did not re-run gateway or phase commands and do not treat the record as proof of runtime behavior.
->
-> Browser E2E not run, per the brief's explicit scoping for this agent-tooling-only change.
->
-> **Handoff:** Completed independent QA of the Astra orchestration setup (AGENTS.md/CLAUDE.md diffs, both agent definitions, both settings files, `docs/astra-orchestration.md`, `scripts/agent-handoff.mjs`, `tests/unit/agent-handoff.test.ts`). All four required gates green; plugin validation and JSON validity confirmed; one pre-existing CLAUDE.md length-budget nit, zero blocking findings. Files changed by this QA: none (read-only). Unresolved: nothing blocking; optional future CLAUDE.md budget trim. Next role: owner/CI acceptance — not claimed here.
->
-> **Verdict: PASS** (tooling scope only; no owner/CI acceptance asserted)
-
-#### Git status at handoff
-
-```text
- M .claude/settings.json
- M .claude/settings.local.json
- M AGENTS.md
- M CLAUDE.md
- M package-lock.json
- M package.json
- M scripts/agent-handoff.mjs
-?? .claude/agents/portfolio-design.md
-?? .claude/agents/portfolio-orchestrator.md
-?? docs/astra-orchestration.md
-?? tests/unit/agent-handoff.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-09-17T20:48:52.819Z · Claude Code
-
-- Branch / HEAD: `main` / `f49804a`
-- Worktree snapshot: `ea8b253c2c6e`
-- Session / turn: `35639bca-a04d-4418-8de6-e5fb36290ae1` / `not exposed`
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `c19ec9c4836a`
+- Session / turn: `894e903e-d4c1-4ee6-86f5-68fd47eda343` / `not exposed`
 - Client: Claude Code
 - Model: `claude-gpt-6-astra`
 
 #### Final report
 
-> ASTRA_ORCHESTRATION_READY
+> Independent review: **unfinished**.
 >
-> `portfolio-design` returned the palette rule: 60% neutrals, 30% material jade, 10% signal jade; jade is the sole chromatic family.
+> - Forced-colors entry test still fails: **24 passed, 1 failed, 94 unrun**.
+> - Desk lighting remains too uneven.
+> - An unexplained rectangle covers part of the desk in 1440px captures.
 >
-> Single-writer rule: only one agent may write a shared worktree at a time; read-only analysis may overlap, but design writing and Codex implementation must not.
+> Lint, contract checks and **495 unit tests pass**. Source integrity verified.
+>
+> **Handoff:** findings recorded in `docs/agent-handoff.md`; paused before further engineering. Nothing committed.
+>
+> Accessibility/zoom and complete visual verification remain outstanding.
 
 #### Git status at handoff
 
 ```text
- M .claude/settings.json
+ M app/globals.css
+ M components/cockpit/decorations.ts
+ M components/cockpit/globe-canvas.tsx
+ M components/cockpit/listening-room.ts
+ M debug.log
+ M docs/responsive-system.md
+ M e2e/phase5-input.spec.ts
+ M lib/responsive/input-policy.ts
+ M tests/unit/desk-environment.test.ts
+ M tests/unit/desk-lamp-accents.test.ts
+ M tests/unit/input-policy.test.ts
+ M tests/unit/listening-room-lighting.test.ts
+?? .codex/config.toml
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-01T02:31:14.259Z · Claude Code
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f217eb91679693a075e430357a52ca53db`
+- Session: `894e903e-d4c1-4ee6-86f5-68fd47eda343`; orchestrator, not engineer or independent QA.
+- Scope: owner-directed bamboo/plaque/lamp/table/tablet revision and preceding seated-camera task. No additional product edits during host verification or review.
+- Last-pass files: `app/globals.css`; `components/cockpit/{listening-room.ts,decorations.ts,globe-canvas.tsx}`; `tests/unit/{desk-environment,desk-lamp-accents,listening-room-lighting}.test.ts`; `e2e/phase5-input.spec.ts`. Prior camera/input/docs edits remain preserved.
+
+#### Verified results — unfinished, not accepted
+
+- Restarted only this session's owned preview to replace demonstrably stale served CSS. No cache deletion or configuration change. Preview remains on http://127.0.0.1:3000/.
+- Fresh normal-entry captures at 1440×900 and 2560×1440 in both themes show visible plaque background rgb(207,201,192), per-line text contrast 9.51:1, and no recorded page/console/request errors.
+- Fresh host lint, contract typecheck, contract validation and 495 unit tests passed; scoped whitespace check passed. Prior engineer tsx ENOMEM remains recorded.
+- Full E2E attempted with one worker and stop-at-first-failure: 24 passed, 1 failed, 94 unrun. At `e2e/phase3-renderer.spec.ts:291`, reduced-motion + forced-colors entry cannot find identity-plaque BEFORE context loss. The same test failed previously; attribution to this revision is unsupported. Three earlier Phase 4 failures remain open. The initial host launch's incorrectly quoted artifact path failed before any tests; its evidence is preserved separately.
+- Fresh independent Codex review: `01a194ed-370e-70c0-a094-f0ab7f5093b9`, distinct from engineer `01a1948f-466b-7c23-8169-bf795baabcee`. Actual CLI 0.164.0-alpha.11.1, source exec, configured gpt-6-astra, read-only sandbox, approval never verified from session metadata and command/image audit. No engineering, delegated work, browser/test runs or Git writes during review. Optional rg memory search was unavailable; that nonzero command remains recorded.
+- Reviewer verdict UNFINISHED. Additional concerns: pool/left-wing 8.17–8.21:1 vs proposed 2–4:1 (wing improved 1.69–1.72×); right-wing sample offscreen/null; unexplained opaque rectangle around x16–312/y668–778 in refreshed 1440px captures, not shown in compared before/earlier-after/2560 captures. Cause/source attribution unproven.
+- Rendered bamboo readability/coverage, accessibility/zoom/dark extrema, complete clearances, plaque/wall contrast and valid contained bounds remain incomplete. Lamp height grew about25.3%; camera/artifact transforms were unchanged in comparison captures. No new desk enclosure; knee opening remains an owner design decision.
+
+#### Evidence and integrity
+
+- Frozen source digest: `b6696256d2ecdbfd1a38a3b3a2e7edad56d0354c4aa017e24f44da19fc9a6056`. Before/after independent review and host recheck: all827 files unchanged; HEAD, branch, raw index, status, refs and stash unchanged; both evidence manifests (27/49 entries) verified without mismatches.
+- Review: C:/Users/alexx/AppData/Local/Temp/claude/C--Users-alexx-Documents-portfolio3-0/894e903e-d4c1-4ee6-86f5-68fd47eda343/scratchpad/visual-pass2-review-report.md
+- Verified runtime/integrity receipt: C:/Users/alexx/AppData/Local/Temp/claude/C--Users-alexx-Documents-portfolio3-0/894e903e-d4c1-4ee6-86f5-68fd47eda343/scratchpad/visual-pass2-review-host-verification-v2.json
+- Original receipt/tool audit preserved; v2 accounts for this CLI's custom_tool_call event schema, not only function_call.
+- This handoff entry is an orchestration-only append AFTER frozen review completed. It preserves all prior entries; no old manifest is refreshed to cover it.
+
+**Handoff:** paused for owner-directed bounded engineering/visual disposition of the findings, then fresh checks and another NEW independent Codex review for any fixes. No automatic writer, commit, push, publication, deployment, baseline replacement or acceptance.
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-01T02:08:40.936Z · Codex
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `c19ec9c4836a`
+- Session / turn: `01a1948f-466b-7c23-8169-bf795baabcee` / `01a194ce-1d4c-7e11-a48d-961e0e064d3f`
+- Client: Codex
+- Model: `gpt-6-astra`
+
+#### Final report
+
+> **SOURCE WRITING STOPPED.** All five treatments are implemented in source, but verification remains incomplete.
+>
+> - Bamboo: **20 culms, 72 fans**, varied heights and leaf sizes; unchanged GPU texture count.
+> - Lamp: **25.3% taller on screen**, with unchanged camera position and artifact transforms.
+> - Desk: sampled unlit area **1.69–1.72× brighter**. Pool/wing ratio remains **8.2:1**, missing the proposed 2–4:1 target.
+> - Tablet: lighter plate, recess and controls.
+> - Plaque: quieter colors implemented, but the preview served the old CSS. New rendered appearance remains unverified.
+>
+> Changed eight files: `app/globals.css`; cockpit `listening-room.ts`, `decorations.ts`, `globe-canvas.tsx`; unit tests `desk-environment`, `desk-lamp-accents`, `listening-room-lighting`; and `e2e/phase5-input.spec.ts`.
+>
+> Checks: focused tests **37 passed**, full unit suite **495 passed**, lint and contract typecheck **exit 0**. Contract validation **exit 1** before execution: tsx `uv_os_get_passwd ENOMEM`. No retry or environment workaround.
+>
+> Both-theme center captures completed. The light-theme viewport/nine-look matrix partially completed, then timed out because the reduced-motion radio’s label intercepted Playwright’s click. Accessibility, zoom and dark-theme extrema remain incomplete. Prior diagnostic failures and four old E2E failures remain open.
+>
+> HEAD, refs, index, stash, owner configuration and other starting source files are unchanged. Runtime `debug.log` also changed. Desk geometry remains unchanged; filling the existing knee opening requires an owner design decision.
+>
+> [Full handoff, measurements and evidence](C:/Users/alexx/AppData/Local/Temp/claude/C--Users-alexx-Documents-portfolio3-0/894e903e-d4c1-4ee6-86f5-68fd47eda343/scratchpad/visual-pass2-report.md)
+>
+> Handoff: **orchestrator → fresh host checks → independent read-only Codex QA → owner visual/commit decision**. No acceptance claimed; no automatic continuation.
+
+#### Git status at handoff
+
+```text
+ M app/globals.css
+ M components/cockpit/decorations.ts
+ M components/cockpit/globe-canvas.tsx
+ M components/cockpit/listening-room.ts
+ M debug.log
+ M docs/responsive-system.md
+ M e2e/phase5-input.spec.ts
+ M lib/responsive/input-policy.ts
+ M tests/unit/desk-environment.test.ts
+ M tests/unit/desk-lamp-accents.test.ts
+ M tests/unit/input-policy.test.ts
+ M tests/unit/listening-room-lighting.test.ts
+?? .codex/config.toml
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-01T00:59:39.094Z · Codex
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `4a8e3c19ef51`
+- Session / turn: `01a1948f-466b-7c23-8169-bf795baabcee` / `01a19496-92af-7fd1-8d8d-8771b964a9e6`
+- Client: Codex
+- Model: `gpt-6-astra`
+
+#### Final report
+
+> **SOURCE WRITING STOPPED.** Bamboo and camera changes are implemented locally; required validation remains blocked.
+>
+> - **Bamboo:** redistributed the existing seven culms/28 fans across left, middle and right. Counts, seed sequence, palette, cache and accessibility behavior remain unchanged.
+> - **Camera:** ±4° yaw/±2° pitch, 8° downward aim, FOV 68°. At 1440×900, horizontal eye-to-recess distance fell **16.7%**, from 7.772 to 6.477 units; crease placement is **88%**. The 2560×1440 crease is also 88%, but its before-distance comparison remains unverified.
+> - **Desk:** geometry unchanged. Source inspection and new front/below ray tests found no demonstrated missing face. Enclosing the open knee space requires a separate owner design decision.
+>
+> Changed files: `listening-room.ts`, `globe-canvas.tsx`, `input-policy.ts`, `desk-environment.test.ts`, `desk-lamp-accents.test.ts`, `input-policy.test.ts`, `phase5-input.spec.ts`, and `docs/responsive-system.md`.
+>
+> Checks:
+>
+> | Check | Result |
+> |---|---|
+> | Focused tests | Exit 0 — 56 passed |
+> | Lint / contract typecheck | Exit 0 each |
+> | Full unit suite | Exit 0 — 494 passed |
+> | Contract validation | **Exit 1** — `tsx` loader failed before validation with `uv_os_get_passwd returned ENOMEM` |
+> | Light-theme capture | Exit 0 — 36 screenshots, no recorded request/page/console errors |
+>
+> No retry or workaround followed the infrastructure failure. Full E2E, remaining browser/accessibility checks and independent QA remain pending. The earlier identity-plaque timeout and exploratory `tsx` failure remain open; numeric hero-bound comparison and browser resource stability are also unverified.
+>
+> Owner configuration, automatic handoff, HEAD, index and refs were preserved. Only the eight allowed files and browser-generated `debug.log` changed.
+>
+> [Full handback and evidence](C:/Users/alexx/AppData/Local/Temp/claude/C--Users-alexx-Documents-portfolio3-0/894e903e-d4c1-4ee6-86f5-68fd47eda343/scratchpad/desk-view-implement1-report.md)
+>
+> **Handoff:** orchestrator → fresh host gates and independent Codex QA → owner visual/commit decision. No acceptance claim or automatic continuation.
+
+#### Git status at handoff
+
+```text
+ M components/cockpit/globe-canvas.tsx
+ M components/cockpit/listening-room.ts
+ M debug.log
+ M docs/responsive-system.md
+ M e2e/phase5-input.spec.ts
+ M lib/responsive/input-policy.ts
+ M tests/unit/desk-environment.test.ts
+ M tests/unit/desk-lamp-accents.test.ts
+ M tests/unit/input-policy.test.ts
+?? .codex/config.toml
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-01T00:47:00.357Z · Codex
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `c97e3d900a59`
+- Session / turn: `01a1948f-466b-7c23-8169-bf795baabcee` / `01a1948f-481a-7a02-89a7-4c2bef2eb9b6`
+- Client: Codex
+- Model: `gpt-6-astra`
+
+#### Final report
+
+> **SOURCE WRITING STOPPED. No product edits; all three fixes remain unfinished.**
+>
+> Runtime metadata confirmed `workspace-write` with `network_access=true` for fresh session `01a1948f-466b-7c23-8169-bf795baabcee`, turn `01a1948f-481a-7a02-89a7-4c2bef2eb9b6`.
+>
+> - Initial browser inspection: **exit 0**, no failed requests or console/page errors. Camera position matched the prior capture; FOV remained 68°.
+> - Follow-up capture: **exit 1**, identity-plaque visibility timed out after 30 seconds.
+> - Geometry diagnostic: **exit 1 before execution**, because the installed `tsx` loader reported `uv_os_get_passwd returned ENOMEM`.
+>
+> I stopped under your blocking-failure/no-fallback instruction. No retry, workaround, configuration change, or preview restart occurred.
+>
+> Desk source contains the cap, underside and supports, but missing geometry versus legitimate knee space remains unresolved. Bamboo and camera tuning were not applied. Tests and gates did not run.
+>
+> Integrity comparison covered **827 files**: only `debug.log` gained browser-generated entries. Product files, handoff, owner configuration, HEAD, index, refs and stash remained unchanged.
+>
+> [Full handback and evidence index](C:/Users/alexx/AppData/Local/Temp/claude/C--Users-alexx-Documents-portfolio3-0/894e903e-d4c1-4ee6-86f5-68fd47eda343/scratchpad/desk-view-fresh2-report.md)
+>
+> **Handoff:** orchestrator verifies the blockers and directs remaining engineering → fresh independent Codex QA → owner visual/commit decision. No completion or acceptance claim.
+
+#### Git status at handoff
+
+```text
+ M debug.log
+?? .codex/config.toml
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-01T00:40:28.370Z · Claude Code
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `fd7429609d79`
+- Session / turn: `894e903e-d4c1-4ee6-86f5-68fd47eda343` / `not exposed`
+- Client: Claude Code
+- Model: `claude-gpt-6-astra`
+
+#### Final report
+
+> Verified: `.codex/config.toml` contains the expected settings, retaining `workspace-write` and enabling network access.
+>
+> Shall I launch a **fresh Codex engineering session** to verify the effective policy and resume the three visual fixes?
+>
+> **Handoff:** no files changed by me. Actual network access and implementation remain unverified.
+
+#### Git status at handoff
+
+```text
+ M debug.log
+?? .codex/config.toml
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-10-31T23:33:38.650Z · Codex
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `2148183f31f2`
+- Session / turn: `01a1944e-1ff3-72b3-8a3e-7efec10e8ee9` / `01a1944e-2199-72e2-838b-88d1610fcdec`
+- Client: Codex
+- Model: `gpt-6-astra`
+
+#### Final report
+
+> **SOURCE WRITING STOPPED.** Browser inspection reported `Failed to load resource: net::ERR_NETWORK_ACCESS_DENIED`. Your explicit stop-on-denial instruction required stopping; I made no retry or alternate-route attempt.
+>
+> - **Product/source edits:** none. Existing handoff change preserved.
+> - **Initial Git verification:** HEAD `d55f22f217eb91679693a075e430357a52ca53db`; only `docs/agent-handoff.md` modified.
+> - **Desk:** source contains the bottom cap, underside, waterfall support, and pedestal. Ray/winding diagnosis remains unfinished; the screenshot does not yet establish missing geometry.
+> - **Camera:** reproduced eye `[-0.345477, 2.771181, 3.479422]`; FOV 68°. No tuning applied.
+> - **Bamboo:** confirmed right-biased atlas placement; no redistribution applied.
+> - **Checks:** browser script exited 0 but recorded the denial. No tests or gates ran; no final source/Git comparison performed.
+>
+> Scratch artifacts: `desk-view-inspect.cjs` and `desk-view-engineer-inspection.json`. Before evidence was untouched.
+>
+> **Handoff:** return to orchestrator to resolve the blocked verification path. Engineering, fresh independent Codex QA, and owner visual/commit decisions remain pending. No completion or acceptance claim.
+
+#### Git status at handoff
+
+```text
+ M debug.log
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-10-31T23:21:01.371Z · Claude Code
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
+- Worktree snapshot: `01ba4719c80b`
+- Session / turn: `894e903e-d4c1-4ee6-86f5-68fd47eda343` / `not exposed`
+- Client: Claude Code
+- Model: `claude-gpt-6-astra`
+
+#### Final report
+
+> Preview is running at **[localhost:3000](http://127.0.0.1:3000/)** and opened in your browser.
+>
+> What should we tackle first—**composition, lighting/materials, or HUD/typography**?
+>
+> **Handoff:** HTTP 200 confirmed; no files changed. Your priority goes to `portfolio-design` next.
+>
+> Visual checks and tests weren’t run; previous E2E findings remain unresolved.
+
+#### Git status at handoff
+
+```text
+(clean apart from the handoff record)
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-10-29T03:31:31.671Z · Codex
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `e03ae2b`
+- Worktree snapshot: `265f33e64a9c`
+- Session / turn: `01a182d7-220e-70f1-af3b-bdd4a53d1d0a` / `01a1859a-f9f7-7e00-a60e-eefb94c04a24`
+- Client: Codex
+- Model: `gpt-6-astra`
+
+#### Final report
+
+> **SOURCE WRITING STOPPED.** The bounded v8 changes are implemented, with composition targets still unmet. No browser, preview restart, commit or publication was performed.
+>
+> - Added the canonical wrapping plaque, measured chrome reservations and recovery visibility handling. Contracts: `cockpit-identity-v1`, existing `content-home-v1`; root `cockpit-v1` unchanged.
+> - Removed the background’s identity mask. Shared look limits are now literal **±6° yaw / ±3° pitch**.
+> - Configured ash `#CDBCA4`, roughness `.58`; silk brightness ×`.87`; mist opacity `.016`; warm key `#FFC58F`, intensity `140`. Four lights and exposure `1.05` remain.
+>
+> The real-geometry fixture measures these solved eyes—not browser results:
+>
+> | Stage | Eye XYZ | Hero height below header |
+> |---|---|---:|
+> | 1024×600 | −.346, 1.921, 2.249 | 44.0% |
+> | 1440×900 | −.346, 2.026, 2.401 | 41.3% |
+> | 2000×635 | −.346, .186, −.263 | 59.4% |
+> | 2560×1440 | −.346, 1.487, 1.621 | 43.0% |
+>
+> FOV remains 68°, downward aim 10°. **The 1440 eye is higher but farther, not closer.** Protecting the fixed stylus at all nine looks required an 84% crease position, missing the proposed 90–94% band. Lamp/sleeve gaps measured 5.96 px and .34 px at 1440/2560, below 8 px. Artifact transforms remain unchanged.
+>
+> Changed exactly 17 files:
+>
+> - `app/{globals.css,layout-contract.ts}`
+> - `components/cockpit/{cockpit-hud.tsx,globe-canvas.tsx,listening-room.ts}`
+> - `lib/content/content-contracts.ts`
+> - `lib/responsive/{input-policy.ts,layout-contracts.ts}`
+> - `docs/responsive-system.md`
+> - `tests/unit/{input-policy,layout-contracts,content-contracts,desk-environment,desk-lamp-accents,listening-room-lighting}.test.ts`
+> - `e2e/{phase3-renderer,phase5-input}.spec.ts`
+>
+> Checks:
+>
+> - Focused six-file unit run: **108 passed**.
+> - `npm.cmd run lint`: exit 0.
+> - `npm.cmd run typecheck:contracts`: exit 0.
+> - `npm.cmd run validate:contracts`: exit 0; 6 layout/4 content contracts.
+> - `npm.cmd run test:unit`: **492 passed, 39 files**.
+> - Scoped `git diff --check`: exit 0. Snapshot comparisons reported differences and LF/CRLF notices, no whitespace errors.
+>
+> The fit timeout was resolved by precomputing projections; no timeout increase. Each uncached solve uses 2,588,976 bytes of typed-array scratch. No added GPU textures, geometry, lights or render passes.
+>
+> HEAD, raw index, handoff and recorded out-of-scope source hashes remain unchanged. No incidental writes were observed. All ten interrupted-v7 E2E failures remain open; new browser regressions are authored but unrun. Rendered appearance, accessibility, hardware performance and fresh independent QA remain pending.
+
+#### Git status at handoff
+
+```text
+ M .agents/agents/kimi-phase-qa.md
+ M .claude/agents/portfolio-design.md
+ M .claude/agents/portfolio-orchestrator.md
  M .claude/settings.local.json
  M AGENTS.md
  M CLAUDE.md
- M package-lock.json
- M package.json
- M scripts/agent-handoff.mjs
-?? .claude/agents/portfolio-design.md
-?? .claude/agents/portfolio-orchestrator.md
-?? docs/astra-orchestration.md
-?? tests/unit/agent-handoff.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-09-17T20:44:28.637Z · kimi
-
-- Branch / HEAD: `main` / `f49804a`
-- Worktree snapshot: `6c59b1b99d23`
-- Session / turn: `session_d106764d-f9c9-46ac-99dc-76473375b282` / `not exposed`
-- Client: Kimi Code
-- Model: `not exposed`
-
-#### Final report
-
-> The client hook did not expose the final assistant report. Inspect the Git status below and the originating session before accepting the handoff.
-
-#### Git status at handoff
-
-```text
- M .claude/settings.json
- M AGENTS.md
- M CLAUDE.md
- M package-lock.json
- M package.json
- M scripts/agent-handoff.mjs
-?? .claude/agents/portfolio-design.md
-?? .claude/agents/portfolio-orchestrator.md
-?? tests/unit/agent-handoff.test.ts
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-09-10T21:12:19.560Z · claude
-
-- Branch / HEAD: `main` / `f7ec5b8`
-- Worktree snapshot: `a965e5fca03a`
-- Session / turn: `fb20bfdd-3c4d-49e2-8b58-048398b63dd8` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> Both findings are addressed in [phase-6-design.md](docs/phase-6-design.md). Only that file changed, plus one memory note. `DESIGN.md` was already modified before this session and is untouched.
->
-> **Finding 1, hysteresis reset.** I reproduced your masking sequence against the real solver at 1440×900 with representative deck sizes. Leaked `true` → natural card → `compact: false` → F3 → full. F3 solved first discriminates cleanly: `true` gives compact, `false` gives the full `above` tier. The fix has four parts.
->
-> - **F3 lifecycle sequence** in §15 ([phase-6-design.md:1076](docs/phase-6-design.md#L1076)) replaces the natural-first check. The prior session must end compact with the F2 override still active at exit, since clearing it first would re-solve the card to full and reset the state under test. Re-entry starts `playRecord(0)` un-awaited and, in one in-page task, waits for the fresh instance at `no-subject`, requires `solveCount === 0`, computes F3 from that instance's own sizes, and arms the override. The read and the arm share one task so no React commit can interleave, and the override wins over the landing card from that instant.
-> - **Per-mount `solveCount`** is added to the `getDeckHudLayout()` probe ([phase-6-design.md:849](docs/phase-6-design.md#L849)). It increments in the same layout effect that writes `previousCompact`, so zero means the hysteresis state is untouched since mount. It is a field on the approved probe, not a fourth hook. A nonzero count at arm time fails the test as invalid rather than passing it.
-> - **Mutation check** is required in P6-AC-26(g) and the §13/§19 report row: Codex temporarily retains `previousCompact` across mounts, confirms the test fails at the tier assertion, reverts, and records the output in the implementation report.
-> - **Unit discriminator** in `tests/unit/hud-layout.test.ts` pins that F3 yields compact under `true` and full under `false`, so the browser verdict depends only on the reset.
->
-> **Finding 2, AC-17 safe-frame source.** §6.1 now has a two-safe-frame table ([phase-6-design.md:249](docs/phase-6-design.md#L249)). The HUD frame from `getHudSnapshot()` stays edge-gutter-only for placement tests and fixtures. P6-AC-17 ([phase-6-design.md:988](docs/phase-6-design.md#L988)) names `cameraSafeFrame = getFocusFit().safeFrame`, takes the stage size from `getHudSnapshot().liveFrame.stage`, and writes all four inequalities, with bottom as `(H − (y + h)) − 16 ≥ hintH + 24` and right symmetric. It adds a containment precondition against the HUD frame to catch a coordinate mix-up, and notes that the renderer's edge-gutter fallback fails the inequalities by design.
->
-> Supporting updates: §6.7, §12 state-by-field table, §15 accessibility and hook-contract rows, §16 risks, D19 clarified plus new D21/D22, §18 probe item, §20 audit rows, and the handoff paragraph. The one table column mismatch reported by my checker is the pre-existing `|arrowLeft − 36|` literal in P6-AC-08.
->
-> Context-rebuild remount is deliberately not armed separately: the rebuild seeds the deck landed, so there is no deterministic `no-subject` window, and any retention that outlives the component is caught by the exit/re-entry path. If you want that path covered anyway, the sequence would need a probe-side gate on the rebuilt instance's first commit.
-
-#### Git status at handoff
-
-```text
  M DESIGN.md
- M docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-31T19:15:31.109Z · claude
-
-- Branch / HEAD: `main` / `543f6c6`
-- Worktree snapshot: `619bf1f67a1d`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> All five findings are resolved; the only file I changed is [docs/phase-6-design.md](docs/phase-6-design.md) (the `docs/agent-handoff.md` modification is a new hook-managed entry, preserved untouched).
->
-> **High — D20 vs plan §9.3.** I verified the conflict is real and predates Phase 6 (today's live behavior already makes `/projects` unreachable during deck focus). Rather than unilaterally amending a binding roadmap check or silently expanding production scope, **D20 is now an explicit blocking owner decision** in §18 with a recommendation: approve the two-step exit path (`esc · return` → cockpit rest → header `/projects`) as satisfying §9.3's intent for focused modes, **with the plan §9.3 clarification amendment recorded only upon approval**; the alternative (persistent deck-mode link) is documented with its costs — new chrome, new identifier, and a mandatory §13 forecast amendment before implementation. P6-AC-22 and its test row are explicitly written against the recommended path and carry the amendment obligation if the owner chooses otherwise. State row 10's "Escape + DOM catalog remain" was corrected to say the catalog is reachable only after exit via the D20 path.
->
-> **Medium — F3 closed form.** The fixture now defines scalars first (`W_x`, `H_x`) and builds `X` from them; three new named-inequality preconditions cover exactly the gaps you listed: `(W_f − W_x)/2 − G_s − A_w ≥ 8` asserted on actual values so the `max(24, …)` floor branch cannot silently void the overlap claim; a compact candidate proven legal under F3 (`X.y − S.y ≥ H_c + G_c` plus the F2 return-control clearance) so retention yields compact, never `hidden`; and the fresh-entry sequence must first assert `status: 'placed'` with `compact === false` on the natural subject before applying F3.
->
-> **Medium — contained coverage.** P6-AC-22 and its row now run **all four** plan §9.1 declared zoom/narrow pressure viewports — 800×450, 683×325, 512×300, **320×568** — matching §9.4's four-case pan-trace requirement; no exclusion needed.
->
-> **Low — malformed table.** The truth table now terminates cleanly with a blank line before the "deliberately deck-only" paragraph (verified by scan).
->
-> **Low — closed reachability set.** P6-AC-22 enumerates it exactly: `browse-arrow-prev`, `browse-arrow-next`, `return-control`, and `deck-project-link` (landed, non-busy), with `browse-hint` (identified but noninteractive) and `screen-dialog` (in-scene imagery, not a deck control) explicitly excluded.
->
-> The §20 audit row was aligned: the design now names **two** genuine owner decisions (compact microcopy; the D20 disposition + §9.3 clarification), both with recommended choices and stated effects.
->
-> Handoff: Phase 6 design review fixes — D20 converted to a blocking owner decision reconciling the plan §9.3 zoom/narrow reachability requirement (recommended two-step exit path with an approval-gated plan clarification; persistent-link alternative costed), F3 made genuinely closed-form with overlap/compact-legality/fresh-entry preconditions, contained coverage extended to the four declared pressure viewports including 320×568, the truth-table markdown repaired, and P6-AC-22's pan-reachability set closed and enumerated. Files changed: `docs/phase-6-design.md` only; hook-managed `docs/agent-handoff.md` preserved. Unresolved: the §18 blocking owner approvals (now including D20). Next role: owner approval of §18, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
- M docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-28T14:14:15.843Z · claude
-
-- Branch / HEAD: `main` / `543f6c6`
-- Worktree snapshot: `103b09cb4a38`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> All six findings are resolved; the only modification on top of the clean `543f6c6` tree is [docs/phase-6-design.md](docs/phase-6-design.md) (+89/−40).
->
-> **High — P6-AC-22's DOM alternative is now enforceable.** I chose and documented the exit-path interpretation (new decision **D20**): a persistent deck-mode `/projects` link would be new production chrome and a new identifier in a phase that must not grow rendered scope, and it's redundant with the plan §A.4 parity-sanctioned exit. The criterion and its contained-mode test row now specify the concrete verified path: pan the return control into the visible viewport → activate `esc · return` → await cockpit-rest → assert `[data-hud="site-header"] a[href="/projects"]` is visible, keyboard-reachable (Tab-focusable), and operable. D20 records the live evidence you cited (inert page content in [cockpit-entry.tsx:63](components/cockpit/cockpit-entry.tsx#L63), rest-only header at [cockpit-hud.tsx:323](components/cockpit/cockpit-hud.tsx#L323), preview-only `AccessibleExperienceLink`) and the rejected alternative.
->
-> **Medium — tier fixtures are now closed-form.** All qualitative phrases are gone. F1/F2/F3 are exact rects: F1 below-forcing `{x: S.x+(S.w−240)/2, y: S.y+⌊(H_f+G_s)/2⌋, 240×160}`; F2 compact-top-forcing `{S.x, S.y, 120×200}` — redesigned to discriminate **horizontally** (subject-centered full candidates overflow the left edge whenever `W_f > X.w`, so above *and* below fail on x-containment; this also removes the unsound vertical-band assumption, since `H_c` may equal `H_f`), with `X.y = S.y` eliminating the above rail band so arrows deterministically resolve below; F3 hysteresis with the obstacle and axis named (beside arrow pair, vertical), `X.h = A_h + 2(G_c−G_s) + HYS` yielding an exact 12 px clearance = `G_c + HYS/2`, strictly inside the retention band. Every fixture's preconditions are asserted before the tier assertion, and a violated precondition fails the test naming the inequality — never skips or substitutes.
->
-> **Medium — warn-once recipe corrected.** The hook-suite row now drives real unsatisfiable episodes with the override (noting `forceDeckFitStatus` alone never produces one): apply safe-frame override → await `unsatisfiable`, count 1 → hold across publications, still 1 → clear, await `placed` (episode ends) → reapply → count 2.
->
-> **Low — AC-08 actionability.** The busy-swap row now captures the arrow handles before the swap and asserts, at the gap frame: `disabled`, focus rejection, and that `click()`/synthesized Enter changes neither `__cockpitDeck.index` nor the probe state and dispatches no navigation.
->
-> **Low — complete `forceDeckFitStatus` truth table.** A six-row accepted/rejected matrix in §12 with no normalization: `(true, validReason)` and `(false)`/`(false, undefined)` accepted; `(true)` without reason, `(true, invalidReason)`, `(false, anything ≠ undefined)` (including `null` or a valid reason), and non-boolean `degraded` all throw with no state change. P6-AC-26(a) now requires the full matrix — every rejected row throws, every accepted row takes effect.
->
-> **Low — §1 note is now fully historical**, recording that the concurrent work was committed and the tree is clean at `543f6c6` on top of the Phase 5 merge, with no claim about live uncommitted state.
->
-> Final checks: AC IDs continuous 01–26 with counts consistent everywhere; no stale phrases remain from any of the six findings; no production code, tests, canonical content, or evidence touched.
->
-> Handoff: Phase 6 design review fixes complete in `docs/phase-6-design.md` — D20 exit-path DOM-alternative contract for P6-AC-22 (verified against the live inert/header behavior), closed-form F1/F2/F3 tier fixtures with named-inequality failure (F2 rebuilt on horizontal discrimination, removing the `H_c < H_f` assumption), override-driven warn-once episodes, handle-captured AC-08 actionability assertions, the complete `forceDeckFitStatus` input matrix wired into P6-AC-26, and the §1 worktree note made fully historical at `543f6c6`. Files changed: `docs/phase-6-design.md` only. Unresolved: the §18 blocking owner approvals. Next role: owner approval of §18, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
- M docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T22:03:58.381Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `57de6282cd0b`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> All fourteen items are resolved. Final report.
->
-> ---
->
-> **Files changed this turn (documentation only):** [docs/phase-6-design.md](docs/phase-6-design.md), [docs/hud-responsive-layout-plan.md](docs/hud-responsive-layout-plan.md), [docs/responsive-system.md](docs/responsive-system.md), [CLAUDE.md](CLAUDE.md) (two stale live status cross-references, net −145 chars). All other worktree modifications (roadmap session, prop removal, hook-managed handoff) preserved untouched.
->
-> **Enforceability issues fixed:**
->
-> 1. **Forced-status observability** — verified against the live code that `getFocusFit()` reads the renderer's imperative fit-cache (`registerFocusFitProbe`, [globe-canvas.tsx](components/cockpit/globe-canvas.tsx#L1561)) while DeckHud consumes the React `focus-fit-store`. The hook is now deck-only **`forceDeckFitStatus(degraded, reason?)`**, observed exclusively through the probe's new `fitDegraded: boolean` / `fitReason` fields (sourced from the same store DeckHud uses) and the effective DOM. P6-AC-07 now *asserts* `getFocusFit().status` stays `'fit'` under forcing — pinning the preserved Phase 5 semantics. Decision D19 records the store/fit-cache reconciliation and the rejected alternatives (fit-cache mutation; three-kind hook; probe `safeFrame` duplication).
-> 2. **Probe schema** — `chrome: readonly Rect[] | null` (null in `unmeasured`, exactly `[returnControlRect]` in every measured state; nothing fabricated); the state table is now a field-by-field matrix over all twelve output fields × the four statuses, with `fitDegraded` documented as an orthogonal flag that never creates a fifth status, and unmounted `null` kept separate.
-> 3. **P6-AC-12** — solver-hidden now applies only to the non-degraded path after all full and compact tiers fail; degraded suppression is a separate probe-distinguished rule. The font-luck browser recipe is replaced by derived override fixtures whose inequalities (below-forcing, compact-top-forcing, hysteresis-retention) are computed from the probe's own measured sizes and **asserted as preconditions** before the tier assertion; exhaustive tier coverage (including new compact-bottom and hysteresis-legality cases) moves to the unit suite.
-> 4. **P6-AC-24 safe-frame source** — now read from the existing `getHudSnapshot().safeFrame` under the same-frame handshake; the undefined probe field is gone; the §6.10 proof is untouched.
-> 5. **P6-AC-26 (new)** — executable hook-contract coverage: malformed-input throws with no partial mutation, the documented unmounted-setter "DeckHud not ready" throw (nothing queued), unmounted getter `null`, override cleared by exit/re-entry and context rebuild, forced-status non-leakage, warn-once-per-episode with post-recovery episodes, the `previousCompact` reset proven via the hysteresis-retention fixture on fresh entry, and mandatory `try/finally`. **Count is now 26**, continuous, bidirectionally mapped, updated in §14/§15/§20 and the handoff.
-> 6. **P6-AC-22** — contained-mode verification now executes at **800×450, 683×325, and 512×300**, asserting the pinned surface, stage-coordinate invariants, pan-tracking, pan-range reachability via explicit stage→viewport conversion, and the reachable DOM alternative; the "covered by construction" claim is removed.
-> 7. Hidden-shell focusability gained an explicit assertion (AC-08 + row).
->
-> **P6-AC-24 / P6-AC-25 remain distinct:** AC-24 = forced store status + safe-frame override → probe `unsatisfiable`, observed via the probe only; AC-25 = real `s: 50` → `getFocusFit()` degraded, null card, probe `no-subject` with the full null-field shape. No passage claims `s: 50` supplies a finite solver subject.
->
-> **Phase 8 roadmap repairs:** the closed file set now names exact paths for every live legacy-font reference (repo-wide search verified 12 files; added `incense.ts`, `boot-screen.tsx`, `warp-transition.tsx`, replacing the "boot/warp styling" shorthand) with a satisfiability note for D-TYPE; **D-FX** has an enforceable disposition (implemented-and-verified, or owner-approved omission recorded and acknowledged, never blocking the exit); **performance waivers** are a new owner-blocking obligation 12 with the nine required evidence fields, referenced by obligation 8 and the exit — no informal "accepted tradeoff" path remains.
->
-> **Phase-status facts reconciled against Git:** Phase 2 delivered (`685eb67`), Phase 4 delivered (`96fc9c5`), Phase 5 delivered and merged (`03fca60`/`15c53ad`, committed owner checkpoint, two Kimi PASS verdicts, 16-job CI) — corrected in the plan header, the responsive-system §12 table, and CLAUDE.md; the Phase 6 design's §1 worktree note is now labeled as the historical initial snapshot.
->
-> **Verification performed:** live reads of the six implementation surfaces; git log/ls-files for phase-delivery evidence; repo-wide sweeps for the old hook name, `covered by construction`, `owner-accepted tradeoff`, legacy font families, Phase 8/9 numbering, count strings, and subjective language — all clean; AC continuity 01–26 confirmed.
->
-> **Unresolved owner approvals:** the §18 blocking checkboxes (now including the three-hook set with the deck-only toggle and the precedence narrowing) — implementation cannot begin until the owner checks them; plus Phase 8's future approvals (art direction, D-FX disposition, baselines, any performance waiver). **No production code, tests, canonical content, approval records, or immutable Phase 4/5 evidence changed.**
->
-> Handoff: Phase 6 design hardened to implementation-ready pending §18 owner approval — corrected forced-status observability (deck-only `forceDeckFitStatus`, probe `fitDegraded`/`fitReason`, Phase 5 `getFocusFit()` semantics pinned by assertion), truthful probe schema with nullable chrome and an exhaustive field matrix, deterministic tier fixtures replacing font-luck, the `getHudSnapshot().safeFrame` source for AC-24, new AC-26 hook-contract suite (26 criteria), three-viewport contained coverage, and Phase 8 roadmap repairs (exact-path closed set, D-FX disposition, owner-authored performance waiver) plus Git-verified phase statuses across the plan, responsive-system, and CLAUDE.md. Files changed: the four named docs only; concurrent work preserved. Next role: **Codex design review, then owner approval of §18's blocking items**, then Codex implementation and Kimi QA.
-
-#### Git status at handoff
-
-```text
- M CLAUDE.md
- M DESIGN.md
+ M app/globals.css
+ M app/layout-contract.ts
+ M components/cockpit/cockpit-app.tsx
+ M components/cockpit/cockpit-hud.tsx
+ M components/cockpit/coffee.ts
  M components/cockpit/decorations.ts
- M docs/design-visual-migration-handoff.md
+ M components/cockpit/glass-mac.ts
+ M components/cockpit/globe-canvas.tsx
+ M components/cockpit/highlights.ts
+ M components/cockpit/incense.ts
+ M components/cockpit/materials.ts
+ M components/cockpit/tea-set.ts
+ M components/cockpit/turntable.ts
+ M components/cockpit/vinyl-crate.ts
+ M docs/astra-orchestration.md
  M docs/hud-responsive-layout-plan.md
- M docs/phase-0-handoff.md
- M docs/phase-2-design.md
- M docs/phase-3-design.md
- M docs/phase-4-design.md
- M docs/phase-5-design.md
- M docs/phase-5-implementation.md
+ M docs/phase-6-design.md
+ M docs/phase-6-plan.md
+ M docs/phase-runner.md
  M docs/responsive-system.md
-?? docs/phase-6-design.md
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-08-14T21:37:34.116Z · claude
-
-- Branch / HEAD: `main` / `03fca60`
-- Worktree snapshot: `bde5728371fc`
-- Session / turn: `d59b67f4-8ee6-415d-97c8-73ee270e4e1e` / `not exposed`
-- Model: `not exposed`
-
-#### Final report
-
-> All checks pass. Final report.
->
-> ---
->
-> **Files changed by this turn:** [docs/phase-6-design.md](docs/phase-6-design.md) only. The other worktree modifications belong to the parallel roadmap-revision session (plan, DESIGN.md §14, CLAUDE.md, responsive-system.md, phase-doc renumbering notes, design-visual-migration-handoff.md), the owner-driven handheld-prop removal ([decorations.ts](components/cockpit/decorations.ts) + one DESIGN.md table row), and the hook-managed [docs/agent-handoff.md](docs/agent-handoff.md) — all preserved untouched per AGENTS.md.
->
-> **Final sequence (verified live in [plan §8](docs/hud-responsive-layout-plan.md)):** Phase 6 — re-anchor deck HUD · Phase 7 — re-anchor crate HUD · Phase 8 — appearance and art-direction migration (new, revision 8/§0.7) · Phase 9 — enforcement, browser matrix, CI, and release verification (renumbered from Phase 8).
->
-> **Objective B status:** already applied by the concurrent session before this turn began; I verified rather than redid it. The plan carries §0.7, the full Phase 8 section (bounded file scope, D-MAT/D-LIGHT/D-ENV/D-TYPE/D-FX/D-BASE deliverables, palette/shader/performance constraints, 9 automated + 2 owner-blocking obligations, exit), and Phase 9 renumbering; responsive-system §12 gained rows 8/9; DESIGN.md §14 names the sequence and Phase 8 ownership; CLAUDE.md's roadmap explains the renumbering. Sweep result: every remaining old-numbered "Phase 8" hit is either new-numbering usage, inside a document carrying a renumbering note, or a code comment (`ci.yml`, `test-hooks.ts`, `playwright.config.ts`, two specs) that plan §0.7 assigns to the next code-touching engineering turn — not mine to edit.
->
-> **Phase 6 enforceability issues found in the re-audit and resolved:**
-> 1. The safe-frame override's unsatisfiability was asserted, not demonstrated → new **§6.10 proof** from the solver's own `contains`/`intersects` inequalities (containment of any positive-area candidate in S implies intersection with subject = S for every gap ≥ 0, so `candidateIsLegal` is false for all three tiers → `{status:'unsatisfiable', failed:'arrows'}` deterministically).
-> 2. Hook contracts lacked invalid-input, lifecycle-survival, and clearing rules → per-hook contracts added: `forceFocusFitStatus` (throws on invalid input; store-resident, overwritten by genuine solves, discarded on rebuild; explicit clearing required), `setDeckHudSubjectOverride` (finite normalized rect or null, else throws; DeckHud-solver-subject-only; auto-clears on unmount; wins over the published card until cleared), `getDeckHudLayout` (read-only, effective-placement semantics, never reports pre-loss values) — each with its requiring ACs.
-> 3. Probe states lacked a complete observable shape → the exhaustive **state × field-shape table** (four mounted states + unmounted null; "no fifth mounted state").
-> 4. Test isolation was implicit → mandatory `try/finally` restoration even on assertion failure, plus the rule that any fourth hook is a blocking owner decision.
-> 5. AC quality → §14 verification conventions (setup/observable/failure/cleanup per criterion, blank-canvas precondition, bidirectional §14↔§15 mapping, no subjective language outside named owner checkpoints); P6-AC-25 and its row tightened to assert the full no-subject null-field shape; §5 now states hysteresis can never admit illegal geometry; §20 clarified that PASS means "spec internally enforceable," not proven production behavior.
->
-> **P6-AC-24 and P6-AC-25 remain distinct and executable:** AC-24 is the override-driven three-step precedence proof (degraded + safe-frame override → `unsatisfiable`, clear override → `placed` with hint degraded-hidden, clear status → full recovery), grounded by the §6.10 proof; AC-25 independently pins the empirically verified `s: 50` outcome (degraded `unfittable-at-max`, published card null, probe `no-subject` with non-null sizes and the null-field shape, all identifiers absent, full recovery at `s: 1.75`). No passage claims `s: 50` supplies a finite oversized subject.
->
-> **Phase 8 bounded scope/exit and baseline governance (verified in the plan):** closed production-file candidate set with design-doc enumeration before implementation; six named deliverables; palette/shader/performance/recovery constraints; exit requires all automated obligations green, owner art-direction approval, and independent QA. Governance: Phase 4 evidence immutable (no `docs/baselines/` path is modified — confirmed via git status); Phase 4 comparisons suspended explicitly during Phase 8; replacement deterministic set under `docs/baselines/phase-8-scorecard/` with the §9.6.5 protocol; owner approves it in a dated checkpoint (artifact defined, left pending — never agent-authored); Phase 9 consumes only that approved set and never fails intentional approved change against Phase 4 imagery.
->
-> **Unresolved owner decisions:** the seven §18 blocking checkboxes (solver-anchored behavior, compact microcopy, Phase 4 test amendments, the three dev-only hooks, §6.9 token consumption with the ≈28→44 px / ≈42→44 px corrections, and the degraded+unsatisfiable precedence narrowing) — §18 now states explicitly that Codex implementation cannot begin until all are checked; plus the future Phase 8 approvals listed in the plan. Every P6 criterion has an executable verification path, so the design is implementation-ready **pending only those approvals**.
->
-> **Confirmed unchanged:** production code, tests, canonical content, `content/portfolio-approvals.json`, and all immutable Phase 4/5 baseline evidence.
->
-> Handoff: Phase 6 design re-audit + roadmap integration complete — `docs/phase-6-design.md` gains the §6.10 unsatisfiability proof, hardened per-hook contracts with the exhaustive probe state-shape table, mandatory test-isolation and per-criterion verification conventions, the §20 PASS clarification, and Phase 8-deferral/Phase 9 alignment; the concurrent session's roadmap restructure (plan §0.7 + Phase 8/9, DESIGN.md, CLAUDE.md, responsive-system.md, historical renumbering notes) verified rather than duplicated. Files changed this turn: `docs/phase-6-design.md` only; all concurrent work and the hook-managed handoff preserved. Unresolved: the §18 blocking owner approvals; code-comment renumbering belongs to the next engineering turn. Next role: owner approval of the revised roadmap and §18's blocking items, then Codex plan/implementation, then Kimi QA.
-
-#### Git status at handoff
-
-```text
- M CLAUDE.md
- M DESIGN.md
- M components/cockpit/decorations.ts
- M docs/design-visual-migration-handoff.md
- M docs/hud-responsive-layout-plan.md
- M docs/phase-0-handoff.md
- M docs/phase-2-design.md
- M docs/phase-3-design.md
- M docs/phase-4-design.md
- M docs/phase-5-design.md
- M docs/phase-5-implementation.md
- M docs/responsive-system.md
-?? docs/phase-6-design.md
+ M e2e/phase3-renderer.spec.ts
+ M e2e/phase5-input.spec.ts
+ M lib/content/content-contracts.ts
+ M lib/responsive/input-policy.ts
+ M lib/responsive/layout-contracts.ts
+ M scripts/agent-handoff.mjs
+ M scripts/phase-runner/core.ts
+ M scripts/phase-runner/manifests/phase-6.json
+ M scripts/phase-runner/phase-runner.ts
+ M scripts/run-e2e.mjs
+ M tests/unit/agent-handoff.test.ts
+ M tests/unit/content-contracts.test.ts
+ M tests/unit/e2e-runner.test.ts
+ M tests/unit/input-policy.test.ts
+ M tests/unit/layout-contracts.test.ts
+ M tests/unit/phase-runner.test.ts
+ M tests/unit/phase6-manifest.test.ts
+?? .claude/agents/portfolio-8a-engineer.md
+?? components/cockpit/desk-outline.ts
+?? components/cockpit/desk-reflections.ts
+?? components/cockpit/listening-room.ts
+?? debug.log
+?? docs/browser-gate-repair-plan.md
+?? docs/codex-qa-proposal.md
+?? docs/phase-8-design.md
+?? docs/phase-8a-custody-continuation.md
+?? docs/phase-8a-recovery-plan.md
+?? docs/phase-8a-visual-revision.md
+?? docs/visual-first-amendment.md
+?? scripts/phase-runner/schemas/qa-result.schema.json
+?? tests/unit/desk-environment.test.ts
+?? tests/unit/desk-lamp-accents.test.ts
+?? tests/unit/desk-reflections.test.ts
+?? tests/unit/listening-room-lighting.test.ts
+?? tests/unit/listening-room.test.ts
+?? tests/unit/ritual-objects.test.ts
 ```
 <!-- agent-handoff:entry:end -->

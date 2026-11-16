@@ -22,7 +22,7 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
 import type { RandomSource } from "@/lib/random/seeded-streams"
-import { makeHeroGlass, makeFrost } from "./materials"
+import { makeHeroGlass, makeFrost, makeAccentMaterial } from "./materials"
 import { makeDecal } from "./decals"
 
 type GlassMacBuildOptions = {
@@ -161,7 +161,7 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
   // ── Micrographic rail baseline (registration line + plus marks + sage
   // tick). The vector sheets themselves come from /public/micrographics
   // via the shared makeDecal helper (handles the SVG webfont swap).
-  const railBaseline = () => textPlane((ctx, W, H) => {
+  const railBaseline = () => { const rail = textPlane((ctx, W, H) => {
     ctx.strokeStyle = 'rgba(110,105,94,0.55)';
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(W/2, 40); ctx.lineTo(W/2, H - 40); ctx.stroke();
@@ -176,13 +176,16 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     ctx.fillStyle = '#78977D';
     ctx.fillRect(W/2 - 7, 64, 14, 14);
   }, 0.3, 1.55, 192, 1024);
+    rail.material = makeAccentMaterial(rail.material, { rectangles: [[89,64,14,14]] });
+    return rail;
+  };
 
   // ── Materials ─────────────────────────────────────────────────
-  const glass    = makeHeroGlass({ thickness: 0.5, roughness: 0.3, aberration: 0.012 });   // smoky frosted casing
+  const glass    = makeHeroGlass({ thickness: 0.5, roughness: 0.36 });   // smoky frosted casing
   const frostCap = makeFrost({ transmission: 0.7, roughness: 0.3, thickness: 0.08 });      // hinge caps / mouse skirt
   const frostSkirtMat = makeFrost({ color: 0x9B958A, transmission: 0.55, roughness: 0.35, thickness: 0.06 });
-  const edgeMat  = new THREE.LineBasicMaterial({ color: 0xF0EBE1, transparent: true, opacity: 0.4, depthWrite: false });
-  const edgeInk  = new THREE.LineBasicMaterial({ color: 0x55514B, transparent: true, opacity: 0.4 });
+  const edgeMat  = new THREE.LineBasicMaterial({ color: 0xF0EBE1, transparent: true, opacity: 0.10, depthTest: true, depthWrite: false });
+  const edgeInk  = new THREE.LineBasicMaterial({ color: 0x55514B, transparent: true, opacity: 0.12, depthTest: true });
   const creamMat = new THREE.MeshStandardMaterial({ color: 0xE7E2D5, map: makeGrainTexture(), roughness: 0.55, metalness: 0.05 });
   const bezelMat = new THREE.MeshStandardMaterial({ color: 0xE2DDD0, roughness: 0.6, metalness: 0.04 });
   const bezelHiMat = new THREE.MeshStandardMaterial({ color: 0xEDE8DB, roughness: 0.55, metalness: 0.04 });
@@ -190,10 +193,10 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
   const keyMat   = new THREE.MeshStandardMaterial({ color: 0xEFEAE0, roughness: 0.5, metalness: 0.03 });
   const keyModMat= new THREE.MeshStandardMaterial({ color: 0xD9D4C8, roughness: 0.55, metalness: 0.03 });
   const sageMat  = new THREE.MeshStandardMaterial({ color: 0x8FAF94, roughness: 0.55, metalness: 0.03 });
-  const jade     = new THREE.MeshLambertMaterial({ color: 0x78977D });
+  const jade     = makeAccentMaterial(new THREE.MeshLambertMaterial({ color: 0x78977D }));
   const jadeDeep = new THREE.MeshStandardMaterial({ color: 0x4B6E4F, roughness: 0.55, metalness: 0.05 });
   const graphite = new THREE.MeshStandardMaterial({ color: 0x3A3733, roughness: 0.6, metalness: 0.08 });
-  const trimMat  = new THREE.MeshStandardMaterial({ color: 0xC6C1B8, roughness: 0.35, metalness: 0.4 });
+  const trimMat  = new THREE.MeshStandardMaterial({ color: 0xC6C1B8, roughness: 0.18, metalness: 0.4 });
   const inkSlot  = new THREE.MeshLambertMaterial({ color: 0x3A3733 });
 
   const edge = (mesh, mat = edgeInk, thresh = 30) => {
@@ -266,6 +269,7 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     ctx.font = '600 30px "JetBrains Mono", monospace';
     ctx.fillText('A.X / STUDIO', 132, h/2);
   }, 0.85, 0.075, 640, 64);
+  sideLabel.material = makeAccentMaterial(sideLabel.material, { rectangles: [[88,19,26,26]] });
   sideLabel.rotation.y = -Math.PI/2;
   sideLabel.position.set(-1.527, 0.16, 0.72);
   xray.add(sideLabel);
@@ -331,7 +335,7 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
       const kw = wu * U - GAP;
       if (!keyGeoCache.has(wu)) keyGeoCache.set(wu, new RoundedBoxGeometry(kw, KEY_H, KEY_D, 2, 0.015));
       const mat = kind === 'sage' ? sageMat : kind === 'jade' ? jadeDeep : kind === 'mod' ? keyModMat : keyMat;
-      const k = new THREE.Mesh(keyGeoCache.get(wu), mat);
+      const k = new THREE.Mesh(keyGeoCache.get(wu), kind === 'sage' || kind === 'jade' ? makeAccentMaterial(mat) : mat);
       k.position.set(cx, 0.055, z);
       keyboard.add(k);
       if (label){
@@ -491,6 +495,7 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     ctx.textAlign = 'left';
     ctx.fillText('·····', w - 108, h/2);
   }, 0.35, 0.06, 320, 56);
+  bezelStatus.material = makeAccentMaterial(bezelStatus.material, { rectangles: [[170,15,26,26]] });
   bezelStatus.position.set(0.63, 0.885, 0.102);
   monitor.add(bezelStatus);
 
@@ -550,11 +555,12 @@ export function buildGlassMac(xray, options: GlassMacBuildOptions){
     new THREE.SphereGeometry(1, 36, 18, 0, Math.PI * 2, 0, Math.PI/2),
     new THREE.MeshStandardMaterial({ map: mTex, roughness: 0.45, metalness: 0.03 })
   );
+  dome.material = makeAccentMaterial(dome.material, { rectangles: [[122,168,13,13]] });
   dome.scale.set(0.235, 0.29, 0.345);
   dome.position.y = 0.03;
   mouse.add(dome);
   // scroll slot at the seam junction
-  const wheel = new THREE.Mesh(new RoundedBoxGeometry(0.022, 0.02, 0.06, 1, 0.008), jadeDeep);
+  const wheel = new THREE.Mesh(new RoundedBoxGeometry(0.022, 0.02, 0.06, 1, 0.008), makeAccentMaterial(jadeDeep));
   wheel.position.set(0, 0.30, 0.12);
   wheel.rotation.x = 0.35;
   mouse.add(wheel);

@@ -14,8 +14,10 @@ import {
   ABOUT_CONTENT_CONTRACT,
   CONTENT_CONTRACTS,
   HOME_CONTENT_CONTRACT,
+  COCKPIT_IDENTITY_CONTENT,
 } from '@/lib/content/content-contracts'
 import { catalogSlugs, PROJECTS } from '@/lib/projects/catalog'
+import { PROFILE } from '@/lib/portfolio/profile'
 import type { ValidationIssue } from '@/lib/shared/core'
 
 const realSlugs = catalogSlugs(PROJECTS)
@@ -48,6 +50,17 @@ function hasError(
 const HOME_SUBJECT = 'content-contract content-home-v1'
 
 describe('real registry', () => {
+  it('binds the plaque to existing canonical profile fields and the unchanged SSR home contract', () => {
+    expect(COCKPIT_IDENTITY_CONTENT).toEqual({
+      region:'cockpit-identity',hud:'identity-plaque',contractId:'content-home-v1',
+      source:'profile',fields:['name','targetRole'],
+    })
+    expect(COCKPIT_IDENTITY_CONTENT.fields.map(field=>PROFILE[field])).toEqual([PROFILE.name,PROFILE.targetRole])
+    expect(HOME_CONTENT_CONTRACT.sources).toContain(COCKPIT_IDENTITY_CONTENT.source)
+    expect(HOME_CONTENT_CONTRACT.delivery).toMatchObject({serverRendered:true,javascriptIndependent:true,webglIndependent:true,visibleSemanticHtml:true})
+    expect(CONTENT_CONTRACTS).toHaveLength(4)
+  })
+
   it('exposes the §A.4.2 constants', () => {
     expect(REQUIRED_CONTENT_ROUTES).toEqual(['/', '/projects', '/projects/[slug]', '/about'])
     expect(PHASE_2_COMPLETE).toBe(true)

@@ -16,6 +16,7 @@ import {
 } from '@/lib/responsive/layout-contract'
 import {
   COCKPIT_LAYOUT_CONTRACT,
+  COCKPIT_IDENTITY_LAYOUT_CONTRACT,
   LAYOUT_CONTRACTS,
   ROUTE_CONTRACT_EXEMPTIONS,
   ROUTE_LAYOUT_CONTRACTS,
@@ -46,6 +47,16 @@ function hasError(
 const SUBJECT = 'layout-contract cockpit-v1'
 
 describe('real registry', () => {
+  it('registers wrapping identity chrome separately from the protected 3D stage', () => {
+    expect(LAYOUT_CONTRACTS).toContain(COCKPIT_IDENTITY_LAYOUT_CONTRACT)
+    expect(COCKPIT_IDENTITY_LAYOUT_CONTRACT.id).toBe('cockpit-identity-v1')
+    expect(COCKPIT_IDENTITY_LAYOUT_CONTRACT.protectedRegions).toEqual([])
+    expect(COCKPIT_IDENTITY_LAYOUT_CONTRACT.allowedAdaptations).toEqual(['reposition','reflow'])
+    expect(COCKPIT_IDENTITY_LAYOUT_CONTRACT.accessibility.reflow).toBe('standard')
+    expect(COCKPIT_IDENTITY_LAYOUT_CONTRACT.accessibility.states).toEqual(COCKPIT_LAYOUT_CONTRACT.accessibility.states)
+    expect(ROUTE_LAYOUT_CONTRACTS['/']).toBe('cockpit-v1')
+  })
+
   it('LAYOUT_CONTRACTS passes validation with zero issues', () => {
     expect(validateLayoutContracts(LAYOUT_CONTRACTS)).toEqual([])
   })

@@ -1,11 +1,10 @@
 #!/usr/bin/env -S npx tsx
 
 import { spawn, spawnSync, execFileSync } from 'node:child_process'
-import { createHash } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import {
   closeSync,
   copyFileSync,
-  cpSync,
   createWriteStream,
   existsSync,
   lstatSync,
@@ -17,43 +16,48 @@ import {
   readlinkSync,
   renameSync,
   rmSync,
-  symlinkSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
-import { dirname, join, relative, resolve, sep } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import {
+  assertQaAuthority,
+  cliIdentity,
+  reviewerArgs,
+  validateHostGates,
+  FIXED_GATES,
+  QA_ROLE,
+  type CliIdentity,
+  type HostGate,
   acceptOwnerGate,
   buildCodexPrompt,
-  buildKimiPrompt,
-  canonicalGateCommand,
+  buildQaPrompt,
   createInitialState,
-  extractKimiJson,
   getStep,
-  isHostRecoverableE2eFailure,
   manifestDigest,
   pathMatchesAllowedCommitPath,
   parseCodexResult,
-  parseKimiResult,
+  parseQaResult,
   parseManifest,
   parseState,
   transitionAfterQa,
   type CodexResult,
-  type KimiResult,
+  type QaResult,
   type PhaseManifest,
   type PhaseRunnerState,
 } from './core'
 
 const RUNNER_DIRECTORY = '.agent-runs'
-const HANDOFF_PATH = join('docs', 'agent-handoff.md')
+const HANDOFF_PATH = 'docs/agent-handoff.md'
 const MAX_COMMAND_OUTPUT = 64 * 1024 * 1024
 
 interface RunnerPaths {
   root: string
   manifest: string
   schema: string
-  kimiAgent: string
+  qaSchema: string
   stateDirectory: string
   state: string
   pause: string
@@ -70,6 +74,7 @@ interface LoadedRunner {
 interface ChildResult {
   stdout: string
   stderr: string
+  exitCode: number
 }
 
 interface QaWorktree {
@@ -84,19 +89,11 @@ function fail(message: string): never {
 function gitText(args: string[], cwd: string): string {
   return execFileSync('git', args, {
     cwd,
+    env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' },
     encoding: 'utf8',
     maxBuffer: MAX_COMMAND_OUTPUT,
     stdio: ['ignore', 'pipe', 'pipe'],
   }).trimEnd()
-}
-
-function gitBuffer(args: string[], cwd: string): Buffer {
-  return execFileSync('git', args, {
-    cwd,
-    encoding: null,
-    maxBuffer: MAX_COMMAND_OUTPUT,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
 }
 
 function gitCommandSucceeded(args: string[], cwd: string): boolean {
@@ -110,7 +107,7 @@ function gitCommandSucceeded(args: string[], cwd: string): boolean {
 
 function repositoryRoot(cwd: string): string {
   try {
-    return gitText(['rev-parse', '--show-toplevel'], cwd)
+    return resolve(gitText(['rev-parse', '--show-toplevel'], cwd))
   } catch {
     return fail(`not inside a Git repository: ${cwd}`)
   }
@@ -134,7 +131,7 @@ function runnerPaths(root: string, phase: number): RunnerPaths {
       'schemas',
       'codex-result.schema.json',
     ),
-    kimiAgent: join(root, '.agents', 'agents', 'kimi-phase-qa.md'),
+    qaSchema: join(root, 'scripts', 'phase-runner', 'schemas', 'qa-result.schema.json'),
     stateDirectory,
     state: join(stateDirectory, 'state.json'),
     pause: join(stateDirectory, 'pause-requested'),
@@ -180,6 +177,7 @@ function loadState(loaded: LoadedRunner): PhaseRunnerState {
   const state = parseState(
     JSON.parse(readFileSync(loaded.paths.state, 'utf8')),
     loaded.manifest,
+    loaded.manifestDigest,
   )
   if (state.manifestDigest !== loaded.manifestDigest) {
     return fail(
@@ -231,61 +229,36 @@ function releaseLock(paths: RunnerPaths): void {
   if (existsSync(paths.lock)) rmSync(paths.lock, { recursive: true, force: true })
 }
 
-function executablePath(kind: 'codex' | 'kimi'): string {
-  const override =
-    kind === 'codex'
-      ? process.env.PHASE_RUNNER_CODEX_BIN
-      : process.env.PHASE_RUNNER_KIMI_BIN
-  if (override) return resolve(override)
-
-  if (kind === 'codex') {
-    const pathResult = spawnSync('codex', ['--version'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
-    if (!pathResult.error && pathResult.status === 0) return 'codex'
-
-    const extensionRoots = [
-      join(homedir(), '.vscode', 'extensions'),
-      join(homedir(), '.vscode-insiders', 'extensions'),
-      join(homedir(), '.cursor', 'extensions'),
-    ]
-    const candidates: Array<{ path: string; modifiedAt: number }> = []
-    for (const extensionRoot of extensionRoots) {
-      if (!existsSync(extensionRoot)) continue
-      for (const entry of readdirSync(extensionRoot, { withFileTypes: true })) {
-        if (!entry.isDirectory() || !entry.name.startsWith('openai.chatgpt-')) {
-          continue
-        }
-        const binRoot = join(extensionRoot, entry.name, 'bin')
-        if (!existsSync(binRoot)) continue
-        for (const platform of readdirSync(binRoot, { withFileTypes: true })) {
-          if (!platform.isDirectory()) continue
-          const candidate = join(binRoot, platform.name, 'codex')
-          if (!existsSync(candidate)) continue
-          candidates.push({
-            path: candidate,
-            modifiedAt: lstatSync(join(extensionRoot, entry.name)).mtimeMs,
-          })
-        }
+export function executablePath(): string {
+  if (process.env.PHASE_RUNNER_CODEX_BIN) return resolve(process.env.PHASE_RUNNER_CODEX_BIN)
+  const name = process.platform === 'win32' ? 'codex.exe' : 'codex'
+  for (const directory of (process.env.PATH ?? '').split(process.platform === 'win32' ? ';' : ':')) {
+    const candidate = resolve(directory, name)
+    if (existsSync(candidate)) return candidate
+  }
+  const candidates: Array<{ path: string; modifiedAt: number }> = []
+  for (const editor of ['.vscode', '.vscode-insiders', '.cursor']) {
+    const root = join(homedir(), editor, 'extensions')
+    if (!existsSync(root)) continue
+    for (const entry of readdirSync(root, { withFileTypes: true })) {
+      if (!entry.isDirectory() || !entry.name.startsWith('openai.chatgpt-')) continue
+      const bin = join(root, entry.name, 'bin')
+      if (!existsSync(bin)) continue
+      for (const platform of readdirSync(bin, { withFileTypes: true })) {
+        const candidate = join(bin, platform.name, name)
+        if (existsSync(candidate)) candidates.push({ path: candidate, modifiedAt: lstatSync(candidate).mtimeMs })
       }
     }
-    candidates.sort((left, right) => right.modifiedAt - left.modifiedAt)
-    const discovered = candidates.find((candidate) => {
-      const result = spawnSync(candidate.path, ['--version'], {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'pipe'],
-      })
-      return !result.error && result.status === 0
-    })
-    if (discovered) return discovered.path
   }
+  candidates.sort((a, b) => b.modifiedAt - a.modifiedAt)
+  return candidates[0]?.path ?? fail('Codex executable unavailable; set PHASE_RUNNER_CODEX_BIN')
+}
 
-  if (kind === 'kimi') {
-    const bundled = join(homedir(), '.kimi-code', 'bin', 'kimi')
-    if (existsSync(bundled)) return bundled
-  }
-  return kind
+export function npmInvocation(args: string[]): { executable: string; args: string[] } {
+  // A fixed JS entry point avoids Windows shell parsing and npm.cmd EINVAL.
+  const cli = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
+  if (!existsSync(cli)) return fail('npm CLI not found beside Node; host proof required')
+  return { executable: process.execPath, args: [cli, ...args] }
 }
 
 function assertExecutable(executable: string, label: string): void {
@@ -304,7 +277,7 @@ function timestampSlug(): string {
   return new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-')
 }
 
-async function runLoggedCommand(
+export async function runLoggedCommand(
   executable: string,
   args: string[],
   options: {
@@ -314,6 +287,9 @@ async function runLoggedCommand(
     label: string
     echoStdout?: boolean
     heartbeatMs?: number
+    recordFailure?: boolean
+    telemetryOnly?: boolean
+    input?: string
   },
 ): Promise<ChildResult> {
   mkdirSync(dirname(options.logPath), { recursive: true })
@@ -321,7 +297,7 @@ async function runLoggedCommand(
   const child = spawn(executable, args, {
     cwd: options.cwd,
     env: options.env ?? process.env,
-    stdio: ['ignore', 'pipe', 'pipe'],
+    stdio: ['pipe', 'pipe', 'pipe'],
   })
 
   const stdout: Buffer[] = []
@@ -347,7 +323,7 @@ async function runLoggedCommand(
     }
   })
   child.stderr.on('data', (chunk: Buffer) => {
-    log.write(chunk)
+    if (!options.telemetryOnly) log.write(chunk)
     process.stderr.write(chunk)
     if (stderrSize < MAX_COMMAND_OUTPUT) {
       stderr.push(chunk)
@@ -358,21 +334,56 @@ async function runLoggedCommand(
   const status = await new Promise<number>((resolveStatus, rejectStatus) => {
     child.once('error', rejectStatus)
     child.once('close', (code) => resolveStatus(code ?? 1))
-  }).finally(() => {
+    // A finite UTF-8 prompt followed by EOF, never an inherited/open stdin.
+    // Keep large prompts out of Windows' command-line length limit.
+    child.stdin.once('error', rejectStatus)
+    child.stdin.end(options.input, 'utf8')
+  }).finally(async () => {
     if (heartbeat) clearInterval(heartbeat)
-    log.end()
+    await new Promise<void>((done, reject) => {
+      log.once('error', reject)
+      log.end(done)
+    })
   })
 
   const result = {
+    exitCode: status,
     stdout: Buffer.concat(stdout).toString('utf8'),
     stderr: Buffer.concat(stderr).toString('utf8'),
   }
-  if (status !== 0) {
+  if (options.telemetryOnly) writeFileSync(`${options.logPath}.stderr`, result.stderr)
+  if (status !== 0 && !options.recordFailure) {
     throw new Error(
       `${options.label} exited ${status}; inspect ${relative(options.cwd, options.logPath)}`,
     )
   }
   return result
+}
+
+export async function runRequiredGates(
+  required: string[], cwd: string, env: NodeJS.ProcessEnv, logPaths: string[],
+  record: (gates: HostGate[]) => void,
+  checkIntegrity: () => void,
+): Promise<HostGate[]> {
+  if (JSON.stringify(required) !== JSON.stringify(FIXED_GATES) || logPaths.length !== required.length) {
+    return fail('host gates require exactly the five fixed commands and logs')
+  }
+  const gates: HostGate[] = []
+  for (const [i, command] of required.entries()) {
+    const invocation = npmInvocation(['run', command.slice('npm run '.length)])
+    const logPath = logPaths[i]!
+    const output = await runLoggedCommand(invocation.executable, invocation.args, {
+      cwd, env: { ...env, CI: 'true' }, logPath, label: command,
+      heartbeatMs: 30_000, recordFailure: true,
+    })
+    gates.push({ command, exitCode: output.exitCode, logPath,
+      logSha256: createHash('sha256').update(readFileSync(logPath)).digest('hex') })
+    record(gates)
+    checkIntegrity()
+    if (output.exitCode !== 0) fail(`host gate exited ${output.exitCode}: ${command}; no reviewer dispatched`)
+  }
+  validateHostGates(gates, required)
+  return gates
 }
 
 function handoffHash(root: string): string {
@@ -384,19 +395,20 @@ function handoffHash(root: string): string {
 
 function captureHandoff(
   root: string,
-  agent: 'codex' | 'kimi',
+  identity: CliIdentity,
   finalReport: string,
 ): void {
   const script = join(root, 'scripts', 'agent-handoff.mjs')
   const result = spawnSync(
     process.execPath,
-    [script, 'capture', '--agent', agent],
+    [script, 'capture', '--agent', 'codex'],
     {
       cwd: root,
       input: JSON.stringify({
         cwd: root,
-        session_id: `phase-runner-${agent}`,
-        final_response: finalReport,
+        session_id: identity.sessionId,
+        model: identity.model,
+        final_response: `${identity.role}\n${finalReport}`,
       }),
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -404,7 +416,7 @@ function captureHandoff(
   )
   if (result.error || result.status !== 0) {
     throw new Error(
-      `could not capture ${agent} handoff: ${result.stderr || result.error?.message}`,
+      `could not capture Codex handoff: ${result.stderr || result.error?.message}`,
     )
   }
 }
@@ -428,7 +440,7 @@ ${risks}
 ${result.handoff}`
 }
 
-function formatKimiReport(result: KimiResult): string {
+function formatQaReport(result: QaResult): string {
   const gates = result.gates
     .map((gate) => `- ${gate.command}: ${gate.status} — ${gate.details}`)
     .join('\n')
@@ -475,7 +487,7 @@ function changedRepositoryPaths(root: string): string[] {
   ].sort()
 }
 
-function selectedPathsSnapshot(root: string, paths: string[]): string {
+export function selectedPathsSnapshot(root: string, paths: string[]): string {
   const hash = createHash('sha256')
   for (const path of [...new Set(paths)].sort()) {
     if (path === HANDOFF_PATH) continue
@@ -499,7 +511,7 @@ function selectedPathsSnapshot(root: string, paths: string[]): string {
   return hash.digest('hex')
 }
 
-function assertCommitInitializationReady(
+export function assertCommitInitializationReady(
   loaded: LoadedRunner,
 ): string[] {
   const commitSteps = loaded.manifest.steps.filter(
@@ -558,10 +570,10 @@ function assertCommitInitializationReady(
   return initialDirtyPaths
 }
 
-function commitPassedStep(
+export function commitPassedStep(
   loaded: LoadedRunner,
   state: PhaseRunnerState,
-  result: KimiResult,
+  result: QaResult,
 ): PhaseRunnerState {
   if (result.verdict !== 'pass') return state
   const step = getStep(loaded.manifest, state.currentStep)
@@ -645,117 +657,202 @@ function commitPassedStep(
   return next
 }
 
-function safeRepositoryPath(root: string, path: string): string {
-  const resolved = resolve(root, path)
-  if (resolved !== root && !resolved.startsWith(`${root}${sep}`)) {
+export function safeRepositoryPath(root: string, path: string): string {
+  const normalizedRoot = resolve(root)
+  const target = resolve(normalizedRoot, path)
+  const rel = relative(normalizedRoot, target)
+  if (isAbsolute(rel) || rel === '..' || rel.startsWith('..' + sep)) {
     return fail(`unsafe repository-relative path: ${path}`)
   }
-  return resolved
+  return target
 }
 
-function worktreeSnapshot(root: string): string {
-  const hash = createHash('sha256')
-  hash.update(
-    gitBuffer(
-      [
-        'diff',
-        '--binary',
-        'HEAD',
-        '--',
-        '.',
-        `:(exclude)${HANDOFF_PATH}`,
-      ],
-      root,
-    ),
-  )
-  for (const path of untrackedPaths(root).sort()) {
-    if (path === HANDOFF_PATH || path.startsWith(`${RUNNER_DIRECTORY}/`)) continue
-    const absolute = safeRepositoryPath(root, path)
-    hash.update(path)
-    const stats = lstatSync(absolute)
-    if (stats.isSymbolicLink()) {
-      hash.update(readlinkSync(absolute))
-    } else if (stats.isFile()) {
-      hash.update(readFileSync(absolute))
+// Only named generated artifacts; ignored source (.env*, next-env.d.ts, etc.)
+// stays protected. Tracked files never acquire an artifact exemption.
+const GATE_DIRECTORIES = ['.next', 'test-results', 'playwright-report']
+// debug.log is Chromium's observed Windows GPU diagnostic output (A9).
+const GATE_FILES = ['tsconfig.tsbuildinfo', 'tsconfig.contracts.tsbuildinfo', 'debug.log']
+// Vite/Vitest's generated caches, not an exemption for installed package code.
+const DEPENDENCY_GATE_CACHES = ['node_modules/.vite', 'node_modules/.vite-temp']
+export function sourceInventory(root: string, outputs: string[] = [], includeDependencies = false,
+  stage: 'gate' | 'review' = 'gate'): Record<string, string> {
+  const tracked = new Set(gitText(['ls-files', '-z'], root).split('\0').filter(Boolean))
+  const result: Record<string, string> = {}
+  function walk(directory: string, prefix = ''): void {
+    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const path = prefix ? prefix + '/' + entry.name : entry.name
+      if (path === '.git') continue
+      const absolute = safeRepositoryPath(root, path)
+      const stat = lstatSync(absolute)
+      if (stat.isSymbolicLink()) return fail(`unproven link isolation: ${path}`)
+      const untracked = !tracked.has(path) && ![...tracked].some((p) => p.startsWith(path + '/'))
+      // Controller exceptions name individual files, never directories/subtrees.
+      const generated = untracked && ((stat.isFile() && outputs.includes(path)) ||
+        (stage === 'gate' && (GATE_DIRECTORIES.includes(path) || GATE_FILES.includes(path) ||
+          DEPENDENCY_GATE_CACHES.includes(path) || (!includeDependencies && path === 'node_modules'))))
+      if (generated) continue
+      if (stat.isDirectory()) {
+        if (stage === 'review') result[path + '/'] = 'directory'
+        walk(absolute, path)
+      }
+      else if (stat.isFile()) result[path] = createHash('sha256').update(readFileSync(absolute)).digest('hex')
+      else return fail(`unsupported source entry: ${path}`)
     }
   }
-  return hash.digest('hex').slice(0, 16)
+  walk(resolve(root))
+  return result
 }
 
-function createQaWorktree(root: string): QaWorktree {
+function digest(value: unknown): string {
+  return createHash('sha256').update(JSON.stringify(value)).digest('hex')
+}
+
+export function worktreeSnapshot(root: string, outputs: string[] = []): string {
+  return digest(sourceInventory(root, outputs))
+}
+
+export function gateSnapshot(root: string): string {
+  return digest(sourceInventory(root, [], true))
+}
+
+export function reviewSnapshot(root: string, outputs: string[] = []): string {
+  return digest(sourceInventory(root, outputs, true, 'review'))
+}
+
+export function gitIntegrity(root: string, base = '59c3dc9'): string {
+  const gitDir = resolve(root, gitText(['rev-parse', '--git-dir'], root))
+  const commonDir = resolve(root, gitText(['rev-parse', '--git-common-dir'], root))
+  const files: Record<string, string> = {}
+  const gitEntry = join(root, '.git')
+  if (lstatSync(gitEntry).isSymbolicLink()) return fail('linked Git metadata is unsupported')
+  if (lstatSync(gitEntry).isFile()) files.gitlink = createHash('sha256').update(readFileSync(gitEntry)).digest('hex')
+  function walk(directory: string, prefix = ''): void {
+    if (lstatSync(directory).isSymbolicLink()) return fail('linked Git metadata is unsupported')
+    for (const entry of readdirSync(directory).sort()) {
+      const path = prefix ? prefix + '/' + entry : entry
+      const absolute = join(directory, entry)
+      const stat = lstatSync(absolute)
+      if (stat.isSymbolicLink()) return fail('linked Git metadata is unsupported')
+      if (stat.isDirectory()) {
+        files[path + '/'] = 'directory'
+        walk(absolute, path)
+      } else if (stat.isFile()) files[path] = createHash('sha256').update(readFileSync(absolute)).digest('hex')
+      else return fail('unsupported Git metadata entry')
+    }
+  }
+  // Include unreachable loose objects and packs, plus shared metadata for a
+  // linked worktree. External alternate object stores cannot be isolated here.
+  if (existsSync(join(commonDir, 'objects/info/alternates')) || process.env.GIT_ALTERNATE_OBJECT_DIRECTORIES ||
+      process.env.GIT_OBJECT_DIRECTORY) {
+    return fail('alternate Git object stores are unsupported')
+  }
+  walk(gitDir, 'git')
+  if (commonDir !== gitDir) walk(commonDir, 'common')
+  return digest({ files, head: gitText(['rev-parse', 'HEAD'], root),
+    base: gitText(['rev-parse', base + '^{tree}'], root),
+    refs: gitText(['show-ref'], root), stash: gitText(['stash', 'list'], root) })
+}
+
+export function assertIntegrity(before: string, after: string, label: string): void {
+  if (before !== after) fail(`${label} changed; source/Git/handoff integrity blocked`)
+}
+
+export function binaryDiff(root: string): Buffer {
+  return execFileSync('git', ['diff', '--binary', '--no-ext-diff', '--no-textconv', 'HEAD', '--'], {
+    cwd: root, env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' },
+    stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: MAX_COMMAND_OUTPUT,
+  })
+}
+
+function preserveQaOutcome(qa: QaWorktree, outcome: unknown): string {
+  const record = join(qa.parent, 'qa-outcome.json')
+  try {
+    writeFileSync(record, JSON.stringify({ snapshotPath: qa.path, outcome }, null, 2), { flag: 'wx' })
+  } catch (error) {
+    return fail(`cannot record QA outcome at ${record}: ${String(error)}; preserved QA snapshot: ${qa.path}; ${JSON.stringify(outcome)}`)
+  }
+  return record
+}
+
+export function qaArtifactsSnapshot(qa: QaWorktree): string {
+  const entries: Record<string, string> = {}
+  function walk(directory: string, prefix = ''): void {
+    for (const entry of readdirSync(directory).sort()) {
+      const path = prefix ? prefix + '/' + entry : entry
+      if (path === 'worktree') continue // separately protected, including Git
+      const absolute = join(directory, entry)
+      const stat = lstatSync(absolute)
+      if (stat.isSymbolicLink()) fail(`unproven QA artifact link: ${path}`)
+      if (stat.isDirectory()) {
+        entries[path + '/'] = 'directory'
+        walk(absolute, path)
+      } else if (stat.isFile()) entries[path] = createHash('sha256').update(readFileSync(absolute)).digest('hex')
+      else fail(`unsupported QA artifact: ${path}`)
+    }
+  }
+  walk(qa.parent)
+  return digest(entries)
+}
+
+// Retain even successful snapshots for host diagnosis/acceptance. In particular,
+// neither errors nor failed verdicts may delete artifacts or uncommitted drift.
+export async function withQaEvidence<T>(qa: QaWorktree, run: () => Promise<T>, verify: () => void): Promise<T> {
+  let result: T | undefined
+  const errors: string[] = []
+  try { result = await run() } catch (error) { errors.push(String(error)) }
+  try { verify() } catch (error) { errors.push(String(error)) }
+  const record = preserveQaOutcome(qa, { result, errors })
+  if (errors.length) return fail(`${errors.join('\n')}; preserved QA snapshot: ${qa.path}; evidence: ${record}`)
+  return result as T
+}
+
+export function createQaWorktree(root: string, outputs: string[] = []): QaWorktree {
   const parent = mkdtempSync(join(tmpdir(), 'portfolio3-phase-qa-'))
   const path = join(parent, 'worktree')
   try {
-    execFileSync('git', ['clone', '--shared', '--no-checkout', '--quiet', root, path], {
-      cwd: root,
-      encoding: 'utf8',
-      maxBuffer: MAX_COMMAND_OUTPUT,
-      stdio: ['ignore', 'pipe', 'pipe'],
+    // No shared objects, symlinks, junctions, dependency tree or cache.
+    execFileSync('git', ['clone', '--no-local', '--no-checkout', '--quiet', root, path], {
+      cwd: root, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: MAX_COMMAND_OUTPUT,
     })
-    execFileSync('git', ['checkout', '--detach', '--quiet', 'HEAD'], {
-      cwd: path,
-      encoding: 'utf8',
-      maxBuffer: MAX_COMMAND_OUTPUT,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
-    execFileSync('git', ['remote', 'remove', 'origin'], {
-      cwd: path,
-      encoding: 'utf8',
-      maxBuffer: MAX_COMMAND_OUTPUT,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
-
-    const diff = gitBuffer(['diff', '--binary', 'HEAD', '--', '.'], root)
-    if (diff.length > 0) {
-      execFileSync(
-        'git',
-        ['apply', '--binary', '--whitespace=nowarn', '-'],
-        {
-          cwd: path,
-          input: diff,
-          encoding: 'utf8',
-          maxBuffer: MAX_COMMAND_OUTPUT,
-          stdio: ['pipe', 'pipe', 'pipe'],
-        },
-      )
+    // Mirror only built-in newline normalization. Never copy hooks, filters or
+    // arbitrary user configuration; unsupported diff semantics fail comparison.
+    for (const [key, fallback] of [['core.autocrlf', 'false'], ['core.eol', 'native']]) {
+      const setting = spawnSync('git', ['config', '--get', key!], { cwd: root, encoding: 'utf8' })
+      if (setting.error || (setting.status !== 0 && setting.status !== 1)) fail(`cannot read ${key}`)
+      const value = setting.status === 0 ? setting.stdout.trim() : fallback!
+      const allowed = key === 'core.autocrlf' ? ['true', 'false', 'input'] : ['lf', 'crlf', 'native']
+      if (!allowed.includes(value)) fail(`unsupported normalization setting: ${key}`)
+      execFileSync('git', ['config', key!, value], { cwd: path })
     }
-
-    for (const untracked of untrackedPaths(root)) {
-      if (untracked.startsWith(`${RUNNER_DIRECTORY}/`)) continue
-      const source = safeRepositoryPath(root, untracked)
-      const destination = safeRepositoryPath(path, untracked)
+    execFileSync('git', ['checkout', '--detach', '--quiet', gitText(['rev-parse', 'HEAD'], root)], { cwd: path })
+    execFileSync('git', ['remote', 'remove', 'origin'], { cwd: path })
+    const live = sourceInventory(root, outputs)
+    const original = sourceInventory(path)
+    for (const file of Object.keys(original)) {
+      if (!(file in live)) unlinkSync(safeRepositoryPath(path, file))
+    }
+    // Copy raw bytes, including tracked CRLF and ignored source. Git patches
+    // normalize line endings and cannot prove exact physical source identity.
+    for (const file of Object.keys(live)) {
+      const destination = safeRepositoryPath(path, file)
       mkdirSync(dirname(destination), { recursive: true })
-      const stats = lstatSync(source)
-      if (stats.isSymbolicLink()) {
-        symlinkSync(readlinkSync(source), destination)
-      } else if (stats.isFile()) {
-        copyFileSync(source, destination)
-      } else {
-        cpSync(source, destination, {
-          recursive: true,
-          preserveTimestamps: true,
-          dereference: false,
-        })
-      }
+      copyFileSync(safeRepositoryPath(root, file), destination)
     }
-
-    const dependencies = join(root, 'node_modules')
-    const qaDependencies = join(path, 'node_modules')
-    if (existsSync(dependencies) && !existsSync(qaDependencies)) {
-      symlinkSync(dependencies, qaDependencies, 'dir')
-    }
+    assertIntegrity(digest(live), worktreeSnapshot(path, outputs), 'disposable snapshot')
+    if (!binaryDiff(root).equals(binaryDiff(path))) fail('disposable binary diff from HEAD changed')
     return { parent, path }
   } catch (error) {
-    cleanupQaWorktree(root, { parent, path })
-    throw error
+    const record = preserveQaOutcome({ parent, path }, { error: String(error) })
+    return fail(`${String(error)}; preserved QA snapshot: ${path}; evidence: ${record}`)
   }
 }
 
-function cleanupQaWorktree(root: string, worktree: QaWorktree): void {
+export function cleanupQaWorktree(root: string, worktree: QaWorktree): void {
   void root
-  if (existsSync(worktree.parent)) {
-    rmSync(worktree.parent, { recursive: true, force: true })
-  }
+  const parent = resolve(worktree.parent)
+  if (dirname(parent) !== resolve(tmpdir()) || !parent.split(sep).at(-1)?.startsWith('portfolio3-phase-qa-') ||
+      resolve(worktree.path) !== join(parent, 'worktree')) return fail('unsafe disposable cleanup path')
+  if (existsSync(parent)) rmSync(parent, { recursive: true, force: true })
 }
 
 function executableVersion(executable: string): string {
@@ -763,53 +860,44 @@ function executableVersion(executable: string): string {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   })
-  return (result.stdout || result.stderr).trim()
+  if (result.error || result.status !== 0) return fail('Codex version evidence unavailable')
+  return (result.stdout || result.stderr).trim() || fail('Codex version evidence empty')
+}
+
+function priorSessionIds(loaded: LoadedRunner, state: PhaseRunnerState): string[] {
+  const sessions = new Set(state.sessions.map((s) => s.sessionId))
+  if (!existsSync(loaded.paths.logs)) return [...sessions]
+  for (const name of readdirSync(loaded.paths.logs)) {
+    if (!/(?:-codex|-qa)\.jsonl$/.test(name)) continue
+    // Failed/malformed attempts must not silently disappear from freshness checks.
+    // Missing CLI identity in any prior attempt requires operator reconciliation.
+    const identity = cliIdentity(readFileSync(join(loaded.paths.logs, name), 'utf8'),
+      'historical CLI log', 'historical CLI log', 'history', [])
+    sessions.add(identity.sessionId)
+  }
+  return [...sessions]
 }
 
 function doctor(loaded: LoadedRunner): void {
-  const state = loadState(loaded)
-  const codex = executablePath('codex')
-  const kimi = executablePath('kimi')
-  assertExecutable(codex, 'Codex')
-  assertExecutable(kimi, 'Kimi')
-  JSON.parse(readFileSync(loaded.paths.schema, 'utf8'))
+  loadState(loaded)
+  assertMigrationActivation(loaded)
+}
 
-  const agentFile = readFileSync(loaded.paths.kimiAgent, 'utf8')
-  const frontmatter = agentFile.split('---')[1] ?? ''
-  if (
-    !frontmatter.includes('- Read') ||
-    !frontmatter.includes('- Bash') ||
-    frontmatter.includes('- Write') ||
-    frontmatter.includes('- Edit') ||
-    !frontmatter.includes('subagents: []')
-  ) {
-    return fail('Kimi QA agent does not enforce the expected tool boundary')
-  }
-
-  const realBefore = worktreeSnapshot(loaded.paths.root)
-  const qaWorktree = createQaWorktree(loaded.paths.root)
-  try {
-    if (worktreeSnapshot(qaWorktree.path) !== realBefore) {
-      return fail('the disposable QA checkout does not match the live worktree')
+export function assertMigrationActivation(loaded: LoadedRunner): void {
+  // Operational preflight only. Governing instructions still require complete
+  // host proofs, manual independent bootstrap QA and genuine owner acceptance
+  // before real runner use. No flag or inferred acceptance replaces that review.
+  assertQaAuthority(loaded.manifest)
+  if (loaded.manifest.maxFixAttempts !== 3) fail('migration requires three fix attempts')
+  assertExecutable(executablePath(), 'Codex')
+  for (const path of [loaded.paths.schema, loaded.paths.qaSchema]) {
+    const schema = JSON.parse(readFileSync(path, 'utf8'))
+    if (schema?.type !== 'object' || schema.additionalProperties !== false ||
+        !Array.isArray(schema.required) || !schema.required.length) {
+      fail(`strict result schema unavailable: ${path}`)
     }
-  } finally {
-    cleanupQaWorktree(loaded.paths.root, qaWorktree)
   }
-  if (worktreeSnapshot(loaded.paths.root) !== realBefore) {
-    return fail('doctor changed the real worktree snapshot')
-  }
-
-  console.log(
-    [
-      `Phase ${state.phase} runner doctor: PASS`,
-      `Codex: ${executableVersion(codex)}`,
-      `Kimi: ${executableVersion(kimi)}`,
-      `Manifest: ${loaded.manifestDigest}`,
-      `Cursor: ${state.currentStep} (${state.status})`,
-      'Disposable QA checkout: exact live snapshot, cleaned successfully',
-      'No model session was launched.',
-    ].join('\n'),
-  )
+  npmInvocation(['ci'])
 }
 
 function codexResultPath(
@@ -821,72 +909,14 @@ function codexResultPath(
   return join(loaded.paths.stateDirectory, `codex-result-${label}.json`)
 }
 
-async function resolveHostE2eGate(
-  loaded: LoadedRunner,
-  state: PhaseRunnerState,
-  result: CodexResult,
-): Promise<CodexResult> {
-  if (
-    !isHostRecoverableE2eFailure(result, loaded.manifest.requiredGates)
-  ) {
-    return result
-  }
-
-  const step = getStep(loaded.manifest, state.currentStep)
-  const label = `${step.id}-${state.fixAttempts[step.id] ?? 0}`
-  const logPath = join(
-    loaded.paths.logs,
-    `${timestampSlug()}-${label}-host-e2e.log`,
-  )
-  console.log(
-    'Codex could not bind the local test port inside its sandbox. ' +
-      'Running the fixed E2E gate from the trusted phase controller.',
-  )
-  await runLoggedCommand('npm', ['run', 'test:e2e'], {
-    cwd: loaded.paths.root,
-    env: {
-      ...process.env,
-      CI: 'true',
-    },
-    logPath,
-    label: `Host E2E ${step.id}`,
-    echoStdout: true,
-    heartbeatMs: 30_000,
-  })
-
-  return {
-    ...result,
-    outcome: 'ready-for-qa',
-    summary:
-      `${result.summary} The trusted phase controller then ran the required ` +
-      'E2E gate outside the model sandbox and it passed.',
-    gates: result.gates.map((gate) =>
-      canonicalGateCommand(gate.command) === 'npm run test:e2e'
-        ? {
-            command: 'npm run test:e2e',
-            status: 'pass',
-            details:
-              'Host phase controller exit 0 after the Codex sandbox denied localhost binding.',
-          }
-        : gate,
-    ),
-    unresolvedRisks: result.unresolvedRisks.filter(
-      (risk) =>
-        !/(?:e2e.*(?:port|bind)|port-enabled|port denial)/i.test(risk),
-    ),
-    handoff:
-      `${result.handoff} Host verification subsequently made the required ` +
-      'E2E gate green; the change is ready for independent Kimi QA.',
-  }
-}
-
 async function runCodex(
   loaded: LoadedRunner,
   state: PhaseRunnerState,
 ): Promise<CodexResult> {
   const step = getStep(loaded.manifest, state.currentStep)
-  const executable = executablePath('codex')
+  const executable = executablePath()
   assertExecutable(executable, 'Codex')
+  const usedSessions = priorSessionIds(loaded, state)
   const label = `${step.id}-${state.fixAttempts[step.id] ?? 0}`
   const resultPath = codexResultPath(loaded, state)
   if (existsSync(resultPath)) unlinkSync(resultPath)
@@ -907,8 +937,6 @@ async function runCodex(
     'exec',
     '--sandbox',
     'workspace-write',
-    '-c',
-    'approval_policy="never"',
     '--json',
     '--output-schema',
     loaded.paths.schema,
@@ -920,15 +948,20 @@ async function runCodex(
   if (process.env.PHASE_RUNNER_CODEX_MODEL) {
     args.push('--model', process.env.PHASE_RUNNER_CODEX_MODEL)
   }
-  args.push(buildCodexPrompt(loaded.manifest, step, state))
+  args.push('-')
 
   console.log(`Starting Codex for Phase ${loaded.manifest.phase} ${step.id}.`)
-  await runLoggedCommand(executable, args, {
+  const output = await runLoggedCommand(executable, args, {
     cwd: loaded.paths.root,
     logPath,
     label: `Codex ${step.id}`,
     heartbeatMs: 30_000,
+    telemetryOnly: true,
+    input: buildCodexPrompt(loaded.manifest, step, state),
   })
+  const identity = cliIdentity(output.stdout, executable, executableVersion(executable),
+    'Engineering: Codex', usedSessions)
+  state.sessions.push(identity)
   if (
     selectedPathsSnapshot(loaded.paths.root, protectedDirtyPaths) !==
     beforeProtectedDirty
@@ -945,77 +978,124 @@ async function runCodex(
     loaded.manifest,
     step,
   )
-  const result = await resolveHostE2eGate(loaded, state, parsedResult)
+  const result = parsedResult
   if (
     result !== parsedResult ||
     handoffHash(loaded.paths.root) === beforeHandoff
   ) {
-    captureHandoff(loaded.paths.root, 'codex', formatCodexReport(result))
+    captureHandoff(loaded.paths.root, identity, formatCodexReport(result))
   }
   return result
 }
 
-async function runKimi(
+async function runQa(
   loaded: LoadedRunner,
   state: PhaseRunnerState,
   codexResult: CodexResult,
-): Promise<KimiResult> {
-  const step = getStep(loaded.manifest, state.currentStep)
-  const executable = executablePath('kimi')
-  assertExecutable(executable, 'Kimi')
-  const realSnapshot = worktreeSnapshot(loaded.paths.root)
-  const qaWorktree = createQaWorktree(loaded.paths.root)
-  const qaSnapshot = worktreeSnapshot(qaWorktree.path)
-  const label = `${step.id}-${state.fixAttempts[step.id] ?? 0}`
-  const logPath = join(
-    loaded.paths.logs,
-    `${timestampSlug()}-${label}-kimi.jsonl`,
-  )
-
-  try {
-    const args = ['--agent-file', loaded.paths.kimiAgent]
-    if (process.env.PHASE_RUNNER_KIMI_MODEL) {
-      args.push('--model', process.env.PHASE_RUNNER_KIMI_MODEL)
-    }
-    args.push(
-      '--prompt',
-      buildKimiPrompt(loaded.manifest, step, codexResult),
-      '--output-format',
-      'stream-json',
-    )
-    console.log(
-      `Starting fresh Kimi QA for Phase ${loaded.manifest.phase} ${step.id} in an isolated checkout.`,
-    )
-    const output = await runLoggedCommand(executable, args, {
-      cwd: qaWorktree.path,
-      env: {
-        ...process.env,
-        KIMI_DISABLE_CRON: '1',
-      },
-      logPath,
-      label: `Kimi QA ${step.id}`,
-      heartbeatMs: 30_000,
-    })
-    if (worktreeSnapshot(qaWorktree.path) !== qaSnapshot) {
-      return fail(
-        'Kimi QA changed a versioned or untracked repository file in its disposable worktree',
-      )
-    }
-    if (worktreeSnapshot(loaded.paths.root) !== realSnapshot) {
-      return fail(
-        'the real worktree changed while Kimi QA was running; another writer may be active',
-      )
-    }
-    const result = parseKimiResult(
-      extractKimiJson(output.stdout),
-      loaded.manifest,
-      step,
-    )
-    captureHandoff(loaded.paths.root, 'kimi', formatKimiReport(result))
-    return result
-  } finally {
-    cleanupQaWorktree(loaded.paths.root, qaWorktree)
+): Promise<QaResult> {
+  assertQaAuthority(loaded.manifest)
+  if (!state.sessions?.some((s) => s.role === 'Engineering: Codex')) {
+    return fail('missing corroborated engineering session history; cannot establish independent QA')
   }
+  const step = getStep(loaded.manifest, state.currentStep)
+  const executable = executablePath()
+  assertExecutable(executable, 'Codex')
+  const cliVersion = executableVersion(executable)
+  const usedSessions = priorSessionIds(loaded, state)
+  const invocationId = randomUUID()
+  const logPath = join(loaded.paths.logs, invocationId + '-qa.jsonl')
+  const resultPath = join(loaded.paths.logs, invocationId + '-qa-result.json')
+  const gatePath = join(loaded.paths.logs, invocationId + '-gates.json')
+  const installLog = join(loaded.paths.logs, invocationId + '-npm-ci.log')
+  const gateLogs = loaded.manifest.requiredGates.map((_, i) => join(loaded.paths.logs, invocationId + '-gate-' + i + '.log'))
+  const outputs = [logPath, `${logPath}.stderr`, resultPath, gatePath, installLog, ...gateLogs].map((p) => relative(loaded.paths.root, p).split(sep).join('/'))
+  mkdirSync(loaded.paths.logs, { recursive: true })
+  const realSource = worktreeSnapshot(loaded.paths.root, outputs)
+  const realAll = reviewSnapshot(loaded.paths.root, outputs)
+  const realGit = gitIntegrity(loaded.paths.root)
+  const base = gitText(['rev-parse', '59c3dc9'], loaded.paths.root)
+  const head = gitText(['rev-parse', 'HEAD'], loaded.paths.root)
+  const qa = createQaWorktree(loaded.paths.root, outputs)
+  let gates: HostGate[] = []
+  let reviewer: CliIdentity | undefined
+  let qaGit: string | undefined
+  let installed: string | undefined
+  let qaReview: string | undefined
+  let realReview: string | undefined
+  let externalReview: string | undefined
+  const reviewOutputs = [logPath, `${logPath}.stderr`, resultPath].map((p) => relative(loaded.paths.root, p).split(sep).join('/'))
+  const parsed = await withQaEvidence(qa, async () => {
+    qaGit = gitIntegrity(qa.path)
+    assertIntegrity(realSource, worktreeSnapshot(qa.path, outputs), 'gate snapshot')
+    assertIntegrity(head, gitText(['rev-parse', 'HEAD'], qa.path), 'snapshot HEAD')
+    assertIntegrity(base, gitText(['rev-parse', '59c3dc9'], qa.path), 'snapshot base')
+    const temporary = join(qa.parent, 'tmp')
+    mkdirSync(temporary)
+    const env = { ...process.env, CI: 'true', npm_config_cache: join(qa.parent, 'npm-cache'),
+      TEMP: temporary, TMP: temporary, TMPDIR: temporary, GIT_OPTIONAL_LOCKS: '0' }
+    const install = npmInvocation(['ci'])
+    await runLoggedCommand(install.executable, install.args, {
+      cwd: qa.path, env, logPath: installLog, label: 'Isolated npm ci', heartbeatMs: 30_000,
+    })
+    installed = gateSnapshot(qa.path)
+    assertIntegrity(realSource, worktreeSnapshot(qa.path, outputs), 'install source')
+    assertIntegrity(qaGit, gitIntegrity(qa.path), 'install Git state')
+    gates = await runRequiredGates(loaded.manifest.requiredGates, qa.path, env, gateLogs,
+      (records) => writeFileSync(gatePath, JSON.stringify({ invocationId, snapshot: realSource, base, head, gates: records }, null, 2)),
+      () => {
+        assertIntegrity(realSource, worktreeSnapshot(qa.path, outputs), 'gate source')
+        assertIntegrity(installed!, gateSnapshot(qa.path), 'gate installed dependencies/source')
+        assertIntegrity(qaGit!, gitIntegrity(qa.path), 'gate Git state')
+      })
+    const binding = { invocationId, snapshot: realSource,
+      base: digest({ base, head, tree: gitText(['rev-parse', '59c3dc9^{tree}'], qa.path) }),
+      gateRecord: createHash('sha256').update(readFileSync(gatePath)).digest('hex') }
+    qaReview = reviewSnapshot(qa.path)
+    assertIntegrity(realAll, reviewSnapshot(loaded.paths.root, outputs), 'real pre-review source/artifacts')
+    assertIntegrity(realGit, gitIntegrity(loaded.paths.root), 'real pre-review Git')
+    // Gate/install logs and records now freeze too. Only these three exact
+    // host launch/result files remain writable, in the controller tree only.
+    realReview = reviewSnapshot(loaded.paths.root, reviewOutputs)
+    externalReview = qaArtifactsSnapshot(qa)
+    const args = reviewerArgs(qa.path, loaded.paths.qaSchema, resultPath)
+    // Fresh read-only exec with approval_policy=never; no weaker retry on denial.
+    const output = await runLoggedCommand(executable, args, {
+      cwd: qa.path, env, logPath, label: QA_ROLE, heartbeatMs: 30_000, recordFailure: true,
+      telemetryOnly: true,
+      input: buildQaPrompt(loaded.manifest, step, codexResult, { binding, gates }),
+    })
+    reviewer = cliIdentity(output.stdout, executable, cliVersion, QA_ROLE,
+      usedSessions)
+    if (output.exitCode !== 0) fail(`reviewer exited ${output.exitCode}; no fallback`)
+    assertIntegrity(qaReview, reviewSnapshot(qa.path), 'review source/dependencies/artifacts')
+    for (const gate of gates) assertIntegrity(gate.logSha256,
+      createHash('sha256').update(readFileSync(gate.logPath)).digest('hex'), 'host gate log')
+    assertIntegrity(binding.gateRecord, createHash('sha256').update(readFileSync(gatePath)).digest('hex'), 'host gate record')
+    // One controller-chosen, fresh output file only; never scrape assistant prose.
+    return parseQaResult(JSON.parse(readFileSync(resultPath, 'utf8')), loaded.manifest, step,
+      { binding, reviewer, gates })
+  }, () => {
+    // Run every check even after a malformed/failed reviewer or a hook write;
+    // preserve both the original failure and all integrity failures in evidence.
+    const errors: string[] = []
+    for (const check of [
+      () => assertIntegrity(realSource, worktreeSnapshot(qa.path, outputs), 'QA source/handoff'),
+      () => { if (qaGit) assertIntegrity(qaGit, gitIntegrity(qa.path), 'QA Git state') },
+      () => { if (installed) assertIntegrity(installed, gateSnapshot(qa.path), 'QA installed dependencies') },
+      () => { if (qaReview) assertIntegrity(qaReview, reviewSnapshot(qa.path), 'QA review artifacts') },
+      () => { if (externalReview) assertIntegrity(externalReview, qaArtifactsSnapshot(qa), 'QA external artifacts') },
+      () => assertIntegrity(realReview ?? realAll,
+        reviewSnapshot(loaded.paths.root, realReview ? reviewOutputs : outputs), 'real source/handoff/dependencies/artifacts'),
+      () => assertIntegrity(realGit, gitIntegrity(loaded.paths.root), 'real Git state'),
+    ]) {
+      try { check() } catch (error) { errors.push(String(error)) }
+    }
+    if (reviewer) state.sessions.push(reviewer)
+    if (errors.length) fail(errors.join('\n'))
+  })
+  if (!parsed || !reviewer) return fail('missing QA result or identity proof')
+  captureHandoff(loaded.paths.root, reviewer, formatQaReport(parsed))
+  return parsed
 }
 
 function initialize(loaded: LoadedRunner): void {
@@ -1080,8 +1160,8 @@ function dryRun(loaded: LoadedRunner): void {
   }
   console.log('=== CODEX PROMPT ===\n')
   console.log(buildCodexPrompt(loaded.manifest, step, state))
-  console.log('\n=== KIMI PROMPT TEMPLATE ===\n')
-  console.log(buildKimiPrompt(loaded.manifest, step, placeholder))
+  console.log('\n=== FRESH CODEX QA PROMPT TEMPLATE ===\n')
+  console.log(buildQaPrompt(loaded.manifest, step, placeholder))
   console.log(
     '\nDry run only: no agent process, state transition, or worktree was created.',
   )
@@ -1220,14 +1300,10 @@ async function continueSavedCodexResult(
         loaded.manifest,
         step,
       )
-      codexResult = await resolveHostE2eGate(
-        loaded,
-        state,
-        parsedResult,
-      )
+      codexResult = parsedResult
       captureHandoff(
         loaded.paths.root,
-        'codex',
+        state.sessions.filter((s) => s.role === 'Engineering: Codex').at(-1) ?? fail('missing saved engineering identity'),
         formatCodexReport(codexResult),
       )
     } catch (error) {
@@ -1252,9 +1328,9 @@ async function continueSavedCodexResult(
     }
 
     state = updateState(loaded, state, { status: 'qa-running' })
-    let kimiResult: KimiResult
+    let qaResult: QaResult
     try {
-      kimiResult = await runKimi(loaded, state, codexResult)
+      qaResult = await runQa(loaded, state, codexResult)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       state = updateState(loaded, state, {
@@ -1269,7 +1345,7 @@ async function continueSavedCodexResult(
       stateAfterCommit = commitPassedStep(
         loaded,
         { ...state, status: 'qa-running' },
-        kimiResult,
+        qaResult,
       )
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
@@ -1282,11 +1358,11 @@ async function continueSavedCodexResult(
     state = transitionAfterQa(
       loaded.manifest,
       stateAfterCommit,
-      kimiResult,
+      qaResult,
     )
     writeState(loaded.paths.state, state)
     console.log(
-      `Kimi verdict for ${kimiResult.step}: ${kimiResult.verdict.toUpperCase()}.`,
+      `Codex QA verdict for ${qaResult.step}: ${qaResult.verdict.toUpperCase()}.`,
     )
     continueLoop = state.status === 'ready'
     if (!continueLoop) {
@@ -1344,7 +1420,7 @@ async function retestCompletedStep(loaded: LoadedRunner): Promise<void> {
       filesChanged: liveFiles,
       handoff:
         `Handoff: Owner-approved Phase ${state.phase} ${state.currentStep} ` +
-        'snapshot is ready for a fresh independent Kimi QA pass; inspect the ' +
+        'snapshot is ready for a fresh independent Codex QA QA pass; inspect the ' +
         'complete live diff and rerun all required gates.',
     }
 
@@ -1352,9 +1428,9 @@ async function retestCompletedStep(loaded: LoadedRunner): Promise<void> {
       status: 'qa-running',
       lastError: null,
     })
-    let kimiResult: KimiResult
+    let qaResult: QaResult
     try {
-      kimiResult = await runKimi(loaded, state, retestContext)
+      qaResult = await runQa(loaded, state, retestContext)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       state = updateState(loaded, state, {
@@ -1367,11 +1443,11 @@ async function retestCompletedStep(loaded: LoadedRunner): Promise<void> {
     state = transitionAfterQa(
       loaded.manifest,
       { ...state, status: 'qa-running' },
-      kimiResult,
+      qaResult,
     )
     writeState(loaded.paths.state, state)
     console.log(
-      `Fresh Kimi verdict for ${kimiResult.step}: ${kimiResult.verdict.toUpperCase()}.`,
+      `Fresh Codex QA verdict for ${qaResult.step}: ${qaResult.verdict.toUpperCase()}.`,
     )
     if (state.status === 'ready') {
       console.log(
@@ -1436,14 +1512,14 @@ async function execute(loaded: LoadedRunner): Promise<void> {
 
       if (existsSync(loaded.paths.pause)) {
         state = updateState(loaded, state, { status: 'paused' })
-        console.log('Paused after Codex and before Kimi QA.')
+        console.log('Paused after Codex and before Codex QA QA.')
         break
       }
 
       state = updateState(loaded, state, { status: 'qa-running' })
-      let kimiResult: KimiResult
+      let qaResult: QaResult
       try {
-        kimiResult = await runKimi(loaded, state, codexResult)
+        qaResult = await runQa(loaded, state, codexResult)
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
         state = updateState(loaded, state, {
@@ -1458,7 +1534,7 @@ async function execute(loaded: LoadedRunner): Promise<void> {
         stateAfterCommit = commitPassedStep(
           loaded,
           { ...state, status: 'qa-running' },
-          kimiResult,
+          qaResult,
         )
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
@@ -1471,15 +1547,15 @@ async function execute(loaded: LoadedRunner): Promise<void> {
       state = transitionAfterQa(
         loaded.manifest,
         stateAfterCommit,
-        kimiResult,
+        qaResult,
       )
       writeState(loaded.paths.state, state)
       console.log(
-        `Kimi verdict for ${kimiResult.step}: ${kimiResult.verdict.toUpperCase()}.`,
+        `Codex QA verdict for ${qaResult.step}: ${qaResult.verdict.toUpperCase()}.`,
       )
 
       if (state.status === 'ready') {
-        if (kimiResult.verdict === 'fail') {
+        if (qaResult.verdict === 'fail') {
           console.log(
             `Returning ${state.currentStep} to Codex for fix attempt ${state.fixAttempts[state.currentStep]}.`,
           )
@@ -1514,6 +1590,11 @@ async function main(): Promise<void> {
   const [command = 'status', ...args] = process.argv.slice(2)
   const root = repositoryRoot(process.cwd())
   const loaded = loadRunner(root, parsePhase(args))
+
+  if (command !== 'status' && command !== 'dry-run') assertQaAuthority(loaded.manifest)
+  if (['init', 'doctor', 'run', 'continue', 'retest', 'retry', 'accept', 'resume'].includes(command)) {
+    assertMigrationActivation(loaded)
+  }
 
   switch (command) {
     case 'init':
@@ -1559,7 +1640,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((error: unknown) => {
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch((error: unknown) => {
   process.stderr.write(
     `phase-runner: ${error instanceof Error ? error.message : String(error)}\n`,
   )
