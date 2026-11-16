@@ -37,12 +37,70 @@ describe('sculpted desk and silk backdrop', () => {
     const first=pattern('screen-a')
     expect(first).toEqual(pattern('screen-a'))
     expect(first).not.toEqual(pattern('screen-b'))
-    expect(first).toHaveLength(7)
+    expect(first).toHaveLength(20)
+    expect([0,1,2,3,4].map(cluster=>first.filter(c=>c.cluster===cluster).length)).toEqual([3,5,4,3,5])
+    expect(first.filter(c=>c.distant)).toHaveLength(8)
+    const heights=first.map(c=>c.bottom-c.top),gaps=first.slice(1).map((c,i)=>c.x-first[i]!.x)
+    expect(Math.max(...heights)/Math.min(...heights)).toBeGreaterThanOrEqual(1.5)
+    expect(Math.max(...gaps)/Math.min(...gaps)).toBeGreaterThanOrEqual(3)
+    expect(first.some(c=>c.lean<0)&&first.some(c=>c.lean>0)).toBe(true)
     const clusters=first.flatMap(c=>c.fans),leaves=clusters.flatMap(c=>c.leaves)
-    expect(clusters).toHaveLength(28);expect(leaves.length).toBeLessThanOrEqual(220)
-    expect(clusters.every(c=>c.leaves.length>=5&&c.leaves.length<=9)).toBe(true)
+    expect(clusters).toHaveLength(72);expect(leaves.length).toBeLessThanOrEqual(560)
+    expect(clusters.every(c=>c.leaves.length>=6&&c.leaves.length<=7)).toBe(true)
     expect(new Set(leaves.map(l=>[l.length,l.width,l.angle,l.bend,l.taper].join(','))).size).toBe(leaves.length)
     expect(Math.max(...leaves.map(l=>l.length))/Math.min(...leaves.map(l=>l.length))).toBeGreaterThan(1.25)
+  })
+
+  it('keeps culms and fans in both outer thirds of the supported cover crops', () => {
+    for (const seed of ['desk-view-owner-fix', 'screen-a', 'screen-b']) {
+      const pattern = bambooPattern(createRandomSource(seed).stream('listening-room/bamboo'))
+      for (const [width, height] of [[1024,600],[1024,768],[1440,900],[2000,635],[2560,1440],[3440,1440]]) {
+        const cover = backdropCover(width!, height!)
+        const project = (x: number, y: number) => ({ x: (x-.5)/cover.x+.5, y: (y-.5)/cover.y+.5 })
+        // The backdrop is screen-space: all nine camera looks use these same
+        // UVs. Test exposed fan attachments below chrome, above the desk field.
+        for (const [left, right] of [[0,1/3],[2/3,1]]) {
+          const fans = pattern.flatMap(c => c.fans).filter(fan => {
+            const p = project(fan.bx/2048, fan.by/1024)
+            return p.x > left!+.02 && p.x < right!-.02 && p.y > 244/height! && p.y < .55
+          })
+          expect(fans.length, `${seed} ${width}x${height} third ${left}`).toBeGreaterThan(0)
+          expect(fans.some(fan => fan.leaves.some(leaf => {
+            const tip = project((leaf.x+Math.cos(leaf.angle)*leaf.length)/2048,
+              (leaf.y+Math.sin(leaf.angle)*leaf.length)/1024)
+            return tip.x > left! && tip.x < right! && tip.y > 94/height! && tip.y < .55
+          }))).toBe(true)
+        }
+      }
+    }
+  })
+
+  it('closes the existing front and underside with outward faces while preserving knee space', () => {
+    const geometries = sculptedDeskGeometries()
+    const material = new THREE.MeshBasicMaterial({ side: THREE.FrontSide })
+    const meshes = Object.entries(geometries).map(([name, geometry]) => {
+      const mesh = new THREE.Mesh(geometry, material); mesh.name = name; return mesh
+    })
+    const cast = (origin: number[], direction: number[]) => new THREE.Raycaster(
+      new THREE.Vector3(...origin), new THREE.Vector3(...direction),
+    ).intersectObjects(meshes)
+    for (let x = -10.4; x <= 10.4; x += .4) {
+      for (const y of [.12, .06, .02, -.01, -.03, -.07, -.12, -.16]) {
+        const hit = cast([x,y,5], [0,0,-1])[0]
+        expect(hit, `front ${x}/${y}`).toBeDefined()
+        expect(hit!.point.z).toBeLessThanOrEqual(deskFrontZ(x)+.025)
+      }
+    }
+    for (let x = -5; x <= 5; x += .5) for (let z = -4; z <= 2.8; z += .4) {
+      const hit = cast([x,-1,z], [0,1,0])[0]
+      expect(hit?.object.name).toBe('body')
+      expect(hit?.point.y).toBeCloseTo(-.175,6)
+      expect(hit!.face!.normal.y).toBeLessThan(-.99)
+    }
+    expect(cast([0,-1,5], [0,0,-1])).toHaveLength(0)
+    expect(cast([-8.4,-.17,0], [0,-1,0])[0]?.point.y).toBeCloseTo(-.175,6)
+    expect(cast([10.8,-1,5], [0,0,-1])[0]?.object.name).toBe('body')
+    meshes.forEach(mesh => mesh.geometry.dispose()); material.dispose()
   })
 
   it('uses continuous furniture grain UVs, bounded linear modulation and one faint static wisp', () => {
@@ -174,16 +232,19 @@ describe('sculpted desk and silk backdrop', () => {
     expect(first.minFilter).toBe(THREE.LinearFilter)
     expect(first.colorSpace).toBe(THREE.SRGBColorSpace)
     expect(canvases).toHaveLength(2)
-    expect(canvases[1]).toMatchObject({width:1,height:1})
-    expect(operations.filter(op => op[0]==='fill')).toHaveLength(168) // default descriptors: 28 clusters x 6 leaves
+    expect(canvases[0]).toMatchObject({width:2048,height:1024})
+    expect(operations.filter(op => op[0]==='fill')).toHaveLength(504) // default descriptors: 72 fans x 7 leaves
+    expect(operations.filter(op => op[0]==='drawImage')).toHaveLength(2)
     expect(operations.some(op=>JSON.stringify(op)===JSON.stringify(['set','filter','blur(16px)']))).toBe(true)
     expect(operations.some(op=>JSON.stringify(op)===JSON.stringify(['set','filter','blur(2px)']))).toBe(true)
     expect(cache.get(palette)).toBe(first); expect(operations).toHaveLength(count)
     const second = cache.get({...palette,quiet:new THREE.Color('#F0EBE1')})
     expect(second).not.toBe(first); expect(dispose).toHaveBeenCalledTimes(1)
+    expect(canvases).toHaveLength(3) // one replacement atlas; same scratch canvas
     const release = vi.spyOn(second,'dispose')
     cache.dispose(); cache.dispose()
     expect(release).toHaveBeenCalledTimes(1)
+    expect(canvases[0]).toMatchObject({width:1,height:1})
   })
 
   it('coalesces actual theme callbacks after CSS settles and keeps the opaque preference fallback', () => {

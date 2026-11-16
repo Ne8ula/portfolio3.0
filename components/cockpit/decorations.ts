@@ -49,20 +49,20 @@ export function buildDeskLamp(warmLight = new THREE.Color(PALETTE.cream)){
       new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), delta.normalize()), bucket);
   };
   const lower = new THREE.Vector3(0, 0.37, 0);
-  const elbow = new THREE.Vector3(-0.8, 2.32, 0);
-  const wrist = new THREE.Vector3(1.9, 2.77, 0.5);
-  const emitterPosition = new THREE.Vector3(2.4, 2.22, 0.85);
-  const foot = add('lamp-weighted-foot', new THREE.CylinderGeometry(0.48, 0.5, 0.14, 40), cream);
+  const elbow = new THREE.Vector3(-0.8, 2.95, 0);
+  const wrist = new THREE.Vector3(1.9, 3.50, 0.5);
+  const emitterPosition = new THREE.Vector3(2.4, 2.85, 0.85);
+  const foot = add('lamp-weighted-foot', new THREE.CylinderGeometry(0.54, 0.56, 0.14, 40), cream);
   foot.position.y = 0.07;
-  rod(new THREE.Vector3(0,0.14,0), lower, 0.055, 'ink');
-  rod(lower, elbow, 0.055, 'ink');
-  rod(elbow, wrist, 0.055, 'ink');
-  rod(wrist, emitterPosition, 0.06, 'ink');
+  rod(new THREE.Vector3(0,0.14,0), lower, 0.06325, 'ink');
+  rod(lower, elbow, 0.06325, 'ink');
+  rod(elbow, wrist, 0.06325, 'ink');
+  rod(wrist, emitterPosition, 0.069, 'ink');
   // Slim inset rails sit on the front of both structural arms.
   for (const [a,b] of [[lower,elbow],[elbow,wrist]]) {
     const delta = b.clone().sub(a);
-    rod(a.clone().addScaledVector(delta,0.09).add(new THREE.Vector3(0,0,0.049)),
-      b.clone().addScaledVector(delta,-0.09).add(new THREE.Vector3(0,0,0.049)), 0.018, 'cream');
+    rod(a.clone().addScaledVector(delta,0.09).add(new THREE.Vector3(0,0,0.057)),
+      b.clone().addScaledVector(delta,-0.09).add(new THREE.Vector3(0,0,0.057)), 0.0207, 'cream');
   }
   for (const pivot of [lower, elbow, wrist]) {
     bake(new THREE.TorusGeometry(0.145, 0.045, 8, 24), pivot,
@@ -101,10 +101,10 @@ export function buildDeskLamp(warmLight = new THREE.Color(PALETTE.cream)){
   const direction = new THREE.Vector3(-2.8, 0.175, -0.2).sub(lamp.position).sub(emitterPosition).normalize();
   head.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0), direction);
   head.position.copy(emitterPosition).sub(new THREE.Vector3(0,0.035,0).applyQuaternion(head.quaternion));
-  const profile = [[0.46,0],[0.52,0.035],[0.52,0.54],[0.47,0.60],[0,0.60],
-    [0,0.56],[0.46,0.56],[0.48,0.05],[0.46,0.05]];
+  const profile = [[0.53,0],[0.60,0.035],[0.60,0.63],[0.54,0.70],[0,0.70],
+    [0,0.66],[0.53,0.66],[0.55,0.05],[0.53,0.05]];
   add('lamp-opaque-shade', new THREE.LatheGeometry(profile.map(([r,y]) => new THREE.Vector2(r,y)), 32), cream, head);
-  const diffuser = add('lamp-recessed-diffuser', new THREE.CylinderGeometry(0.46,0.46,0.012,32),
+  const diffuser = add('lamp-recessed-diffuser', new THREE.CylinderGeometry(0.53,0.53,0.012,32),
     makeAccentMaterial(cream, { color: warmLight, intensity: 2.0 }), head);
   diffuser.position.y = 0.041;
   const emitter = new THREE.Object3D(); emitter.name = 'task-lamp-emitter';
@@ -374,9 +374,9 @@ export function buildDecorations(scene, tableGroup, camera, renderer, warmLight 
     // tablet-only materials — charcoal family + the PC's hero glass.
     // env intensity is pulled DOWN on the charcoals: the cream PMREM env
     // otherwise lifts a matte 0x2* into khaki at grazing angles.
-    const slate   = new THREE.MeshStandardMaterial({ color: 0x1B1916, roughness: 0.88, envMapIntensity: 0.4 });
-    const well    = new THREE.MeshStandardMaterial({ color: 0x0C0A07, roughness: 0.55, envMapIntensity: 0.3 });
-    const btnMat  = new THREE.MeshStandardMaterial({ color: 0x191713, roughness: 0.38, metalness: 0.05, envMapIntensity: 0.5 });
+    const slate   = new THREE.MeshStandardMaterial({ color: PALETTE.lineInk, roughness: 0.88, envMapIntensity: 0.4 });
+    const well    = new THREE.MeshStandardMaterial({ color: PALETTE.inkSoft, roughness: 0.55, envMapIntensity: 0.3 });
+    const btnMat  = new THREE.MeshStandardMaterial({ color: PALETTE.trim, roughness: 0.38, metalness: 0.05, envMapIntensity: 0.5 });
     const penMat  = new THREE.MeshStandardMaterial({ color: 0x242120, roughness: 0.55, envMapIntensity: 0.5 });
     const penTrim = new THREE.MeshStandardMaterial({ color: 0x171513, roughness: 0.3, metalness: 0.08, envMapIntensity: 0.5 });
     const shellGlass = makeHeroGlass({ thickness: 0.16, roughness: 0.34 });

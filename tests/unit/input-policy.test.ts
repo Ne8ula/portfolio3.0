@@ -42,8 +42,8 @@ describe('policy constants', () => {
     expect(SIZE_RATIO_FLOOR).toBe(0.45)
     expect(RESPONSE_EXPONENT_MIN).toBe(1.0)
     expect(RESPONSE_EXPONENT_MAX).toBe(1.7)
-    expect(MAX_YAW_RAD).toBeCloseTo((6 * Math.PI) / 180, 12)
-    expect(MAX_PITCH_RAD).toBeCloseTo((3 * Math.PI) / 180, 12)
+    expect(MAX_YAW_RAD).toBeCloseTo((4 * Math.PI) / 180, 12)
+    expect(MAX_PITCH_RAD).toBeCloseTo((2 * Math.PI) / 180, 12)
     expect(DELTA_PIXEL).toBe(0)
     expect(DELTA_LINE).toBe(1)
     expect(DELTA_PAGE).toBe(2)
@@ -177,8 +177,8 @@ describe('hoverAngle', () => {
       )
       expect(hoverAngle(0, centerY, halfH, MAX_PITCH_RAD, exponent)).toBeCloseTo(MAX_PITCH_RAD, 12)
       // Literal owner-directed range, independent of imported tuning values.
-      expect(hoverAngle(0, centerX, halfW, MAX_YAW_RAD, exponent)*180/Math.PI).toBeCloseTo(6,12)
-      expect(hoverAngle(v.h, centerY, halfH, MAX_PITCH_RAD, exponent)*180/Math.PI).toBeCloseTo(-3,12)
+      expect(hoverAngle(0, centerX, halfW, MAX_YAW_RAD, exponent)*180/Math.PI).toBeCloseTo(4,12)
+      expect(hoverAngle(v.h, centerY, halfH, MAX_PITCH_RAD, exponent)*180/Math.PI).toBeCloseTo(-2,12)
     }
   })
 

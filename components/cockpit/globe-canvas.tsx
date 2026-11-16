@@ -462,14 +462,14 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
       const studioNeutral = new THREE.Color(PALETTE.inkSoft);
       const amb = new THREE.AmbientLight(cream, 0.08);
       scene.add(amb);
-      // Shorter lamp-to-target throw: initial on-axis inverse-square calibration.
-      const key = taskKey = new THREE.SpotLight(token('--scene-warm-light'), 140, 0, 0.70, 0.95, 2);
+      // Raised emitter: compensate distance/incidence while preserving the pool.
+      const key = taskKey = new THREE.SpotLight(token('--scene-warm-light'), 147, 0, 0.70, 0.95, 2);
       key.castShadow = false;
       key.position.set(-7, 8, 4);
       key.target.position.set(-2.8, 0.175, -0.2);
       tableGroup.add(key, key.target);
-      const fill = new THREE.DirectionalLight(cream, 0.18);
-      fill.position.set(0, 2, 7);
+      const fill = new THREE.DirectionalLight(cream, 0.36);
+      fill.position.set(0, 4, 7);
       scene.add(fill);
       const rim = new THREE.DirectionalLight(jade, 0.13);
       rim.position.set(7, 5, -8);
@@ -1990,16 +1990,16 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
 
 function easeInOut(x){ return x<.5 ? 2*x*x : 1-Math.pow(-2*x+2,2)/2; }
 
-// Higher downward-looking seat. Trial nearer first, retreat only when actual
+// Seated, downward-looking rest pose. Trial nearer first, retreat only when actual
 // geometry/chrome cannot fit the complete shared nine-position look envelope.
 function resolveRestCamera(width,height,points,crease,reservations,protectedPoints=points) {
-  const pitch=-10*Math.PI/180, tangent=Math.tan(68*Math.PI/360);
+  const pitch=-8*Math.PI/180, tangent=Math.tan(68*Math.PI/360);
   const centerX=(Math.min(...protectedPoints.map(p=>p.x))+Math.max(...protectedPoints.map(p=>p.x)))/2;
   const direction=new THREE.Vector3(0,-Math.sin(pitch),Math.cos(pitch));
   const maxY=1-2*(reservations.header+16)/height;
-  // The fixed forward stylus crosses the bottom edge at the proposed 90%
-  // crease band during +3deg pitch. Reserve its complete silhouette first.
-  const k=-.68;
+  // Place the front crease at 88%; the complete stylus and hero silhouettes
+  // still constrain distance over all nine shared +/-4deg, +/-2deg looks.
+  const k=-.76;
   const slope=(-Math.sin(pitch)-k*tangent*Math.cos(pitch))/(Math.cos(pitch)-k*tangent*Math.sin(pitch));
   const origin=new THREE.Vector3(centerX,crease.y-slope*crease.z,0);
   const movement=new THREE.Vector3(0,slope,1);

@@ -6,14 +6,18 @@
 
 /* Rest-view chrome only; boot/warp and semantic document typography are separate. */
 .cockpit-identity-plaque {
+  /* Local, opaque palette: the light silk wall does not invert with HUD ink. */
+  --identity-surface: #CFC9C0;
+  --identity-ink: #26231F;
+  --identity-rule: #B9B5AE;
   position: absolute;
   z-index: 40;
   width: 18.5rem;
   box-sizing: border-box;
   padding: 16px;
-  color: var(--cream);
-  background: var(--ink);
-  border: 1px solid var(--jade-light);
+  color: var(--identity-ink);
+  background: var(--identity-surface);
+  border: 1px solid var(--identity-rule);
   border-radius: 0;
   overflow-wrap: anywhere;
 }
@@ -36,6 +40,18 @@
   font-family: var(--font-sans);
   font-size: calc(16px * var(--text-scale));
   line-height: 1.5;
+}
+:root[data-a11y-contrast="high"] .cockpit-identity-plaque {
+  --identity-surface: #F0EBE1;
+  --identity-ink: #1E1C1A;
+  --identity-rule: var(--identity-ink);
+}
+@media (prefers-contrast: more) {
+  :root:not([data-a11y-contrast="standard"]) .cockpit-identity-plaque {
+    --identity-surface: #F0EBE1;
+    --identity-ink: #1E1C1A;
+    --identity-rule: var(--identity-ink);
+  }
 }
 .cockpit-rest-vignette {
   position: absolute; inset: 0; pointer-events: none; z-index: 3;

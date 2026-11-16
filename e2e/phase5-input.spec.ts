@@ -132,8 +132,11 @@ async function visibleHoverBox(page: Page): Promise<VisibleBox> {
 test('identity plaque reflows in measured visible chrome through live resize, pan and preferences', async ({ page }) => {
   test.setTimeout(ciTimeout(180_000,600_000))
   await page.setViewportSize({width:1440,height:900})
-  await enterCockpit(page)
+  // Exercise the real entry path for this chrome surface, including its portal.
+  await page.goto('/')
+  await page.locator('[data-hud="boot-enter"]').click()
   const plaque=page.locator('[data-layout-region="cockpit-identity"]')
+  await expect(plaque).toBeVisible()
   await expect(plaque).toHaveAttribute('data-layout-contract','cockpit-identity-v1')
   await expect(plaque).toHaveAttribute('data-content-contract','content-home-v1')
   await expect(plaque.locator('h1')).toHaveText(PROFILE.name)
@@ -155,12 +158,17 @@ test('identity plaque reflows in measured visible chrome through live resize, pa
       return .2126*rgb[0]!+.7152*rgb[1]!+.0722*rgb[2]!
     }
     const fg=luminance(style.color),bg=luminance(style.backgroundColor)
+    const lineContrast=[...plaque.children].map(line=>{
+      const text=luminance(getComputedStyle(line).color)
+      return (Math.max(text,bg)+.05)/(Math.min(text,bg)+.05)
+    })
     return {left:p.left-v.left,right:v.right-p.right,bottom:v.bottom-p.bottom,header:p.top-Math.max(v.top,h.bottom),
       overflow:plaque.scrollWidth-plaque.clientWidth,height:p.height,
       contrast:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05),
       measurementError:Math.max(...actual.map((n,i)=>Math.abs(n-(recorded[i]??Infinity)))),
       outsideSurface:!plaque.closest('.responsive-stage-surface'),radius:style.borderRadius,
-      background:style.backgroundColor,color:style.color,transform:style.transform,
+      background:style.backgroundColor,color:style.color,transform:style.transform,lineContrast,
+      highContrast:document.documentElement.getAttribute('data-a11y-contrast')==='high',
     }
   })
   const assertMeasured=async()=>{
@@ -170,6 +178,8 @@ test('identity plaque reflows in measured visible chrome through live resize, pa
     },{timeout:timing.expect}).toBe(true)
     expect(await measurements()).toMatchObject({outsideSurface:true,radius:'0px',transform:'none'})
     expect((await measurements()).contrast).toBeGreaterThanOrEqual(4.5)
+    const m=await measurements()
+    for(const contrast of m.lineContrast)expect(contrast).toBeGreaterThanOrEqual(m.highContrast?7:4.5)
   }
   const sizes=[{width:1440,height:900},{width:2000,height:635},{width:1024,height:600},{width:800,height:500},{width:320,height:568}]
   for(const theme of ['dark','light']){
@@ -177,6 +187,8 @@ test('identity plaque reflows in measured visible chrome through live resize, pa
     for(const size of [...sizes,...sizes.slice().reverse()]){
       await page.setViewportSize(size)
       await assertMeasured()
+      expect((await measurements()).background).toBe('rgb(207, 201, 192)')
+      expect((await measurements()).color).toBe('rgb(38, 35, 31)')
     }
   }
   await page.setViewportSize({width:800,height:500})
@@ -696,8 +708,8 @@ test.describe('Phase 5 free-look input normalization', () => {
         }), 10)
         expect(Math.abs(state.yawTarget)).toBeLessThanOrEqual(MAX_YAW_RAD + 1e-12)
         expect(Math.abs(state.pitchTarget)).toBeLessThanOrEqual(MAX_PITCH_RAD + 1e-12)
-        expect(state.yawTarget*180/Math.PI).toBeCloseTo(-point.x*6,1)
-        expect(state.pitchTarget*180/Math.PI).toBeCloseTo(-point.y*3,1)
+        expect(state.yawTarget*180/Math.PI).toBeCloseTo(-point.x*4,1)
+        expect(state.pitchTarget*180/Math.PI).toBeCloseTo(-point.y*2,1)
         expect(Math.abs(state.yawTarget - expectedYaw)).toBeLessThanOrEqual(
           point.x === 0 ? 1e-6 : MAX_YAW_RAD * 0.01,
         )

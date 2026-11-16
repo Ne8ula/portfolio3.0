@@ -117,36 +117,46 @@ export type StudioBackdropPalette = {
 }
 type Stream = { next(): number }
 export function bambooPattern(random: Stream = { next: () => 0.5 }) {
-  return Array.from({ length: 7 }, (_, index) => {
-    const x = 0.31 + index * 0.105 + (random.next() - 0.5) * 0.025
-    const top = 0.15 + random.next() * 0.11, lean = (random.next() - 0.5) * 0.09
-    const fans = Array.from({ length: 4 }, (_, fan) => {
-      const t = 0.20 + fan * 0.20 + (random.next() - 0.5) * 0.045
-      const bx = (x + lean * t) * 2048, by = 690 + (top * 1024 - 690) * t
+  // Five irregular groves, each grown independently from the named stream.
+  // Smaller leaves leave silk between the stems instead of making dark sprays.
+  const clusters = [[.12,.146,.178], [.24,.267,.306,.323,.355],
+    [.426,.462,.485,.527], [.599,.638,.66], [.738,.765,.801,.834,.873]]
+  return clusters.flatMap((centers, cluster) => centers.map((center, member) => ({ center, cluster, member })))
+    .map(({ center, cluster, member }, index) => {
+    const x = center + (random.next() - 0.5) * .006
+    const band = (index + cluster) % 3
+    const top = [.055,.20,.35][band]! + random.next() * .025
+    const bottom = .76 + random.next() * .06
+    const lean = (index % 2 ? 1 : -1) * (.02 + random.next() * .035)
+    const fanCount = 3 + (index % 5 < 3 ? 1 : 0)
+    const leafScale = [.59,.69,.78][(band + member) % 3]!
+    const fans = Array.from({ length: fanCount }, (_, fan) => {
+      const t = (fan + .75) / (fanCount + .3) + (random.next() - .5) * .04
+      const bx = (x + lean * (.7*t + .3*t*t)) * 2048, by = (bottom + (top-bottom)*t) * 1024
       const sign = (index + fan) % 2 ? 1 : -1
       const angle = sign > 0 ? -0.45 - random.next() * 0.4 : Math.PI + 0.45 + random.next() * 0.4
-      const reach = 90 + random.next() * 65
-      const leaves = Array.from({ length: 5 + Math.floor(random.next() * 3) }, (_, leaf) => {
+      const reach = 65 + random.next() * 40
+      const leaves = Array.from({ length: 6 + Math.floor(random.next() * 2) }, (_, leaf) => {
         const along = 0.15 + leaf * 0.105 + random.next() * 0.045
         return {
           x: bx + Math.cos(angle) * reach * along,
           y: by + Math.sin(angle) * reach * along,
           angle: angle + (leaf % 2 ? 1 : -1) * (0.35 + random.next() * 0.35) + (random.next() - 0.5) * Math.PI / 15,
-          length: 112 * (0.75 + random.next() * 0.5),
-          width: 16 * (0.75 + random.next() * 0.5),
-          bend: (random.next() - 0.5) * 22,
+          length: 112 * leafScale * (0.95 + random.next() * 0.1),
+          width: 16 * leafScale * (0.8 + random.next() * 0.4),
+          bend: (random.next() - 0.5) * 16,
           taper: 0.35 + random.next() * 0.2,
         }
       })
       return { bx, by, angle, reach, leaves }
     })
-    return { x, top, lean, distant: index % 2 === 0, fans }
+    return { x, top, bottom, lean, cluster, distant: index % 5 === 0 || index % 5 === 3, fans }
   })
 }
 
 /** Silk artwork only. Quiet chrome masks live in stage coordinates, never
  * inside this atlas, so cover cropping cannot expose a rectangular dark band. */
-export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooPattern()) {
+export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooPattern(), layer = document.createElement('canvas')) {
   const canvas = document.createElement('canvas')
   canvas.width = 2048; canvas.height = 1024
   const context = canvas.getContext('2d')!
@@ -158,15 +168,16 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
   field.addColorStop(0,css(palette.silk.clone().lerp(palette.bamboo,0.12)))
   field.addColorStop(1,css(palette.silk))
   context.fillStyle=field; context.fillRect(0,0,2048,1024)
-  const layer=document.createElement('canvas'); layer.width=2048;layer.height=1024
+  if (layer.width!==2048) layer.width=2048
+  if (layer.height!==1024) layer.height=1024
   const draw=layer.getContext('2d')!
   for(const distant of [true,false]) {
     draw.clearRect(0,0,2048,1024)
     draw.fillStyle=draw.strokeStyle=css(distant ? palette.bamboo.clone().lerp(palette.silk,0.3) : palette.bamboo)
     for(const culm of pattern.filter(c=>c.distant===distant)) {
       draw.lineWidth=distant?4:3
-      draw.beginPath();draw.moveTo(culm.x*2048,690)
-      draw.quadraticCurveTo((culm.x+culm.lean*0.4)*2048,420,(culm.x+culm.lean)*2048,culm.top*1024);draw.stroke()
+      draw.beginPath();draw.moveTo(culm.x*2048,culm.bottom*1024)
+      draw.quadraticCurveTo((culm.x+culm.lean*.35)*2048,(culm.bottom+culm.top)*512,(culm.x+culm.lean)*2048,culm.top*1024);draw.stroke()
       for(const fan of culm.fans) {
         draw.lineWidth=2
         draw.beginPath();draw.moveTo(fan.bx-5,fan.by+2);draw.lineTo(fan.bx+5,fan.by-2);draw.stroke()
@@ -192,7 +203,6 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
   for(const x of [0.39,0.59,0.79]) {
     context.beginPath();context.moveTo(x*2048,0);context.lineTo(x*2048,1024);context.stroke()
   }
-  layer.width=layer.height=1
   const texture=new THREE.CanvasTexture(canvas)
   texture.colorSpace=THREE.SRGBColorSpace
   texture.minFilter=texture.magFilter=THREE.LinearFilter;texture.generateMipmaps=false
@@ -202,13 +212,17 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
 export function createStudioBackdropCache(random?: Stream) {
   const pattern=bambooPattern(random)
   let key='',texture: THREE.CanvasTexture|null=null
+  let layer: HTMLCanvasElement|null=null
   return {
     get(palette: StudioBackdropPalette) {
       const next=Object.values(palette).map(color=>color.getHexString()).join(':')
-      if(next!==key || !texture) {texture?.dispose();texture=studioBackdrop(palette,pattern);key=next}
+      if(next!==key || !texture) {
+        layer ??= document.createElement('canvas')
+        texture?.dispose();texture=studioBackdrop(palette,pattern,layer);key=next
+      }
       return texture
     },
-    dispose(){texture?.dispose();texture=null;key=''},
+    dispose(){texture?.dispose();texture=null;key='';if(layer){layer.width=layer.height=1;layer=null}},
   }
 }
 

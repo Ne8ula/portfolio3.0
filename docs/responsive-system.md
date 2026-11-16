@@ -285,7 +285,7 @@ two DIFFERENT mechanisms (plan §A.5) — do not merge them:
    the live visible stage/container box, then shaped
    by `responseExponentFor(viewport)` (`1.0` at the reference `1440×900`,
    rising toward `1.7` at the smallest supported ratio). Because
-   `1 ** e === 1`, the current owner-directed `±6°` yaw / `±3°` pitch envelope is reachable
+   `1 ** e === 1`, the current owner-directed `±4°` yaw / `±2°` pitch envelope is reachable
    at the stage edge on EVERY supported viewport; smaller viewports only
    damp response near center. Applying a reference-dimension divisor to
    hover (which would truncate the envelope) is the regression plan §9.4
@@ -308,6 +308,12 @@ Intrinsic plaque bounds, including large-text wrapping, are measured in stage
 coordinates for the rest-camera reservation. Focused views hide the plaque
 and retain their separate fit and parallax policies. The silk background has
 no identity-sized quiet mask; the opaque plaque supplies text contrast.
+
+Rest framing retains the 68° field of view and all authored model/FPV
+transforms. Its 8° downward aim and 88% front-crease placement solve the
+nearest seat that preserves the complete protected silhouettes, header and
+identity reservations over all nine free-look extrema. Focused framing and
+its separate parallax policy are unchanged.
 
 Wheel input normalizes `WheelEvent.deltaMode` via `normalizeWheelDelta()`:
 pixel deltas stay pixels, line deltas convert through the computed line

@@ -44,7 +44,7 @@ describe('listening-room task-light rig', () => {
     expect(lights).toHaveLength(4)
     const key = lights.find(o => o instanceof THREE.SpotLight) as THREE.SpotLight
     expect(key).toBeDefined()
-    expect(key.intensity).toBe(140)
+    expect(key.intensity).toBe(147)
     expect(key.color.getHexString()).toBe('ffc58f')
     expect(key.angle).toBe(0.70)
     expect(key.penumbra).toBe(0.95)
@@ -56,7 +56,7 @@ describe('listening-room task-light rig', () => {
     table.position.set(1, -0.2, -6.8)
     table.rotation.y = 0.3
     scene.updateMatrixWorld(true)
-    const expected = new THREE.Vector3(-5, 2.4, -2.35).applyMatrix4(table.matrixWorld)
+    const expected = new THREE.Vector3(-5, 3.03, -2.35).applyMatrix4(table.matrixWorld)
     expect(key.getWorldPosition(new THREE.Vector3()).distanceTo(expected)).toBeLessThan(1e-10)
     const target = new THREE.Vector3(-2.8, 0.175, -0.2).applyMatrix4(table.matrixWorld)
     expect(key.target.getWorldPosition(new THREE.Vector3()).distanceTo(target)).toBeLessThan(1e-10)
@@ -77,6 +77,7 @@ describe('listening-room task-light rig', () => {
     expect(light.envScene.children).toHaveLength(6)
     const intensities: number[] = []
     light.scene.traverse(o => { if (o instanceof THREE.Light) intensities.push(o.intensity) })
-    expect(intensities.sort((a, b) => a - b)).toEqual([0.08, 0.13, 0.18, 140])
+    expect(intensities.sort((a, b) => a - b)).toEqual([0.08, 0.13, 0.36, 147])
+    expect(light.scene.children.find(o=>o instanceof THREE.DirectionalLight && o.intensity===.36)?.position.toArray()).toEqual([0,4,7])
   })
 })

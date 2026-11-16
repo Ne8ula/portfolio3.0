@@ -188,7 +188,7 @@ describe('static task lamp and opt-in jade accents', () => {
       f.camera.aspect=width!/height!;f.camera.updateProjectionMatrix()
       const seat=fit(width!,height!);expect(seat.valid).toBe(true)
       reports.push({stage:`${width}x${height}`,eye:seat.position.toArray().map(v=>+v.toFixed(4)),heroFraction:+(seat.span/(1-78/height!)).toFixed(4)})
-      for(const yaw of [-6,0,6])for(const pitch of [-3,0,3]){
+      for(const yaw of [-4,0,4])for(const pitch of [-2,0,2]){
         f.camera.position.copy(seat.position);f.camera.rotation.set(seat.pitch+pitch*Math.PI/180,yaw*Math.PI/180,0,'YXZ')
         f.camera.updateMatrixWorld(true);f.table.updateMatrixWorld(true)
         const label=`${width}x${height} yaw ${yaw} pitch ${pitch}`
@@ -212,7 +212,7 @@ describe('static task lamp and opt-in jade accents', () => {
       f.renderer.domElement.getBoundingClientRect=()=>({left:0,top:0,width:width!,height:height!,right:width!,bottom:height!})
       f.camera.aspect=width!/height!;f.camera.updateProjectionMatrix()
       const seat=fit(width!,height!)
-      for(const yaw of [-6,0,6])for(const pitch of [-3,0,3]){
+      for(const yaw of [-4,0,4])for(const pitch of [-2,0,2]){
         f.camera.position.copy(seat.position);f.camera.rotation.set(seat.pitch+pitch*Math.PI/180,yaw*Math.PI/180,0,'YXZ')
         f.camera.updateMatrixWorld(true);f.table.updateMatrixWorld(true)
         expect(reachable(coffee,'coffee-mug',width!,height!),`${width}x${height} mug ${yaw}/${pitch}`).toBe(true)
@@ -242,9 +242,7 @@ describe('static task lamp and opt-in jade accents', () => {
       const camera=new THREE.PerspectiveCamera(68,width!/height!,.1,2000)
       camera.position.copy(seat.position);camera.rotation.x=seat.pitch;camera.updateMatrixWorld(true)
       const crease=f.table.localToWorld(new THREE.Vector3(0,.007,3.115)).project(camera)
-      // Protected forward stylus at all nine looks takes precedence over the
-      // proposed 90–94% art band; the actual exposed crease is at 84%.
-      expect((1-crease.y)/2).toBeCloseTo(.84,8)
+      expect((1-crease.y)/2).toBeCloseTo(.88,8)
       // The luminous core must actually be exposed through the channel,
       // rather than merely projecting a hidden center onto the bottom band.
       const core = furniture.localToWorld(new THREE.Vector3(0,.007,3.115))
@@ -399,6 +397,7 @@ describe('static task lamp and opt-in jade accents', () => {
     const size = bounds.getSize(new THREE.Vector3())
     expect(size.x).toBeLessThan(4.1)
     expect(size.y).toBeLessThan(4.1)
+    expect(size.y).toBeGreaterThanOrEqual(3.075131178200245 * 1.2)
     expect(size.z).toBeLessThan(2)
     console.log('Lamp envelope:',size.toArray())
     expect(meshes(lamp)).toHaveLength(7)
@@ -408,7 +407,7 @@ describe('static task lamp and opt-in jade accents', () => {
     expect(lampLights).toHaveLength(0)
     const emitter = lamp.getObjectByName('task-lamp-emitter')!
     const position = emitter.getWorldPosition(new THREE.Vector3())
-    expect(position.distanceTo(new THREE.Vector3(-5, 2.4, -2.35))).toBeLessThan(1e-10)
+    expect(position.distanceTo(new THREE.Vector3(-5, 3.03, -2.35))).toBeLessThan(1e-10)
     const axis = new THREE.Vector3(0, -1, 0).transformDirection(emitter.matrixWorld)
     expect(axis.dot(new THREE.Vector3(-2.8, 0.175, -0.2).sub(position).normalize())).toBeCloseTo(1)
     const api = bridge.__cockpitDecor as { list: () => string[]; set: (name: string) => boolean }
@@ -416,6 +415,22 @@ describe('static task lamp and opt-in jade accents', () => {
     expect(api.list()).toEqual(['sax', 'tablet', 'plant', 'shaker'])
     expect(api.set('desk-lamp')).toBe(false)
     expect(decor.children[4]).toBe(lamp)
+  })
+
+  it('separates the inactive tablet plate, recess and controls without broad emission', () => {
+    const { decor } = fixture()
+    const tablet = decor.children[1]!
+    const parts = meshes(tablet)
+    const plate = parts.find(m=>parameters(m.geometry)?.width===2.3-.24 && parameters(m.geometry)?.height===.06)!
+    const recess = parts.find(m=>parameters(m.geometry)?.width===1.66 && parameters(m.geometry)?.height===.03)!
+    const buttons = parts.filter(m=>parameters(m.geometry)?.height===.024 && m.material.color.getHex()===0xB9B5AE)
+    expect(plate.material.color.getHex()).toBe(0x55514B)
+    expect(recess.material.color.getHex()).toBe(0x3A3733)
+    expect(buttons).toHaveLength(4)
+    for(const part of [plate,recess,...buttons]) {
+      expect(part.material.emissive.getHex()).toBe(0)
+      expect(part.material.transparent).toBe(false)
+    }
   })
 
   it('keeps the actual lamp inside rest projections and below header/identity at both capture sizes', () => {
@@ -428,12 +443,16 @@ describe('static task lamp and opt-in jade accents', () => {
     for (const [width, height] of [[1440, 900], [2560, 1440]]) {
       camera.aspect = width! / height!; camera.updateProjectionMatrix()
       const seat=rest(width!,height!);expect(seat.valid).toBe(true)
+      // Same authored assembly and measured plaque envelope as the pre-growth
+      // normal-entry captures: enlarging the lamp may not push the seat back.
+      expect(seat.position.z).toBeLessThanOrEqual(width===1440 ? 1.935092 : 1.201605)
       camera.position.copy(seat.position);camera.rotation.set(seat.pitch,0,0);camera.updateMatrixWorld(true)
       table.updateMatrixWorld(true)
       const shade=lamp.getObjectByName('lamp-opaque-shade') as THREE.Mesh
       const sleeveMeshes=meshes(rest.crate).filter(m=>Array.isArray(m.material)&&Number.isInteger(m.parent?.userData.i))
       const shadeHull=projection(shade,camera,width!,height!)
       const sleeveGap=Math.min(...sleeveMeshes.map(m=>polygonGap(shadeHull,projection(m,camera,width!,height!))))
+      expect(sleeveGap).toBeGreaterThanOrEqual(8)
       const xs=shadeHull.map(p=>p.x),ys=shadeHull.map(p=>p.y)
       const raycaster=new THREE.Raycaster()
       let samples=0,unoccluded=0
