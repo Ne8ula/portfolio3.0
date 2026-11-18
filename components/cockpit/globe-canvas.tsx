@@ -139,7 +139,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
     const T = () => THEMES[curTheme];
     // Scene colors follow the same resolved CSS tokens as the cockpit shell.
     const token = (name) => new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(name).trim());
-    const backdropCache = createStudioBackdropCache(randomSource.stream('listening-room/bamboo'));
+    const backdropCache = createStudioBackdropCache(createRandomSource('ax-bamboo-depth-v1').stream('listening-room/bamboo'));
     const silkScreen = createSilkScreen();
     silkScreen.mesh.visible = false;
     scene.add(silkScreen.mesh);
@@ -165,7 +165,7 @@ function GlobeCanvas({ yawRef, pitchRef, onContextEvent, restore }){
         silkScreen.set(backdropCache.get({
           quiet: token('--ink'),
           silk: token('--warp-cream').lerp(token('--scene-warm-light'), 0.12).multiplyScalar(0.87),
-          bamboo: new THREE.Color(PALETTE.ink).lerp(new THREE.Color(PALETTE.jade), 0.3),
+          bamboo: new THREE.Color(PALETTE.ink).lerp(new THREE.Color(PALETTE.jade), 0.5),
           warm: token('--scene-warm-light'),
         }), token('--ink'));
         silkScreen.mesh.visible = true;

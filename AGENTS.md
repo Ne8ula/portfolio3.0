@@ -47,7 +47,7 @@ Old hash manifests cover original bytes; never rewrite them to certify new text.
 Task -> design/owner decisions where needed -> one engineer -> tests -> fresh
 independent read-only Codex review -> owner commit/publication decision.
 
-- Orchestrator: GPT-6 Astra in Claude Code; client/model/role are distinct.
+- Orchestrator: Fable 5.2 in Claude Code; client/model/role are distinct.
   Read this policy, handoff, Git status and live diff. Hold the brief and inspect
   evidence; never author product code. Instruction alignment and operational
   handoffs are orchestration work, not product engineering.

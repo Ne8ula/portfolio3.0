@@ -116,27 +116,45 @@ export type StudioBackdropPalette = {
   quiet: THREE.Color; silk: THREE.Color; bamboo: THREE.Color; warm: THREE.Color
 }
 type Stream = { next(): number }
+const BAMBOO_DEPTHS = [
+  { tint: .45, alpha: .40, scale: .75, halves: 4 },
+  { tint: .25, alpha: .52, scale: .85, halves: 3 },
+  { tint: 0, alpha: .66, scale: 1, halves: 2 },
+  { tint: 0, alpha: .97, scale: 1.25, halves: 0 },
+]
+
+// A quadratic curve stays inside its control-point hull. Keep the entire
+// dark fan (including branches) inside one zone, with room for resampling.
+function bambooLeafHull(leaf: { x:number; y:number; angle:number; length:number; width:number; bend:number; taper:number }): [number,number][] {
+  const dx=Math.cos(leaf.angle)*leaf.length,dy=Math.sin(leaf.angle)*leaf.length
+  const nx=-Math.sin(leaf.angle),ny=Math.cos(leaf.angle)
+  return [[leaf.x,leaf.y], [leaf.x+dx,leaf.y+dy],
+    [leaf.x+dx*leaf.taper+nx*(leaf.width+leaf.bend),leaf.y+dy*leaf.taper+ny*(leaf.width+leaf.bend)],
+    [leaf.x+dx*.65+nx*(leaf.bend-leaf.width),leaf.y+dy*.65+ny*(leaf.bend-leaf.width)]]
+}
+
 export function bambooPattern(random: Stream = { next: () => 0.5 }) {
-  // Five irregular groves, each grown independently from the named stream.
-  // Smaller leaves leave silk between the stems instead of making dark sprays.
-  const clusters = [[.12,.146,.178], [.24,.267,.306,.323,.355],
-    [.426,.462,.485,.527], [.599,.638,.66], [.738,.765,.801,.834,.873]]
-  return clusters.flatMap((centers, cluster) => centers.map((center, member) => ({ center, cluster, member })))
-    .map(({ center, cluster, member }, index) => {
+  const centers = [[.12,.178,.267,.355,.599,.765], [.146,.24,.426,.527,.738,.873],
+    [.13,.30,.49,.66,.78], [.215,.455,.84]]
+  return centers.flatMap((grove, depth) => grove.map(center => ({ center, depth })))
+    .sort((a,b)=>a.center-b.center).map(({ center, depth }, index) => {
+    const cluster = Math.min(4,Math.floor(center*5))
     const x = center + (random.next() - 0.5) * .006
     const band = (index + cluster) % 3
-    const top = [.055,.20,.35][band]! + random.next() * .025
+    const top = (depth<2 ? [.055,.20,.35][band]! : .075) + random.next() * .025
     const bottom = .76 + random.next() * .06
     const lean = (index % 2 ? 1 : -1) * (.02 + random.next() * .035)
-    const fanCount = 3 + (index % 5 < 3 ? 1 : 0)
-    const leafScale = [.59,.69,.78][(band + member) % 3]!
+    const fanCount = depth<2 ? 4 : 3
+    const leafScale = BAMBOO_DEPTHS[depth]!.scale
+    const lane = center>=.40 && center<=.51
     const fans = Array.from({ length: fanCount }, (_, fan) => {
       const t = (fan + .75) / (fanCount + .3) + (random.next() - .5) * .04
-      const bx = (x + lean * (.7*t + .3*t*t)) * 2048, by = (bottom + (top-bottom)*t) * 1024
+      let bx = (x + lean * (.7*t + .3*t*t)) * 2048
+      let by = (depth<2 ? bottom+(top-bottom)*t : (lane ? [.43,.32,.22] : [.25,.21,.16])[fan]!) * 1024
       const sign = (index + fan) % 2 ? 1 : -1
       const angle = sign > 0 ? -0.45 - random.next() * 0.4 : Math.PI + 0.45 + random.next() * 0.4
-      const reach = 65 + random.next() * 40
-      const leaves = Array.from({ length: 6 + Math.floor(random.next() * 2) }, (_, leaf) => {
+      const reach = depth<2 ? 65 + random.next() * 40 : 36 + random.next() * 12
+      const leaves = Array.from({ length: (depth===0 ? 7 : 6) + Math.floor(random.next() * 2) }, (_, leaf) => {
         const along = 0.15 + leaf * 0.105 + random.next() * 0.045
         return {
           x: bx + Math.cos(angle) * reach * along,
@@ -144,19 +162,29 @@ export function bambooPattern(random: Stream = { next: () => 0.5 }) {
           angle: angle + (leaf % 2 ? 1 : -1) * (0.35 + random.next() * 0.35) + (random.next() - 0.5) * Math.PI / 15,
           length: 112 * leafScale * (0.95 + random.next() * 0.1),
           width: 16 * leafScale * (0.8 + random.next() * 0.4),
-          bend: (random.next() - 0.5) * 16,
+          bend: (random.next() - 0.5) * 16 * leafScale,
           taper: 0.35 + random.next() * 0.2,
         }
       })
+      if(depth>=2) {
+        const hull: [number,number][] = [[bx-5,by+2],[bx+5,by-2],
+          [bx+Math.cos(angle)*reach,by+Math.sin(angle)*reach],...leaves.flatMap(bambooLeafHull)]
+        const xs=hull.map(p=>p[0]),ys=hull.map(p=>p[1])
+        const zone=lane ? [.40*2048,.51*2048,.07*1024,.46*1024] as const : [0,2048,.07*1024,.27*1024] as const
+        const shift=(values:number[],lo:number,hi:number)=>Math.max(lo+8-Math.min(...values),Math.min(0,hi-8-Math.max(...values)))
+        const dx=shift(xs,zone[0],zone[1]),dy=shift(ys,zone[2],zone[3])
+        bx+=dx;by+=dy
+        leaves.forEach(leaf=>{leaf.x+=dx;leaf.y+=dy})
+      }
       return { bx, by, angle, reach, leaves }
     })
-    return { x, top, bottom, lean, cluster, distant: index % 5 === 0 || index % 5 === 3, fans }
+    return { x, top, bottom, lean, cluster, depth, lane, fans }
   })
 }
 
 /** Silk artwork only. Quiet chrome masks live in stage coordinates, never
  * inside this atlas, so cover cropping cannot expose a rectangular dark band. */
-export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooPattern(), layer = document.createElement('canvas')) {
+export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooPattern(), layer = document.createElement('canvas'), blur = document.createElement('canvas')) {
   const canvas = document.createElement('canvas')
   canvas.width = 2048; canvas.height = 1024
   const context = canvas.getContext('2d')!
@@ -170,14 +198,26 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
   context.fillStyle=field; context.fillRect(0,0,2048,1024)
   if (layer.width!==2048) layer.width=2048
   if (layer.height!==1024) layer.height=1024
+  if (blur.width!==1024) blur.width=1024
+  if (blur.height!==512) blur.height=512
   const draw=layer.getContext('2d')!
-  for(const distant of [true,false]) {
+  for(const [depth,settings] of BAMBOO_DEPTHS.entries()) {
     draw.clearRect(0,0,2048,1024)
-    draw.fillStyle=draw.strokeStyle=css(distant ? palette.bamboo.clone().lerp(palette.silk,0.3) : palette.bamboo)
-    for(const culm of pattern.filter(c=>c.distant===distant)) {
-      draw.lineWidth=distant?4:3
+    const tint=palette.bamboo.clone().lerp(palette.silk,settings.tint)
+    draw.fillStyle=css(tint)
+    for(const culm of pattern.filter(c=>c.depth===depth)) {
+      draw.strokeStyle=css(tint)
+      if(depth>=2) {
+        const fade=draw.createLinearGradient(0,.27*1024,0,(culm.lane ? .58 : .50)*1024)
+        // Stems start pale: the fade below the leaf zones must not leave a
+        // near-black line behind a hero, even before it reaches zero.
+        fade.addColorStop(0,css(tint,.3));fade.addColorStop(1,css(tint,0))
+        draw.strokeStyle=fade
+      }
+      draw.lineWidth=depth<2?4:3
       draw.beginPath();draw.moveTo(culm.x*2048,culm.bottom*1024)
       draw.quadraticCurveTo((culm.x+culm.lean*.35)*2048,(culm.bottom+culm.top)*512,(culm.x+culm.lean)*2048,culm.top*1024);draw.stroke()
+      draw.strokeStyle=css(tint)
       for(const fan of culm.fans) {
         draw.lineWidth=2
         draw.beginPath();draw.moveTo(fan.bx-5,fan.by+2);draw.lineTo(fan.bx+5,fan.by-2);draw.stroke()
@@ -193,8 +233,19 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
         }
       }
     }
-    context.save();context.globalAlpha=distant?0.16:0.46
-    context.filter=distant?'blur(16px)':'blur(2px)'
+    // Portable bilinear blur: halve, then double, alternating two canvases.
+    // Only the current source rectangle is read; cleared destinations avoid
+    // accumulating opacity. The final upsample always returns to `layer`.
+    let from=layer,w=2048,h=1024
+    for(let step=0;step<settings.halves*2;step++) {
+      const to=from===layer?blur:layer,ctx=to.getContext('2d')!
+      const factor=step<settings.halves ? .5 : 2,nw=w*factor,nh=h*factor
+      ctx.clearRect(0,0,to.width,to.height)
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='low'
+      ctx.drawImage(from,0,0,w,h,0,0,nw,nh)
+      from=to;w=nw;h=nh
+    }
+    context.save();context.globalAlpha=settings.alpha
     context.drawImage(layer,0,0);context.restore()
   }
   context.fillStyle=css(palette.silk.clone().lerp(palette.warm,0.08),0.06)
@@ -212,17 +263,18 @@ export function studioBackdrop(palette: StudioBackdropPalette, pattern = bambooP
 export function createStudioBackdropCache(random?: Stream) {
   const pattern=bambooPattern(random)
   let key='',texture: THREE.CanvasTexture|null=null
-  let layer: HTMLCanvasElement|null=null
+  let layer: HTMLCanvasElement|null=null,blur: HTMLCanvasElement|null=null
   return {
     get(palette: StudioBackdropPalette) {
-      const next=Object.values(palette).map(color=>color.getHexString()).join(':')
+      const next=[palette.silk,palette.bamboo,palette.warm].map(color=>color.getHexString()).join(':')
       if(next!==key || !texture) {
         layer ??= document.createElement('canvas')
-        texture?.dispose();texture=studioBackdrop(palette,pattern,layer);key=next
+        blur ??= document.createElement('canvas')
+        texture?.dispose();texture=studioBackdrop(palette,pattern,layer,blur);key=next
       }
       return texture
     },
-    dispose(){texture?.dispose();texture=null;key='';if(layer){layer.width=layer.height=1;layer=null}},
+    dispose(){texture?.dispose();texture=null;key='';if(layer){layer.width=layer.height=1;layer=null}if(blur){blur.width=blur.height=1;blur=null}},
   }
 }
 

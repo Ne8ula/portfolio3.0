@@ -38,21 +38,55 @@ describe('sculpted desk and silk backdrop', () => {
     expect(first).toEqual(pattern('screen-a'))
     expect(first).not.toEqual(pattern('screen-b'))
     expect(first).toHaveLength(20)
-    expect([0,1,2,3,4].map(cluster=>first.filter(c=>c.cluster===cluster).length)).toEqual([3,5,4,3,5])
-    expect(first.filter(c=>c.distant)).toHaveLength(8)
+    expect([0,1,2,3].map(depth=>first.filter(c=>c.depth===depth).length)).toEqual([6,6,5,3])
+    expect([0,1,2,3].map(depth=>first.filter(c=>c.depth===depth).flatMap(c=>c.fans).length)).toEqual([24,24,15,9])
     const heights=first.map(c=>c.bottom-c.top),gaps=first.slice(1).map((c,i)=>c.x-first[i]!.x)
     expect(Math.max(...heights)/Math.min(...heights)).toBeGreaterThanOrEqual(1.5)
     expect(Math.max(...gaps)/Math.min(...gaps)).toBeGreaterThanOrEqual(3)
     expect(first.some(c=>c.lean<0)&&first.some(c=>c.lean>0)).toBe(true)
     const clusters=first.flatMap(c=>c.fans),leaves=clusters.flatMap(c=>c.leaves)
     expect(clusters).toHaveLength(72);expect(leaves.length).toBeLessThanOrEqual(560)
-    expect(clusters.every(c=>c.leaves.length>=6&&c.leaves.length<=7)).toBe(true)
+    expect(first.every(c=>c.fans.every(f=>f.leaves.length>=(c.depth===0?7:6)&&f.leaves.length<=(c.depth===0?8:7)))).toBe(true)
     expect(new Set(leaves.map(l=>[l.length,l.width,l.angle,l.bend,l.taper].join(','))).size).toBe(leaves.length)
-    expect(Math.max(...leaves.map(l=>l.length))/Math.min(...leaves.map(l=>l.length))).toBeGreaterThan(1.25)
+    const lengthRatio=Math.max(...leaves.map(l=>l.length))/Math.min(...leaves.map(l=>l.length))
+    expect(lengthRatio).toBeGreaterThan(1.7);expect(lengthRatio).toBeLessThan(1.85)
+    for(const c of first) for(const f of c.fans) for(const leaf of f.leaves) {
+      expect(leaf.length).toBeGreaterThanOrEqual([84,95.2,112,140][c.depth]!* .95)
+      expect(leaf.length).toBeLessThanOrEqual([84,95.2,112,140][c.depth]!*1.05)
+    }
+  })
+
+  it('keeps complete dark-leaf curves and branches inside a padded approved zone', () => {
+    for(const seed of ['ax-bamboo-depth-v1','screen-a','screen-b',...Array.from({length:20},(_,i)=>`zone-${i}`)]) {
+      const pattern=bambooPattern(createRandomSource(seed).stream('listening-room/bamboo'))
+      for(const culm of pattern.filter(c=>c.depth>=2)) for(const fan of culm.fans) {
+        const points=[[fan.bx-5,fan.by+2],[fan.bx+5,fan.by-2],
+          [fan.bx+Math.cos(fan.angle)*fan.reach,fan.by+Math.sin(fan.angle)*fan.reach]]
+        for(const leaf of fan.leaves) {
+          const dx=Math.cos(leaf.angle)*leaf.length,dy=Math.sin(leaf.angle)*leaf.length
+          const nx=-Math.sin(leaf.angle),ny=Math.cos(leaf.angle)
+          // Convex-hull containment proves both quadratic edges, not just tips.
+          points.push([leaf.x,leaf.y],[leaf.x+dx,leaf.y+dy],
+            [leaf.x+dx*leaf.taper+nx*(leaf.width+leaf.bend),leaf.y+dy*leaf.taper+ny*(leaf.width+leaf.bend)],
+            [leaf.x+dx*.65+nx*(leaf.bend-leaf.width),leaf.y+dy*.65+ny*(leaf.bend-leaf.width)])
+        }
+        const fits=(l:number,r:number,b:number)=>points.every(([x,y])=>x!>=l*2048+8-1e-8&&x!<=r*2048-8+1e-8&&y!>=.07*1024+8-1e-8&&y!<=b*1024-8+1e-8)
+        expect(fits(0,1,.27)||fits(.40,.51,.46),`${seed} depth ${culm.depth}`).toBe(true)
+      }
+    }
+  })
+
+  it('constructs the same production bamboo without consuming the capture source', () => {
+    const line=source.split('\n').find(line=>line.includes('const backdropCache ='))!
+    const construct=new Function('createStudioBackdropCache','createRandomSource',`${line};return backdropCache;`)
+    const seeded=vi.fn(createRandomSource)
+    const first=construct(bambooPattern,seeded)
+    expect(construct(bambooPattern,seeded)).toEqual(first)
+    expect(seeded.mock.calls).toEqual([['ax-bamboo-depth-v1'],['ax-bamboo-depth-v1']])
   })
 
   it('keeps culms and fans in both outer thirds of the supported cover crops', () => {
-    for (const seed of ['desk-view-owner-fix', 'screen-a', 'screen-b']) {
+    for (const seed of ['desk-view-owner-fix', 'screen-a', 'screen-b', 'ax-bamboo-depth-v1']) {
       const pattern = bambooPattern(createRandomSource(seed).stream('listening-room/bamboo'))
       for (const [width, height] of [[1024,600],[1024,768],[1440,900],[2000,635],[2560,1440],[3440,1440]]) {
         const cover = backdropCover(width!, height!)
@@ -60,7 +94,7 @@ describe('sculpted desk and silk backdrop', () => {
         // The backdrop is screen-space: all nine camera looks use these same
         // UVs. Test exposed fan attachments below chrome, above the desk field.
         for (const [left, right] of [[0,1/3],[2/3,1]]) {
-          const fans = pattern.flatMap(c => c.fans).filter(fan => {
+          const fans = pattern.filter(c=>c.depth<2).flatMap(c => c.fans).filter(fan => {
             const p = project(fan.bx/2048, fan.by/1024)
             return p.x > left!+.02 && p.x < right!-.02 && p.y > 244/height! && p.y < .55
           })
@@ -231,20 +265,45 @@ describe('sculpted desk and silk backdrop', () => {
     expect(first.generateMipmaps).toBe(false)
     expect(first.minFilter).toBe(THREE.LinearFilter)
     expect(first.colorSpace).toBe(THREE.SRGBColorSpace)
-    expect(canvases).toHaveLength(2)
+    expect(canvases).toHaveLength(3)
     expect(canvases[0]).toMatchObject({width:2048,height:1024})
-    expect(operations.filter(op => op[0]==='fill')).toHaveLength(504) // default descriptors: 72 fans x 7 leaves
-    expect(operations.filter(op => op[0]==='drawImage')).toHaveLength(2)
-    expect(operations.some(op=>JSON.stringify(op)===JSON.stringify(['set','filter','blur(16px)']))).toBe(true)
-    expect(operations.some(op=>JSON.stringify(op)===JSON.stringify(['set','filter','blur(2px)']))).toBe(true)
+    expect(canvases[1]).toMatchObject({width:1024,height:512})
+    expect(operations.filter(op => op[0]==='fill')).toHaveLength(528) // 24 fans x 8 + 48 x 7
+    const draws=operations.filter(op=>op[0]==='drawImage')
+    expect(draws).toHaveLength(22) // 4 composites + (4+3+2) down/up pairs
+    const expectedSizes=[
+      [1024,512,256,128,256,512,1024,2048],
+      [1024,512,256,512,1024,2048], [1024,512,1024,2048], [],
+    ]
+    let cursor=0
+    for(const sizes of expectedSizes) {
+      let previous=2048
+      for(const width of sizes) {
+        expect(draws[cursor++]).toEqual(['drawImage','canvas',0,0,previous,previous/2,0,0,width,width/2])
+        previous=width
+      }
+      expect(draws[cursor++]).toEqual(['drawImage','canvas',0,0])
+    }
+    expect(operations.some(op=>op[0]==='set'&&op[1]==='filter')).toBe(false)
+    expect(operations.filter(op=>op[0]==='set'&&op[1]==='globalAlpha').map(op=>op[2])).toEqual([.40,.52,.66,.97])
+    const rgba=(color:THREE.Color)=>{const hex=color.getHex();return `rgba(${hex>>16},${(hex>>8)&255},${hex&255},1)`}
+    expect(operations.filter(op=>op[0]==='set'&&op[1]==='fillStyle').slice(1,5).map(op=>op[2])).toEqual(
+      [.45,.25,0,0].map(mix=>rgba(palette.bamboo.clone().lerp(palette.silk,mix))))
+    expect(operations.filter(op=>op[0]==='gradient'&&op[2]===.27*1024).map(op=>op[4])).toEqual(
+      bambooPattern().filter(c=>c.depth>=2).sort((a,b)=>a.depth-b.depth).map(c=>(c.lane ? .58 : .50)*1024))
+    const uuid=first.uuid,version=first.version
     expect(cache.get(palette)).toBe(first); expect(operations).toHaveLength(count)
-    const second = cache.get({...palette,quiet:new THREE.Color('#F0EBE1')})
+    expect(cache.get({...palette,quiet:new THREE.Color('#F0EBE1')})).toBe(first)
+    expect(first.uuid).toBe(uuid);expect(first.version).toBe(version)
+    expect(operations).toHaveLength(count);expect(dispose).not.toHaveBeenCalled()
+    const second = cache.get({...palette,silk:new THREE.Color('#F0EBE1')})
     expect(second).not.toBe(first); expect(dispose).toHaveBeenCalledTimes(1)
-    expect(canvases).toHaveLength(3) // one replacement atlas; same scratch canvas
+    expect(canvases).toHaveLength(4) // one replacement atlas; same two scratch canvases
     const release = vi.spyOn(second,'dispose')
     cache.dispose(); cache.dispose()
     expect(release).toHaveBeenCalledTimes(1)
     expect(canvases[0]).toMatchObject({width:1,height:1})
+    expect(canvases[1]).toMatchObject({width:1,height:1})
   })
 
   it('coalesces actual theme callbacks after CSS settles and keeps the opaque preference fallback', () => {

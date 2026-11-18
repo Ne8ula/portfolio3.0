@@ -29,3 +29,9 @@
 [1031/220122.058:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x74cc001c3800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [1031/220122.107:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x74cc01354800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
 [1031/220122.861:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x74cc01354800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[1116/132301.895:ERROR:gpu\command_buffer\service\webgpu_decoder_impl.cc:1729] Failed to query ID3D11Device from ANGLE.
+[1116/132301.910:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x661c00a79200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[1116/132302.441:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x661c00a79200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[1116/132303.723:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x661c00a79200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[1116/132306.758:ERROR:gpu\command_buffer\service\gl_utils.cc:430] [.WebGL-0x661c00a79200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[1116/132411.697:WARNING:media\filters\ffmpeg_demuxer.cc:1499] PipelineStatus::DEMUXER_ERROR_NO_SUPPORTED_STREAMS

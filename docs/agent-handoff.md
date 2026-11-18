@@ -20,6 +20,76 @@ Hook setup:
 ## Recent handoffs
 
 <!-- agent-handoff:entry:start -->
+### 2026-11-16T18:21:54.949Z · Claude Code
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `e48a10f`
+- Worktree snapshot: `664ceced7cf4`
+- Session / turn: `a3f9531a-4c23-42aa-a488-f5420affc7aa` / `not exposed`
+- Client: Claude Code
+- Model: `claude-fable-5-2`
+
+#### Final report
+
+> Research is under way; nothing in the repo has been changed and no visual fixes will be decided until you've seen the results.
+>
+> **Running now (2 of 5 agents, both GPT via Codex CLI 0.167.0-alpha.4.1):**
+> - **Current-state capture:** screenshots of the live cockpit in both themes, at 1440×900 and 1920×1080, across base, PC, crate and deck views, plus detail crops of the bamboo screen, AX-01, turntable/crate and desk lighting.
+> - **Reference-site study:** the five sites you listed, covering first-five-seconds message, how role and work are surfaced, what the 3D is for, craft signals, and what separates a creative-technologist portfolio from an explorable game level.
+>
+> Both are briefed to write only to the session scratchpad and to stop on any denial. I started the preview at http://127.0.0.1:3000/ for the capture.
+>
+> **Queued for when the captures land (3 more agents, all `portfolio-design`):**
+> - **Bamboo screen (Claude):** your images 1 and 2 against the current screen and its code, with technique options.
+> - **Desk lighting, materials, bloom and translucency (Claude):** your image 3 against the current render pipeline, with options that fit the three.js constraints and `DESIGN.md`.
+> - **Positioning (GPT-6 Astra):** game scene versus Creative Technologist, using the site research and the current entry flow.
+>
+> I'm holding these three so they compare against real screenshots rather than code alone.
+>
+> **Two things to know before the second wave:**
+> 1. **Model override.** `portfolio-design` is stored as GPT-6 Astra, and the standing rule is to launch it with no model override. It is the only agent type I can spawn, so the two Claude agents need an explicit override to Fable 5.2. I'm reading your "both GPT and Claude models" as authorizing that for this task. If you'd rather not, say so and all three will run on Astra.
+> 2. **Doc mismatch.** The uncommitted edit to `docs/astra-orchestration.md` lists Design as Fable 5.2 in the roles table, while the same file's intro and `.claude/agents/portfolio-design.md` still say GPT-6 Astra. I have not touched either.
+>
+> Not yet checked: whether Codex's sandbox lets the browser use the real GPU. If it falls back to software rendering, the captures will misrepresent glass and lighting; the capture agent is briefed to report which renderer it got, and I'll tell you.
+
+#### Git status at handoff
+
+```text
+ M .claude/agents/portfolio-orchestrator.md
+ M .claude/settings.local.json
+ M AGENTS.md
+ M docs/astra-orchestration.md
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
+### 2026-11-16T16:57:05.271Z · Claude Code
+
+- Branch / HEAD: `codex/phase-6-deck-hud` / `e48a10f`
+- Worktree snapshot: `200104bf43df`
+- Session / turn: `78a5ce86-de0b-44ef-8164-1d9fab056540` / `not exposed`
+- Client: Claude Code
+- Model: `claude-gpt-6-astra`
+
+#### Final report
+
+> This session is **Claude Code**, configured as `portfolio-orchestrator` using **GPT‑6 Astra through Model Gateway**—not a Claude model.
+>
+> By **ClaudeAgent**, do you mean:
+> - Switching this agent to a **Claude model**, or
+> - A specific **ClaudeAgent SDK/application**?
+>
+> **Handoff:** setup checked read-only; no files changed, existing settings edits preserved. Awaiting that clarification.
+>
+> Runtime compatibility with “ClaudeAgent” is not yet verified.
+
+#### Git status at handoff
+
+```text
+ M .claude/settings.local.json
+```
+<!-- agent-handoff:entry:end -->
+
+<!-- agent-handoff:entry:start -->
 ### 2026-11-01T02:31:50.040Z · Claude Code
 
 - Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
@@ -283,151 +353,5 @@ Hook setup:
 
 ```text
  M debug.log
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-10-31T23:21:01.371Z · Claude Code
-
-- Branch / HEAD: `codex/phase-6-deck-hud` / `d55f22f`
-- Worktree snapshot: `01ba4719c80b`
-- Session / turn: `894e903e-d4c1-4ee6-86f5-68fd47eda343` / `not exposed`
-- Client: Claude Code
-- Model: `claude-gpt-6-astra`
-
-#### Final report
-
-> Preview is running at **[localhost:3000](http://127.0.0.1:3000/)** and opened in your browser.
->
-> What should we tackle first—**composition, lighting/materials, or HUD/typography**?
->
-> **Handoff:** HTTP 200 confirmed; no files changed. Your priority goes to `portfolio-design` next.
->
-> Visual checks and tests weren’t run; previous E2E findings remain unresolved.
-
-#### Git status at handoff
-
-```text
-(clean apart from the handoff record)
-```
-<!-- agent-handoff:entry:end -->
-
-<!-- agent-handoff:entry:start -->
-### 2026-10-29T03:31:31.671Z · Codex
-
-- Branch / HEAD: `codex/phase-6-deck-hud` / `e03ae2b`
-- Worktree snapshot: `265f33e64a9c`
-- Session / turn: `01a182d7-220e-70f1-af3b-bdd4a53d1d0a` / `01a1859a-f9f7-7e00-a60e-eefb94c04a24`
-- Client: Codex
-- Model: `gpt-6-astra`
-
-#### Final report
-
-> **SOURCE WRITING STOPPED.** The bounded v8 changes are implemented, with composition targets still unmet. No browser, preview restart, commit or publication was performed.
->
-> - Added the canonical wrapping plaque, measured chrome reservations and recovery visibility handling. Contracts: `cockpit-identity-v1`, existing `content-home-v1`; root `cockpit-v1` unchanged.
-> - Removed the background’s identity mask. Shared look limits are now literal **±6° yaw / ±3° pitch**.
-> - Configured ash `#CDBCA4`, roughness `.58`; silk brightness ×`.87`; mist opacity `.016`; warm key `#FFC58F`, intensity `140`. Four lights and exposure `1.05` remain.
->
-> The real-geometry fixture measures these solved eyes—not browser results:
->
-> | Stage | Eye XYZ | Hero height below header |
-> |---|---|---:|
-> | 1024×600 | −.346, 1.921, 2.249 | 44.0% |
-> | 1440×900 | −.346, 2.026, 2.401 | 41.3% |
-> | 2000×635 | −.346, .186, −.263 | 59.4% |
-> | 2560×1440 | −.346, 1.487, 1.621 | 43.0% |
->
-> FOV remains 68°, downward aim 10°. **The 1440 eye is higher but farther, not closer.** Protecting the fixed stylus at all nine looks required an 84% crease position, missing the proposed 90–94% band. Lamp/sleeve gaps measured 5.96 px and .34 px at 1440/2560, below 8 px. Artifact transforms remain unchanged.
->
-> Changed exactly 17 files:
->
-> - `app/{globals.css,layout-contract.ts}`
-> - `components/cockpit/{cockpit-hud.tsx,globe-canvas.tsx,listening-room.ts}`
-> - `lib/content/content-contracts.ts`
-> - `lib/responsive/{input-policy.ts,layout-contracts.ts}`
-> - `docs/responsive-system.md`
-> - `tests/unit/{input-policy,layout-contracts,content-contracts,desk-environment,desk-lamp-accents,listening-room-lighting}.test.ts`
-> - `e2e/{phase3-renderer,phase5-input}.spec.ts`
->
-> Checks:
->
-> - Focused six-file unit run: **108 passed**.
-> - `npm.cmd run lint`: exit 0.
-> - `npm.cmd run typecheck:contracts`: exit 0.
-> - `npm.cmd run validate:contracts`: exit 0; 6 layout/4 content contracts.
-> - `npm.cmd run test:unit`: **492 passed, 39 files**.
-> - Scoped `git diff --check`: exit 0. Snapshot comparisons reported differences and LF/CRLF notices, no whitespace errors.
->
-> The fit timeout was resolved by precomputing projections; no timeout increase. Each uncached solve uses 2,588,976 bytes of typed-array scratch. No added GPU textures, geometry, lights or render passes.
->
-> HEAD, raw index, handoff and recorded out-of-scope source hashes remain unchanged. No incidental writes were observed. All ten interrupted-v7 E2E failures remain open; new browser regressions are authored but unrun. Rendered appearance, accessibility, hardware performance and fresh independent QA remain pending.
-
-#### Git status at handoff
-
-```text
- M .agents/agents/kimi-phase-qa.md
- M .claude/agents/portfolio-design.md
- M .claude/agents/portfolio-orchestrator.md
- M .claude/settings.local.json
- M AGENTS.md
- M CLAUDE.md
- M DESIGN.md
- M app/globals.css
- M app/layout-contract.ts
- M components/cockpit/cockpit-app.tsx
- M components/cockpit/cockpit-hud.tsx
- M components/cockpit/coffee.ts
- M components/cockpit/decorations.ts
- M components/cockpit/glass-mac.ts
- M components/cockpit/globe-canvas.tsx
- M components/cockpit/highlights.ts
- M components/cockpit/incense.ts
- M components/cockpit/materials.ts
- M components/cockpit/tea-set.ts
- M components/cockpit/turntable.ts
- M components/cockpit/vinyl-crate.ts
- M docs/astra-orchestration.md
- M docs/hud-responsive-layout-plan.md
- M docs/phase-6-design.md
- M docs/phase-6-plan.md
- M docs/phase-runner.md
- M docs/responsive-system.md
- M e2e/phase3-renderer.spec.ts
- M e2e/phase5-input.spec.ts
- M lib/content/content-contracts.ts
- M lib/responsive/input-policy.ts
- M lib/responsive/layout-contracts.ts
- M scripts/agent-handoff.mjs
- M scripts/phase-runner/core.ts
- M scripts/phase-runner/manifests/phase-6.json
- M scripts/phase-runner/phase-runner.ts
- M scripts/run-e2e.mjs
- M tests/unit/agent-handoff.test.ts
- M tests/unit/content-contracts.test.ts
- M tests/unit/e2e-runner.test.ts
- M tests/unit/input-policy.test.ts
- M tests/unit/layout-contracts.test.ts
- M tests/unit/phase-runner.test.ts
- M tests/unit/phase6-manifest.test.ts
-?? .claude/agents/portfolio-8a-engineer.md
-?? components/cockpit/desk-outline.ts
-?? components/cockpit/desk-reflections.ts
-?? components/cockpit/listening-room.ts
-?? debug.log
-?? docs/browser-gate-repair-plan.md
-?? docs/codex-qa-proposal.md
-?? docs/phase-8-design.md
-?? docs/phase-8a-custody-continuation.md
-?? docs/phase-8a-recovery-plan.md
-?? docs/phase-8a-visual-revision.md
-?? docs/visual-first-amendment.md
-?? scripts/phase-runner/schemas/qa-result.schema.json
-?? tests/unit/desk-environment.test.ts
-?? tests/unit/desk-lamp-accents.test.ts
-?? tests/unit/desk-reflections.test.ts
-?? tests/unit/listening-room-lighting.test.ts
-?? tests/unit/listening-room.test.ts
-?? tests/unit/ritual-objects.test.ts
 ```
 <!-- agent-handoff:entry:end -->

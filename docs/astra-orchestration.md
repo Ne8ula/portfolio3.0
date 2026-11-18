@@ -1,7 +1,9 @@
-# Astra orchestration in Claude Code
+# Portfolio orchestration in Claude Code
 
-GPT-6 Astra runs in the Claude Code client through Eigenwise Model Gateway,
-a community integration, not an Anthropic-supported non-Claude backend.
+Fable 5.2 runs the portfolio orchestrator and design roles in Claude Code
+(owner direction, 2026-11-16); no Claude Code portfolio role is assigned a
+non-Claude model. Eigenwise Model Gateway, a community integration and not an
+Anthropic-supported backend, remains wired as described under Setup reference.
 The website has no runtime dependency on that gateway.
 
 ## One policy
@@ -21,8 +23,8 @@ neither accepts a failed candidate nor reseals an old alignment manifest.
 
 | Role | Client / role | Scope |
 | --- | --- | --- |
-| Orchestrator | Claude Code / portfolio-orchestrator / GPT-6 Astra | Brief, delegate, inspect evidence, handoff |
-| Design | Claude Code / portfolio-design / GPT-6 Astra | Exploration, critique and assigned design documents |
+| Orchestrator | Claude Code / portfolio-orchestrator / Fable 5.2 | Brief, delegate, inspect evidence, handoff |
+| Design | Claude Code / portfolio-design / Fable 5.2 | Exploration, critique and assigned design documents |
 | Engineering | Separate Codex CLI session by default | Bounded work; honor specific owner role/model assignments |
 | Independent QA | NEW read-only Codex CLI process/session | Exact work and fresh host checks; never self-review |
 
@@ -89,7 +91,7 @@ compatibility, modify hosts files, or patch Claude Code. The CLI is the intended
 entry point; Desktop and editor integration are not certified by this setup.
 
 Codex keeps its authenticated default model unless a specific owner task
-assignment says otherwise. Choosing Astra changes no worker model. The shelved
+assignment says otherwise. Choosing Fable 5.2 for orchestration changes no worker model. The shelved
 runner is not the active workflow; never use legacy PHASE_RUNNER_KIMI settings.
 
 ## Troubleshooting only when requested

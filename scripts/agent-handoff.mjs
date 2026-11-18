@@ -19,9 +19,9 @@ import { dirname, join, resolve } from "node:path";
 
 const HANDOFF_HEADER = `# Automated cross-agent handoff
 
-This is the single rolling communication record for the Astra orchestrator,
+This is the single rolling communication record for the Fable 5.2 orchestrator,
 Claude design, Codex engineering, and fresh independent Codex QA. Client and model are recorded
-separately; a Claude Code session can run Astra through Model Gateway.
+separately; each entry keeps the model its session actually reported.
 Lifecycle hooks maintain it; do not create a new handoff file after each turn.
 Read the newest entry together with the live Git status and diff. Repository
 files and test output are authoritative when this summary becomes stale.
